@@ -1,0 +1,165 @@
+[
+  {
+    "disabled": false,
+    "displayName": "App Engine default service account",
+    "email": "mat1-9e6b3@appspot.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/mat1-9e6b3@appspot.gserviceaccount.com",
+    "oauth2ClientId": "108609462831917407871",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "108609462831917407871"
+  },
+  {
+    "description": "Firebase Admin SDK Service Agent",
+    "disabled": false,
+    "displayName": "firebase-adminsdk",
+    "email": "firebase-adminsdk-fbsvc@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/firebase-adminsdk-fbsvc@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "101330162184304566760",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "101330162184304566760"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions firestore-incremental-capture service account",
+    "email": "ext-firestore-incremental-hrcj@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-firestore-incremental-hrcj@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "107606896704774132333",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "107606896704774132333"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions firestore-bundle-builder-3z6i service account",
+    "email": "ext-firestore-bundle-buil-riiv@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-firestore-bundle-buil-riiv@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "115894299447192672031",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "115894299447192672031"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions firestore-multimodal-genai service account",
+    "email": "ext-firestore-multimodal-genai@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-firestore-multimodal-genai@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "101857329279745578587",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "101857329279745578587"
+  },
+  {
+    "disabled": false,
+    "displayName": "Trip Import Cron Reader",
+    "email": "trip-import-cron@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/trip-import-cron@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "113211177629116504360",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "113211177629116504360"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions http-pdf-generator service account",
+    "email": "ext-http-pdf-generator@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-http-pdf-generator@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "103250862073717019759",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "103250862073717019759"
+  },
+  {
+    "disabled": false,
+    "displayName": "Default compute service account",
+    "email": "250085264089-compute@developer.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/250085264089-compute@developer.gserviceaccount.com",
+    "oauth2ClientId": "107543193295838525509",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "107543193295838525509"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions back-up-firestore-to-storage service account",
+    "email": "ext-back-up-firestore-to--p6o7@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-back-up-firestore-to--p6o7@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "106234559800019514314",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "106234559800019514314"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions image-processing-api service account",
+    "email": "ext-image-processing-api@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-image-processing-api@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "114046328188917807277",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "114046328188917807277"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions firestore-user-document service account",
+    "email": "ext-firestore-user-document@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-firestore-user-document@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "112804036823201978916",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "112804036823201978916"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions firestore-importer service account",
+    "email": "ext-firestore-importer@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-firestore-importer@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "111302588563294239651",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "111302588563294239651"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase App Hosting compute service account",
+    "email": "firebase-app-hosting-compute@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/firebase-app-hosting-compute@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "118319305366241088007",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "118319305366241088007"
+  },
+  {
+    "description": "googletracking",
+    "disabled": false,
+    "displayName": "mat1",
+    "email": "mat1-687@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/mat1-687@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "110571158173718308468",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "110571158173718308468"
+  },
+  {
+    "disabled": false,
+    "displayName": "Firebase Extensions firestore-pdf-generator service account",
+    "email": "ext-firestore-pdf-generator@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/ext-firestore-pdf-generator@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "105823292006764542971",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "105823292006764542971"
+  },
+  {
+    "description": "Service account via script",
+    "disabled": false,
+    "displayName": "CLI Created Service",
+    "email": "my-cli-service@mat1-9e6b3.iam.gserviceaccount.com",
+    "etag": "MDEwMjE5MjA=",
+    "name": "projects/mat1-9e6b3/serviceAccounts/my-cli-service@mat1-9e6b3.iam.gserviceaccount.com",
+    "oauth2ClientId": "117564554911383057644",
+    "projectId": "mat1-9e6b3",
+    "uniqueId": "117564554911383057644"
+  }
+]

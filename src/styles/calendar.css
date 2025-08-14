@@ -1,0 +1,54 @@
+/* src/styles/calendar.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Wrapped in @layer components so Tailwind processes these before utilities.
+  NOTE: VS Code showing "Unknown at rule @apply" is an editor limitation; build is fine.
+*/
+@layer components {
+  .calendar-container {
+    @apply bg-white rounded-lg shadow-card overflow-hidden border border-gray-200;
+  }
+  .calendar-header {
+    @apply flex items-center justify-between px-4 py-3 bg-primary-50 border-b border-gray-200;
+  }
+  .calendar-title {
+    @apply text-lg font-semibold text-gray-800;
+  }
+  .calendar-nav-button {
+    @apply px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition;
+  }
+  .calendar-grid {
+    @apply grid grid-cols-7 text-sm;
+  }
+  .calendar-day-header {
+    @apply text-center py-2 font-medium text-gray-500 bg-gray-50 border-b border-gray-200;
+  }
+  .calendar-day {
+    @apply h-20 border border-gray-200 relative cursor-pointer hover:bg-gray-50 transition;
+  }
+  .calendar-day-today {
+    @apply border-primary-400 bg-primary-50;
+  }
+  .calendar-event {
+    @apply absolute bottom-1 left-1 right-1 px-2 py-0.5 rounded text-xs font-medium text-white truncate;
+  }
+  /* Example event category colors */
+  .event-retail {
+    @apply bg-yellow-500;
+  }
+  .event-vendor {
+    @apply bg-green-500;
+  }
+  .event-maintenance {
+    @apply bg-red-500;
+  }
+  .event-inprogress {
+    @apply bg-blue-500;
+  }
+  .event-completed {
+    @apply bg-green-600;
+  }
+}

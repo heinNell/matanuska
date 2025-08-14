@@ -1,0 +1,15 @@
+/workspaces/matrefactor/.github/instructions/High‑level architecture(trips).md
+/workspaces/matrefactor/docs/trips-modals-wiring.md
+/workspaces/matrefactor/src/api/tripsApi.ts
+/workspaces/matrefactor/src/components/Models/Trips/TripStatusUpdateModal.tsx
+/workspaces/matrefactor/src/components/TripManagement/ActiveTrips.tsx
+/workspaces/matrefactor/src/components/lists/WebBookTripsList.tsx
+/workspaces/matrefactor/src/context/TripSelectionContext.tsx
+/workspaces/matrefactor/src/hooks/useRealtimeTrips.ts
+/workspaces/matrefactor/src/hooks/useTimelineTrips.tsx
+/workspaces/matrefactor/src/hooks/useTrips.ts
+/workspaces/matrefactor/src/hooks/useWebBookTrips.ts
+/workspaces/matrefactor/src/pages/trips/ActiveTrips.tsx
+/workspaces/matrefactor/src/pages/trips/ActiveTripsManager.tsx
+/workspaces/matrefactor/src/pages/trips/ActiveTripsPageEnhanced.tsx
+/workspaces/matrefactor/src/pages/trips/CompletedTrips.tsx

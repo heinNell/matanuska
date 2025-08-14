@@ -1,0 +1,1056 @@
+[
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "21H - ADS 4865",
+      "uid": "352592576757652",
+      "uid2": "",
+      "ph": "+263773717259",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMB920"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_39.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 16,
+      "cnm": 0,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "0",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "4",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 0,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [
+      { "id": 1, "n": "vehicle_class", "v": "heavy_truck", "ct": 1729232417, "mt": 1748913921 },
+      { "id": 2, "n": "brand", "v": "Scania", "ct": 1748913921, "mt": 1748913921 },
+      { "id": 3, "n": "model", "v": "G460", "ct": 1748913921, "mt": 1748913921 },
+      { "id": 4, "n": "year", "v": "2010", "ct": 1748913921, "mt": 1748913921 },
+      { "id": 5, "n": "color", "v": "White", "ct": 1748913921, "mt": 1748913921 },
+      { "id": 6, "n": "engine_model", "v": "460HP", "ct": 1748913921, "mt": 1748913921 },
+      { "id": 7, "n": "primary_fuel_type", "v": "Diesel", "ct": 1748913921, "mt": 1748913921 },
+      { "id": 8, "n": "cargo_type", "v": "32 Ton", "ct": 1748913921, "mt": 1748913921 }
+    ],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 200 }] },
+      "max_distance_between_messages": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "External Voltage", "t": "voltage", "d": "", "m": "V", "p": "io_66/const1000", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":5,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1729179185, "mt": 1729179185 },
+      { "id": 2, "n": "LHS Tank", "t": "fuel level", "d": "|1:0:348.52:40:697.03:80:1045.54:120:1394.05:160:1742.56:200:2091.06:240:2439.57:280:2788.08:320:3136.59:360:3485.1:400:3515:440:3651:450", "m": "l", "p": "io_273", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"fuel_params\":{\"fillingsJoinInterval\":300,\"filterQuality\":20,\"flags\":7874,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":20,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":4,\"show_time\":false,\"upper_bound\":3651,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.115101289134, "b": -0.115101289134 }, { "x": 348.52, "a": 0.114774324984, "b": -0.00114774325 }, { "x": 697.03, "a": 0.114774324984, "b": -0.00114774325 }, { "x": 1045.54, "a": 0.114774324984, "b": -0.00114774325 }, { "x": 1394.05, "a": 0.114774324984, "b": -0.00114774325 }, { "x": 1742.56, "a": 0.114777618364, "b": -0.006886657102 }, { "x": 2091.06, "a": 0.114774324984, "b": 0 }, { "x": 2439.57, "a": 0.114774324984, "b": 0 }, { "x": 2788.08, "a": 0.114774324984, "b": 0 }, { "x": 3136.59, "a": 0.114774324984, "b": 0 }, { "x": 3485.1, "a": 1.33779264214, "b": -4262.34113712 }, { "x": 3515, "a": 0.073529411765, "b": 181.544117647 }], "ct": 1729179185, "mt": 1743070516 },
+      { "id": 3, "n": "RHS TAnk", "t": "fuel level", "d": "|1:0:348.52:40:697.03:80:1045.54:120:1394.05:160:1742.56:200:2091.06:240:2439.57:280:2788.08:320:3136.59:360:3485.1:400:3515:440:3651:450", "m": "l", "p": "io_270", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"fuel_params\":{\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":7874,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":20,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":3,\"show_time\":false,\"upper_bound\":3651,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.115101289134, "b": -0.115101289134 }, { "x": 348.52, "a": 0.114774324984, "b": -0.00114774325 }, { "x": 697.03, "a": 0.114774324984, "b": -0.00114774325 }, { "x": 1045.54, "a": 0.114774324984, "b": -0.00114774325 }, { "x": 1394.05, "a": 0.114774324984, "b": -0.00114774325 }, { "x": 1742.56, "a": 0.114777618364, "b": -0.006886657102 }, { "x": 2091.06, "a": 0.114774324984, "b": 0 }, { "x": 2439.57, "a": 0.114774324984, "b": 0 }, { "x": 2788.08, "a": 0.114774324984, "b": 0 }, { "x": 3136.59, "a": 0.114774324984, "b": 0 }, { "x": 3485.1, "a": 1.33779264214, "b": -4262.34113712 }, { "x": 3515, "a": 0.073529411765, "b": 181.544117647 }], "ct": 1729179185, "mt": 1743070516 },
+      { "id": 4, "n": "Signal Strenght", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":2,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1729179185, "mt": 1729179185 },
+      { "id": 5, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":0,\"mu\":0,\"pos\":1,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1729179185, "mt": 1729179185 },
+      { "id": 6, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":8,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467890, "mt": 1739468114 },
+      { "id": 7, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":7,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467890, "mt": 1739467890 },
+      { "id": 8, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467890, "mt": 1739467890 }
+    ],
+    "reportProps": {
+      "speedLimit": 90, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 55, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 1 }, "fuelConsRates": { "consSummer": 55, "consWinter": 55, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 29 }
+    },
+    "aliases": [],
+    "driving": {
+      "acceleration": [
+        { "flags": 2, "min_value": 0.25, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.25, "min_value": 0.16, "name": "Acceleration: medium", "penalties": 500 }
+      ],
+      "brake": [
+        { "flags": 2, "min_value": 0.25, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.25, "min_value": 0.16, "name": "Brake: medium", "penalties": 500 }
+      ],
+      "global": { "accel_mode": "0" },
+      "idling": [{ "flags": 0, "max_value": 1000, "min_value": 1, "name": "Idling", "penalties": 1 }],
+      "speeding": [{ "flags": 2, "max_duration": 30, "max_speed": 95, "max_value": 95, "min_duration": 10, "min_speed": 85, "min_value": 85, "name": "Speeding: extreme", "penalties": 5000 }],
+      "turn": [
+        { "flags": 2, "min_value": 0.25, "name": "Turn: extreme", "penalties": 500 },
+        { "flags": 2, "max_value": 0.25, "min_value": 0.16, "name": "Turn: medium", "penalties": 500 }
+      ]
+    },
+    "trip": {
+      "type": 1, "gpsCorrection": 1, "minSat": 2, "minMovingSpeed": 1, "minStayTime": 300, "maxMessagesDistance": 10000, "minTripTime": 60, "minTripDistance": 100
+    }
+  },
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "22H - AGZ 3812 (ADS 4866)",
+      "uid": "864454077916934",
+      "uid2": "",
+      "ph": "+263781163420",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMC920"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_39.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 272,
+      "cnm": 1014939,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "0",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "1",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 1,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [
+      { "id": 1, "n": "primary_fuel_type", "v": "Diesel", "ct": 1738020345, "mt": 1738020345 },
+      { "id": 2, "n": "vehicle_class", "v": "heavy_truck", "ct": 1742967281, "mt": 1748913990 },
+      { "id": 3, "n": "engine_model", "v": "460HP", "ct": 1742967281, "mt": 1742967281 },
+      { "id": 4, "n": "cargo_type", "v": "32 Ton", "ct": 1742967281, "mt": 1742967281 },
+      { "id": 5, "n": "carrying_capacity", "v": "32", "ct": 1742967281, "mt": 1742967281 },
+      { "id": 6, "n": "axles", "v": "2", "ct": 1742967281, "mt": 1742967281 },
+      { "id": 7, "n": "effective_capacity", "v": "900", "ct": 1742967281, "mt": 1742967281 },
+      { "id": 8, "n": "brand", "v": "Scania", "ct": 1748913990, "mt": 1748913990 }
+    ],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "none" },
+      "max_distance_between_messages": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "Signal Strenght", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":3,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1732692466, "mt": 1732692466 },
+      { "id": 2, "n": "External Voltage", "t": "voltage", "d": "", "m": "V", "p": "io_66/const1000", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":2,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1732692466, "mt": 1732692466 },
+      { "id": 3, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":1.75,\"mu\":0,\"pos\":1,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1732692466, "mt": 1738020345 },
+      { "id": 4, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468271, "mt": 1739468271 },
+      { "id": 5, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":5,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468271, "mt": 1739468271 },
+      { "id": 6, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":4,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468271, "mt": 1739468271 }
+    ],
+    "reportProps": {
+      "speedLimit": 90, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 55, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 1 }, "fuelConsRates": { "consSummer": 55, "consWinter": 55, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 29 }
+    },
+    "aliases": [],
+    "driving": {
+      "acceleration": [
+        { "flags": 2, "min_value": 0.25, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.25, "min_value": 0.16, "name": "Acceleration: medium", "penalties": 500 }
+      ],
+      "brake": [
+        { "flags": 2, "min_value": 0.25, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.25, "min_value": 0.16, "name": "Brake: medium", "penalties": 500 }
+      ],
+      "global": { "accel_mode": "0" },
+      "idling": [{ "flags": 0, "max_value": 10800, "min_value": 1800, "name": "Idling", "penalties": 1, "validator_id": 3 }],
+      "speeding": [{ "flags": 2, "max_duration": 30, "max_speed": 95, "max_value": 95, "min_duration": 10, "min_speed": 85, "min_value": 85, "name": "Speeding: extreme", "penalties": 5000 }],
+      "turn": [{ "flags": 2, "min_value": 0.25, "name": "Turn: extreme", "penalties": 500 }]
+    },
+    "trip": {
+      "type": 1, "gpsCorrection": 1, "minSat": 2, "minMovingSpeed": 1, "minStayTime": 300, "maxMessagesDistance": 10000, "minTripTime": 60, "minTripDistance": 100
+    }
+  },
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "23H - AFQ 1324 (Int Sim)",
+      "uid": "352592576285704",
+      "uid2": "",
+      "ph": "+891335182241",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMB920"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_39.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 275,
+      "cnm": 391961,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "0",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 0,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [
+      { "id": 1, "n": "vehicle_class", "v": "heavy_truck", "ct": 1721828565, "mt": 1741619327 },
+      { "id": 2, "n": "carrying_capacity", "v": "900", "ct": 1739466847, "mt": 1739466847 },
+      { "id": 3, "n": "brand", "v": "Shacman", "ct": 1741619327, "mt": 1741619327 },
+      { "id": 4, "n": "model", "v": "X3000", "ct": 1741619327, "mt": 1741619327 },
+      { "id": 5, "n": "year", "v": "2020", "ct": 1741619327, "mt": 1741619327 },
+      { "id": 6, "n": "color", "v": "White", "ct": 1741619327, "mt": 1741619327 },
+      { "id": 7, "n": "engine_model", "v": "420HP", "ct": 1742967355, "mt": 1742967355 },
+      { "id": 8, "n": "primary_fuel_type", "v": "Diesel", "ct": 1742967356, "mt": 1742967356 },
+      { "id": 9, "n": "cargo_type", "v": "29.5 Ton (reefer)", "ct": 1742967356, "mt": 1742967356 },
+      { "id": 10, "n": "effective_capacity", "v": "600", "ct": 1742967356, "mt": 1742967356 },
+      { "id": 11, "n": "axles", "v": "2", "ct": 1742967356, "mt": 1742967356 }
+    ],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "none" },
+      "max_distance_between_messages": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":0,\"mu\":0,\"pos\":3,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1721828565, "mt": 1721828565 },
+      { "id": 2, "n": "Small Tank", "t": "fuel level", "d": "Fuel|1:0:178.92:20:356.83:40:534.74:60:712.66:80:890.57:100:1068.48:120:1246.39:140:1424.31:160:1602.22:180:1780.13:200", "m": "l", "p": "io_273", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"engine_sensors\":[1],\"fuel_params\":{\"extraFillingTimeout\":60,\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":5834,\"ignoreStayTimeout\":20,\"minFillingVolume\":20,\"minTheftTimeout\":20,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":2,\"show_time\":false,\"upper_bound\":1780.13,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.112410071942, "b": -0.112410071942 }, { "x": 178.92, "a": 0.11241639031, "b": -0.113540554213 }, { "x": 356.83, "a": 0.11241639031, "b": -0.113540554213 }, { "x": 534.74, "a": 0.112410071942, "b": -0.110161870504 }, { "x": 712.66, "a": 0.11241639031, "b": -0.114664718116 }, { "x": 890.57, "a": 0.11241639031, "b": -0.114664718116 }, { "x": 1068.48, "a": 0.11241639031, "b": -0.114664718116 }, { "x": 1246.39, "a": 0.112410071942, "b": -0.106789568345 }, { "x": 1424.31, "a": 0.11241639031, "b": -0.115788882019 }, { "x": 1602.22, "a": 0.11241639031, "b": -0.115788882019 }], "ct": 1721828565, "mt": 1748926557 },
+      { "id": 3, "n": "Big Tank", "t": "fuel level", "d": "Fuel|1:0:355.83:40:709.65:80:1063.45:120:1417.25:160:1771.05:200:2124.87:240:2478.67:280:2832.47:320:3186.27:360:3539.3:400", "m": "l", "p": "io_270", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"engine_sensors\":[1],\"fuel_params\":{\"extraFillingTimeout\":60,\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":5834,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":1,\"show_time\":false,\"upper_bound\":3539.3,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.112730039737, "b": -0.112730039737 }, { "x": 355.83, "a": 0.113051834266, "b": -0.227234186875 }, { "x": 709.65, "a": 0.113058224986, "b": -0.231769361221 }, { "x": 1063.45, "a": 0.113058224986, "b": -0.231769361221 }, { "x": 1417.25, "a": 0.113058224986, "b": -0.231769361221 }, { "x": 1771.05, "a": 0.113051834266, "b": -0.220451076819 }, { "x": 2124.87, "a": 0.113058224986, "b": -0.234030525721 }, { "x": 2478.67, "a": 0.113058224986, "b": -0.234030525721 }, { "x": 2832.47, "a": 0.113058224986, "b": -0.234030525721 }, { "x": 3186.27, "a": 0.113304818287, "b": -1.01974336459 }], "ct": 1721828565, "mt": 1748926437 },
+      { "id": 4, "n": "External Voltage", "t": "voltage", "d": "", "m": "V", "p": "io_66/const1000", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":5,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1721829751, "mt": 1721829751 },
+      { "id": 5, "n": "Signal Strenght", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":4,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1721829751, "mt": 1721829751 },
+      { "id": 6, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":8,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468339, "mt": 1739468339 },
+      { "id": 7, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739466847, "mt": 1739466847 },
+      { "id": 8, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":7,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468339, "mt": 1739468339 }
+    ],
+    "reportProps": {
+      "speedLimit": 0, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 0, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 0 }, "fuelConsRates": { "consSummer": 10, "consWinter": 12, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 29 }
+    },
+    "aliases": [],
+    "driving": {
+      "acceleration": [
+        { "flags": 2, "min_value": 0.5, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.5, "min_value": 0.4, "name": "Acceleration: medium", "penalties": 500 }
+      ],
+      "brake": [
+        { "flags": 2, "max_value": 0.5, "min_value": 0.4, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "min_value": 0.5, "name": "Brake: medium", "penalties": 500 }
+      ],
+      "global": { "accel_mode": "0" },
+      "idling": [{ "flags": 0, "max_value": 10800, "min_value": 1800, "name": "Idling", "penalties": 1, "validator_id": 1 }],
+      "speeding": [{ "flags": 2, "max_duration": 30, "max_speed": 95, "max_value": 95, "min_duration": 10, "min_speed": 85, "min_value": 85, "name": "Speeding: extreme", "penalties": 5000 }],
+      "turn": [{ "flags": 2, "min_value": 0.5, "name": "Turn: extreme", "penalties": 500 }]
+    },
+    "trip": {
+      "type": 1, "gpsCorrection": 1, "minSat": 2, "minMovingSpeed": 1, "minStayTime": 300, "maxMessagesDistance": 10000, "minTripTime": 60, "minTripDistance": 100
+    }
+  },
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "24H - AFQ 1325 (Int Sim)",
+      "uid": "352625693727222",
+      "uid2": "",
+      "ph": "+893141335236302",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMB920"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_39.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 275,
+      "cnm": 384268,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "0",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "1",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 0,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [
+      { "id": 1, "n": "vehicle_class", "v": "heavy_truck", "ct": 1643882558, "mt": 1742968741 },
+      { "id": 2, "n": "registration_plate", "v": "AFQ 1325", "ct": 1643882558, "mt": 1643882558 },
+      { "id": 3, "n": "brand", "v": "Shacman", "ct": 1643882558, "mt": 1643882558 },
+      { "id": 4, "n": "model", "v": "X3000", "ct": 1643882558, "mt": 1643882558 },
+      { "id": 5, "n": "color", "v": "White", "ct": 1643882558, "mt": 1643882558 },
+      { "id": 6, "n": "year", "v": "2020", "ct": 1742968741, "mt": 1742968741 },
+      { "id": 7, "n": "engine_model", "v": "420HP", "ct": 1742968741, "mt": 1742968741 },
+      { "id": 8, "n": "cargo_type", "v": "32 Ton", "ct": 1742968741, "mt": 1742968741 },
+      { "id": 9, "n": "effective_capacity", "v": "600", "ct": 1742968741, "mt": 1742968741 },
+      { "id": 10, "n": "axles", "v": "2", "ct": 1742968741, "mt": 1742968741 },
+      { "id": 11, "n": "primary_fuel_type", "v": "Diesel", "ct": 1742968741, "mt": 1742968741 }
+    ],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "none" },
+      "max_distance_between_messages": { "period": "10m", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "Signal Strength", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":2,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1643975416, "mt": 1666795406 },
+      { "id": 2, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":5.1,\"mu\":0,\"pos\":1,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1643975416, "mt": 1742968741 },
+      { "id": 3, "n": "Small Tank", "t": "fuel level", "d": "TD_186001|1:0:327.6:20:655.2:40:982.8:60:1310.4:80:1638:100:1965.6:120:2293.2:140:2620.8:160:2984.4:180:3312:200", "m": "l", "p": "io_270", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"engine_sensors\":[2],\"fuel_params\":{\"extraFillingTimeout\":60,\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":5834,\"ignoreStayTimeout\":10,\"minFillingVolume\":10,\"minTheftTimeout\":15,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":3,\"show_time\":false,\"upper_bound\":3276,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.06123698714, "b": -0.06123698714 }, { "x": 327.6, "a": 0.06105006105, "b": 0 }, { "x": 655.2, "a": 0.06105006105, "b": 0 }, { "x": 982.8, "a": 0.06105006105, "b": 0 }, { "x": 1310.4, "a": 0.06105006105, "b": 0 }, { "x": 1638, "a": 0.06105006105, "b": 0 }, { "x": 1965.6, "a": 0.06105006105, "b": 0 }, { "x": 2293.2, "a": 0.06105006105, "b": 0 }, { "x": 2620.8, "a": 0.05500550055, "b": 15.8415841584 }, { "x": 2984.4, "a": 0.06105006105, "b": -2.1978021978 }], "ct": 1643979031, "mt": 1748917473 },
+      { "id": 4, "n": "Big Tank", "t": "fuel level", "d": "TD_186034|1:0:327.6:20:655.2:40:1055.61:60:1409.63:80:1783.65:100:2147.62:120:2511.61:140:2875.61:160:3239.62:180:3603.61:200:3941.62:220:4269.22:240:4596.82:260:4924.42:280:5252.02:300:5579.62:320:5907.22:340:6234.82:360:6562.42:380:6890.02:400", "m": "l", "p": "io_273", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"engine_sensors\":[2],\"fuel_params\":{\"extraFillingTimeout\":60,\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":5834,\"ignoreStayTimeout\":10,\"minFillingVolume\":10,\"minTheftTimeout\":15,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":4,\"show_time\":false,\"upper_bound\":6234.82,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.06123698714, "b": -0.06123698714 }, { "x": 327.6, "a": 0.06105006105, "b": 0 }, { "x": 655.2, "a": 0.049948802477, "b": 7.27354461677 }, { "x": 1055.61, "a": 0.056493983391, "b": 0.36438619287 }, { "x": 1409.63, "a": 0.053473076306, "b": 4.62274744666 }, { "x": 1783.65, "a": 0.054949583757, "b": 1.989174932 }, { "x": 2147.62, "a": 0.054946564466, "b": 1.99565922141 }, { "x": 2511.61, "a": 0.054945054945, "b": 1.99945054945 }, { "x": 2875.61, "a": 0.054943545507, "b": 2.00379110464 }, { "x": 3239.62, "a": 0.054946564466, "b": 1.99401082447 }, { "x": 3603.61, "a": 0.059169847046, "b": -13.2250525132 }, { "x": 3941.62, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4269.22, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4596.82, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4924.42, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5252.02, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5579.62, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5907.22, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 6234.82, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 6562.42, "a": 0.06105006105, "b": -20.6361416361 }], "ct": 1643980776, "mt": 1748917473 },
+      { "id": 5, "n": "Odometer", "t": "odometer", "d": "", "m": "km", "p": "io_16/const10", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":5}", "vt": 0, "vs": 0, "tbl": [], "ct": 1646737105, "mt": 1666795406 },
+      { "id": 6, "n": "Voltage sensor", "t": "voltage", "d": "", "m": "V", "p": "pwr_ext", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1733152307, "mt": 1733152307 },
+      { "id": 7, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":9,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468408, "mt": 1739468408 },
+      { "id": 8, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":8,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468408, "mt": 1739468408 },
+      { "id": 9, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":7,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468408, "mt": 1739468408 }
+    ],
+    "reportProps": {
+      "speedLimit": 85, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 51, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 2 }, "fuelConsRates": { "consSummer": 51, "consWinter": 51, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 29 }
+    },
+    "aliases": [
+      { "id": 1, "n": "Setparam 2007", "c": "setparam", "l": "tcp", "p": "2007|40.119.153.184", "a": 1, "f": 0, "jp": "" },
+      { "id": 2, "n": "Setparam 2008", "c": "setparam", "l": "tcp", "p": "2008|8982", "a": 1, "f": 0, "jp": "" },
+      { "id": 3, "n": "Setparam 2010", "c": "setparam", "l": "tcp", "p": "2010|2", "a": 1, "f": 0, "jp": "" }
+    ],
+    "driving": {
+      "acceleration": [
+        { "flags": 0, "max_value": 0.6, "min_value": 0.4, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Acceleration: medium", "penalties": 1000 }
+      ],
+      "brake": [
+        { "flags": 0, "max_value": 0.4, "min_value": 0.35, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.35, "min_value": 0.31, "name": "Brake: medium", "penalties": 1000 }
+      ],
+      "global": { "accel_mode": "0" },
+      "harsh": [{ "flags": 0, "max_value": 0.4, "min_value": 0.3, "name": "Harsh driving", "penalties": 300 }],
+      "speeding": [{ "flags": 0, "max_duration": 30, "max_value": 100, "min_duration": 10, "min_value": 85, "name": "Speeding: extreme", "penalties": 5000 }],
+      "turn": [
+        { "flags": 0, "max_value": 0.6, "min_value": 0.4, "name": "Turn: extreme", "penalties": 1000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Turn: medium", "penalties": 500 }
+      ]
+    },
+    "trip": {
+      "type": 1, "gpsCorrection": 1, "minSat": 2, "minMovingSpeed": 1, "minStayTime": 300, "maxMessagesDistance": 10000, "minTripTime": 60, "minTripDistance": 100
+    }
+  },
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "26H - AFQ 1327 (Int Sim)",
+      "uid": "357544376232183",
+      "uid2": "",
+      "ph": "+89314183306",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMB140"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_39.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 275,
+      "cnm": 420359,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "0",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 0,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [
+      { "id": 1, "n": "vehicle_class", "v": "heavy_truck", "ct": 1721828307, "mt": 1742967759 },
+      { "id": 2, "n": "brand", "v": "Shacman", "ct": 1742967759, "mt": 1742967759 },
+      { "id": 3, "n": "model", "v": "X3000", "ct": 1742967759, "mt": 1742967759 },
+      { "id": 4, "n": "year", "v": "2020", "ct": 1742967759, "mt": 1742967759 },
+      { "id": 5, "n": "color", "v": "White", "ct": 1742967759, "mt": 1742967759 },
+      { "id": 6, "n": "engine_model", "v": "420HP", "ct": 1742967759, "mt": 1742967759 },
+      { "id": 7, "n": "primary_fuel_type", "v": "Diesel", "ct": 1742967759, "mt": 1742967759 },
+      { "id": 8, "n": "effective_capacity", "v": "600", "ct": 1742967759, "mt": 1742967759 },
+      { "id": 9, "n": "cargo_type", "v": "32 Ton", "ct": 1742967759, "mt": 1742967759 },
+      { "id": 10, "n": "axles", "v": "2", "ct": 1742967759, "mt": 1742967759 }
+    ],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 200 }] },
+      "max_distance_between_messages": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "Big Tank", "t": "fuel level", "d": "Fuel|1:0:327.6:20:655.2:40:1055.61:60:1409.63:80:1783.65:100:2147.62:120:2511.61:140:2875.61:160:3239.62:180:3603.61:200:3941.62:220:4269.22:240:4596.82:260:4924.42:280:5252.02:300:5579.62:320:5907.22:340:6234.82:360:6562.42:380:6890.02:400", "m": "l", "p": "io_273", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"engine_sensors\":[5],\"fuel_params\":{\"extraFillingTimeout\":60,\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":7882,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":5,\"show_time\":false,\"upper_bound\":6890.02,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.06123698714, "b": -0.06123698714 }, { "x": 327.6, "a": 0.06105006105, "b": 0 }, { "x": 655.2, "a": 0.049948802477, "b": 7.27354461677 }, { "x": 1055.61, "a": 0.056493983391, "b": 0.36438619287 }, { "x": 1409.63, "a": 0.053473076306, "b": 4.62274744666 }, { "x": 1783.65, "a": 0.054949583757, "b": 1.989174932 }, { "x": 2147.62, "a": 0.054946564466, "b": 1.99565922141 }, { "x": 2511.61, "a": 0.054945054945, "b": 1.99945054945 }, { "x": 2875.61, "a": 0.054943545507, "b": 2.00379110464 }, { "x": 3239.62, "a": 0.054946564466, "b": 1.99401082447 }, { "x": 3603.61, "a": 0.059169847046, "b": -13.2250525132 }, { "x": 3941.62, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4269.22, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4596.82, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4924.42, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5252.02, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5579.62, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5907.22, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 6234.82, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 6562.42, "a": 0.06105006105, "b": -20.6361416361 }], "ct": 1717682490, "mt": 1748917698 },
+      { "id": 2, "n": "Small Tank", "t": "fuel level", "d": "Fuel|1:0:327.6:20:655.2:40:982.8:60:1310.4:80:1638:100:1965.6:120:2293.2:140:2620.8:160:2948.4:180:3312:200", "m": "l", "p": "io_270", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"engine_sensors\":[5],\"fuel_params\":{\"extraFillingTimeout\":60,\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":7882,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":4,\"show_time\":false,\"upper_bound\":3312,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.06123698714, "b": -0.06123698714 }, { "x": 327.6, "a": 0.06105006105, "b": 0 }, { "x": 655.2, "a": 0.06105006105, "b": 0 }, { "x": 982.8, "a": 0.06105006105, "b": 0 }, { "x": 1310.4, "a": 0.06105006105, "b": 0 }, { "x": 1638, "a": 0.06105006105, "b": 0 }, { "x": 1965.6, "a": 0.06105006105, "b": 0 }, { "x": 2293.2, "a": 0.06105006105, "b": 0 }, { "x": 2620.8, "a": 0.06105006105, "b": 0 }, { "x": 2948.4, "a": 0.05500550055, "b": 17.8217821782 }], "ct": 1717682490, "mt": 1748917698 },
+      { "id": 3, "n": "External Voltage", "t": "voltage", "d": "", "m": "V", "p": "io_66/const1000", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":3,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1717682490, "mt": 1717682490 },
+      { "id": 4, "n": "Signal Strenght", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":2,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1717682490, "mt": 1717682490 },
+      { "id": 5, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":0,\"mu\":0,\"pos\":1,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1717682490, "mt": 1717682490 },
+      { "id": 6, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":8,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467723, "mt": 1739468433 },
+      { "id": 7, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":7,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467723, "mt": 1739467723 },
+      { "id": 8, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467723, "mt": 1739467723 }
+    ],
+    "reportProps": {
+      "speedLimit": 0, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 51, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 0 }, "fuelConsRates": { "consSummer": 51, "consWinter": 51, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 29 }
+    },
+    "aliases": [
+      { "id": 1, "n": "Setparam 2007", "c": "setparam", "l": "tcp", "p": "2007|40.119.153.184", "a": 1, "f": 0, "jp": "" },
+      { "id": 2, "n": "Setparam 2008", "c": "setparam", "l": "tcp", "p": "2008|8982", "a": 1, "f": 0, "jp": "" },
+      { "id": 3, "n": "Setparam 2010", "c": "setparam", "l": "tcp", "p": "2010|2", "a": 1, "f": 0, "jp": "" }
+    ],
+    "driving": {
+      "acceleration": [
+        { "flags": 2, "min_value": 0.4, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Acceleration: medium", "penalties": 1000 }
+      ],
+      "brake": [
+        { "flags": 2, "min_value": 0.35, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.35, "min_value": 0.31, "name": "Brake: medium", "penalties": 1000 }
+      ],
+      "global": { "accel_mode": "0" },
+      "harsh": [{ "flags": 2, "min_value": 0.3, "name": "Harsh driving", "penalties": 300 }],
+      "speeding": [{ "flags": 0, "max_duration": 30, "max_value": 100, "min_duration": 10, "min_value": 85, "name": "Speeding: extreme", "penalties": 5000 }],
+      "turn": [
+        { "flags": 2, "min_value": 0.4, "name": "Turn: extreme", "penalties": 1000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Turn: medium", "penalties": 500 }
+      ]
+    },
+    "trip": {
+      "type": 1, "gpsCorrection": 1, "minSat": 2, "minMovingSpeed": 1, "minStayTime": 300, "maxMessagesDistance": 10000, "minTripTime": 60, "minTripDistance": 100
+    }
+  },
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "28H - AFQ 1329 (Int Sim)",
+      "uid": "352592576816946",
+      "uid2": "",
+      "ph": "+8931182829",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMB920"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_39.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 272,
+      "cnm": 314046,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "0",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 0,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [
+      { "id": 1, "n": "vehicle_class", "v": "heavy_truck", "ct": 1724072322, "mt": 1742969787 },
+      { "id": 2, "n": "brand", "v": "Shacman", "ct": 1742969787, "mt": 1742969787 },
+      { "id": 3, "n": "model", "v": "X3000", "ct": 1742969787, "mt": 1742969787 },
+      { "id": 4, "n": "year", "v": "2020", "ct": 1742969787, "mt": 1742969787 },
+      { "id": 5, "n": "color", "v": "White", "ct": 1742969787, "mt": 1742969787 },
+      { "id": 6, "n": "engine_model", "v": "420HP", "ct": 1742969787, "mt": 1742969787 },
+      { "id": 7, "n": "primary_fuel_type", "v": "Diesel", "ct": 1742969787, "mt": 1742969787 },
+      { "id": 8, "n": "effective_capacity", "v": "600", "ct": 1742969787, "mt": 1742969787 },
+      { "id": 9, "n": "cargo_type", "v": "32 Ton", "ct": 1742969787, "mt": 1742969787 }
+    ],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 200 }] },
+      "max_distance_between_messages": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "Small Tank", "t": "fuel level", "d": "|1:0:327.6:20:655.2:40:982.8:60:1310.4:80:1638:100:1965.6:120:2293.2:140:2620.8:160:2948.4:180:3312:200", "m": "l", "p": "io_273", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"fuel_params\":{\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":7746,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":2,\"show_time\":false,\"upper_bound\":3312,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.06123698714, "b": -0.06123698714 }, { "x": 327.6, "a": 0.06105006105, "b": 0 }, { "x": 655.2, "a": 0.06105006105, "b": 0 }, { "x": 982.8, "a": 0.06105006105, "b": 0 }, { "x": 1310.4, "a": 0.06105006105, "b": 0 }, { "x": 1638, "a": 0.06105006105, "b": 0 }, { "x": 1965.6, "a": 0.06105006105, "b": 0 }, { "x": 2293.2, "a": 0.06105006105, "b": 0 }, { "x": 2620.8, "a": 0.06105006105, "b": 0 }, { "x": 2948.4, "a": 0.05500550055, "b": 17.8217821782 }], "ct": 1724072322, "mt": 1748917781 },
+      { "id": 2, "n": "Big Tank", "t": "fuel level", "d": "|1:0:327.6:20:655.2:40:1055.61:60:1409.63:80:1783.65:100:2147.62:120:2511.61:140:2875.61:160:3239.62:180:3603.61:200:3941.62:220:4269.22:240:4596.82:260:4924.42:280:5252.02:300:5579.62:320:5907.22:340:6234.82:360:6562.42:380:6890.02:400", "m": "l", "p": "io_270", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"engine_sensors\":[5],\"fuel_params\":{\"extraFillingTimeout\":60,\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":5834,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":1,\"show_time\":false,\"upper_bound\":6890.02,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.06123698714, "b": -0.06123698714 }, { "x": 327.6, "a": 0.06105006105, "b": 0 }, { "x": 655.2, "a": 0.049948802477, "b": 7.27354461677 }, { "x": 1055.61, "a": 0.056493983391, "b": 0.36438619287 }, { "x": 1409.63, "a": 0.053473076306, "b": 4.62274744666 }, { "x": 1783.65, "a": 0.054949583757, "b": 1.989174932 }, { "x": 2147.62, "a": 0.054946564466, "b": 1.99565922141 }, { "x": 2511.61, "a": 0.054945054945, "b": 1.99945054945 }, { "x": 2875.61, "a": 0.054943545507, "b": 2.00379110464 }, { "x": 3239.62, "a": 0.054946564466, "b": 1.99401082447 }, { "x": 3603.61, "a": 0.059169847046, "b": -13.2250525132 }, { "x": 3941.62, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4269.22, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4596.82, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 4924.42, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5252.02, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5579.62, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 5907.22, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 6234.82, "a": 0.06105006105, "b": -20.6361416361 }, { "x": 6562.42, "a": 0.06105006105, "b": -20.6361416361 }], "ct": 1724072322, "mt": 1748917781 },
+      { "id": 3, "n": "External Voltage", "t": "voltage", "d": "", "m": "V", "p": "io_66/const1000", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":5,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1724078694, "mt": 1724078694 },
+      { "id": 4, "n": "Signal Strenght", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":4,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1724078694, "mt": 1724078694 },
+      { "id": 5, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":0,\"mu\":0,\"pos\":3,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1724078694, "mt": 1724078694 },
+      { "id": 6, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":7,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467522, "mt": 1739468510 },
+      { "id": 7, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":8,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467834, "mt": 1739468510 },
+      { "id": 8, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739467522, "mt": 1739467522 }
+    ],
+    "reportProps": {
+      "speedLimit": 85, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 51, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 2 }, "fuelConsRates": { "consSummer": 51, "consWinter": 51, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 29 }
+    },
+    "aliases": [
+      { "id": 1, "n": "Setparam 2007", "c": "setparam", "l": "tcp", "p": "2007|40.119.153.184", "a": 1, "f": 0, "jp": "" },
+      { "id": 2, "n": "Setparam 2008", "c": "setparam", "l": "tcp", "p": "2008|8982", "a": 1, "f": 0, "jp": "" },
+      { "id": 3, "n": "Setparam 2010", "c": "setparam", "l": "tcp", "p": "2010|2", "a": 1, "f": 0, "jp": "" }
+    ],
+    "driving": {
+      "acceleration": [
+        { "flags": 2, "min_value": 0.4, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Acceleration: medium", "penalties": 1000 }
+      ],
+      "brake": [
+        { "flags": 2, "min_value": 0.35, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.35, "min_value": 0.31, "name": "Brake: medium", "penalties": 1000 }
+      ],
+      "global": { "accel_mode": "0" },
+      "harsh": [{ "flags": 2, "min_value": 0.3, "name": "Harsh driving", "penalties": 300 }],
+      "speeding": [
+        { "flags": 2, "max_duration": 30, "min_duration": 10, "min_value": 41, "name": "Speeding: extreme", "penalties": 5000 },
+        { "flags": 2, "max_value": 41, "min_duration": 10, "min_value": 21, "name": "Speeding: medium", "penalties": 2000 },
+        { "flags": 2, "max_value": 21, "min_duration": 10, "min_value": 10, "name": "Speeding: mild", "penalties": 100 }
+      ],
+      "turn": [
+        { "flags": 2, "min_value": 0.4, "name": "Turn: extreme", "penalties": 1000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Turn: medium", "penalties": 500 }
+      ]
+    },
+    "trip": {
+      "type": 1, "gpsCorrection": 1, "minSat": 2, "minMovingSpeed": 1, "minStayTime": 300, "maxMessagesDistance": 10000, "minTripTime": 60, "minTripDistance": 100
+    }
+  },
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "29H - AGJ 3466",
+      "uid": "864454076614506",
+      "uid2": "",
+      "ph": "+263781166004",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMC920"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_39.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 275,
+      "cnm": 131936,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 0,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [{ "id": 1, "n": "vehicle_class", "v": "empty_vehicle", "ct": 1732169130, "mt": 1732169130 }],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 200 }] },
+      "max_distance_between_messages": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "External Voltage", "t": "voltage", "d": "", "m": "V", "p": "io_66/const1000", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":3,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1732169130, "mt": 1732169130 },
+      { "id": 2, "n": "Signal Strenght", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":2,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1732169130, "mt": 1732169130 },
+      { "id": 3, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":0,\"mu\":0,\"pos\":1,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1732169130, "mt": 1732169130 },
+      { "id": 4, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468590, "mt": 1739468590 },
+      { "id": 5, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":5,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468590, "mt": 1739468590 },
+      { "id": 6, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":4,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468590, "mt": 1739468590 }
+    ],
+    "reportProps": {
+      "speedLimit": 0, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 0, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 0 }, "fuelConsRates": { "consSummer": 10, "consWinter": 12, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 30 }
+    },
+    "aliases": [],
+    "driving": {
+      "acceleration": [
+        { "flags": 2, "min_value": 0.4, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Acceleration: medium", "penalties": 1000 }
+      ],
+      "brake": [
+        { "flags": 2, "min_value": 0.35, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.35, "min_value": 0.31, "name": "Brake: medium", "penalties": 1000 }
+      ],
+      "global": { "accel_mode": "0" },
+      "harsh": [{ "flags": 2, "min_value": 0.3, "name": "Harsh driving", "penalties": 300 }],
+      "speeding": [
+        { "flags": 2, "max_duration": 30, "min_duration": 10, "min_value": 41, "name": "Speeding: extreme", "penalties": 5000 },
+        { "flags": 2, "max_value": 41, "min_duration": 10, "min_value": 21, "name": "Speeding: medium", "penalties": 2000 },
+        { "flags": 2, "max_value": 21, "min_duration": 10, "min_value": 10, "name": "Speeding: mild", "penalties": 100 }
+      ],
+      "turn": [
+        { "flags": 2, "min_value": 0.4, "name": "Turn: extreme", "penalties": 1000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Turn: medium", "penalties": 500 }
+      ]
+    },
+    "trip": {
+      "type": 1, "gpsCorrection": 1, "minSat": 2, "minMovingSpeed": 1, "minStayTime": 300, "maxMessagesDistance": 10000, "minTripTime": 60, "minTripDistance": 100
+    }
+  },
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "30H - AGL 4216",
+      "uid": "352592576336838",
+      "uid2": "",
+      "ph": "+263786347542",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMB920"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_39.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 275,
+      "cnm": 36570,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "0",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 0,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [{ "id": 1, "n": "vehicle_class", "v": "empty_vehicle", "ct": 1725962991, "mt": 1725962991 }],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 200 }] },
+      "max_distance_between_messages": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "Fuel", "t": "fuel level", "d": "|1:0:273:20:546:40:819:60:1092:80:1365:100:1638:120:1911:140:2184:160:2457:180:2730:200:3003:220:3276:240:3549:260:3822:280:4095:300", "m": "l", "p": "io_270", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"fuel_params\":{\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":7874,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":4,\"show_time\":false,\"upper_bound\":4095,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.073529411765, "b": -0.073529411765 }, { "x": 273, "a": 0.07326007326, "b": 0 }, { "x": 546, "a": 0.07326007326, "b": 0 }, { "x": 819, "a": 0.07326007326, "b": 0 }, { "x": 1092, "a": 0.07326007326, "b": 0 }, { "x": 1365, "a": 0.07326007326, "b": 0 }, { "x": 1638, "a": 0.07326007326, "b": 0 }, { "x": 1911, "a": 0.07326007326, "b": 0 }, { "x": 2184, "a": 0.07326007326, "b": 0 }, { "x": 2457, "a": 0.07326007326, "b": 0 }, { "x": 2730, "a": 0.07326007326, "b": 0 }, { "x": 3003, "a": 0.07326007326, "b": 0 }, { "x": 3276, "a": 0.07326007326, "b": 0 }, { "x": 3549, "a": 0.07326007326, "b": 0 }, { "x": 3822, "a": 0.07326007326, "b": 0 }], "ct": 1725890996, "mt": 1725950562 },
+      { "id": 2, "n": "Signal Strenght", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":3,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1725890996, "mt": 1725890996 },
+      { "id": 3, "n": "External Voltage", "t": "voltage", "d": "", "m": "V", "p": "io_66/const1000", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":2,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1725890996, "mt": 1725890996 },
+      { "id": 4, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":0,\"mu\":0,\"pos\":1,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1725890996, "mt": 1725890996 },
+      { "id": 5, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":7,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468637, "mt": 1739468637 },
+      { "id": 6, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468637, "mt": 1739468637 },
+      { "id": 7, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":5,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468637, "mt": 1739468637 }
+    ],
+    "reportProps": {
+      "speedLimit": 0, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 0, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 0 }, "fuelConsRates": { "consSummer": 10, "consWinter": 12, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 29 }
+    },
+    "aliases": [],
+    "driving": {
+      "acceleration": [
+        { "flags": 2, "min_value": 0.4, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Acceleration: medium", "penalties": 1000 }
+      ],
+      "brake": [
+        { "flags": 2, "min_value": 0.35, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.35, "min_value": 0.31, "name": "Brake: medium", "penalties": 1000 }
+      ],
+      "global": { "accel_mode": "0" },
+      "harsh": [{ "flags": 2, "min_value": 0.3, "name": "Harsh driving", "penalties": 300 }],
+      "speeding": [
+        { "flags": 2, "max_duration": 30, "min_duration": 10, "min_value": 41, "name": "Speeding: extreme", "penalties": 5000 },
+        { "flags": 2, "max_value": 41, "min_duration": 10, "min_value": 21, "name": "Speeding: medium", "penalties": 2000 },
+        { "flags": 2, "max_value": 21, "min_duration": 10, "min_value": 10, "name": "Speeding: mild", "penalties": 100 }
+      ],
+      "turn": [
+        { "flags": 2, "min_value": 0.4, "name": "Turn: extreme", "penalties": 1000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Turn: medium", "penalties": 500 }
+      ]
+    },
+    "trip": {
+      "type": 1, "gpsCorrection": 1, "minSat": 2, "minMovingSpeed": 1, "minStayTime": 300, "maxMessagesDistance": 10000, "minTripTime": 60, "minTripDistance": 100
+    }
+  },
+  {
+    "type": "avl_unit",
+    "version": "b4",
+    "mu": 0,
+    "general": {
+      "n": "31H - AGZ 1963 (Int sim)",
+      "uid": "864454077925646",
+      "uid2": "",
+      "ph": "+893141335238449",
+      "ph2": "",
+      "psw": "",
+      "hw": "Teltonika FMC920"
+    },
+    "icon": {
+      "lib": "600000003",
+      "url": "A_42.png",
+      "imgRot": "0"
+    },
+    "counters": {
+      "cfl": 275,
+      "cnm": 76976,
+      "cneh": 0,
+      "cnkb": 0
+    },
+    "advProps": {
+      "monitoring_sensor": "",
+      "use_sensor_color": "0",
+      "monitoring_sensor_id": "",
+      "motion_state_sensor_id": "",
+      "monitoring_battery_id": "",
+      "track_sensor": "",
+      "sensors_colors": "",
+      "sensors_colors_id": "",
+      "track_solid": "",
+      "solid_colors": "",
+      "track_speed": "",
+      "speed_colors": "",
+      "label_color": "",
+      "trip_colors": "",
+      "msgFilter": {
+        "enabled": 0,
+        "skipInvalid": 1,
+        "lbsCorrection": 0,
+        "wifiCorrection": 0,
+        "minSats": 4,
+        "maxHdop": 2,
+        "maxSpeed": 0,
+        "minWifiPoints": 2,
+        "maxWifiPoints": 3,
+        "wifiAccuracy": 10
+      },
+      "speed_source": {
+        "speed_parameter": "",
+        "speed_measure": "0"
+      }
+    },
+    "fields": [],
+    "afields": [],
+    "profile": [{ "id": 1, "n": "vehicle_class", "v": "empty_vehicle", "ct": 1729863932, "mt": 1729863932 }],
+    "intervals": [],
+    "healthCheck": {
+      "missing_position_data": { "period": "none" },
+      "insufficient_satellite_coverage": { "period": "none" },
+      "low_battery": { "period": "1h", "unhealthy_conditions": [{ "type": "less", "value": 20 }] },
+      "voltage_out_of_range": { "period": "none" },
+      "max_messages_last_hour": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 200 }] },
+      "max_distance_between_messages": { "period": "1h", "unhealthy_conditions": [{ "type": "greater", "value": 100000 }] },
+      "no_data": { "period": "1d" },
+      "stuck_fls": { "period": "none" },
+      "ignition_is_off": { "period": "none" }
+    },
+    "sensors": [
+      { "id": 1, "n": "RHS Tank", "t": "fuel level", "d": "|1:0:328.6:20:657.2:40:985.8:60:1314.4:80:1643:100:1971.6:120:2300.2:140:2628.8:160:2957.4:180:3286:200:3614.6:220:3943.2:240:4271.8:260:4600.4:280:4929:300:5257.6:320:5586.2:340:5914.8:360:6243.4:380:6572:400:6900.6:420:7229.2:440:7557.8:460:7886.4:480", "m": "l", "p": "io_273", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"fuel_params\":{\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":7874,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":5,\"show_time\":false,\"upper_bound\":7886.4,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.06105006105, "b": -0.06105006105 }, { "x": 328.6, "a": 0.060864272672, "b": 0 }, { "x": 657.2, "a": 0.060864272672, "b": 0 }, { "x": 985.8, "a": 0.060864272672, "b": 0 }, { "x": 1314.4, "a": 0.060864272672, "b": 0 }, { "x": 1643, "a": 0.060864272672, "b": 0 }, { "x": 1971.6, "a": 0.060864272672, "b": 0 }, { "x": 2300.2, "a": 0.060864272672, "b": 0 }, { "x": 2628.8, "a": 0.060864272672, "b": 0 }, { "x": 2957.4, "a": 0.060864272672, "b": 0 }, { "x": 3286, "a": 0.060864272672, "b": 0 }, { "x": 3614.6, "a": 0.060864272672, "b": 0 }, { "x": 3943.2, "a": 0.060864272672, "b": 0 }, { "x": 4271.8, "a": 0.060864272672, "b": 0 }, { "x": 4600.4, "a": 0.060864272672, "b": 0 }, { "x": 4929, "a": 0.060864272672, "b": 0 }, { "x": 5257.6, "a": 0.060864272672, "b": -1e-12 }, { "x": 5586.2, "a": 0.060864272672, "b": 0 }, { "x": 5914.8, "a": 0.060864272672, "b": -1e-12 }, { "x": 6243.4, "a": 0.060864272672, "b": 0 }, { "x": 6572, "a": 0.060864272672, "b": 0 }, { "x": 6900.6, "a": 0.060864272672, "b": -1e-12 }, { "x": 7229.2, "a": 0.060864272672, "b": 1e-12 }, { "x": 7557.8, "a": 0.060864272672, "b": -1e-12 }], "ct": 1729864059, "mt": 1748918661 },
+      { "id": 2, "n": "LHS Tank", "t": "fuel level", "d": "|1:0:328.6:20:657.2:40:985.8:60:1314.4:80:1643:100:1971.6:120:2300.2:140:2628.8:160:2957.4:180:3286:200:3614.6:220:3943.2:240:4271.8:260:4600.4:280:4929:300:5257.6:320:5586.2:340:5914.8:360:6243.4:380:6572:400:6900.6:420:7229.2:440:7557.8:460:7886.4:480:8215:500:8543.6:520:8872.2:540:9200.8:560:9529.4:580:9858:600", "m": "l", "p": "io_270", "f": 64, "c": "{\"act\":1,\"appear_in_popup\":true,\"calc_fuel\":2,\"ci\":{},\"cm\":1,\"fuel_params\":{\"fillingsJoinInterval\":300,\"filterQuality\":10,\"flags\":7874,\"ignoreStayTimeout\":10,\"minFillingVolume\":20,\"minTheftTimeout\":10,\"minTheftVolume\":10,\"theftsJoinInterval\":300},\"lower_bound\":1,\"mu\":0,\"pos\":4,\"show_time\":false,\"upper_bound\":9858,\"flags\":\"64\"}", "vt": 0, "vs": 0, "tbl": [{ "x": 1, "a": 0.06105006105, "b": -0.06105006105 }, { "x": 328.6, "a": 0.060864272672, "b": 0 }, { "x": 657.2, "a": 0.060864272672, "b": 0 }, { "x": 985.8, "a": 0.060864272672, "b": 0 }, { "x": 1314.4, "a": 0.060864272672, "b": 0 }, { "x": 1643, "a": 0.060864272672, "b": 0 }, { "x": 1971.6, "a": 0.060864272672, "b": 0 }, { "x": 2300.2, "a": 0.060864272672, "b": 0 }, { "x": 2628.8, "a": 0.060864272672, "b": 0 }, { "x": 2957.4, "a": 0.060864272672, "b": 0 }, { "x": 3286, "a": 0.060864272672, "b": 0 }, { "x": 3614.6, "a": 0.060864272672, "b": 0 }, { "x": 3943.2, "a": 0.060864272672, "b": 0 }, { "x": 4271.8, "a": 0.060864272672, "b": 0 }, { "x": 4600.4, "a": 0.060864272672, "b": 0 }, { "x": 4929, "a": 0.060864272672, "b": 0 }, { "x": 5257.6, "a": 0.060864272672, "b": -1e-12 }, { "x": 5586.2, "a": 0.060864272672, "b": 0 }, { "x": 5914.8, "a": 0.060864272672, "b": -1e-12 }, { "x": 6243.4, "a": 0.060864272672, "b": 0 }, { "x": 6572, "a": 0.060864272672, "b": 0 }, { "x": 6900.6, "a": 0.060864272672, "b": -1e-12 }, { "x": 7229.2, "a": 0.060864272672, "b": 1e-12 }, { "x": 7557.8, "a": 0.060864272672, "b": -1e-12 }, { "x": 7886.4, "a": 0.060864272672, "b": 1e-12 }, { "x": 8215, "a": 0.060864272672, "b": 1e-12 }, { "x": 8543.6, "a": 0.060864272672, "b": 1e-12 }, { "x": 8872.2, "a": 0.060864272672, "b": -2e-12 }, { "x": 9200.8, "a": 0.060864272672, "b": 1e-12 }, { "x": 9529.4, "a": 0.060864272672, "b": 1e-12 }], "ct": 1729864059, "mt": 1748918661 },
+      { "id": 3, "n": "Signal Strenght", "t": "custom", "d": "", "m": "", "p": "gsm", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"mu\":0,\"pos\":3,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1729864059, "mt": 1729864059 },
+      { "id": 4, "n": "External Voltage", "t": "voltage", "d": "", "m": "V", "p": "io_66/const1000", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":2,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1729864059, "mt": 1729864059 },
+      { "id": 5, "n": "Ignition", "t": "engine operation", "d": "", "m": "On/Off", "p": "io_1", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"consumption\":0,\"mu\":0,\"pos\":1,\"show_time\":false,\"timeout\":0}", "vt": 0, "vs": 0, "tbl": [], "ct": 1729864059, "mt": 1729864059 },
+      { "id": 6, "n": "Harsh Braking Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_16", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":8,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468689, "mt": 1739468689 },
+      { "id": 7, "n": "Harsh Acceleration Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_67", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":7,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468689, "mt": 1739468689 },
+      { "id": 8, "n": "Harsh Cornering Parameters", "t": "accelerometer", "d": "", "m": "g", "p": "io_11", "f": 0, "c": "{\"act\":1,\"appear_in_popup\":true,\"ci\":{},\"cm\":1,\"pos\":6,\"show_time\":false}", "vt": 0, "vs": 0, "tbl": [], "ct": 1739468689, "mt": 1739468689 }
+    ],
+    "reportProps": {
+      "speedLimit": 85, "maxMessagesInterval": 0, "dailyEngineHoursRate": 0, "urbanMaxSpeed": 0, "mileageCoefficient": 0, "fuelRateCoefficient": 48, "speedingTolerance": 10, "speedingMinDuration": 1, "speedingMode": 0, "driver_activity": { "type": 0 }, "fuelConsRates": { "consSummer": 48, "consWinter": 48, "winterMonthFrom": 11, "winterDayFrom": 1, "winterMonthTo": 1, "winterDayTo": 29 }
+    },
+    "aliases": [
+      { "id": 1, "n": "Setparam 2007", "c": "setparam", "l": "tcp", "p": "2007|40.119.153.184", "a": 1, "f": 0, "jp": "" },
+      { "id": 2, "n": "Setparam 2008", "c": "setparam", "l": "tcp", "p": "2008|8982", "a": 1, "f": 0, "jp": "" },
+      { "id": 3, "n": "Setparam 2010", "c": "setparam", "l": "tcp", "p": "2010|2", "a": 1, "f": 0, "jp": "" },
+      { "id": 4, "n": "New command", "c": "_video_download", "l": "tcp", "p": "{\"hws_ip\":\"3.14.17\",\"start_time\":\"\",\"dur\":\"\",\"cha_ns\":\"\",\"sub\":\"\"}", "a": 1, "f": 0, "jp": "" },
+      { "id": 5, "n": "Drive cam", "c": "query_photo_dualcam", "l": "tcp", "p": "{\"cha_ns\":3}", "a": 1, "f": 0, "jp": "" }
+    ],
+    "driving": {
+      "acceleration": [
+        { "flags": 2, "min_value": 0.4, "name": "Acceleration: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Acceleration: medium", "penalties": 1000 }
+      ],
+      "brake": [
+        { "flags": 2, "min_value": 0.35, "name": "Brake: extreme", "penalties": 2000 },
+        { "flags": 2, "max_value": 0.35, "min_value": 0.31, "name": "Brake: medium", "penalties": 1000 }
+      ],
+      "global": { "accel_mode": "0" },
+      "harsh": [{ "flags": 2, "min_value": 0.3, "name": "Harsh driving", "penalties": 300 }],
+      "speeding": [
+        { "flags": 2, "max_duration": 30, "min_duration": 10, "min_value": 41, "name": "Speeding: extreme", "penalties": 5000 },
+        { "flags": 2, "max_value": 41, "min_duration": 10, "min_value": 21, "name": "Speeding: medium", "penalties": 2000 },
+        { "flags": 2, "max_value": 21, "min_duration": 10, "min_value": 10, "name": "Speeding: mild", "penalties": 100 }
+      ],
+      "turn": [
+        { "flags": 2, "min_value": 0.4, "name": "Turn: extreme", "penalties": 1000 },
+        { "flags": 2, "max_value": 0.4, "min_value": 0.31, "name": "Turn: medium", "penalties": 500 }
+      ]
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "tripSettings": {
+          "type": 1,
+          "gpsCorrection": 1,
+          "minSat": 2,
+          "minMovingSpeed": 1,
+          "minStayTime": 300,
+          "maxMessagesDistance": 10000,
+          "minTripTime": 60,
+          "minTripDistance": 100
+        }
+      },
+      "geometry": null
+    }
+  }
+]

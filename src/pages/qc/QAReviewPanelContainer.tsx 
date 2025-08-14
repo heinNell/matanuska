@@ -1,0 +1,67 @@
+import React, { useState } from 'react';
+import QAReviewPanel from './QAReviewPanel';
+
+interface TaskHistoryEntry {
+  id: string;
+  taskId: string;
+  action: string;
+  timestamp: string;
+  userId: string;
+  notes?: string;
+}
+
+interface JobCardTask {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  notes?: string;
+}
+
+const QAReviewPanelContainer: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  // Sample data - replace with actual data fetching logic
+  const jobCardId = "sample-job-card-id";
+  const tasks: JobCardTask[] = [];
+  const taskHistory: TaskHistoryEntry[] = [];
+
+  const handleVerifyTask = async (taskId: string) => {
+    setIsLoading(true);
+    try {
+      // Implement actual verification logic here
+      console.log(`Verifying task ${taskId}`);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+    } catch (error) {
+      console.error("Error verifying task:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyAllTasks = async () => {
+    setIsLoading(true);
+    try {
+      // Implement actual all tasks verification logic here
+      console.log("Verifying all tasks");
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+    } catch (error) {
+      console.error("Error verifying all tasks:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <QAReviewPanel
+      jobCardId={jobCardId}
+      tasks={tasks}
+      taskHistory={taskHistory}
+      onVerifyTask={handleVerifyTask}
+      canVerifyAllTasks={tasks.some(task => task.status === 'completed')}
+      onVerifyAllTasks={handleVerifyAllTasks}
+      isLoading={isLoading}
+    />
+  );
+};
+
+export default QAReviewPanelContainer;

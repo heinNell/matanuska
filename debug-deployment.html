@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deployment Debug</title>
+</head>
+
+<body>
+  <div id="debug-info">
+    <h1>Deployment Debug Information</h1>
+    <div id="env-check"></div>
+    <div id="script-check"></div>
+    <div id="console-errors"></div>
+  </div>
+
+  <script>
+    // Check environment variables
+    const envCheck = document.getElementById('env-check');
+    envCheck.innerHTML = `
+            <h2>Environment Variables:</h2>
+            <p>Mode: ${import.meta.env.MODE || 'undefined'}</p>
+            <p>Base URL: ${import.meta.env.BASE_URL || 'undefined'}</p>
+            <p>Firebase API Key: ${import.meta.env.VITE_FIREBASE_API_KEY ? 'Set' : 'Missing'}</p>
+            <p>Firebase Project ID: ${import.meta.env.VITE_FIREBASE_PROJECT_ID || 'undefined'}</p>
+        `;
+
+    // Check script loading
+    const scriptCheck = document.getElementById('script-check');
+    scriptCheck.innerHTML = `
+            <h2>Script Loading:</h2>
+            <p>React available: ${typeof React !== 'undefined' ? 'Yes' : 'No'}</p>
+            <p>ReactDOM available: ${typeof ReactDOM !== 'undefined' ? 'Yes' : 'No'}</p>
+            <p>Firebase available: ${typeof window.Firebase !== 'undefined' ? 'Yes' : 'No'}</p>
+        `;
+
+    // Capture console errors
+    const originalError = console.error;
+    const errors = [];
+    console.error = (...args) => {
+      errors.push(args.join(' '));
+      originalError.apply(console, args);
+      document.getElementById('console-errors').innerHTML = `
+                <h2>Console Errors:</h2>
+                <pre>${errors.join('\n')}</pre>
+            `;
+    };
+
+    // Test module loading
+    try {
+      import('./src/main.tsx').then(() => {
+        console.log('Main module loaded successfully');
+      }).catch(error => {
+        console.error('Failed to load main module:', error);
+      });
+    } catch (error) {
+      console.error('Failed to import main module:', error);
+    }
+  </script>
+</body>
+
+</html>

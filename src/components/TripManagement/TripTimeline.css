@@ -1,0 +1,74 @@
+/* Enhanced Timeline Styling */
+.react-calendar-timeline .rct-header-root {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.react-calendar-timeline .rct-sidebar {
+  border-right: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.react-calendar-timeline .rct-vertical-lines .rct-vl {
+  border-left-color: #e2e8f0;
+}
+
+.react-calendar-timeline .rct-horizontal-lines .rct-hl {
+  border-bottom-color: #e2e8f0;
+}
+
+.react-calendar-timeline .rct-dateHeader {
+  border-left-color: #e2e8f0;
+  color: #475569;
+  font-weight: 500;
+  padding: 0.25rem;
+}
+
+.react-calendar-timeline .rct-dateHeader-primary {
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.timeline-marker-today {
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  background-color: #ef4444; /* Red color for today marker */
+  z-index: 3;
+}
+
+/* Trip items styling */
+.react-calendar-timeline .rct-item {
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+.react-calendar-timeline .rct-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  z-index: 5;
+}
+
+/* Enhanced scrollbars for timeline */
+.react-calendar-timeline ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.react-calendar-timeline ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.react-calendar-timeline ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.react-calendar-timeline ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Add more space between grid lines for readability */
+.react-calendar-timeline .rct-day-6,
+.react-calendar-timeline .rct-day-0 {
+  background-color: #f8fafc; /* Light background for weekends */
+}

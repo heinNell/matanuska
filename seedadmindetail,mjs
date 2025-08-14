@@ -1,0 +1,329 @@
+import { initializeApp, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { readFileSync } from 'fs';
+
+// Check if service account key file exists and load it
+let serviceAccount;
+try {
+  serviceAccount = JSON.parse(readFileSync('./serviceAccountKey.json', 'utf8'));
+  console.log('✅ Service account key loaded successfully');
+} catch (error) {
+  console.error('❌ Error loading service account key:', error.message);
+  console.log('\n📝 INSTRUCTIONS:');
+  console.log('1. Go to Firebase Console → Project Settings → Service Accounts');
+  console.log('2. Click "Generate new private key"');
+  console.log('3. Save the file as "serviceAccountKey.json" in the project root directory');
+  console.log('4. Run this script again\n');
+  process.exit(1);
+}
+
+// Initialize Firebase Admin
+try {
+  initializeApp({
+    credential: cert(serviceAccount)
+  });
+  console.log('✅ Firebase Admin initialized successfully');
+} catch (error) {
+  console.error('❌ Error initializing Firebase Admin:', error);
+  process.exit(1);
+}
+
+const db = getFirestore();
+
+// admin details data - flat array for storing in Firestore
+const authorisationMapping = [
+
+  {
+    "userId": "H",
+    "role": "Operator",
+    "fullName": "Hein Nel",
+    "username": "HeinNel",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Fuel Management", "Request", "Logbook"
+    ]
+  },
+  {
+    "userId": "AM",
+    "role": "Operator",
+    "fullName": "Adrian Moyo",
+    "username": "AdrianMoyo",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Fuel Management", "Logbook"
+    ]
+  },
+  {
+    "userId": "PK",
+    "role": "Operator",
+    "fullName": "Phillimon Kwarire",
+    "username": "PhillimonKwarire",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Fuel Management", "Request", "Logbook"
+    ]
+  },
+  {
+    "userId": "LT",
+    "role": "Operator",
+    "fullName": "Luckson Tanyanyiwa",
+    "username": "LucksonTanyanyiwa",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Fuel Management", "Logbook"
+    ]
+  },
+  {
+    "userId": "BM",
+    "role": "Operator",
+    "fullName": "Biggie Mugwa",
+    "username": "BiggieMugwa",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Fuel Management", "Logbook"
+    ]
+  },
+  {
+    "userId": "WM",
+    "role": "Operator",
+    "fullName": "Wellington Musumbu",
+    "username": "WellingtonMusumbu",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Logbook"
+    ]
+  },
+  {
+    "userId": "DM",
+    "role": "Operator",
+    "fullName": "Decide Murahwa",
+    "username": "DecideMurahwa",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Incident Report", "Logbook"
+    ]
+  },
+  {
+    "userId": "W",
+    "role": "Technician",
+    "fullName": "Workshop",
+    "username": "Workshop",
+    "email": "transportmatanuska@gmail.com",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Operator Daily Reporting", "Vehicles", "Checklist", "Workorder", "Service Schedule", "Incident Report", "Fuel Management", "Report", "Reminder", "Parts Inventory", "Request", "Labor Code", "Tool Management", "Purchase Order", "Demand Parts", "Vendors", "Tire Inventory", "Logbook", "Task Master", "Documents", "Bunker", "DVIR & DOT Inspection"
+    ]
+  },
+  {
+    "userId": "J",
+    "role": "Operator",
+    "fullName": "Joshua",
+    "username": "Joshua",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Operator Daily Reporting"
+    ]
+  },
+  {
+    "userId": "BM2",
+    "role": "Technician",
+    "fullName": "Bradley Milner",
+    "username": "Bradley",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Operator Daily Reporting"
+    ]
+  },
+  {
+    "userId": "WK",
+    "role": "Technician",
+    "fullName": "Witness Kajayi",
+    "username": "Witness",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Operator Daily Reporting", "Labor Code"
+    ]
+  },
+  {
+    "userId": "KR",
+    "role": "Technician",
+    "fullName": "Kenneth Rukweza",
+    "username": "Kenneth",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Operator Daily Reporting", "Labor Code"
+    ]
+  },
+  {
+    "userId": "DK",
+    "role": "Operator",
+    "fullName": "Doctor Kondwani",
+    "username": "DoctorKondwani",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Fuel Management", "Logbook"
+    ]
+  },
+  {
+    "userId": "TV",
+    "role": "Operator",
+    "fullName": "Taurayi Vherenaisi",
+    "username": "TaurayiVherenaisi",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Logbook"
+    ]
+  },
+  {
+    "userId": "CC",
+    "role": "Operator",
+    "fullName": "Canaan Chipfurutse",
+    "username": "CanaanChipfurutse",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Logbook"
+    ]
+  },
+  {
+    "userId": "JB",
+    "role": "Operator",
+    "fullName": "Jonathan Bepete",
+    "username": "JonathanBepete",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Logbook"
+    ]
+  },
+  {
+    "userId": "PF",
+    "role": "Operator",
+    "fullName": "Peter Farai",
+    "username": "PeterFarai",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Logbook"
+    ]
+  },
+  {
+    "userId": "EM",
+    "role": "Operator",
+    "fullName": "Enock Mukonyerwa",
+    "username": "EnockMukonyerwa",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Logbook"
+    ]
+  },
+  {
+    "userId": "LQ",
+    "role": "Operator",
+    "fullName": "Lovemore Qochiwe",
+    "username": "LovemoreQochiwe",
+    "email": "",
+    "status": "Active",
+    "accessAreas": [
+      "Logbook"
+    ]
+  },
+  {
+    "userId": "AM2",
+    "role": "Employee",
+    "fullName": "Alec Maocha",
+    "username": "AlecMaocha",
+    "email": "alec@matanuska.co.zw",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Vehicles", "Checklist", "Workorder", "Service Schedule", "Incident Report", "Report", "Reminder", "Parts Inventory", "Request", "Labor Code", "Tool Management", "Site", "Purchase Order", "PO Approval", "Demand Parts", "Tire Inventory", "Logbook", "Task Master", "Documents"
+    ]
+  },
+  {
+    "userId": "PM",
+    "role": "Technician",
+    "fullName": "Paul Mwanyadza",
+    "username": "PaulMwanyadza",
+    "email": "mwanyadzapaul61@gmail.com",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Operator Daily Reporting", "Vehicles", "Checklist", "Workorder", "Service Schedule", "Incident Report", "Report", "Request", "Labor Code", "Tool Management", "Site", "Demand Parts", "Tire Inventory", "Task Master", "Documents", "DVIR & DOT Inspection"
+    ]
+  },
+  {
+    "userId": "CJ",
+    "role": "Sub Admin",
+    "fullName": "Cain Jeche",
+    "username": "CainJeche",
+    "email": "cain@matanuska.co.zw",
+    "status": "Active",
+    "accessAreas": [
+      "Inspection", "Operator Daily Reporting", "Vehicles", "Checklist", "Workorder", "Service Schedule", "Incident Report", "Fuel Management", "Report", "Reminder", "Parts Inventory", "Request", "Labor Code", "Tool Management", "Site", "Purchase Order", "PO Approval", "Demand Parts", "Vendors", "Tire Inventory", "Logbook", "Task Master", "Documents"
+    ]
+  }
+]
+
+
+async function seedAdminDetails() {
+  console.log(`🔄 Starting admin details seeding process...`);
+  console.log(`📊 Found ${authorisationMapping.length} admin details to seed`);
+  
+  try {
+    const batch = db.batch();
+    let successCount = 0;
+    let skipCount = 0;
+    
+    for (const admin of authorisationMapping) {
+      const docRef = db.collection('adminDetails').doc(admin.userId);
+      
+      // Check if document already exists to avoid duplicates
+      const doc = await docRef.get();
+      
+      if (doc.exists) {
+        console.log(`ℹ️ Admin ${admin.userId} already exists, skipping...`);
+        skipCount++;
+        continue;
+      }
+      
+      // Add admin data to batch
+      batch.set(docRef, {
+        ...admin,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      
+      successCount++;
+    }
+    
+    // Commit the batch
+    await batch.commit();
+    
+    console.log(`✅ Successfully seeded ${successCount} admin details to Firestore`);
+    console.log(`ℹ️ Skipped ${skipCount} existing admin details`);
+  } catch (error) {
+    console.error('❌ Error seeding admin details:', error);
+  }
+}
+
+// Run the seeding function
+seedAdminDetails().then(() => {
+  console.log('🏁 Admin details seeding process complete');
+  process.exit(0);
+}).catch(error => {
+  console.error('❌ Unhandled error during admin details seeding:', error);
+  process.exit(1);
+});

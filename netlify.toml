@@ -1,0 +1,85 @@
+[build]
+  command = "bash ./netlify-build.sh"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  VITE_ENV_MODE = "production"
+  VITE_USE_EMULATOR = "false"
+  # Optional: mitigate OOM on large builds
+  NODE_OPTIONS = "--max_old_space_size=4096"
+
+# -------- SPA Fallback --------
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# -------- Caching --------
+# Cache immutable, hashed assets aggressively
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Ensure the SPA shell is always fresh
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# -------- Security Headers --------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # CSP tuned for Firebase + Google Maps + reCAPTCHA + Wialon
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval'
+        https://*.googleapis.com
+        https://maps.googleapis.com
+        https://www.gstatic.com
+        https://maps.gstatic.com
+        https://www.google.com
+        https://hst-api.wialon.com;
+      style-src 'self' 'unsafe-inline'
+        https://fonts.googleapis.com;
+      img-src 'self' data: blob:
+        https://*.googleapis.com
+        https://maps.gstatic.com
+        https://*.gstatic.com
+        https://firebasestorage.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      connect-src 'self'
+        https://*.firebaseio.com
+        wss://*.firebaseio.com
+        https://firestore.googleapis.com
+        https://firebasestorage.googleapis.com
+        https://identitytoolkit.googleapis.com
+        https://securetoken.googleapis.com
+        https://firebaseinstallations.googleapis.com
+        https://*.googleapis.com
+        https://maps.googleapis.com
+        https://hst-api.wialon.com;
+      frame-src 'self'
+        https://www.google.com
+        https://www.gstatic.com
+        https://www.recaptcha.net;
+      worker-src 'self' blob:;
+      base-uri 'self';
+      frame-ancestors 'none';
+      form-action 'self';
+    """
+    # Keep COOP; drop COEP to avoid forced cross-origin isolation
+    Cross-Origin-Opener-Policy = "same-origin"
+    # DO NOT set Cross-Origin-Embedder-Policy unless you need crossOriginIsolated
+    # Cross-Origin-Embedder-Policy = "unsafe-none"
+    Cross-Origin-Resource-Policy = "same-origin"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"

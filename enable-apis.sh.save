@@ -1,0 +1,35 @@
+#!/bin/bash
+
+
+# Project ID
+PROJECT_ID="mat1-9e6b3"
+
+echo "Enabling required Google APIs for project: $PROJECT_ID..."
+
+# Enable Google Maps APIs
+gcloud services enable \
+  maps-backend.googleapis.com \
+  maps-embed-backend.googleapis.com \
+  static-maps-backend.googleapis.com \
+  geocoding-backend.googleapis.com \
+  places-backend.googleapis.com \
+  distance-matrix-backend.googleapis.com \
+  directions-backend.googleapis.com \
+  timezone-backend.googleapis.com \
+  roads.googleapis.com \
+  routes.googleapis.com \
+  --project=$PROJECT_ID
+
+# Enable Firebase APIs
+gcloud services enable \
+  firebase.googleapis.com \
+  firestore.googleapis.com \
+  firebaseremoteconfig.googleapis.com \
+  firebasehosting.googleapis.com \
+  firebasestorage.googleapis.com \
+  firebasedatabase.googleapis.com \
+  fcm.googleapis.com \
+  identitytoolkit.googleapis.com \
+  --project=$PROJECT_ID
+
+echo "All required APIs have been enabled successfully."

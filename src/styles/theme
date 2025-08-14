@@ -1,0 +1,177 @@
+:root {
+  /* Main Brand Colors */
+  --brand-primary: 210 100% 40%; /* #0066cc - Primary blue */
+  --brand-secondary: 200 75% 55%; /* #4da6ff - Secondary blue */
+  --brand-accent: 155 55% 45%; /* #3d9970 - Accent green */
+
+  /* Semantic Colors */
+  --success: 142 76% 36%; /* #2ecc40 - Success green */
+  --warning: 45 100% 51%; /* #ffcc00 - Warning yellow */
+  --danger: 0 100% 50%; /* #ff0000 - Danger red */
+  --info: 200 100% 50%; /* #00ccff - Info blue */
+
+  /* Neutral Colors */
+  --neutral-50: 210 20% 98%; /* #f8fafc - Lightest gray */
+  --neutral-100: 210 20% 95%; /* #f1f5f9 - Lighter gray */
+  --neutral-200: 210 20% 90%; /* #e2e8f0 - Light gray */
+  --neutral-300: 210 20% 80%; /* #cbd5e1 - Gray */
+  --neutral-400: 210 20% 70%; /* #94a3b8 - Medium gray */
+  --neutral-500: 210 20% 50%; /* #64748b - Dark gray */
+  --neutral-600: 210 20% 40%; /* #475569 - Darker gray */
+  --neutral-700: 210 20% 30%; /* #334155 - Very dark gray */
+  --neutral-800: 210 20% 20%; /* #1e293b - Almost black */
+  --neutral-900: 210 20% 10%; /* #0f172a - Black */
+
+  /* UI Colors */
+  --background: var(--neutral-50);
+  --foreground: var(--neutral-900);
+  --card: 0 0% 100%;
+  --card-foreground: var(--neutral-900);
+  --popover: 0 0% 100%;
+  --popover-foreground: var(--neutral-900);
+  --primary: var(--brand-primary);
+  --primary-foreground: 0 0% 100%;
+  --secondary: var(--brand-secondary);
+  --secondary-foreground: 0 0% 100%;
+  --muted: var(--neutral-200);
+  --muted-foreground: var(--neutral-600);
+  --accent: var(--brand-accent);
+  --accent-foreground: 0 0% 100%;
+  --destructive: var(--danger);
+  --destructive-foreground: 0 0% 100%;
+  --border: var(--neutral-300);
+  --input: var(--neutral-300);
+  --ring: var(--brand-primary);
+
+  /* Effects */
+  --radius: 0.5rem;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Dark mode theme */
+.dark {
+  --background: var(--neutral-900);
+  --foreground: var(--neutral-50);
+  --card: var(--neutral-800);
+  --card-foreground: var(--neutral-50);
+  --popover: var(--neutral-800);
+  --popover-foreground: var(--neutral-50);
+  --primary: var(--brand-primary);
+  --primary-foreground: 0 0% 100%;
+  --secondary: var(--brand-secondary);
+  --secondary-foreground: 0 0% 100%;
+  --muted: var(--neutral-700);
+  --muted-foreground: var(--neutral-400);
+  --accent: var(--brand-accent);
+  --accent-foreground: 0 0% 100%;
+  --destructive: var(--danger);
+  --destructive-foreground: 0 0% 100%;
+  --border: var(--neutral-700);
+  --input: var(--neutral-700);
+  --ring: var(--brand-primary);
+}
+
+/* Component Styles */
+.card-enhanced {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border: 1px solid hsl(var(--border));
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-enhanced:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header-enhanced {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: linear-gradient(to right, hsl(var(--primary) / 0.1), transparent);
+}
+
+.card-content-enhanced {
+  padding: 1.5rem;
+}
+
+.btn-enhanced {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.btn-primary-enhanced {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary-enhanced:hover {
+  background-color: hsl(var(--primary) / 0.9);
+  box-shadow: var(--shadow);
+}
+
+.btn-secondary-enhanced {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+.btn-secondary-enhanced:hover {
+  background-color: hsl(var(--secondary) / 0.9);
+}
+
+.badge-enhanced {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+.badge-success {
+  background-color: hsl(var(--success) / 0.2);
+  color: hsl(var(--success));
+}
+
+.badge-warning {
+  background-color: hsl(var(--warning) / 0.2);
+  color: hsl(var(--warning) / 0.8);
+}
+
+.badge-danger {
+  background-color: hsl(var(--danger) / 0.2);
+  color: hsl(var(--danger));
+}
+
+.badge-info {
+  background-color: hsl(var(--info) / 0.2);
+  color: hsl(var(--info) / 0.8);
+}
+
+/* Data visualization colors */
+.chart-colors {
+  --chart-primary: hsl(var(--brand-primary));
+  --chart-secondary: hsl(var(--brand-secondary));
+  --chart-accent: hsl(var(--brand-accent));
+  --chart-success: hsl(var(--success));
+  --chart-warning: hsl(var(--warning));
+  --chart-danger: hsl(var(--danger));
+  --chart-info: hsl(var(--info));
+}
