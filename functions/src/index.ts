@@ -26,7 +26,45 @@ import * as logger from "firebase-functions/logger";
 // this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+export const api = onRequest((request, response) => {
+  logger.info("Received request", {
+    method: request.method,
+    path: request.path,
+    query: request.query,
+    structuredData: true
+  });
+
+  try {
+    switch (request.method) {
+      case 'GET':
+        response.json({
+          status: 'success',
+          message: 'API is running',
+          timestamp: new Date().toISOString()
+        });
+        break;
+
+      case 'POST':
+        const data = request.body;
+        logger.info("Received POST data", { data });
+        response.json({
+          status: 'success',
+          message: 'Data received',
+          data
+        });
+        break;
+
+      default:
+        response.status(405).json({
+          status: 'error',
+          message: `Method ${request.method} not allowed`
+        });
+    }
+  } catch (error) {
+    logger.error("Error processing request", error);
+    response.status(500).json({
+      status: 'error',
+      message: 'Internal server error'
+    });
+  }
+});

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from '../../ui/Modal';
-import { TripForm } from "/workspaces/matrefactor/src/components/forms/trips/TripForm";
+import { TripForm } from "@/components/forms/trips/TripForm";
 import { Trip } from "../../../types";
 import { useAppContext } from "../../../context/AppContext";
 import { AlertTriangle } from "lucide-react";

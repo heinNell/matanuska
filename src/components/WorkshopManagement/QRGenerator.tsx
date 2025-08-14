@@ -4,7 +4,7 @@ import Card, { CardContent, CardHeader } from "../ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "../ui/FormElements";
 import { QrCode, Save, Truck, Wrench, Clipboard, ExternalLink, List, Download } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCode } from "qrcode.react";
 
 const QRGenerator: React.FC = () => {
   const navigate = useNavigate();
@@ -290,12 +290,11 @@ const QRGenerator: React.FC = () => {
               <div className="flex flex-col items-center text-center">
                 <div className="bg-white p-4 rounded-lg border shadow-sm">
                   <div className="w-48 h-48 bg-white flex items-center justify-center border">
-                    <QRCodeSVG
+                    <QRCode
                       value={qrValue}
-                      size={180}
-                      bgColor={"#FFFFFF"}
-                      fgColor={"#000000"}
-                      level={"M"}
+                      size={200}
+                      level="M"
+                      includeMargin={true} // Use this instead of marginSize
                     />
                   </div>
                 </div>

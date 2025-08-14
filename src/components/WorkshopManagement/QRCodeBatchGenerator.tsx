@@ -1,5 +1,5 @@
 import { ArrowLeft, Printer, QrCode } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCode } from "qrcode.react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
@@ -154,7 +154,7 @@ export const QRCodeBatchGenerator: React.FC = () => {
           {vehiclesToShow.map((vehicle: Vehicle) => (
             <Card key={vehicle.id} className="print:border print:shadow-none">
               <CardContent className="p-4 text-center">
-                <QRCodeSVG
+                <QRCode
                   value={generateQRValue(vehicle.fleetNumber, qrType)}
                   size={120}
                   level="M"
