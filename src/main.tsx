@@ -5,6 +5,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
+// Import the Google Maps API patch to fix the "Cannot read properties of undefined (reading 'wI')" error
+import "./utils/googleMapsApiPatch";
 
 declare global {
   interface Window {

@@ -10,6 +10,8 @@ import {
   getBoundsForLocations,
 } from "../../utils/mapConfig";
 import { initPlacesService, placeToLocation, searchPlacesByText } from "../../utils/placesService";
+// Import the Google Maps API patch
+import "../../utils/googleMapsApiPatch";
 import RouteDrawer from "../Models/maps/RouteDrawer";
 // Creating a simple component to replace the missing LocationDetailPanel
 const LocationDetailPanel = ({
