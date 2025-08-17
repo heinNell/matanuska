@@ -1,6 +1,7 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { FileText, Save, X } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import * as React from "react";
+import { useEffect, useState } from "react";
 import { useAppContext } from "../../../context/AppContext";
 import { CARReport, DriverBehaviorEvent, RESPONSIBLE_PERSONS } from "../../../types";
 import { formatDate } from "../../../utils/helpers";

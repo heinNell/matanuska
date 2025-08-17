@@ -6,20 +6,32 @@
  * For Matanuska Transport Platform
  */
 
-import fs from 'fs';
-import path from 'path';
+import { readFileSync, writeFileSync } from 'fs';
+import * as path from 'path';
 import { fileURLToPath } from 'url';
-import glob from 'glob';
-import chalk from 'chalk';
+import { sync as globSync } from 'glob';
+
+// Simple colorize function for output
+function colorize(text: string, color: 'blue' | 'green' | 'yellow' | 'red' | 'cyan'): string {
+  const colors = {
+    blue: '\x1b[34m',
+    green: '\x1b[32m',
+    yellow: '\x1b[33m',
+    red: '\x1b[31m',
+    cyan: '\x1b[36m',
+    reset: '\x1b[0m',
+  };
+  return colors[color] + text + colors.reset;
+}
 
 // Get directory name in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const COMPONENTS_DIR = path.join(__dirname, 'src/components');
-const PAGES_DIR = path.join(__dirname, 'src/pages');
-const OUTPUT_FILE = path.join(__dirname, 'UI_CONNECTION_REPORT.md');
+const COMPONENTS_DIR = path.join(__dirname, '..', 'src/components');
+const PAGES_DIR = path.join(__dirname, '..', 'src/pages');
+const OUTPUT_FILE = path.join(__dirname, '..', 'UI_CONNECTION_REPORT.md');
 
 // UI element patterns to check
 const UI_PATTERNS = {
@@ -52,8 +64,68 @@ const HANDLER_PATTERNS = {
   modal: /(?:handle|on)(?:Modal|Dialog|Close|Open)/i
 };
 
+// Define TypeScript interfaces
+interface ButtonStatus {
+  found: boolean;
+  connected: boolean;
+}
+
+interface ButtonsResult {
+  edit: ButtonStatus;
+  view: ButtonStatus;
+  delete: ButtonStatus;
+  save: ButtonStatus;
+  cancel: ButtonStatus;
+}
+
+interface FormsResult {
+  found: boolean;
+  connected: boolean;
+  validated: boolean;
+}
+
+interface ModalsResult {
+  found: boolean;
+  connected: boolean;
+}
+
+interface UIElements {
+  buttons: ButtonsResult;
+  forms: FormsResult;
+  modals: ModalsResult;
+}
+
+interface ComponentResult {
+  name: string;
+  path: string;
+  ui: UIElements;
+  issues: string[];
+}
+
+interface Issue {
+  component: string;
+  issue: string;
+  path: string;
+}
+
+interface StatsResult {
+  totalComponents: number;
+  connectedButtons: number;
+  disconnectedButtons: number;
+  connectedForms: number;
+  disconnectedForms: number;
+  connectedModals: number;
+  disconnectedModals: number;
+}
+
+interface Results {
+  components: Record<string, ComponentResult>;
+  stats: StatsResult;
+  issues: Issue[];
+}
+
 // Tracking results
-const results = {
+const results: Results = {
   components: {},
   stats: {
     totalComponents: 0,
@@ -70,14 +142,14 @@ const results = {
 /**
  * Analyze a single component file
  */
-function analyzeComponent(filePath) {
+function analyzeComponent(filePath: string): ComponentResult {
   const relativePath = path.relative(__dirname, filePath);
-  const content = fs.readFileSync(filePath, 'utf8');
+  const content = readFileSync(filePath, 'utf8');
   const componentName = path.basename(filePath, path.extname(filePath));
-  
-  console.log(chalk.blue(`Analyzing ${componentName}...`));
-  
-  const componentResult = {
+
+  console.log(colorize(`Analyzing ${componentName}...`, 'blue'));
+
+  const componentResult: ComponentResult = {
     name: componentName,
     path: relativePath,
     ui: {
@@ -93,17 +165,18 @@ function analyzeComponent(filePath) {
     },
     issues: []
   };
-  
+
   // Check buttons
   Object.keys(UI_PATTERNS.buttons).forEach(buttonType => {
-    if (UI_PATTERNS.buttons[buttonType].test(content)) {
-      componentResult.ui.buttons[buttonType].found = true;
+    const typedButtonType = buttonType as keyof typeof UI_PATTERNS.buttons;
+    if (UI_PATTERNS.buttons[typedButtonType].test(content)) {
+      componentResult.ui.buttons[typedButtonType].found = true;
       results.stats.totalComponents++;
-      
+
       // Check for corresponding handler
-      const connected = HANDLER_PATTERNS[buttonType].test(content);
-      componentResult.ui.buttons[buttonType].connected = connected;
-      
+      const connected = HANDLER_PATTERNS[typedButtonType as keyof typeof HANDLER_PATTERNS].test(content);
+      componentResult.ui.buttons[typedButtonType].connected = connected;
+
       if (connected) {
         results.stats.connectedButtons++;
       } else {
@@ -117,17 +190,17 @@ function analyzeComponent(filePath) {
       }
     }
   });
-  
+
   // Check forms
   if (UI_PATTERNS.forms.form.test(content)) {
     componentResult.ui.forms.found = true;
-    
+
     // Check for form submission handler
     componentResult.ui.forms.connected = HANDLER_PATTERNS.form.test(content);
-    
+
     // Check for form validation
     componentResult.ui.forms.validated = UI_PATTERNS.forms.validation.test(content);
-    
+
     if (componentResult.ui.forms.connected) {
       results.stats.connectedForms++;
     } else {
@@ -139,7 +212,7 @@ function analyzeComponent(filePath) {
         path: relativePath
       });
     }
-    
+
     if (!componentResult.ui.forms.validated) {
       componentResult.issues.push('Form may not have validation');
       results.issues.push({
@@ -149,14 +222,14 @@ function analyzeComponent(filePath) {
       });
     }
   }
-  
+
   // Check modals
   if (UI_PATTERNS.modals.modal.test(content) || UI_PATTERNS.modals.dialog.test(content)) {
     componentResult.ui.modals.found = true;
-    
+
     // Check for modal handlers
     componentResult.ui.modals.connected = HANDLER_PATTERNS.modal.test(content);
-    
+
     if (componentResult.ui.modals.connected) {
       results.stats.connectedModals++;
     } else {
@@ -169,7 +242,7 @@ function analyzeComponent(filePath) {
       });
     }
   }
-  
+
   results.components[componentName] = componentResult;
   return componentResult;
 }
@@ -177,10 +250,10 @@ function analyzeComponent(filePath) {
 /**
  * Generate a markdown report from results
  */
-function generateReport() {
+function generateReport(): void {
   let report = '# UI Connection Verification Report\n\n';
   report += `*Generated on: ${new Date().toLocaleString()}*\n\n`;
-  
+
   // Add summary
   report += '## Summary\n\n';
   report += `- Total Components Analyzed: ${Object.keys(results.components).length}\n`;
@@ -190,65 +263,65 @@ function generateReport() {
   report += `- Disconnected Forms: ${results.stats.disconnectedForms}\n`;
   report += `- Connected Modals: ${results.stats.connectedModals}\n`;
   report += `- Disconnected Modals: ${results.stats.disconnectedModals}\n\n`;
-  
+
   // Add issue list
   report += '## Potential Issues\n\n';
-  
+
   if (results.issues.length === 0) {
     report += 'No issues detected! All UI elements appear to be properly connected.\n\n';
   } else {
     report += 'The following issues were detected and should be investigated:\n\n';
     report += '| Component | Issue | Path |\n';
     report += '|-----------|-------|------|\n';
-    
+
     results.issues.forEach(issue => {
       report += `| ${issue.component} | ${issue.issue} | ${issue.path} |\n`;
     });
-    
+
     report += '\n';
   }
-  
+
   // Add component details
   report += '## Component Details\n\n';
-  
+
   Object.values(results.components).forEach(component => {
     if (component.issues.length > 0) {
       report += `### ${component.name}\n\n`;
       report += `Path: \`${component.path}\`\n\n`;
-      
+
       // UI elements found
       report += '**UI Elements:**\n\n';
-      
+
       // Buttons
       const foundButtons = Object.entries(component.ui.buttons)
         .filter(([_, value]) => value.found)
         .map(([type, value]) => `${type} button (${value.connected ? '✅ connected' : '❌ disconnected'})`);
-      
+
       if (foundButtons.length > 0) {
         report += '- Buttons: ' + foundButtons.join(', ') + '\n';
       }
-      
+
       // Forms
       if (component.ui.forms.found) {
         report += `- Form: ${component.ui.forms.connected ? '✅ connected' : '❌ disconnected'}`;
         report += `, Validation: ${component.ui.forms.validated ? '✅ present' : '❌ missing'}\n`;
       }
-      
+
       // Modals
       if (component.ui.modals.found) {
         report += `- Modal/Dialog: ${component.ui.modals.connected ? '✅ connected' : '❌ disconnected'}\n`;
       }
-      
+
       // Issues
       report += '\n**Issues:**\n\n';
       component.issues.forEach(issue => {
         report += `- ${issue}\n`;
       });
-      
+
       report += '\n';
     }
   });
-  
+
   // Add recommendations
   report += '## Recommendations\n\n';
   report += '1. **Fix Disconnected Buttons**: Ensure all buttons have corresponding handler functions\n';
@@ -256,39 +329,39 @@ function generateReport() {
   report += '3. **Add Form Validation**: Implement validation for all forms to improve user experience\n';
   report += '4. **Check Modal Behavior**: Verify modals can be opened and closed properly\n';
   report += '5. **Test UI Workflows**: Conduct end-to-end testing of common UI workflows\n';
-  
-  fs.writeFileSync(OUTPUT_FILE, report);
-  console.log(chalk.green(`Report generated at ${OUTPUT_FILE}`));
+
+  writeFileSync(OUTPUT_FILE, report);
+  console.log(colorize(`Report generated at ${OUTPUT_FILE}`, 'green'));
 }
 
 /**
  * Main execution
  */
-async function main() {
-  console.log(chalk.green('Starting UI Connection Verification...'));
-  
+async function main(): Promise<void> {
+  console.log(colorize('Starting UI Connection Verification...', 'green'));
+
   // Get component files
-  const componentFiles = glob.sync([
-    `${COMPONENTS_DIR}/**/*.tsx`, 
+  const componentFiles = globSync([
+    `${COMPONENTS_DIR}/**/*.tsx`,
     `${COMPONENTS_DIR}/**/*.jsx`,
     `${PAGES_DIR}/**/*.tsx`,
     `${PAGES_DIR}/**/*.jsx`
   ]);
-  
-  console.log(chalk.blue(`Found ${componentFiles.length} component files`));
-  
+
+  console.log(colorize(`Found ${componentFiles.length} component files`, 'blue'));
+
   // Analyze each component
   componentFiles.forEach(file => {
     analyzeComponent(file);
   });
-  
+
   // Generate the report
   generateReport();
-  
-  console.log(chalk.green('UI Connection Verification complete!'));
-  console.log(chalk.yellow(`Connected buttons: ${results.stats.connectedButtons}, Disconnected: ${results.stats.disconnectedButtons}`));
-  console.log(chalk.yellow(`Connected forms: ${results.stats.connectedForms}, Disconnected: ${results.stats.disconnectedForms}`));
-  console.log(chalk.yellow(`Connected modals: ${results.stats.connectedModals}, Disconnected: ${results.stats.disconnectedModals}`));
+
+  console.log(colorize('UI Connection Verification complete!', 'green'));
+  console.log(colorize(`Connected buttons: ${results.stats.connectedButtons}, Disconnected: ${results.stats.disconnectedButtons}`, 'yellow'));
+  console.log(colorize(`Connected forms: ${results.stats.connectedForms}, Disconnected: ${results.stats.disconnectedForms}`, 'yellow'));
+  console.log(colorize(`Connected modals: ${results.stats.connectedModals}, Disconnected: ${results.stats.disconnectedModals}`, 'yellow'));
 }
 
 main().catch(console.error);

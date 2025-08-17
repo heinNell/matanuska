@@ -240,6 +240,7 @@ const ActiveTripsPage: React.FC = () => {
   const [costTrip, setCostTrip] = useState<UITrip | null>(null);
   const [isSystemCostsOpen, setIsSystemCostsOpen] = useState(false);
   const [systemCostsTrip, setSystemCostsTrip] = useState<UITrip | null>(null);
+  const [isQuickAddModalOpen, setIsQuickAddModalOpen] = useState(false);
 
   const normalizeRtTrip = (trip: any): UITrip => ({
     id: trip.id,
@@ -612,6 +613,13 @@ const ActiveTripsPage: React.FC = () => {
                 icon={<RefreshCw className="w-4 h-4" />}
               >
                 Refresh Webhook Trips
+              </Button>
+              <Button
+                onClick={() => setIsQuickAddModalOpen(true)}
+                className="bg-indigo-600 text-white hover:bg-indigo-700"
+                icon={<TruckIcon className="w-4 h-4" />}
+              >
+                Quick Add
               </Button>
               <Link
                 to="/trips/add"
@@ -1078,7 +1086,204 @@ const ActiveTripsPage: React.FC = () => {
       )}
 
       <LoadImportModal isOpen={showLoadImportModal} onClose={() => setShowLoadImportModal(false)} />
+
+      {/* Quick Add Trip Modal */}
+      <Modal
+        isOpen={isQuickAddModalOpen}
+        onClose={() => setIsQuickAddModalOpen(false)}
+        title="Quick Add Trip"
+        maxWidth="2xl"
+      >
+        <QuickAddTripModal onSubmit={handleAddTripSubmit} onCancel={() => setIsQuickAddModalOpen(false)} />
+      </Modal>
     </div>
   );
 };
+
+// Quick Add Trip Modal Component
+const QuickAddTripModal: React.FC<{
+  onSubmit: (tripData: any) => void;
+  onCancel: () => void;
+}> = ({ onSubmit, onCancel }) => {
+  const [tripData, setTripData] = useState({
+    fleetNumber: `TR-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+    clientName: '',
+    route: '',
+    driver: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
+    baseRevenue: 0,
+    revenueCurrency: 'ZAR',
+    origin: '',
+    destination: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setTripData(prev => ({
+      ...prev,
+      [name]: name === 'baseRevenue' ? parseFloat(value) || 0 : value
+    }));
+  };
+
+  const handleRouteChange = (field: 'origin' | 'destination', value: string) => {
+    setTripData(prev => {
+      const newData = { ...prev, [field]: value };
+      return {
+        ...newData,
+        route: `${newData.origin} - ${newData.destination}`
+      };
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Validate required fields
+    if (!tripData.clientName || !tripData.route || !tripData.driver) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    onSubmit(tripData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Fleet Number
+          </label>
+          <input
+            type="text"
+            name="fleetNumber"
+            value={tripData.fleetNumber}
+            onChange={handleChange}
+            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Client Name *
+          </label>
+          <input
+            type="text"
+            name="clientName"
+            value={tripData.clientName}
+            onChange={handleChange}
+            required
+            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Origin *
+          </label>
+          <input
+            type="text"
+            name="origin"
+            value={tripData.origin}
+            onChange={(e) => handleRouteChange('origin', e.target.value)}
+            required
+            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Destination *
+          </label>
+          <input
+            type="text"
+            name="destination"
+            value={tripData.destination}
+            onChange={(e) => handleRouteChange('destination', e.target.value)}
+            required
+            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Driver *
+          </label>
+          <input
+            type="text"
+            name="driver"
+            value={tripData.driver}
+            onChange={handleChange}
+            required
+            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Base Revenue
+          </label>
+          <div className="mt-1 relative rounded-md shadow-sm">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span className="text-gray-500 sm:text-sm">R</span>
+            </div>
+            <input
+              type="number"
+              name="baseRevenue"
+              value={tripData.baseRevenue}
+              onChange={handleChange}
+              className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+              placeholder="0.00"
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <span className="text-gray-500 sm:text-sm">ZAR</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Start Date
+          </label>
+          <input
+            type="date"
+            name="startDate"
+            value={tripData.startDate}
+            onChange={handleChange}
+            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            End Date
+          </label>
+          <input
+            type="date"
+            name="endDate"
+            value={tripData.endDate}
+            onChange={handleChange}
+            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+          />
+        </div>
+      </div>
+
+      <div className="mt-6 flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-indigo-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-indigo-700"
+        >
+          Create Trip
+        </button>
+      </div>
+    </form>
+  );
+};
+
 export default ActiveTripsPage;

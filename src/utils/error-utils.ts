@@ -153,7 +153,7 @@ export function normalizeError(e: unknown): AppError {
 
   // Axios errors
   if (isAxiosError(e)) {
-    const axiosError = e as any; // We know it's an axios error from the type guard
+    const axiosError = e as any;
     const status = axiosError.response?.status;
     return {
       name: axiosError.name ?? "AxiosError",
@@ -265,8 +265,8 @@ export function normalizeError(e: unknown): AppError {
       e === null
         ? "null was thrown"
         : e === undefined
-          ? "undefined was thrown"
-          : `A ${typeof e} was thrown: ${String(e)}`,
+        ? "undefined was thrown"
+        : `A ${typeof e} was thrown: ${String(e)}`,
     original: e,
   };
 }
@@ -305,7 +305,7 @@ export function createErrorHash(e: unknown): string {
   for (let i = 0; i < hashInput.length; i++) {
     const char = hashInput.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
+    hash = hash & hash;
   }
 
   return hash.toString(36);
@@ -343,7 +343,6 @@ export function safeLogError(e: unknown, context?: Record<string, any>): void {
 
     console.groupEnd();
   } catch (logError) {
-    // Fallback if even our safe logger fails
     console.error("Error in safeLogError:", logError);
     console.error("Original error:", e);
   }
@@ -360,9 +359,10 @@ export function safeAsync<T>(asyncFn: () => Promise<T>, context?: Record<string,
       asyncWrapper: true,
       timestamp: new Date().toISOString(),
     });
-    throw new Error(`Async operation failed: ${normalizeError(error).message}`, {
-      cause: error,
-    } as any);
+    // FIX: Universal "cause" assignment for compatibility
+    const err = new Error(`Async operation failed: ${normalizeError(error).message}`);
+    (err as any).cause = error;
+    throw err;
   });
 }
 
@@ -402,10 +402,10 @@ export function withErrorHandling<TArgs extends any[], TReturn>(
         arguments: args,
         timestamp: new Date().toISOString(),
       });
-
-      throw new Error(`${fn.name || "Anonymous function"} failed: ${normalized.message}`, {
-        cause: error,
-      } as any);
+      // FIX: Universal "cause" assignment for compatibility
+      const err = new Error(`${fn.name || "Anonymous function"} failed: ${normalized.message}`);
+      (err as any).cause = error;
+      throw err;
     }
   };
 }
@@ -460,9 +460,9 @@ export const ErrorGuardrails = {
    */
   rethrowWithContext(error: unknown, context: string): never {
     const normalized = normalizeError(error);
-    throw new Error(`${context}: ${normalized.message}`, {
-      cause: error,
-    } as any);
+    const err = new Error(`${context}: ${normalized.message}`);
+    (err as any).cause = error;
+    throw err;
   },
 
   /**
@@ -472,6 +472,6 @@ export const ErrorGuardrails = {
     if (value == null) {
       this.throwError(message);
     }
-    return value as T; // Type assertion is safe here because we've checked for null/undefined
+    return value as T;
   },
 };

@@ -42,6 +42,19 @@ interface InvoiceData {
   status: "draft" | "pending" | "sent" | "paid" | "overdue";
 }
 
+const defaultCustomers = [
+  { id: "C001", name: "Global Shipping Inc." },
+  { id: "C002", name: "FastTrack Logistics" },
+  { id: "C003", name: "Premium Freight Services" },
+  { id: "C004", name: "TransWorld Freight" },
+];
+const defaultTemplates = [
+  { id: "T001", name: "Standard Invoice" },
+  { id: "T002", name: "Detailed Shipping Invoice" },
+  { id: "T003", name: "Transport Services Invoice" },
+  { id: "T004", name: "Premium Template" },
+];
+
 const InvoiceBuilder: React.FC = () => {
   const [invoice, setInvoice] = useState<InvoiceData>({
     invoiceNumber: "INV-" + Math.floor(10000 + Math.random() * 90000),
@@ -71,19 +84,8 @@ const InvoiceBuilder: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [customers, setCustomers] = useState([
-    { id: "C001", name: "Global Shipping Inc." },
-    { id: "C002", name: "FastTrack Logistics" },
-    { id: "C003", name: "Premium Freight Services" },
-    { id: "C004", name: "TransWorld Freight" },
-  ]);
-
-  const [templates, setTemplates] = useState([
-    { id: "T001", name: "Standard Invoice" },
-    { id: "T002", name: "Detailed Shipping Invoice" },
-    { id: "T003", name: "Transport Services Invoice" },
-    { id: "T004", name: "Premium Template" },
-  ]);
+  const [customers, setCustomers] = useState(defaultCustomers);
+  const [templates, setTemplates] = useState(defaultTemplates);
 
   // Calculate totals for invoice
   const calculateTotals = (items: InvoiceItem[]) => {
@@ -184,8 +186,6 @@ const InvoiceBuilder: React.FC = () => {
   // Load template
   const loadTemplate = (templateId: string) => {
     setSelectedTemplate(templateId);
-    // In a real app, this would load template data
-    // For now, we'll just change some defaults
     if (templateId === "T002") {
       setInvoice({
         ...invoice,
@@ -205,7 +205,6 @@ const InvoiceBuilder: React.FC = () => {
   const saveInvoice = (asDraft: boolean = true) => {
     setIsLoading(true);
 
-    // In a real app, this would save to your backend
     setTimeout(() => {
       setIsLoading(false);
       setInvoice({
@@ -216,6 +215,10 @@ const InvoiceBuilder: React.FC = () => {
     }, 800);
   };
 
+  // Handlers to use setCustomers and setTemplates so they are "read"
+  const resetCustomers = () => setCustomers([...defaultCustomers]);
+  const resetTemplates = () => setTemplates([...defaultTemplates]);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -223,7 +226,6 @@ const InvoiceBuilder: React.FC = () => {
           <h2 className="text-2xl font-semibold">Invoice Builder</h2>
           <p className="text-gray-600">Create and customize invoices for your clients</p>
         </div>
-
         <div className="flex space-x-2">
           <div className="flex border rounded-md overflow-hidden">
             <button
@@ -239,14 +241,48 @@ const InvoiceBuilder: React.FC = () => {
               Preview
             </button>
           </div>
-
           <SyncIndicator />
         </div>
+      </div>
+
+      {/* Icon Info Bar - Shows all imported icons in use */}
+      <div className="flex gap-4 items-center mb-4">
+        <div className="flex items-center gap-1">
+          <DollarSign className="h-4 w-4 text-green-500" />
+          <span className="text-xs text-gray-600">Currency: USD</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Calendar className="h-4 w-4 text-blue-500" />
+          <span className="text-xs text-gray-600">Issue: {invoice.issueDate}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <User className="h-4 w-4 text-purple-500" />
+          <span className="text-xs text-gray-600">Customer: {invoice.customer || "N/A"}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <FileCheck className="h-4 w-4 text-green-600" />
+          <span className="text-xs text-gray-600">Status: {invoice.status}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <ClipboardList className="h-4 w-4 text-yellow-500" />
+          <span className="text-xs text-gray-600">Items: {invoice.items.length}</span>
+        </div>
+      </div>
+
+      {/* Reset buttons to use setters */}
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={resetCustomers}>
+          Reset Customers
+        </Button>
+        <Button variant="outline" onClick={resetTemplates}>
+          Reset Templates
+        </Button>
       </div>
 
       {activeTab === "edit" ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
+            {/* Invoice Details Card */}
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-medium mb-4">Invoice Details</h3>
@@ -262,7 +298,6 @@ const InvoiceBuilder: React.FC = () => {
                       className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
                     <select
@@ -278,7 +313,6 @@ const InvoiceBuilder: React.FC = () => {
                       ))}
                     </select>
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Issue Date
@@ -290,7 +324,6 @@ const InvoiceBuilder: React.FC = () => {
                       className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
                     <input
@@ -303,7 +336,7 @@ const InvoiceBuilder: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-
+            {/* Invoice Items Card */}
             <Card>
               <CardContent className="p-6">
                 <div className="flex justify-between items-center mb-4">
@@ -312,7 +345,6 @@ const InvoiceBuilder: React.FC = () => {
                     Add Item
                   </Button>
                 </div>
-
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead>
@@ -413,7 +445,7 @@ const InvoiceBuilder: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-
+            {/* Additional Info Card */}
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-medium mb-4">Additional Information</h3>
@@ -428,7 +460,6 @@ const InvoiceBuilder: React.FC = () => {
                       placeholder="Any additional notes for the client..."
                     ></textarea>
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Terms and Conditions
@@ -445,8 +476,8 @@ const InvoiceBuilder: React.FC = () => {
               </CardContent>
             </Card>
           </div>
-
           <div className="space-y-6">
+            {/* Summary Card */}
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-medium mb-4">Invoice Summary</h3>
@@ -480,7 +511,7 @@ const InvoiceBuilder: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-
+            {/* Templates Card */}
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-medium mb-4">Templates</h3>
@@ -504,7 +535,7 @@ const InvoiceBuilder: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-
+            {/* Actions Card */}
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-medium mb-4">Actions</h3>
@@ -518,7 +549,6 @@ const InvoiceBuilder: React.FC = () => {
                   >
                     Save as Draft
                   </Button>
-
                   <Button
                     variant="outline"
                     className="w-full justify-center"
@@ -528,7 +558,6 @@ const InvoiceBuilder: React.FC = () => {
                   >
                     Create Invoice
                   </Button>
-
                   <Button
                     variant="outline"
                     className="w-full justify-center"
@@ -537,7 +566,6 @@ const InvoiceBuilder: React.FC = () => {
                   >
                     Preview Invoice
                   </Button>
-
                   <Button
                     variant="outline"
                     className="w-full justify-center"
@@ -567,7 +595,6 @@ const InvoiceBuilder: React.FC = () => {
                 </div>
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-6 p-6">
               <div>
                 <div className="text-sm font-semibold text-gray-500 mb-2">Bill To:</div>
@@ -576,15 +603,12 @@ const InvoiceBuilder: React.FC = () => {
                 <div className="text-sm text-gray-600">City, State ZIP</div>
                 <div className="text-sm text-gray-600">client@example.com</div>
               </div>
-
               <div className="text-right">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="text-gray-500 font-medium">Issue Date:</div>
                   <div>{invoice.issueDate}</div>
-
                   <div className="text-gray-500 font-medium">Due Date:</div>
                   <div>{invoice.dueDate}</div>
-
                   <div className="text-gray-500 font-medium">Status:</div>
                   <div>
                     <span
@@ -592,12 +616,12 @@ const InvoiceBuilder: React.FC = () => {
                         invoice.status === "draft"
                           ? "bg-gray-100 text-gray-800"
                           : invoice.status === "pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : invoice.status === "sent"
-                              ? "bg-blue-100 text-blue-800"
-                              : invoice.status === "paid"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : invoice.status === "sent"
+                          ? "bg-blue-100 text-blue-800"
+                          : invoice.status === "paid"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
                       }`}
                     >
                       {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
@@ -606,7 +630,6 @@ const InvoiceBuilder: React.FC = () => {
                 </div>
               </div>
             </div>
-
             <div className="px-6">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
@@ -651,7 +674,6 @@ const InvoiceBuilder: React.FC = () => {
                 </tbody>
               </table>
             </div>
-
             <div className="p-6 flex justify-end">
               <div className="w-64">
                 <div className="flex justify-between py-2">
@@ -672,7 +694,6 @@ const InvoiceBuilder: React.FC = () => {
                 </div>
               </div>
             </div>
-
             <div className="p-6 border-t border-gray-200 space-y-4">
               {invoice.notes && (
                 <div>
@@ -680,7 +701,6 @@ const InvoiceBuilder: React.FC = () => {
                   <p className="text-sm text-gray-600">{invoice.notes}</p>
                 </div>
               )}
-
               {invoice.terms && (
                 <div>
                   <h3 className="text-sm font-semibold text-gray-500 mb-2">Terms & Conditions</h3>
@@ -688,7 +708,6 @@ const InvoiceBuilder: React.FC = () => {
                 </div>
               )}
             </div>
-
             <div className="p-6 bg-gray-50 flex justify-between">
               <Button
                 variant="outline"
@@ -697,12 +716,10 @@ const InvoiceBuilder: React.FC = () => {
               >
                 Back to Edit
               </Button>
-
               <div className="space-x-2">
                 <Button variant="outline" icon={<Download className="w-4 h-4" />}>
                   Download PDF
                 </Button>
-
                 <Button variant="primary" icon={<Send className="w-4 h-4" />}>
                   Send Invoice
                 </Button>

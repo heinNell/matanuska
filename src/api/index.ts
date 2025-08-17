@@ -106,7 +106,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Health check endpoint
-app.get("/api", (req: Request, res: Response) => {
+app.get("/api", (_req: Request, res: Response) => {
   res.status(200).json({
     status: "ok",
     message: "API is running",
@@ -117,7 +117,7 @@ app.get("/api", (req: Request, res: Response) => {
 
 // Import API routes from src/api if needed
 // We can proxy to these handlers for specific endpoints
-app.get("/api/health", (req: Request, res: Response) => {
+app.get("/api/health", (_req: Request, res: Response) => {
   res.status(200).json({
     status: "ok",
     services: {
@@ -156,22 +156,20 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
         csvData.trim().startsWith("USED TYRES")
       ) {
         console.log("Detected special format CSV (no headers)");
-        // No headers format - parse with specific column mapping
         records = parse(csvData, {
           columns: false,
           skip_empty_lines: true,
           trim: true,
-          relax_column_count: true, // Allow varying column counts
-          skip_records_with_error: true, // Skip records with parsing errors
+          relax_column_count: true,
+          skip_records_with_error: true,
         });
       } else {
         console.log("Detected standard CSV with headers");
-        // Standard CSV with headers
         records = parse(csvData, {
           columns: true,
           skip_empty_lines: true,
           trim: true,
-          skip_records_with_error: true, // Skip records with parsing errors
+          skip_records_with_error: true,
         });
       }
     } catch (parseError: unknown) {
@@ -195,34 +193,12 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
 
     // Process each record and prepare for Firestore
     const processedRecords = records.map((record: CSVRecord, index: number) => {
-      // Check if record is an array (no headers) or object (with headers)
       const isArray = Array.isArray(record);
 
-      // For debugging
       if (index === 0) {
         console.log("First record is array?", isArray);
         console.log("First record:", record);
       }
-
-      // Extract values based on format
-      // Your specific format appears to be:
-      // [0]: SCRAPPED TYRES/VEHICLE STORE/USED TYRES (Location category)
-      // [1]: Tyre ID ("XA12083P215")
-      // [2]: Description ("RETREAD XA12083P215")
-      // [3]: Pattern ("KL303")
-      // [4]: Quantity ("4.0000")
-      // [5]: Status ("Scrapped/Sold", "Recap One")
-      // [6]: Axle Position ("Trailer", "Drive")
-      // [7]: Size ("315/80R22.5", "385/65R22.5")
-      // [8]: Model ("M3", "MM79")
-      // [9]: Brand ("POWERTRAC", "STOCK RETREAD")
-      // [10]: Vehicle ID ("T4", "T6")
-      // [11]: Registration Number ("ADZ9011/ADZ9010")
-      // [12]: Price ("0.0000")
-      // [13]: Holding Bay ("HOLDING BAY - SCRAPPED TYRES")
-      // [14]: Expiry Date ("18/11/2024")
-      // [15]: Date Added ("01/07/2024")
-      // [16]: Mileage ("0", "39952")
 
       let location = "";
       let tyreId = "";
@@ -244,59 +220,62 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
       let id = "";
 
       try {
-        location = isArray 
-          ? (record as CSVRecordArray)[0]?.toString() || "" 
+        location = isArray
+          ? (record as CSVRecordArray)[0]?.toString() || ""
           : (record as CSVRecordObject).location || "";
-        tyreId = isArray 
-          ? (record as CSVRecordArray)[1]?.toString() || "" 
+        tyreId = isArray
+          ? (record as CSVRecordArray)[1]?.toString() || ""
           : (record as CSVRecordObject).tyreId || "";
-        description = isArray 
-          ? (record as CSVRecordArray)[2]?.toString() || "" 
+        description = isArray
+          ? (record as CSVRecordArray)[2]?.toString() || ""
           : (record as CSVRecordObject).description || "";
-        pattern = isArray 
-          ? (record as CSVRecordArray)[3]?.toString() || "" 
+        pattern = isArray
+          ? (record as CSVRecordArray)[3]?.toString() || ""
           : (record as CSVRecordObject).pattern || "";
-        quantity = parseFloat(isArray 
-          ? (record as CSVRecordArray)[4]?.toString() || "0" 
-          : ((record as CSVRecordObject).quantity?.toString() || "0")) || 0;
-        status = isArray 
-          ? (record as CSVRecordArray)[5]?.toString() || "" 
+        quantity = parseFloat(
+          isArray
+            ? (record as CSVRecordArray)[4]?.toString() || "0"
+            : ((record as CSVRecordObject).quantity?.toString() || "0")
+        ) || 0;
+        status = isArray
+          ? (record as CSVRecordArray)[5]?.toString() || ""
           : (record as CSVRecordObject).status || "";
-        axlePosition = isArray 
-          ? (record as CSVRecordArray)[6]?.toString() || "" 
+        axlePosition = isArray
+          ? (record as CSVRecordArray)[6]?.toString() || ""
           : (record as CSVRecordObject).axlePosition || "";
-        size = isArray 
-          ? (record as CSVRecordArray)[7]?.toString() || "" 
+        size = isArray
+          ? (record as CSVRecordArray)[7]?.toString() || ""
           : (record as CSVRecordObject).size || "";
-        model = isArray 
-          ? (record as CSVRecordArray)[8]?.toString() || "" 
+        model = isArray
+          ? (record as CSVRecordArray)[8]?.toString() || ""
           : (record as CSVRecordObject).model || "";
-        brand = isArray 
-          ? (record as CSVRecordArray)[9]?.toString() || "" 
+        brand = isArray
+          ? (record as CSVRecordArray)[9]?.toString() || ""
           : (record as CSVRecordObject).brand || "";
-        vehicleId = isArray 
-          ? (record as CSVRecordArray)[10]?.toString() || "" 
+        vehicleId = isArray
+          ? (record as CSVRecordArray)[10]?.toString() || ""
           : (record as CSVRecordObject).vehicleId || "";
-        registrationNumber = isArray 
-          ? (record as CSVRecordArray)[11]?.toString() || "" 
+        registrationNumber = isArray
+          ? (record as CSVRecordArray)[11]?.toString() || ""
           : (record as CSVRecordObject).registrationNumber || "";
-        price = parseFloat(isArray 
-          ? (record as CSVRecordArray)[12]?.toString() || "0" 
-          : ((record as CSVRecordObject).price?.toString() || "0")) || 0;
-        holdingBay = isArray 
-          ? (record as CSVRecordArray)[13]?.toString() || "" 
+        price = parseFloat(
+          isArray
+            ? (record as CSVRecordArray)[12]?.toString() || "0"
+            : ((record as CSVRecordObject).price?.toString() || "0")
+        ) || 0;
+        holdingBay = isArray
+          ? (record as CSVRecordArray)[13]?.toString() || ""
           : (record as CSVRecordObject).holdingBay || "";
-        expiryDate = isArray 
-          ? (record as CSVRecordArray)[14]?.toString() || "" 
+        expiryDate = isArray
+          ? (record as CSVRecordArray)[14]?.toString() || ""
           : (record as CSVRecordObject).expiryDate || "";
         dateAdded = isArray
           ? (record as CSVRecordArray)[15]?.toString() || new Date().toLocaleDateString()
           : (record as CSVRecordObject).dateAdded || new Date().toLocaleDateString();
-        mileage = isArray 
-          ? (record as CSVRecordArray)[16]?.toString() || "0" 
+        mileage = isArray
+          ? (record as CSVRecordArray)[16]?.toString() || "0"
           : (record as CSVRecordObject).mileage || "0";
 
-        // Generate a unique ID - use combination of tyreId and category for uniqueness
         id = tyreId
           ? `${location.replace(/[^a-zA-Z0-9]/g, "_")}_${tyreId.replace(/[^a-zA-Z0-9]/g, "_")}`
           : `tyre_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -304,7 +283,6 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
         console.error(`Error processing record at index ${index}:`, err);
         console.error("Record data:", record);
 
-        // Initialize default values if an error occurs
         id = id || `error_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
         location = location || "";
         tyreId = tyreId || `unknown_${index}`;
@@ -350,15 +328,13 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
       };
     });
 
-    // Save records to Firestore
     try {
       const result = await importInventoryItems(processedRecords as InventoryItem[]);
-
       return res.status(200).json({
         success: true,
         message: `Successfully processed ${processedRecords.length} records`,
         importResult: result,
-        sampleRecords: processedRecords.slice(0, 3), // Return first 3 as samples
+        sampleRecords: processedRecords.slice(0, 3),
       });
     } catch (dbError: unknown) {
       const error = dbError as Error;
@@ -378,7 +354,7 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
 });
 
 // GET all inventory items
-app.get("/api/inventory", async (req: Request, res: Response) => {
+app.get("/api/inventory", async (_req: Request, res: Response) => {
   try {
     if (!(firebase as any).getAllInventoryItems) {
       return res.status(500).json({
@@ -484,7 +460,7 @@ app.delete("/api/inventory/:id", async (req: Request, res: Response) => {
 });
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack || err.message);
   res.status(500).json({
     error: "Internal Server Error",

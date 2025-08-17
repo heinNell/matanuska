@@ -12,31 +12,33 @@ import {
   User,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import DriverBehaviorEventDetails from "../../components/DriverManagement/DriverBehaviorEventDetails";
-import DriverPerformanceOverview from "../../components/DriverManagement/DriverPerformanceOverview";
-import DriverBehaviorEventForm from "../../components/forms/driver/DriverBehaviorEventForm";
-import CARReportForm from "../../components/forms/qc/CARReportForm";
-import CARReportList from "../../components/lists/CARReportList";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
-import SyncIndicator from "../../components/ui/SyncIndicator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
-import { useAppContext } from "../../context/AppContext";
-import { useDriverBehavior } from "../../hooks/useDriverBehavior";
-import { DriverBehaviorEvent } from "../../types";
+import DriverBehaviorEventDetails from "@/components/DriverManagement/DriverBehaviorEventDetails";
+import DriverPerformanceOverview from "@/components/DriverManagement/DriverPerformanceOverview";
+import DriverBehaviorEventForm from "@/components/forms/driver/DriverBehaviorEventForm";
+import CARReportForm from "@/components/forms/qc/CARReportForm";
+import CARReportList from "@/components/lists/CARReportList";
+import Card, { CardContent, CardHeader } from "@/components/ui/Card";
+import SyncIndicator from "@/components/ui/SyncIndicator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { useAppContext } from "@/context/AppContext";
+import { useDriverBehavior } from "@/hooks/useDriverBehavior";
+import { DriverBehaviorEvent } from "@/types";
 
 /**
- * Driver Behavior Events Page Component
+ * Driver Fuel Behavior Page Component
  *
- * This component displays driver behavior events with filtering capabilities
+ * This component displays driver behavior events with a focus on fuel-related behaviors
  * and allows users to:
- * - View detailed driver performance metrics
- * - Record new behavior events
- * - View and edit existing behavior events
+ * - View detailed driver performance metrics related to fuel usage
+ * - Record new behavior events specifically about fuel usage
+ * - View and edit existing fuel behavior events
  * - Initiate Corrective Action Reports (CAR) from events
  * - View existing CAR reports
  * - Sync with external systems
+ *
+ * Note: This is a specialized version of the driver behavior component focused on fuel efficiency.
  */
-const DriverBehaviorPage: React.FC = () => {
+const DriverFuelBehaviorPage: React.FC = () => {
   // Local UI state
   const [isSyncing, setIsSyncing] = useState(false);
   const [activeTab, setActiveTab] = useState("performance");
@@ -557,4 +559,4 @@ const DriverBehaviorPage: React.FC = () => {
   );
 };
 
-export default DriverBehaviorPage;
+export default DriverFuelBehaviorPage;

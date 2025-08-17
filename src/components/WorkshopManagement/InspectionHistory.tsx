@@ -68,7 +68,7 @@ const InspectionHistory: React.FC = () => {
         snapshot.forEach((doc) => {
           inspectionData.push({
             id: doc.id,
-            ...doc.data(),
+            ...(doc.data() as Omit<Inspection, 'id'>),
           } as Inspection);
         });
 

@@ -25,6 +25,11 @@ export const useOfflineForm = (options: UseOfflineFormOptions): OfflineFormRetur
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
+  // Security: Validate collection path to prevent path traversal
+  if (!options.collectionPath || options.collectionPath.includes('..')) {
+    throw new Error("Invalid collection path");
+  }
+
   // For demo purposes, randomly simulate offline status
   const isOffline = Math.random() < 0.3;
 
@@ -35,6 +40,11 @@ export const useOfflineForm = (options: UseOfflineFormOptions): OfflineFormRetur
     try {
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Security: Validate data before submission (mock)
+      if (!data || typeof data !== 'object') {
+        throw new Error("Invalid data format");
+      }
 
       // For demo purposes, randomly simulate failure
       const simulateFailure = Math.random() < 0.1;
@@ -64,6 +74,11 @@ export const useOfflineForm = (options: UseOfflineFormOptions): OfflineFormRetur
     setError(null);
 
     try {
+      // Security: Validate ID format
+      if (!id || typeof id !== 'string' || id.length < 1) {
+        throw new Error("Invalid ID format");
+      }
+
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
 

@@ -21,6 +21,21 @@ interface StockItem {
   notes?: string;
 }
 
+// Add type helper
+const StockItemKeys: Record<keyof StockItem, boolean> = {
+  id: true,
+  name: true,
+  sku: true,
+  category: true,
+  quantity: true,
+  reorderLevel: true,
+  supplier: true,
+  location: true,
+  lastOrderDate: true,
+  unitCost: true,
+  notes: true,
+};
+
 interface Filter {
   category: string;
   supplier: string;
@@ -355,17 +370,23 @@ const StockManager: React.FC = () => {
               headers.forEach((header, index) => {
                 if (index < values.length) {
                   const value = values[index];
-                  // Convert numeric values
-                  if (
-                    header === "Quantity" ||
-                    header === "Reorder Level" ||
-                    header === "Unit Cost"
-                  ) {
-                    item[header.toLowerCase().replace(" ", "") as keyof StockItem] = parseFloat(
-                      value
-                    ) as any;
+                  const key = header.toLowerCase().replace(" ", "") as string;
+                  
+                  // Handle numeric fields explicitly
+                  if (key === "quantity" || key === "reorderlevel" || key === "unitcost") {
+                    const numValue = parseFloat(value);
+                    if (!isNaN(numValue)) {
+                      (item as any)[key] = numValue;
+                    }
+                  } else if (key === "lastorderdate") {
+                    if (value) {
+                      (item as any)[key] = value;
+                    }
                   } else {
-                    item[header.toLowerCase().replace(" ", "") as keyof StockItem] = value as any;
+                    // Handle string fields
+                    if (key in StockItemKeys) {
+                      (item as any)[key] = value;
+                    }
                   }
                 }
               });
@@ -649,7 +670,9 @@ const StockManager: React.FC = () => {
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
-            <h3 className="text-lg font-medium mb-4">Add New Inventory Item</h3>
+            <h3 className="text-lg font-medium mb-4">
+              {editingItemId ? 'Edit' : 'Add New'} Inventory Item
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -758,34 +781,23 @@ const StockManager: React.FC = () => {
                 />
               </div>
             </div>
-
             <div className="mt-6 flex justify-end gap-3">
               <Button
+                variant="secondary"
                 onClick={() => {
                   setIsAddModalOpen(false);
                   resetNewItem();
                 }}
-                variant="secondary"
               >
                 Cancel
               </Button>
-              {editingItemId ? (
-                <Button
-                  onClick={handleUpdateItem}
-                  variant="primary"
-                  disabled={!newItem.name || !newItem.sku}
-                >
-                  Save Changes
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleAddItem}
-                  variant="primary"
-                  disabled={!newItem.name || !newItem.sku}
-                >
-                  Add Item
-                </Button>
-              )}
+              <Button
+                variant="primary"
+                disabled={!newItem.name || !newItem.sku}
+                onClick={editingItemId ? handleUpdateItem : handleAddItem}
+              >
+                {editingItemId ? 'Update' : 'Add'} Item
+              </Button>
             </div>
           </div>
         </div>

@@ -1,0 +1,22 @@
+# Node modules and build output
+node_modules/
+dist/
+build/
+coverage/
+out/
+.eslintcache
+
+# IDE and environment
+.vscode/
+.idea/
+.DS_Store
+
+# Git and misc
+.git/
+*.log
+
+# Vite/Next/Firebase generated files
+.next/
+.firebase/
+.cache/
+public/

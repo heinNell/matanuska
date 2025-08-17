@@ -170,19 +170,26 @@ async function initializeFirebase() {
 }
 
 // Generic seeding function for any collection
-async function seedCollection(collectionName, data, options = {}) {
+async function seedCollection(collectionName, data, options = {
+  force: false,
+  validate: true,
+  verbose: false,
+  idGenerator: (item) =>
+    item.id ||
+    `${Object.values(item)
+      .join("_")
+      .replace(/[^a-zA-Z0-9]/g, "_")}`,
+  preprocessor: (item) => item,
+}) {
   console.log(colorize(`\n🔄 Starting to seed collection: ${collectionName}`, "cyan"));
   console.log(`Found ${data.length} items to process`);
 
   const {
-    force = false,
-    validate = true,
-    idGenerator = (item) =>
-      item.id ||
-      `${Object.values(item)
-        .join("_")
-        .replace(/[^a-zA-Z0-9]/g, "_")}`,
-    preprocessor = (item) => item,
+    force,
+    validate,
+    verbose,
+    idGenerator,
+    preprocessor,
   } = options;
 
   try {
@@ -499,6 +506,7 @@ async function main() {
         validate: options.validate,
         verbose: options.verbose,
         idGenerator: (item) => item.route.replace(/[^a-zA-Z0-9]/g, "_") + "_" + item.distance,
+        preprocessor: (item) => item,
       });
       stats.total += routeDistances.length;
       stats.success += routeStats.success;
@@ -513,6 +521,7 @@ async function main() {
         validate: options.validate,
         verbose: options.verbose,
         idGenerator: (item) => item.fleetNumber,
+        preprocessor: (item) => item,
       });
       stats.total += fleetData.length;
       stats.success += fleetStats.success;
@@ -531,6 +540,7 @@ async function main() {
           validate: options.validate,
           verbose: options.verbose,
           idGenerator: (item) => item.name.toLowerCase().replace(/[^a-z0-9]/g, ""),
+          preprocessor: (item) => item,
         }
       );
       stats.total += tyreBrands.length;
@@ -547,6 +557,7 @@ async function main() {
           validate: options.validate,
           verbose: options.verbose,
           idGenerator: (item) => item.size.replace(/[^a-z0-9]/g, ""),
+    preprocessor: (item) => item,
         }
       );
       stats.total += tyreSizes.length;
@@ -563,6 +574,7 @@ async function main() {
           const patternName = item.pattern || "standard";
           return `${item.brand.toLowerCase()}_${patternName.toLowerCase()}_${item.size.replace(/[^a-z0-9]/g, "")}`;
         },
+        preprocessor: (item) => item,
       });
       stats.total += tyrePatterns.length;
       stats.success += patternStats.success;
@@ -578,6 +590,7 @@ async function main() {
           validate: options.validate,
           verbose: options.verbose,
           idGenerator: (item) => item.vehicleType,
+    preprocessor: (item) => item,
         }
       );
       stats.total += vehiclePositions.length;
@@ -596,6 +609,7 @@ async function main() {
           validate: options.validate,
           verbose: options.verbose,
           idGenerator: (item) => `${item.StoreName}_${item.TyrePosDescription}_${item.TyreCode}`,
+          preprocessor: (item) => item, // Add default preprocessor that returns item unchanged
         }
       );
       stats.total += vehicleTyreMappings.length;
@@ -611,6 +625,7 @@ async function main() {
         validate: options.validate,
         verbose: options.verbose,
         idGenerator: (item) => item.StockCde.replace(/[^a-zA-Z0-9]/g, "_"),
+    preprocessor: (item) => item,
       });
       stats.total += stockInventory.length;
       stats.success += inventoryStats.success;

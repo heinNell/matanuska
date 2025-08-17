@@ -1,0 +1,52 @@
+# ESLint ignore for Node / Firebase Functions
+
+# Node modules (project and nested)
+node_modules/
+**/node_modules/
+
+# Build and distribution output
+dist/
+build/
+lib/
+out/
+/.next/
+
+# Generated files and caches
+generated/
+.cache/
+.parcel-cache/
+.turbo/
+
+# Coverage reports
+coverage/
+coverage/**
+
+# Firebase / Functions specific
+functions/node_modules/
+functions/lib/
+functions/dist/
+
+# Environment and secret files
+.env
+.env.*
+serviceAccountKey.json
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS / editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Compiled / minified artifacts
+*.min.js
+*.bundle.js
+
+# Test fixtures
+test/fixtures/
+fixtures/

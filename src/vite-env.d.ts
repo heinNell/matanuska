@@ -1,6 +1,12 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  // Vite's built-in env variables
+  readonly DEV: boolean
+  readonly PROD: boolean
+  readonly MODE: string
+  readonly SSR: boolean
+
   // Firebase Configuration
   readonly VITE_FIREBASE_API_KEY: string
   readonly VITE_FIREBASE_AUTH_DOMAIN: string
