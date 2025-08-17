@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 // Corrected: Import path now points to 'wialonAuth2' as specified.
 import {
   getCurrentWialonUser,
@@ -8,6 +9,7 @@ import {
 } from "../../utils/wialonAuth2";
 // Corrected: Import path now points to 'wialonConfig2' as specified.
 import { WIALON_SESSION_TOKEN, openWialonLogin } from "../../utils/wialonConfig2";
+import useWialonDiagnostics from "../../hooks/useWialonDiagnostics";
 
 // Use the token from environment variables or fallback to default
 const DEFAULT_TOKEN =
@@ -19,6 +21,8 @@ export const WialonLoginPanel: React.FC = () => {
   const [log, setLog] = useState<string[]>([]);
   const [user, setUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { diagnoseWialon } = useWialonDiagnostics();
+  const navigate = useNavigate();
 
   // Load Wialon SDK on component mount
   useEffect(() => {
@@ -71,6 +75,17 @@ export const WialonLoginPanel: React.FC = () => {
     } catch (err: any) {
       // Add type annotation for err
       appendLog(`Login failed: ${err.message || err}`);
+      appendLog('Running diagnostics...');
+      
+      try {
+        await diagnoseWialon({ 
+          redirect: false, 
+          silent: true 
+        });
+        appendLog('Diagnostics complete. Check the diagnostics page for results.');
+      } catch (diagError) {
+        appendLog('Failed to run diagnostics');
+      }
     } finally {
       setIsLoading(false);
     }

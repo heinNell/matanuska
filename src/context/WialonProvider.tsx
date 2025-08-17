@@ -233,6 +233,9 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
         logout,
         refreshUnits,
         setToken,
+        runDiagnostics,
+        diagnosticResults,
+        isDiagnosticRunning
       }}
     >
       {children}
