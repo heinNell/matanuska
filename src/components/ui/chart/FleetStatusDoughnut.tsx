@@ -1,19 +1,24 @@
-import { ArcElement, Chart as ChartJS, Legend, Tooltip } from "chart.js";
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from "chart.js"; // FIX: Correct path is 'chart.js'
 import { Doughnut } from "react-chartjs-2";
 import { useFleetAnalytics } from "../../../context/FleetAnalyticsContext";
 
-// Register ChartJS components
+// Register Chart.js components globally
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export function FleetStatusDoughnut() {
   const { fleetStatus, isLoading } = useFleetAnalytics();
+
+  // Safe fallback in case fleetStatus is undefined
+  const operational = fleetStatus?.operational ?? 0;
+  const maintenance = fleetStatus?.maintenance ?? 0;
+  const percentOperational = fleetStatus?.percentOperational ?? 0;
 
   const data = {
     labels: ["Operational", "Under Maintenance"],
     datasets: [
       {
         label: "Vehicles",
-        data: [fleetStatus.operational, fleetStatus.maintenance],
+        data: [operational, maintenance],
         backgroundColor: ["#2563eb", "#ef4444"],
         borderWidth: 1,
       },
@@ -21,7 +26,11 @@ export function FleetStatusDoughnut() {
   };
 
   if (isLoading) {
-    return <div className="w-full h-48 flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="w-full h-48 flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -35,15 +44,21 @@ export function FleetStatusDoughnut() {
               display: true,
               position: "bottom" as const,
             },
+            tooltip: {
+              callbacks: {
+                label: (context) =>
+                  `${context.label}: ${context.raw} vehicles`,
+              },
+            },
           },
           cutout: "70%",
         }}
       />
       <div className="text-center mt-2 text-lg font-semibold">
-        {fleetStatus.percentOperational}% Operational
+        {percentOperational}% Operational
       </div>
       <div className="text-xs text-gray-500">
-        {fleetStatus.operational} vehicles, {fleetStatus.maintenance} under maintenance
+        {operational} vehicles, {maintenance} under maintenance
       </div>
     </div>
   );

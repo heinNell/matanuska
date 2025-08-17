@@ -2,6 +2,7 @@
 import { DieselConsumptionRecord as BaseDieselConsumptionRecord } from ".";
 
 export interface ExtendedDieselConsumptionRecord extends BaseDieselConsumptionRecord {
+  id: string; // Unique identifier for the record
   // Additional properties used in DieselDashboard but not in the base type
   vehicleId?: string; // Used in place of fleetNumber
   timestamp?: string; // Used in place of date

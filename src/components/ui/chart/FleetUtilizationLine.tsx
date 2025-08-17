@@ -1,28 +1,31 @@
 import {
-  CategoryScale,
   Chart as ChartJS,
-  Legend,
+  CategoryScale,
   LinearScale,
-  LineElement,
   PointElement,
+  LineElement,
   Title,
   Tooltip,
+  Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { useFleetAnalytics } from "../../../context/FleetAnalyticsContext";
 
-// Register ChartJS components
+// Register ChartJS components ONCE globally
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export function FleetUtilizationLine() {
   const { fleetUtilization, isLoading } = useFleetAnalytics();
 
+  // Safety fallback to avoid crashing if data is undefined
+  const safeUtilization = Array.isArray(fleetUtilization) ? fleetUtilization : [];
+
   const data = {
-    labels: fleetUtilization.map((item) => item.month),
+    labels: safeUtilization.map((item) => item.month),
     datasets: [
       {
         label: "Utilization %",
-        data: fleetUtilization.map((item) => item.utilization),
+        data: safeUtilization.map((item) => item.utilization),
         fill: false,
         borderColor: "#2563eb",
         backgroundColor: "#2563eb",
@@ -51,7 +54,9 @@ export function FleetUtilizationLine() {
             },
             tooltip: {
               callbacks: {
-                label: (context) => `Utilization: ${context.raw}%`,
+                label: function (context) {
+                  return `Utilization: ${context.raw}%`;
+                },
               },
             },
           },

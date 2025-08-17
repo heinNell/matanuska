@@ -1,12 +1,12 @@
 import {
-  CategoryScale,
   Chart as ChartJS,
-  Legend,
+  CategoryScale,
   LinearScale,
-  LineElement,
   PointElement,
+  LineElement,
   Title,
   Tooltip,
+  Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 
@@ -42,7 +42,7 @@ export function PerformanceLineChart() {
           responsive: true,
           plugins: {
             legend: {
-              position: "top",
+              position: "top" as const,
             },
             title: {
               display: true,

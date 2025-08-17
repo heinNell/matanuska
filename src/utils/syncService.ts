@@ -13,7 +13,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { type ClientOptions } from "openai/index.js";
+import { type ClientOptions } from "openai/index";
 import { db } from "../firebase";
 import {
   type ActionItem,
