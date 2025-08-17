@@ -1,6 +1,6 @@
 // src/components/workshop/InspectionItemCard.tsx
 import React from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 
 interface InspectionItemCardProps {
   id: string;

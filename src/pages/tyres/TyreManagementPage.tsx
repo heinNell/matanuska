@@ -22,7 +22,7 @@ import TyreFormModal from "../../components/Models/Tyre/TyreFormModal";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 // Using the Tyre type directly from tyreData.ts instead of TyreModel
-import { useTyreReferenceData } from "@/context/TyreReferenceDataContext";
+import { useTyreReferenceData } from "../../context/TyreReferenceDataContext";
 // Renamed import to avoid conflict with local declaration
 // Removed unused adaptTyreFormat import after local adapter implementation
 

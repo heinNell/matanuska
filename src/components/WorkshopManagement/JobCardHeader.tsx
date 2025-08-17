@@ -1,7 +1,7 @@
 import { AlertTriangle, Calendar, Clock, Truck, User } from "lucide-react";
 import React from "react";
 import { formatDate } from "../../utils/helpers";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 
 interface JobCardHeaderProps {
   jobCard: {

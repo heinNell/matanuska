@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Filter, PlusCircle, Search, User } from "lucide-react";
 import React, { useState } from "react";
 import DriverForm from "../../components/forms/driver/DriverForm";

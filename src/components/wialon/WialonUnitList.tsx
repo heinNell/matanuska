@@ -1,4 +1,4 @@
-import UnitsTable from "@/components/ui/UnitsTable";
+import UnitsTable from "../../components/ui/UnitsTable";
 import React from "react";
 
 export const WialonUnitList: React.FC = () => {

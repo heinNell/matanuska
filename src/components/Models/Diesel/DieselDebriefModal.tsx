@@ -4,7 +4,7 @@ import React, { useState } from "react";
 // ─── Types ───────────────────────────────────────────────────────
 
 // ─── UI Components ───────────────────────────────────────────────
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import Card, { CardContent } from "../../ui/Card";
 import Modal from "../../ui/Modal";
 

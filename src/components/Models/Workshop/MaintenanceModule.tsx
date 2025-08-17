@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { AlertTriangle, Plus, RefreshCw, Wrench } from "lucide-react";
 import React, { useState } from "react";
 import Card, { CardContent, CardHeader } from "../../ui/Card";

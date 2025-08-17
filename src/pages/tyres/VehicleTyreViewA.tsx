@@ -1,15 +1,15 @@
-import { VehicleSelector } from "@/components/common/VehicleSelector";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { useTyres } from "@/context/TyreContext";
+import { VehicleSelector } from "../../components/common/VehicleSelector";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { useTyres } from "../../context/TyreContext";
 import {
   getTyreConditionColor,
   getTyreStatusColor,
   getVehicleTyreConfiguration,
-} from "@/data/tyreData";
-import { FLEET_VEHICLES } from "@/data/vehicles";
-import type { FleetTyreMapping, TyreAllocation } from "@/types/tyre";
+} from "../../data/tyreData";
+import { FLEET_VEHICLES } from "../../data/vehicles";
+import type { FleetTyreMapping, TyreAllocation } from "../../types/tyre";
 import { CircleDot, Eye, Wrench } from "lucide-react";
 import React, { useEffect, useState } from "react";
 

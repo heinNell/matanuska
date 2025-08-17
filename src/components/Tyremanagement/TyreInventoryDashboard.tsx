@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { BarChart, Download, Filter, PieChart, Plus, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../ui/Card";

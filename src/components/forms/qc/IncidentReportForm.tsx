@@ -1,6 +1,6 @@
 import { AlertTriangle, Calendar, Cloud, Map, Save, Truck, Upload } from "lucide-react";
 import React, { useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { Card, CardContent } from "../../ui/Card";
 
 interface IncidentReportFormProps {

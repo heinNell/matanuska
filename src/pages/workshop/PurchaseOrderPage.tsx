@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui";
+import { Card, CardContent } from "../../components/ui";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PurchaseOrderModule from "../../components/Models/Workshop/PurchaseOrderModule";

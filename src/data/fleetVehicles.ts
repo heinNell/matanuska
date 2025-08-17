@@ -1,4 +1,4 @@
-import { Vehicle } from "@/types/vehicle";
+import { Vehicle } from "../types/vehicle";
 
 export const FLEET_VEHICLES: Vehicle[] = [
   // Heavy Trucks - H Series

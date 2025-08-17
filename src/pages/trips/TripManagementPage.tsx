@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import Modal from "@/components/ui/Modal";
+import { Button } from "../../components/ui/Button";
+import Card from "../../components/ui/Card";
+import Modal from "../../components/ui/Modal";
 import { addDoc, collection } from "firebase/firestore";
 import { PlusCircle, Truck } from "lucide-react";
 import React, { useState } from "react";

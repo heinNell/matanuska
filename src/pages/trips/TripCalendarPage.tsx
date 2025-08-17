@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
-import CardContent from "@/components/ui/CardContent";
-import { db } from "@/firebase";
+import { Button } from "../../components/ui/Button";
+import Card from "../../components/ui/Card";
+import CardContent from "../../components/ui/CardContent";
+import { db } from "../../firebase";
 import { addWeeks, endOfWeek, format, isValid, parseISO, startOfWeek, subWeeks } from "date-fns";
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import {

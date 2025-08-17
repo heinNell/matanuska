@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useAppContext } from "../../../context/AppContext";
 
 // ─── UI Components ───────────────────────────────────────────────
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import Modal from "../../ui/Modal";
 
 // ─── Icons ───────────────────────────────────────────────────────

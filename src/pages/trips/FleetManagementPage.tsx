@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
 import { ClipboardList, Map, Truck, User } from "lucide-react";
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";

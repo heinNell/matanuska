@@ -9,7 +9,7 @@ import {
   setDoc,
   increment as fsIncrement,
 } from "firebase/firestore";
-import { db as appDb } from "@/firebase";
+import { db as appDb } from "../firebase";
 
 // If you already defined this elsewhere, remove this local interface and import it.
 export interface InventoryItem {

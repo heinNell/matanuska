@@ -1,14 +1,14 @@
-import VehiclePositionDiagram from "@/components/Tyremanagement/VehiclePositionDiagram";
-import { Button } from "@/components/ui/Button";
-import { Input, Select, TextArea } from "@/components/ui/FormElements";
-import Modal from "@/components/ui/Modal";
-import { useTyreReferenceData } from "@/context/TyreReferenceDataContext";
+import VehiclePositionDiagram from "../../../components/Tyremanagement/VehiclePositionDiagram";
+import { Button } from "../../../components/ui/Button";
+import { Input, Select, TextArea } from "../../../components/ui/FormElements";
+import Modal from "../../../components/ui/Modal";
+import { useTyreReferenceData } from "../../../context/TyreReferenceDataContext";
 import { Timestamp } from "firebase/firestore";
 import { ChevronRight, Save, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 // *** HIERDIE IS JOU ENIGSTE TYRE DATA BRON ***
-import type { Tyre } from "@/data/tyreData";
+import type { Tyre } from "../../../data/tyreData";
 import {
   TyreConditionStatus, // <-- Import TyreStatus
   TyreMountStatus, // <-- Import TyreConditionStatus
@@ -16,7 +16,7 @@ import {
   TyreStoreLocation, // <-- Import TyreMountStatus
   TyreType,
   tyreTypes,
-} from "@/data/tyreData";
+} from "../../../data/tyreData";
 
 interface TyreFormModalProps {
   isOpen: boolean;

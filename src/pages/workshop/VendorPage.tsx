@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui";
+import { Card, CardContent } from "../../components/ui";
 import { ArrowDownToLine, ArrowUpFromLine, Plus, Search } from "lucide-react";
 import Papa from "papaparse";
 import React, { useEffect, useState } from "react";

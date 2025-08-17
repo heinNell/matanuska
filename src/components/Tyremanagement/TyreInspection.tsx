@@ -5,7 +5,7 @@ import { Tyre } from "../../types/tyre"; // Import Tyre from types/tyre to match
 import { VehicleSelector } from "../common/VehicleSelector";
 
 // Import tyre reference data
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import {
   AlertTriangle,
   Camera,

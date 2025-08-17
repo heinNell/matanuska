@@ -1,7 +1,7 @@
-import useWialonGeofences from "@/hooks/useWialonGeofences";
-import { useWialonResources } from "@/hooks/useWialonResources";
-import { useWialonSdk } from "@/hooks/useWialonSdk";
-import { useWialonSession } from "@/hooks/useWialonSession";
+import useWialonGeofences from "../../hooks/useWialonGeofences";
+import { useWialonResources } from "../../hooks/useWialonResources";
+import { useWialonSdk } from "../../hooks/useWialonSdk";
+import { useWialonSession } from "../../hooks/useWialonSession";
 import React, { useState } from "react";
 import { Circle, MapContainer, Polygon, Polyline, TileLayer, useMapEvents } from "react-leaflet";
 

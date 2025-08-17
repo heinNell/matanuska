@@ -6,7 +6,7 @@ import { Trip, TRIP_DELETION_REASONS, TripDeletionRecord } from "../../../types"
 import { calculateTotalCosts, formatCurrency } from "../../../utils/helpers";
 
 // ─── UI Components ───────────────────────────────────────────────
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { Select, Textarea } from "../../ui/FormElements";
 import Modal from "../../ui/Modal";
 

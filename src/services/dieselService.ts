@@ -15,10 +15,10 @@ import {
   Timestamp,
   orderBy,
 } from "firebase/firestore";
-import type { DieselConsumptionRecord, DieselNorm } from "@/types/diesel";
+import type { DieselConsumptionRecord, DieselNorm } from "../types/diesel";
 
 // ❌ REMOVE: never import UI components in a service layer
-// import DieselNormsModal from "@/components/Models/Diesel/DieselNormsModal";
+// import DieselNormsModal from "../components/Models/Diesel/DieselNormsModal";
 
 // Collection references
 const DIESEL_COLLECTION = "dieselConsumption";

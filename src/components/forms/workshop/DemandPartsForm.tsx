@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { File, Link2, Plus, Save, Trash, Truck, Wrench } from "lucide-react";
 import React, { useState } from "react";
 import { Card, CardContent } from "../../ui/Card";

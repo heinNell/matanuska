@@ -1,7 +1,7 @@
-import { useWialonDrivers } from "@/hooks/useWialonDrivers";
-import { useWialonResources } from "@/hooks/useWialonResources";
-import { useWialonSdk } from "@/hooks/useWialonSdk";
-import { useWialonSession } from "@/hooks/useWialonSession";
+import { useWialonDrivers } from "../../hooks/useWialonDrivers";
+import { useWialonResources } from "../../hooks/useWialonResources";
+import { useWialonSdk } from "../../hooks/useWialonSdk";
+import { useWialonSession } from "../../hooks/useWialonSession";
 import React, { useState } from "react";
 
 export const WialonDriverManager: React.FC = () => {

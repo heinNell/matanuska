@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { FileText, Send, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { formatCurrency } from "../../../utils/helpers";

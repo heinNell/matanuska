@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { Check, FileText, Package, Plus, RefreshCw, ShoppingCart, Store } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";

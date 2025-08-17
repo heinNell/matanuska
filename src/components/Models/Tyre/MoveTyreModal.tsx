@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Modal from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
-import { Select, Input } from '@/components/ui/FormElements';
-import type { StockEntry, TyreStore } from '@/types/tyre';
-import { useTyreStores } from '@/context/TyreStoresContext';
+import Modal from '../../../components/ui/Modal';
+import { Button } from '../../../components/ui/Button';
+import { Select, Input } from '../../../components/ui/FormElements';
+import type { StockEntry, TyreStore } from '../../../types/tyre';
+import { useTyreStores } from '../../../context/TyreStoresContext';
 
 interface MoveTyreModalProps {
   isOpen: boolean;

@@ -7,7 +7,7 @@ import { Trip } from "../../types";
 
 // ─── UI Components ───────────────────────────────────────────────
 import Card, { CardContent, CardHeader } from "../ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Input, Select } from "../ui/FormElements";
 
 // ─── Icons ───────────────────────────────────────────────────────

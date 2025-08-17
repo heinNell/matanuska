@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
-import SyncIndicator from "@/components/ui/SyncIndicator";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent } from "../../components/ui/Card";
+import SyncIndicator from "../../components/ui/SyncIndicator";
 import { Calendar, Download, Filter, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 

@@ -1,6 +1,6 @@
-import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui";
-import { Badge } from "@/components/ui/badge";
-import { parseInspectionDefects } from "@/utils/inspectionUtils";
+import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui";
+import { Badge } from "../../components/ui/badge";
+import { parseInspectionDefects } from "../../utils/inspectionUtils";
 import { FileWarning, Search } from "lucide-react";
 import { useState } from "react";
 import { DefectItemModal } from "../../components/Models/Workshop/DefectItemModal";

@@ -1,8 +1,8 @@
 // @ts-nocheck
 // src/components/Tyres/TyreIntegration.tsx
-import { Button } from "@/components/ui";
-import { useTyreAssignment } from "@/hooks/useTyreAssignments";
-import { useTyreStock } from "@/hooks/useTyreStock";
+import { Button } from "../../components/ui";
+import { useTyreAssignment } from "../../hooks/useTyreAssignments";
+import { useTyreStock } from "../../hooks/useTyreStock";
 import React, { useState } from "react";
 import { TyreInspection, useTyreInspections } from "../../hooks/useTyreInspections";
 import { useTyres } from "../../hooks/useTyres";

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Card, { CardContent, CardHeader } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
 import { MessageSquare, Edit, Save, X, User, Clock } from "lucide-react";
-import { formatDateTime } from "@/utils/helpers";
+import { formatDateTime } from "../../utils/helpers";
 
 interface JobCardNotesProps {
   notes: {

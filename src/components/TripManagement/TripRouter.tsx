@@ -6,7 +6,7 @@ import CompletedTrips from "../../pages/trips/CompletedTrips";
 import TripManagement from "../../pages/trips/TripManagementPage";
 import WialonMapComponent from "../../pages/wialon/WialonMapComponent";
 import TripForm from "../forms/trips/TripForm";
-import CompletedTripEditModal from "@/components/Models/Trips/CompletedTripEditModal";
+import CompletedTripEditModal from "../../components/Models/Trips/CompletedTripEditModal";
 
 const TripRouter: React.FC = () => {
   const defaultCurrency: SupportedCurrency = "USD";

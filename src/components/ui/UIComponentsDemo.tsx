@@ -3,7 +3,7 @@ import {
   ProgressStepper,
   StatsCardGroup,
   VerticalStepper,
-} from "@/components/ui";
+} from "../../components/ui";
 import { useState } from "react";
 
 const UIComponentsDemo = () => {

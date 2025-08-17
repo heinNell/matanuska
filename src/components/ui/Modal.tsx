@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 
 type MaxWidth = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 

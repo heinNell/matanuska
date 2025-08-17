@@ -7,14 +7,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/consolidated/Card";
+} from "../../../components/ui/consolidated/Card";
 
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart/recharts/chart-container";
+} from "../../../components/ui/chart/recharts/chart-container";
 
 const chartData = [
   { date: "2025-01-01", idleTime: 222, activeTime: 150 },

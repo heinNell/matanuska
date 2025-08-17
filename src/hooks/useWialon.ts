@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getEnvVar } from '../utils/envUtils'; // Assuming envUtils.ts exists and exports getEnvVar
-import { WialonUnit } from "@/types/wialon-types";
+import { WialonUnit } from "../types/wialon-types";
 
 
 // After (if only WialonCore and WialonItem were unused):

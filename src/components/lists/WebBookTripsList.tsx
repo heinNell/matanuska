@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Calendar, CheckCircle, Clock, DollarSign, Edit, MapPin, Truck, User } from "lucide-react";
 import { useState } from "react";
 import { useAppContext } from "../../context/AppContext";

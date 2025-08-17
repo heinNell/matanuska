@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import Input from "../../components/ui/Input";

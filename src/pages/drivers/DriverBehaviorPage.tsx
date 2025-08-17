@@ -1,5 +1,5 @@
-import { driverBehaviorService } from "@/api/driverBehaviorService";
-import { Button } from "@/components/ui/Button";
+import { driverBehaviorService } from "../../api/driverBehaviorService";
+import { Button } from "../../components/ui/Button";
 import {
   AlertTriangle,
   BookOpen,

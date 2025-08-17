@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Copy, Edit, Plus, Search, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { useAppContext } from "../../context/AppContext";

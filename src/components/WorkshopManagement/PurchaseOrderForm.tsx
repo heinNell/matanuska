@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { format } from "date-fns";
 import { Check, Download, Plus, Trash2, X } from "lucide-react";
 import React, { useEffect, useState } from "react";

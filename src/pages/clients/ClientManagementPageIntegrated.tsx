@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Building, Filter, PlusCircle, Search } from "lucide-react";
 import React, { useState } from "react";
 import ClientForm from "../../components/forms/client/ClientForm";

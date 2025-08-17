@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useFleetList, FleetOption } from '@/hooks/useFleetList';
+import { useFleetList, FleetOption } from '../../hooks/useFleetList';
 
 interface FleetSelectorProps {
   value: string;

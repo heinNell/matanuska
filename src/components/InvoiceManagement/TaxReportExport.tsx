@@ -2,7 +2,7 @@ import React from "react";
 import { useAppContext } from "../../context/AppContext";
 import Card, { CardContent, CardHeader } from "../../components/ui/Card";
 import { FileText, Download, Settings, Filter } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 
 const TaxReportExport: React.FC = () => {
   const { isLoading } = useAppContext();

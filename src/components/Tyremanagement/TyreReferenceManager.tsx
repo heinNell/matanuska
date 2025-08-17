@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Edit, Plus, RefreshCcw, Save, Trash, X } from "lucide-react";
 import React, { useState } from "react";
 import { useTyreReferenceData } from "../../context/TyreReferenceDataContext";

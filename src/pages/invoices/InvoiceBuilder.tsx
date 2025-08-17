@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "../../components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import SyncIndicator from "../../components/ui/SyncIndicator";
 import {
   Save,

@@ -2,10 +2,10 @@ import {
   collection, doc, onSnapshot, query, where, orderBy,
   FirestoreDataConverter, DocumentData
 } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db } from "../firebase";
 import {
   JobCard, JobCardTask, Note, TaskHistoryEntry, AssignedPart
-} from "@/types/jobCard";
+} from "../types/jobCard";
 
 // Lightweight converters so onSnapshot returns typed objects
 const as = <T>(): FirestoreDataConverter<T> => ({

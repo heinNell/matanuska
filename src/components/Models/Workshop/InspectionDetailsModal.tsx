@@ -5,7 +5,7 @@ import {
   CardContent,
   // If you aren’t using these, don’t import them from your barrel:
   // Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui";
+} from "../../../components/ui";
 import {
   FileWarning,
   CheckCircle,

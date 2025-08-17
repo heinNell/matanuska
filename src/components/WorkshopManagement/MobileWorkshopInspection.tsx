@@ -1,16 +1,16 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/textarea";
-import { mobileFirebaseConfig } from "@/config/mobileConfig";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import { Textarea } from "../../components/ui/textarea";
+import { mobileFirebaseConfig } from "../../config/mobileConfig";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import {
   inspectionTemplates,
   type InspectionItem,
   type InspectionTemplate,
-} from "@/data/inspectionTemplates";
-import { useToast } from "@/hooks/use-toast";
-import { useCapacitor } from "@/hooks/useCapacitor";
+} from "../../data/inspectionTemplates";
+import { useToast } from "../../hooks/use-toast";
+import { useCapacitor } from "../../hooks/useCapacitor";
 import {
   AlertTriangle,
   Calendar,

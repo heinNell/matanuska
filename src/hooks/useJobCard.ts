@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { JobCard, JobCardTask, Note, TaskHistoryEntry, AssignedPart } from "@/types/jobCard";
+import { JobCard, JobCardTask, Note, TaskHistoryEntry, AssignedPart } from "../types/jobCard";
 import {
   watchJobCard,
   watchTasks,
   watchNotes,
   watchTaskHistory,
   watchAssignedParts,
-} from "@/services/jobCardService";
+} from "../services/jobCardService";
 
 export function useJobCard(jobCardId: string) {
   const [jobCard, setJobCard] = useState<JobCard | null>(null);

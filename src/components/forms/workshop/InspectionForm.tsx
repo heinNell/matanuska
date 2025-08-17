@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { AlertTriangle, ArrowLeft, CheckCircle, Clipboard, FileText, Save } from "lucide-react";
 import React, { useState } from "react";
 import { inspectionTemplates } from "../../../data/inspectionTemplates";

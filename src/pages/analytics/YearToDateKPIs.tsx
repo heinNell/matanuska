@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/Button";
-import Card, { CardContent, CardHeader } from "@/components/ui/Card";
-import { Input } from "@/components/ui/FormElements";
+import { Button } from "../../components/ui/Button";
+import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Input } from "../../components/ui/FormElements";
 import {
   Activity,
   AlertTriangle,

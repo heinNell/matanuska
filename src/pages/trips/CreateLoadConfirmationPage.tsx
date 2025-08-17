@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader } from "@/components/ui";
+import { Button, Card, CardContent, CardHeader } from "../../components/ui";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";

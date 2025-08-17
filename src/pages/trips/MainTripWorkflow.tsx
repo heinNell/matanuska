@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 import { useState } from "react";
 import CostForm from "../../components/forms/cost/CostForm";
 import { TripForm } from "../../components/forms/trips/TripForm";

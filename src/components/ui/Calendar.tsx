@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Card, { CardContent, CardHeader } from "../../components/ui/Card";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Search } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { useAppContext } from "../../context/AppContext";
 import SyncIndicator from "../../components/ui/SyncIndicator";
 

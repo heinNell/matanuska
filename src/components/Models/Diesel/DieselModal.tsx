@@ -1,10 +1,10 @@
 // src/components/Models/Diesel/DieselModal.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { addDieselRecord, updateDieselRecord } from "@/services/dieselService";
-import type { DieselConsumptionRecord } from "@/types/diesel";
+import { addDieselRecord, updateDieselRecord } from "../../../services/dieselService";
+import type { DieselConsumptionRecord } from "../../../types/diesel";
 import { Timestamp } from "firebase/firestore";
 // If you have a UI kit barrel, swap these for your components
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 
 type Props = {
   open: boolean;

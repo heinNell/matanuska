@@ -1,4 +1,4 @@
-import { useFleetList, FleetOption } from '@/hooks/useFleetList';
+import { useFleetList, FleetOption } from '../../hooks/useFleetList';
 import React from 'react';
 
 export interface VehicleSelectorProps {

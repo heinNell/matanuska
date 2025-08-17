@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SupportedCurrency } from "../../lib/currency";

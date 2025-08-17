@@ -1,8 +1,8 @@
-import VehiclePositionDiagram from "@/components/Tyremanagement/VehiclePositionDiagram";
-import { Button } from "@/components/ui/Button";
-import { Input, Select, Textarea } from "@/components/ui/FormElements";
-import { useTyreReferenceData } from "@/context/TyreReferenceDataContext";
-import { Tyre, TyreStoreLocation } from "@/types/TyreModel";
+import VehiclePositionDiagram from "../../../components/Tyremanagement/VehiclePositionDiagram";
+import { Button } from "../../../components/ui/Button";
+import { Input, Select, Textarea } from "../../../components/ui/FormElements";
+import { useTyreReferenceData } from "../../../context/TyreReferenceDataContext";
+import { Tyre, TyreStoreLocation } from "../../../types/TyreModel";
 import React, { useEffect, useState } from "react";
 
 interface TyreFormProps {

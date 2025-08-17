@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { AlertCircle, CheckCircle, Clock, Users } from "lucide-react";
 import React from "react";
 import Card, { CardContent, CardHeader } from "../../components/ui/Card";

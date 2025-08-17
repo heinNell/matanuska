@@ -3,7 +3,7 @@
  * Specifically designed to work with AVL unit data for vehicles with fuel probes
  */
 
-import { getWialonSession } from "@/api/wialon";
+import { getWialonSession } from "../api/wialon";
 
 // Define interfaces for sensor data
 export interface WialonSensor {

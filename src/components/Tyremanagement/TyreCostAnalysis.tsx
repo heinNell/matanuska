@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Select } from "@/components/ui/FormElements";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Select } from "../../components/ui/FormElements";
+import { Badge } from "../../components/ui/badge";
 import {
   Table,
   TableBody,
@@ -9,8 +9,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { SAMPLE_TYRES, TYRE_BRANDS, TYRE_PATTERNS, Tyre } from "@/data/tyreData";
+} from "../../components/ui/table";
+import { SAMPLE_TYRES, TYRE_BRANDS, TYRE_PATTERNS, Tyre } from "../../data/tyreData";
 import { BarChart3, DollarSign, Download, TrendingDown, TrendingUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -61,7 +61,7 @@ export const TyreCostAnalysis: React.FC<TyreCostAnalysisProps> = ({ tyreData }) 
     // Log expected vs actual names
     console.log("Import names check:");
     try {
-      const dataModule = require("@/data/tyreData");
+      const dataModule = require("../../data/tyreData");
       console.log("Available exports:", Object.keys(dataModule));
     } catch (error) {
       console.error("Module inspection error:", error);

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { BarChart, Download, Filter, PieChart, Plus, Search } from "lucide-react";
 import React, { useState } from "react";
 import { Card, CardContent } from "../../components/ui/Card";
@@ -22,7 +22,7 @@ interface TyreRecord {
   pattern?: string;
 }
 
-import { useTyreInventory } from "@/hooks/useTyreInventory";
+import { useTyreInventory } from "../../hooks/useTyreInventory";
 
 interface TyreInventoryDashboardProps {
   onAddTyre?: () => void;

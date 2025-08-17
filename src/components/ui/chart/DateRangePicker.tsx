@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/consolidated/Card";
+import { Button } from "../../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/consolidated/Card";
 import { addMonths, format, subMonths } from "date-fns";
 
 // Using native select instead of custom components

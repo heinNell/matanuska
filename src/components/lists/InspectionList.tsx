@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { collection, getDocs } from "firebase/firestore";
 import { AlertTriangle, CheckCircle, Clock, Edit, Eye } from "lucide-react";
 import React, { useEffect, useState } from "react";

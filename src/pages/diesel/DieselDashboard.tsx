@@ -1,9 +1,9 @@
-import DieselEditModal from "@/components/Models/Diesel/DieselEditModal";
-import DieselImportModal from "@/components/Models/Diesel/DieselImportModal";
-import DieselNormsModal from "@/components/Models/Diesel/DieselNormsModal";
-import EnhancedDieselDebriefModal from "@/components/Models/Diesel/EnhancedDieselDebriefModal";
-import ManualDieselEntryModal from "@/components/Models/Diesel/ManualDieselEntryModal";
-import TripLinkageModal from "@/components/Models/Trips/TripLinkageModal";
+import DieselEditModal from "../../components/Models/Diesel/DieselEditModal";
+import DieselImportModal from "../../components/Models/Diesel/DieselImportModal";
+import DieselNormsModal from "../../components/Models/Diesel/DieselNormsModal";
+import EnhancedDieselDebriefModal from "../../components/Models/Diesel/EnhancedDieselDebriefModal";
+import ManualDieselEntryModal from "../../components/Models/Diesel/ManualDieselEntryModal";
+import TripLinkageModal from "../../components/Models/Trips/TripLinkageModal";
 import { Fuel } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import DieselDashboardFilters from "../../components/diesel/DieselDashboardFilters";
@@ -12,7 +12,7 @@ import DieselDashboardSummary from "../../components/diesel/DieselDashboardSumma
 import DieselRecordsCards from "../../components/diesel/DieselRecordsCards";
 import DieselRecordsTable from "../../components/diesel/DieselRecordsTable";
 import AutomaticProbeVerificationModal from "../../components/Models/Diesel/AutomaticProbeVerificationModal";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { useAppContext } from "../../context/AppContext";
 import { useSyncContext } from "../../context/SyncContext";

@@ -1,6 +1,6 @@
-import type { StockEntry, TyreStore } from "@/types/tyre";
-import { addTyreStore, listenToTyreStores, updateTyreStoreEntry } from "@/types/tyreStores";
-import { firestore } from "@/utils/firebaseConnectionHandler";
+import type { StockEntry, TyreStore } from "../types/tyre";
+import { addTyreStore, listenToTyreStores, updateTyreStoreEntry } from "../types/tyreStores";
+import { firestore } from "../utils/firebaseConnectionHandler";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 

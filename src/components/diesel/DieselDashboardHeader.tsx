@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Plus, RefreshCw, Upload } from "lucide-react";
 import React from "react";
 import SyncIndicator from "../ui/SyncIndicator";

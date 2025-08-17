@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { AlertTriangle, CheckCircle, Info, Shield, TrendingDown, TrendingUp } from "lucide-react";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";

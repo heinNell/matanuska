@@ -5,7 +5,7 @@
  * to prevent import casing issues across the application.
  *
  * The barrel exports allow for cleaner imports in other files:
- * import { Button, Card, Input } from '@/components/ui';
+ * import { Button, Card, Input } from '../../components/ui';
  */
 
 // -------------------------

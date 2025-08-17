@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Download } from "lucide-react";
 import React from "react";
 import { formatCurrency } from "../../utils/helpers";

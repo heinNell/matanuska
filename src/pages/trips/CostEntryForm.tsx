@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/Button";
-import { FileUpload, Input, Select, TextArea } from "@/components/ui/FormElements";
+import { Button } from "../../components/ui/Button";
+import { FileUpload, Input, Select, TextArea } from "../../components/ui/FormElements";
 import { AlertTriangle, Flag, Save, Upload, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { COST_CATEGORIES, CostEntry } from "../../types";

@@ -1,5 +1,5 @@
-import { Tyre, TYRE_BRANDS, TYRE_PATTERNS, TYRE_SIZES } from "@/data/tyreData";
-import { getBestTyres, getTyrePerformanceStats, RankedTyre } from "@/utils/tyreAnalytics";
+import { Tyre, TYRE_BRANDS, TYRE_PATTERNS, TYRE_SIZES } from "../../data/tyreData";
+import { getBestTyres, getTyrePerformanceStats, RankedTyre } from "../../utils/tyreAnalytics";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/Tabs";

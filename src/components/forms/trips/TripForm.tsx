@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useWialonUnits } from "../../../hooks/useWialonUnits";
 import { CLIENTS, DRIVERS, Trip } from "../../../types/index";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { Input, Select, TextArea } from "../../ui/FormElements";
 
 // Using the TripFormData type from types directory

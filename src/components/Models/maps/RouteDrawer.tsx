@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
-import { Location, RouteOptions } from '@/types/mapTypes';
+import { Location, RouteOptions } from '../../../types/mapTypes';
 
 interface RouteDrawerProps {
   origin: Location;

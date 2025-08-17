@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SignaturePad from "react-signature-canvas";
 
 // 1. Import your custom useCapacitor hook (update path as needed)
-import { useCapacitor } from "@/hooks/useCapacitor"; // <-- Update if needed
+import { useCapacitor } from "../../hooks/useCapacitor"; // <-- Update if needed
 
 interface TyreInspectionFormProps {
   fleetNumber?: string;

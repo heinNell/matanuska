@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { db } from "@/firebase"; // <- adjust if your path differs
+import { db } from "../../firebase"; // <- adjust if your path differs
 import {
   Timestamp,
   collection,

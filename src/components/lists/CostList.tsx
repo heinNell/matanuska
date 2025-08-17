@@ -2,7 +2,7 @@ import React from "react";
 import { CostEntry } from "../../types";
 import { formatCurrency } from "../../utils/formatters";
 import { PencilIcon, TrashIcon, FileIcon } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 
 interface CostListProps {
   costs: CostEntry[];

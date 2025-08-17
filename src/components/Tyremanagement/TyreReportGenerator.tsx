@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Select } from "@/components/ui/FormElements";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Select } from "../../components/ui/FormElements";
 import { Download, FileText } from "lucide-react";
 import React, { useState } from "react";
 

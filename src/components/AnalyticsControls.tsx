@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/consolidated/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/consolidated/Card";
 import { Checkbox } from "../components/ui/checkbox";
-import { useFleetAnalytics } from "@/context/FleetAnalyticsContext";
+import { useFleetAnalytics } from "../context/FleetAnalyticsContext";
 
 const dataPoints = [
   { id: "fuelConsumption", label: "Fuel Consumption", color: "#8884d8" },

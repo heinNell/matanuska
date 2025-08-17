@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Card, { CardContent, CardHeader } from "../ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Input, Select } from "../ui/FormElements";
 import { QrCode, Save, Truck, Wrench, Clipboard, ExternalLink, List, Download } from "lucide-react";
 import { QRCode } from "qrcode.react";

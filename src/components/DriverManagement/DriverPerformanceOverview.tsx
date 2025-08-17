@@ -8,7 +8,7 @@ import {
 } from "../../types";
 import Card, { CardContent, CardHeader } from "../ui/Card";
 // Removed erroneous self-import line that broke parsing
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { AlertTriangle, Clock, Edit, Eye, Plus, Save, Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/helpers";
 import { FileUpload, Input, Select, TextArea } from "../ui/FormElements"; // Ensure FileUpload is imported if used

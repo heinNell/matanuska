@@ -5,7 +5,7 @@ import React from "react";
 import { CARReport } from "../../types";
 
 // ─── UI Components ───────────────────────────────────────────────
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import Modal from "../ui/Modal";
 
 // ─── Icons ───────────────────────────────────────────────────────

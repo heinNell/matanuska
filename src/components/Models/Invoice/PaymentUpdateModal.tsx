@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { FollowUpRecord, Trip } from "../../../types";
 
 // ─── UI Components ───────────────────────────────────────────────
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { Input, Select, Textarea } from "../../ui/FormElements";
 import Modal from "../../ui/Modal";
 

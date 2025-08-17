@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ArrowLeft, CheckCircle2, Clipboard, XCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";

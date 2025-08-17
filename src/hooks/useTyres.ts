@@ -1,5 +1,5 @@
-import { firestore } from "@/firebase";
-import { tyreConverter } from "@/types/TyreFirestoreConverter";
+import { firestore } from "../firebase";
+import { tyreConverter } from "../types/TyreFirestoreConverter";
 import { addDoc, collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 

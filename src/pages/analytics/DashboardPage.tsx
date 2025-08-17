@@ -1,14 +1,14 @@
-import AnalyticsControls from "@/components/AnalyticsControls";
-import { Button } from "@/components/ui/Button";
-import { FleetAnalyticsLineChart } from "@/components/ui/chart/FleetAnalyticsLineChart";
-import { FleetCostAreaChart } from "@/components/ui/chart/FleetCostAreaChart";
-import { FleetStatusDoughnut } from "@/components/ui/chart/FleetStatusDoughnut";
-import { FleetUtilizationLine } from "@/components/ui/chart/FleetUtilizationLine";
-import { PerformanceLineChart } from "@/components/ui/chart/PerformanceLineChart";
-import { RechartsLineChart } from "@/components/ui/chart/RechartsLineChart";
-import { ROIBarChart } from "@/components/ui/chart/ROIBarChart";
-import { VehicleUtilizationChart } from "@/components/ui/chart/VehicleUtilizationChart";
-import { FleetAnalyticsProvider, useFleetAnalytics } from "@/context/FleetAnalyticsContext";
+import AnalyticsControls from "../../components/AnalyticsControls";
+import { Button } from "../../components/ui/Button";
+import { FleetAnalyticsLineChart } from "../../components/ui/chart/FleetAnalyticsLineChart";
+import { FleetCostAreaChart } from "../../components/ui/chart/FleetCostAreaChart";
+import { FleetStatusDoughnut } from "../../components/ui/chart/FleetStatusDoughnut";
+import { FleetUtilizationLine } from "../../components/ui/chart/FleetUtilizationLine";
+import { PerformanceLineChart } from "../../components/ui/chart/PerformanceLineChart";
+import { RechartsLineChart } from "../../components/ui/chart/RechartsLineChart";
+import { ROIBarChart } from "../../components/ui/chart/ROIBarChart";
+import { VehicleUtilizationChart } from "../../components/ui/chart/VehicleUtilizationChart";
+import { FleetAnalyticsProvider, useFleetAnalytics } from "../../context/FleetAnalyticsContext";
 
 const DashboardContent = () => {
   const { refreshData, isLoading } = useFleetAnalytics();

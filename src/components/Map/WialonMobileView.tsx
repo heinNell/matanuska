@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import React, { useState } from "react";
 
 interface WialonMobileViewProps {

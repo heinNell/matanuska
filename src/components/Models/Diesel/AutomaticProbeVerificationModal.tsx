@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { AlertTriangle, CheckCircle, Database, Info, RefreshCw, Save, X } from "lucide-react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { useAppContext } from "../../../context/AppContext";

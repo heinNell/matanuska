@@ -1,13 +1,13 @@
-import DieselEditModal from "@/components/Models/Diesel/DieselEditModal";
-import DieselImportModal from "@/components/Models/Diesel/DieselImportModal";
-import DieselNormsModal from "@/components/Models/Diesel/DieselNormsModal";
-import EnhancedDieselDebriefModal from "@/components/Models/Diesel/EnhancedDieselDebriefModal";
-import ManualDieselEntryModal from "@/components/Models/Diesel/ManualDieselEntryModal";
-import TripLinkageModal from "@/components/Models/Trips/TripLinkageModal";
-import { Button } from "@/components/ui/Button";
-import Card, { CardContent, CardHeader } from "@/components/ui/Card";
-import { Select } from "@/components/ui/FormElements";
-import SyncIndicator from "@/components/ui/SyncIndicator";
+import DieselEditModal from "../../components/Models/Diesel/DieselEditModal";
+import DieselImportModal from "../../components/Models/Diesel/DieselImportModal";
+import DieselNormsModal from "../../components/Models/Diesel/DieselNormsModal";
+import EnhancedDieselDebriefModal from "../../components/Models/Diesel/EnhancedDieselDebriefModal";
+import ManualDieselEntryModal from "../../components/Models/Diesel/ManualDieselEntryModal";
+import TripLinkageModal from "../../components/Models/Trips/TripLinkageModal";
+import { Button } from "../../components/ui/Button";
+import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Select } from "../../components/ui/FormElements";
+import SyncIndicator from "../../components/ui/SyncIndicator";
 import {
   AlertTriangle,
   Calculator,

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { format } from "date-fns";
 import { doc, setDoc } from "firebase/firestore"; // Import doc and setDoc
 import { Check, Download, Edit2, FileText, Printer, X } from "lucide-react";

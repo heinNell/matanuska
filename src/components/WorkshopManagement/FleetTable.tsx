@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Card, { CardContent, CardHeader } from "../ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Truck, Search, Plus, Edit, Trash2, Filter, RefreshCw, Download } from "lucide-react";
-import FleetFormModal from "@/components/Models/Trips/FleetFormModal";
+import FleetFormModal from "../../components/Models/Trips/FleetFormModal";
 
 // Mock fleet data
 const mockFleetData = [

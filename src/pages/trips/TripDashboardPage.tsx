@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/Button";
-import Card, { CardContent, CardHeader } from "@/components/ui/Card";
-import Modal from "@/components/ui/Modal";
+import { Button } from "../../components/ui/Button";
+import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import Modal from "../../components/ui/Modal";
 import { CalendarClock, MapPin, PlusCircle } from "lucide-react";
 import React from "react";
 import { TripForm } from "../../components/forms/trips/TripForm";

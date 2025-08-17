@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { AlertTriangle, Calendar, CheckCircle, Clock, FileUp, Send, User, X } from "lucide-react";
 import React, { useState } from "react";
 import { useAppContext } from "../../context/AppContext";

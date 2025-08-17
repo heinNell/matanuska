@@ -1,5 +1,5 @@
 // ─── // ─── UI Components ───────────────────────────────────────────────────
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import React, { useEffect, useState } from "react";
 import Modal from "../../../components/ui/Modal";
 import { useAppContext } from "../../../context/AppContext";

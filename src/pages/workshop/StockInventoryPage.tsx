@@ -11,7 +11,7 @@ import {
 import Papa from "papaparse";
 import React, { useMemo, useState } from "react";
 import { StockItem, useWorkshop } from "../../context/WorkshopContext";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 
 // Replace the empty interface with a type alias for clarity
 type StockInventoryPageProps = object;

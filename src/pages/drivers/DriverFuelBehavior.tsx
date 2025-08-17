@@ -1,5 +1,5 @@
-import { driverBehaviorService } from "@/api/driverBehaviorService";
-import { Button } from "@/components/ui/Button";
+import { driverBehaviorService } from "../../api/driverBehaviorService";
+import { Button } from "../../components/ui/Button";
 import {
   AlertTriangle,
   BookOpen,
@@ -12,17 +12,17 @@ import {
   User,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import DriverBehaviorEventDetails from "@/components/DriverManagement/DriverBehaviorEventDetails";
-import DriverPerformanceOverview from "@/components/DriverManagement/DriverPerformanceOverview";
-import DriverBehaviorEventForm from "@/components/forms/driver/DriverBehaviorEventForm";
-import CARReportForm from "@/components/forms/qc/CARReportForm";
-import CARReportList from "@/components/lists/CARReportList";
-import Card, { CardContent, CardHeader } from "@/components/ui/Card";
-import SyncIndicator from "@/components/ui/SyncIndicator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { useAppContext } from "@/context/AppContext";
-import { useDriverBehavior } from "@/hooks/useDriverBehavior";
-import { DriverBehaviorEvent } from "@/types";
+import DriverBehaviorEventDetails from "../../components/DriverManagement/DriverBehaviorEventDetails";
+import DriverPerformanceOverview from "../../components/DriverManagement/DriverPerformanceOverview";
+import DriverBehaviorEventForm from "../../components/forms/driver/DriverBehaviorEventForm";
+import CARReportForm from "../../components/forms/qc/CARReportForm";
+import CARReportList from "../../components/lists/CARReportList";
+import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import SyncIndicator from "../../components/ui/SyncIndicator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
+import { useAppContext } from "../../context/AppContext";
+import { useDriverBehavior } from "../../hooks/useDriverBehavior";
+import { DriverBehaviorEvent } from "../../types";
 
 /**
  * Driver Fuel Behavior Page Component

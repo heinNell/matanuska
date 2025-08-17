@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 // Use canonical domain types
-import { Tyre, TyreInspection, TyreStore } from "@/types/tyre";
-import { Vehicle } from "@/types/vehicle";
+import { Tyre, TyreInspection, TyreStore } from "../types/tyre";
+import { Vehicle } from "../types/vehicle";
 
 // Minimal reference for a tyre model entity (no concrete type exists yet in types)
 type TyreModelRef = { id: string; name?: string };

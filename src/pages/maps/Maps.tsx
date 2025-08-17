@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/Button";
-import Card, { CardContent, CardHeader } from "@/components/ui/Card";
-import SyncIndicator from "@/components/ui/SyncIndicator";
+import { Button } from "../../components/ui/Button";
+import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import SyncIndicator from "../../components/ui/SyncIndicator";
 import { Filter, Layers, Navigation, RefreshCw, Truck } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import FleetMapComponent from "../../components/Map/FleetMapComponent";

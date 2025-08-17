@@ -1,4 +1,4 @@
-import { useWialonUnits } from "@/hooks/useWialonUnits";
+import { useWialonUnits } from "../../hooks/useWialonUnits";
 import React, { useMemo, useState } from "react";
 
 // Define comprehensive types

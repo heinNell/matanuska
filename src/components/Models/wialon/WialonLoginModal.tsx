@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useWialonSession } from "@/hooks/useWialonSession";
+import { useWialonSession } from "../../../hooks/useWialonSession";
 
 export default function WialonLoginModal() {
   const [token, setToken] = useState("");

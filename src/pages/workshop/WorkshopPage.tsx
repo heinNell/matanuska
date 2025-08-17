@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import { useWorkshop } from "../../context/WorkshopContext";
 
 // UI Components
-import { Card, CardContent } from "@/components/ui";
+import { Card, CardContent } from "../../components/ui";
 
 const WorkshopPage: React.FC = () => {
   const { stockItems, purchaseOrders, isLoading } = useWorkshop();

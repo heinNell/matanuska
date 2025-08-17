@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Autocomplete, DirectionsRenderer, GoogleMap, Libraries } from "@react-google-maps/api";
 import {
   ChevronDown,

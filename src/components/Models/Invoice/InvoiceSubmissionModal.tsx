@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { AlertTriangle, Flag, Send, X } from "lucide-react";
 import React, { useState } from "react";
 import { AdditionalCost, Trip } from "../../../types";

@@ -1,11 +1,11 @@
-import JobCardHeader from "@/components/WorkshopManagement/JobCardHeader";
+import JobCardHeader from "../../components/WorkshopManagement/JobCardHeader";
 import React, { useState } from "react";
 // import InventoryPanel from './InventoryPanel'; // Component commented out - missing file
-import JobCardNotes from "@/components/WorkshopManagement/JobCardNotes";
+import JobCardNotes from "../../components/WorkshopManagement/JobCardNotes";
 import TaskHistoryList from "./TaskHistoryList";
 // import QAReviewPanel from './QAReviewPanel'; // Component commented out - missing file
 // import CompletionPanel from './CompletionPanel'; // Component commented out - missing file
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { doc, updateDoc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../../firebase";

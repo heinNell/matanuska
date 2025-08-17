@@ -1,6 +1,6 @@
 import { Box, Clock, Download, FileText, Link, MapPin, ShoppingBag, User } from "lucide-react";
 import React from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import { Card, CardContent } from "../../components/ui/Card";
 
 interface POItem {

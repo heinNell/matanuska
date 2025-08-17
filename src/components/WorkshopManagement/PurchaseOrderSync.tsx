@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import React, { useEffect, useState } from "react";
 import { syncPurchaseOrderToSage } from "../../api/sageIntegration";
 import { Card, CardContent, CardHeader } from "../../components/ui/Card";

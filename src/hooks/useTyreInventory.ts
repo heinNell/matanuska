@@ -1,4 +1,4 @@
-import { firestore } from "@/firebase";
+import { firestore } from "../firebase";
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Tyre } from "../types/TyreModel";

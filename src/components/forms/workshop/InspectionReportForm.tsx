@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import { format } from "date-fns";
 import { Camera, Check, Download, Trash2, Upload, X } from "lucide-react";
 import { useSnackbar } from "notistack";

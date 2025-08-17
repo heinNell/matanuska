@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
 import { QrCode, Camera } from "lucide-react";
-import { useCapacitor } from "@/hooks/useCapacitor";
+import { useCapacitor } from "../../hooks/useCapacitor";
 import { toast } from "sonner";
 
 interface MobileQRScannerProps {

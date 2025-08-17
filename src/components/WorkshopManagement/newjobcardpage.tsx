@@ -1,15 +1,15 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import JobCardHeader from "@/components/WorkshopManagement/JobCardHeader";
-import TaskManager from "@/components/WorkshopManagement/TaskManager";
-import { db } from "@/firebase"; // Your Firestore instance
-import { JobCardTask } from "@/types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
+import JobCardHeader from "../../components/WorkshopManagement/JobCardHeader";
+import TaskManager from "../../components/WorkshopManagement/TaskManager";
+import { db } from "../../firebase"; // Your Firestore instance
+import { JobCardTask } from "../../types";
 import { format } from "date-fns";
 import { doc, setDoc } from "firebase/firestore"; // Firestore functions
 import { Save, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import Card, { CardContent } from "../ui/Card";
 
 // Local shape for job card details used in this page

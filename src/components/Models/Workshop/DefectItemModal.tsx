@@ -1,6 +1,6 @@
 import React from "react";
-import Modal from "@/components/ui/Modal";
-import { DefectItem } from "@/utils/inspectionUtils";
+import Modal from "../../../components/ui/Modal";
+import { DefectItem } from "../../../utils/inspectionUtils";
 
 interface DefectItemModalProps {
   isOpen: boolean;
