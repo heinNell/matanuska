@@ -20,6 +20,14 @@ const WialonTrackingPage: React.FC = () => {
               <span className="material-icons">refresh</span>
               Refresh
             </button>
+            <a 
+              href="/admin-management/wialon-diagnostics" 
+              className="diagnostics-btn"
+              title="Run Wialon diagnostics"
+            >
+              <span className="material-icons">bug_report</span>
+              Diagnostics
+            </a>
             <button className="toggle-sidebar-btn" onClick={toggleSidebar}>
               <span className="material-icons">
                 {sidebarExpanded ? "chevron_right" : "chevron_left"}

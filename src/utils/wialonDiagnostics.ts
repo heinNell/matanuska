@@ -6,7 +6,7 @@
  */
 import { ErrorCategory, ErrorSeverity, logError } from "../utils/errorHandling";
 
-interface DiagnosticResult {
+export interface DiagnosticResult {
   status: 'success' | 'warning' | 'error';
   message: string;
   details?: string;
@@ -57,14 +57,12 @@ export const runWialonDiagnostics = async (): Promise<DiagnosticResult[]> => {
   }
   
   return results;
-};
-
-/**
+};/**
  * Check if Wialon token is properly configured
  */
 export const checkWialonToken = (): DiagnosticResult => {
   const token = import.meta.env.VITE_WIALON_TOKEN;
-  
+
   if (!token) {
     return {
       status: 'error',
@@ -77,7 +75,7 @@ export const checkWialonToken = (): DiagnosticResult => {
       ]
     };
   }
-  
+
   if (token.length < 20) {
     return {
       status: 'warning',
@@ -90,7 +88,7 @@ export const checkWialonToken = (): DiagnosticResult => {
       ]
     };
   }
-  
+
   return {
     status: 'success',
     message: 'Wialon token is properly configured'
@@ -102,7 +100,7 @@ export const checkWialonToken = (): DiagnosticResult => {
  */
 export const checkWialonApiUrl = (): DiagnosticResult => {
   const apiUrl = import.meta.env.VITE_WIALON_API_URL;
-  
+
   if (!apiUrl) {
     return {
       status: 'warning',
@@ -114,10 +112,10 @@ export const checkWialonApiUrl = (): DiagnosticResult => {
       ]
     };
   }
-  
+
   try {
     new URL(apiUrl);
-    
+
     if (!apiUrl.startsWith('http')) {
       return {
         status: 'error',
@@ -129,7 +127,7 @@ export const checkWialonApiUrl = (): DiagnosticResult => {
         ]
       };
     }
-    
+
     return {
       status: 'success',
       message: 'Wialon API URL is properly formatted'
@@ -152,21 +150,21 @@ export const checkWialonApiUrl = (): DiagnosticResult => {
  */
 export const checkWialonConnectivity = async (): Promise<DiagnosticResult> => {
   const apiUrl = import.meta.env.VITE_WIALON_API_URL || 'https://hst-api.wialon.com';
-  
+
   try {
     // Use the SDK URL as a probe since it should always be available
     const sdkUrl = `${apiUrl.replace(/\/+$/, '')}/wsdk/script/wialon.js`;
-    
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-    
+
     const response = await fetch(sdkUrl, {
       method: 'HEAD',
       signal: controller.signal,
     });
-    
+
     clearTimeout(timeoutId);
-    
+
     if (response.ok) {
       return {
         status: 'success',
@@ -197,7 +195,7 @@ export const checkWialonConnectivity = async (): Promise<DiagnosticResult> => {
         ]
       };
     }
-    
+
     return {
       status: 'error',
       message: 'Connection failed',

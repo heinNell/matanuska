@@ -15,6 +15,9 @@ interface WialonContextType {
   logout: () => void;
   refreshUnits: () => Promise<any[]>;
   setToken: (token: string) => void;
+  runDiagnostics: () => Promise<void>;
+  diagnosticResults: any[];
+  isDiagnosticRunning: boolean;
 }
 
 export const WialonContext = createContext<WialonContextType>({
@@ -29,6 +32,9 @@ export const WialonContext = createContext<WialonContextType>({
   logout: () => {},
   refreshUnits: async () => [],
   setToken: () => {},
+  runDiagnostics: async () => {},
+  diagnosticResults: [],
+  isDiagnosticRunning: false,
 });
 
 export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
@@ -43,6 +49,8 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
     const storedToken = localStorage.getItem('wialonToken');
     return storedToken || getEnvVar("VITE_WIALON_SESSION_TOKEN", "");
   });
+  const [diagnosticResults, setDiagnosticResults] = useState<any[]>([]);
+  const [isDiagnosticRunning, setIsDiagnosticRunning] = useState(false);
 
   // Auto-initialize Wialon when component mounts
   useEffect(() => {
@@ -191,6 +199,23 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
         setInitialized(false);
         setUnits([]);
       });
+    }
+  };
+  
+  const runDiagnostics = async () => {
+    try {
+      // Import the diagnostic tools dynamically to avoid circular dependencies
+      setIsDiagnosticRunning(true);
+      const { runWialonDiagnostics } = await import('../utils/wialonDiagnostics');
+      const results = await runWialonDiagnostics();
+      setDiagnosticResults(results);
+      return results;
+    } catch (error) {
+      console.error('Failed to run Wialon diagnostics:', error);
+      setError(error instanceof Error ? error : new Error('Unknown diagnostic error'));
+      return [];
+    } finally {
+      setIsDiagnosticRunning(false);
     }
   };
 

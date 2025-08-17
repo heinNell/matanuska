@@ -107,14 +107,14 @@ export const initWialonSession = async (
           // Get detailed error information
           const errorText = window.wialon.core.Errors.getErrorText(code);
           console.error("Wialon login failed:", errorText, "Error code:", code);
-          
+
           // Check for specific error codes
           if (code === 5) {
             console.warn("Error performing request - Possible network issue or invalid API endpoint");
             console.warn("API URL being used:", baseUrl);
             console.warn("Token format correct:", token && token.length > 20 ? "Yes" : "No");
           }
-          
+
           reject(new Error(`Wialon login failed: ${errorText}`));
           return;
         }

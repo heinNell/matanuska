@@ -292,6 +292,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="admin-management">
           <Route path="car-report-details" element={withSuspense(CARReportDetails)} />
           <Route path="action-item-details" element={withSuspense(ActionItemDetails)} />
+          <Route path="wialon-diagnostics" element={withSuspense(lazy(() => import("./pages/admin/WialonDiagnosticsPage")))} />
         </Route>
 
         {/** dev all-pages explorer removed */}

@@ -222,8 +222,13 @@ export const loadGoogleMapsScript = async (libraries: string = "places"): Promis
           if (authErrorDetected) {
             promise = null;
             reject(new Error(lastErrorMessage || "Google Maps authentication failed"));
-        } else {
-          resolve();
+          } else {
+            resolve();
+          }
+        } catch (err) {
+          console.error("[Maps Loader] Error during delayed Google Maps validation", err);
+          promise = null;
+          reject(err instanceof Error ? err : new Error("Unexpected error after script load"));
         }
       }, 200);
     };

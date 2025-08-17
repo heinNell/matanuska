@@ -128,19 +128,19 @@ export async function initializeWialon(): Promise<boolean> {
       log("Wialon token is missing. Please provide a valid token in environment variables.", true);
       return false;
     }
-    
+
     // Initialize session with proper error logging
     try {
       session.initSession(WIALON_API_URL);
-      
+
       log(`Connecting to Wialon API: ${WIALON_API_URL}`);
-      
+
       const loginSuccess = await new Promise<boolean>((resolve) => {
         try {
           session.loginToken(TOKEN, "", (code: number) => {
             if (code) {
               const errorText = W.core.Errors.getErrorText(code);
-              
+
               // Add more detailed diagnostics for common error codes
               let errorDetails = "";
               if (code === 5) {
@@ -152,21 +152,21 @@ export async function initializeWialon(): Promise<boolean> {
               } else if (code === 4) {
                 errorDetails = " - Access denied with the provided credentials";
               }
-              
+
               logError(`Wialon login failed: ${errorText}${errorDetails}`, {
                 category: ErrorCategory.API,
                 severity: ErrorSeverity.ERROR,
-                context: { 
-                  code, 
+                context: {
+                  code,
                   errorText,
                   apiUrl: WIALON_API_URL,
                   tokenLength: TOKEN ? TOKEN.length : 0,
                   // Don't log the actual token for security
                 },
               });
-              
+
               log(`Error details - Code: ${code}, Text: ${errorText}${errorDetails}`, true);
-              
+
               resolve(false);
             } else {
               log("Wialon login successful");
