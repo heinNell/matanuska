@@ -73,11 +73,20 @@ export const searchPlacesByText = (
       request.locationBias = circle;
     }
 
-    service.findPlaceFromQuery(request, (results: any, status: any) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-        resolve(results);
-      } else {
-        reject(new Error(`Place search failed: ${status}`));
+    try {
+      service.findPlaceFromQuery(request, (results: any, status: any) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+          resolve(results);
+        } else {
+          console.warn(`Place search failed with status: ${status}`);
+          // Return empty array instead of rejecting to prevent app crashes
+          resolve([]);
+        }
+      });
+    } catch (error) {
+      console.error("Exception in Places service call:", error);
+      // Return empty array instead of rejecting to prevent app crashes
+      resolve([]);
       }
     });
   });

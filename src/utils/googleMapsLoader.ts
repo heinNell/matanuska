@@ -213,9 +213,15 @@ export const loadGoogleMapsScript = async (libraries: string = "places"): Promis
       // Even if script loads, we need to check for auth errors that might happen after loading
       // We use a small delay to allow the auth check to complete
       setTimeout(() => {
-        if (authErrorDetected) {
-          promise = null;
-          reject(new Error(lastErrorMessage || "Google Maps authentication failed"));
+        try {
+          // Additional safety check for required objects
+          if (!window.google?.maps?.places) {
+            console.warn("[Maps Loader] Google Maps Places library not fully initialized");
+          }
+
+          if (authErrorDetected) {
+            promise = null;
+            reject(new Error(lastErrorMessage || "Google Maps authentication failed"));
         } else {
           resolve();
         }
