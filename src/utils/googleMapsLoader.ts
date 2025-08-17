@@ -126,11 +126,25 @@ export const isValidApiKeyFormat = (apiKey: string | undefined): boolean => {
 };
 
 /**
+ * Track requested libraries to prevent duplicate loading
+ */
+let requestedLibraries: Set<string> = new Set();
+
+/**
  * Main function to load Google Maps script
  */
 export const loadGoogleMapsScript = async (libraries: string = "places"): Promise<void> => {
+  // If already loaded, return immediately
+  if (window.google && window.google.maps) {
+    console.log("[Maps Loader] Google Maps already loaded");
+    return Promise.resolve();
+  }
+
   // Only load once
-  if (promise) return promise;
+  if (promise) {
+    console.log("[Maps Loader] Using existing loader promise");
+    return promise;
+  }
 
   // Set up auth failure handler
   setupAuthFailureHandler();
@@ -179,8 +193,17 @@ export const loadGoogleMapsScript = async (libraries: string = "places"): Promis
       console.log(`[Maps Loader] Loading Google Maps via proxy: ${url}`);
       script.src = url;
     } else if (GOOGLE_MAPS_API_KEY) {
-      const url = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=${libraries}`;
-      console.log("[Maps Loader] Loading Google Maps directly with API key");
+      // Process libraries to ensure we're not loading duplicates
+      const libraryArray = libraries.split(',').map(lib => lib.trim());
+
+      // Add all requested libraries to our tracking set
+      libraryArray.forEach(lib => requestedLibraries.add(lib));
+
+      // Create a deduplicated library string
+      const deduplicatedLibraries = Array.from(requestedLibraries).join(',');
+
+      const url = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=${deduplicatedLibraries}`;
+      console.log(`[Maps Loader] Loading Google Maps directly with API key (libraries: ${deduplicatedLibraries})`);
       script.src = url;
     } else {
       const error = new Error("Maps configuration error: No valid API source available");
@@ -286,7 +309,12 @@ export const useLoadGoogleMaps = (libraries: string = "places") => {
   } | null>(null);
 
   useEffect(() => {
-    if (isLoaded) return;
+    // If Maps API is already loaded, just set state accordingly
+    if (isGoogleMapsAPILoaded()) {
+      setIsLoaded(true);
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
 

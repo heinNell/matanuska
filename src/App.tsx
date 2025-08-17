@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AppRoutes from "./AppRoutes";
+import "./utils/mapScriptFixer"; // Prevent duplicate Google Maps API loading
 
 // ---------- Context Providers ----------
 import { AppProvider } from "./context/AppContext";
