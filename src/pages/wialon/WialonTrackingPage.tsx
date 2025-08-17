@@ -20,8 +20,8 @@ const WialonTrackingPage: React.FC = () => {
               <span className="material-icons">refresh</span>
               Refresh
             </button>
-            <a 
-              href="/admin-management/wialon-diagnostics" 
+            <a
+              href="/admin-management/wialon-diagnostics"
               className="diagnostics-btn"
               title="Run Wialon diagnostics"
             >

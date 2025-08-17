@@ -1,6 +1,6 @@
 /**
  * Wialon API Diagnostics Tool
- * 
+ *
  * This utility helps diagnose common Wialon API connection issues
  * and provides troubleshooting recommendations.
  */
@@ -18,15 +18,15 @@ export interface DiagnosticResult {
  */
 export const runWialonDiagnostics = async (): Promise<DiagnosticResult[]> => {
   const results: DiagnosticResult[] = [];
-  
+
   // 1. Check environment variables
   const tokenCheck = checkWialonToken();
   results.push(tokenCheck);
-  
+
   // 2. Check API URL format
   const apiUrlCheck = checkWialonApiUrl();
   results.push(apiUrlCheck);
-  
+
   // 3. Check network connectivity to Wialon
   try {
     const connectivityCheck = await checkWialonConnectivity();
@@ -43,11 +43,11 @@ export const runWialonDiagnostics = async (): Promise<DiagnosticResult[]> => {
       ]
     });
   }
-  
+
   // Log summary
   const errors = results.filter(r => r.status === 'error').length;
   const warnings = results.filter(r => r.status === 'warning').length;
-  
+
   if (errors > 0) {
     logError(`Wialon diagnostics found ${errors} errors and ${warnings} warnings`, {
       category: ErrorCategory.API,
@@ -55,7 +55,7 @@ export const runWialonDiagnostics = async (): Promise<DiagnosticResult[]> => {
       context: { results }
     });
   }
-  
+
   return results;
 };/**
  * Check if Wialon token is properly configured

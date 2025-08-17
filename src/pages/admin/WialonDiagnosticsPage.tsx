@@ -1,6 +1,6 @@
 /**
  * Wialon Diagnostics Page
- * 
+ *
  * This page provides tools for diagnosing and troubleshooting
  * Wialon API integration issues.
  */
@@ -16,7 +16,7 @@ const WialonDiagnosticsPage: React.FC = () => {
       <Helmet>
         <title>Wialon Diagnostics | Matanuska</title>
       </Helmet>
-      
+
       <div className="container py-10">
         <div className="flex flex-col gap-6">
           <div>
@@ -25,18 +25,18 @@ const WialonDiagnosticsPage: React.FC = () => {
               Troubleshoot and fix common Wialon API connection issues
             </p>
           </div>
-          
+
           <Tabs defaultValue="diagnostics" className="w-full">
             <TabsList className="mb-4">
               <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
               <TabsTrigger value="troubleshooting">Troubleshooting Guide</TabsTrigger>
               <TabsTrigger value="configuration">Configuration</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="diagnostics" className="space-y-6">
               <WialonDiagnosticTool />
             </TabsContent>
-            
+
             <TabsContent value="troubleshooting" className="space-y-6">
               <Card>
                 <CardHeader>
@@ -50,11 +50,11 @@ const WialonDiagnosticsPage: React.FC = () => {
                         <div>
                           <h4 className="font-medium">Error Code 4: Invalid Session</h4>
                           <p className="text-sm text-gray-600 mt-1">
-                            Your session has expired or the token is invalid. You need to log in again 
+                            Your session has expired or the token is invalid. You need to log in again
                             to obtain a new session token.
                           </p>
                         </div>
-                        
+
                         <div>
                           <h4 className="font-medium">Error Code 1: Invalid User Credentials</h4>
                           <p className="text-sm text-gray-600 mt-1">
@@ -62,7 +62,7 @@ const WialonDiagnosticsPage: React.FC = () => {
                             and try again.
                           </p>
                         </div>
-                        
+
                         <div>
                           <h4 className="font-medium">Error Code 7: Access Denied</h4>
                           <p className="text-sm text-gray-600 mt-1">
@@ -70,7 +70,7 @@ const WialonDiagnosticsPage: React.FC = () => {
                             Wialon administrator to request the necessary permissions.
                           </p>
                         </div>
-                        
+
                         <div>
                           <h4 className="font-medium">Error Code 8: Invalid Service</h4>
                           <p className="text-sm text-gray-600 mt-1">
@@ -78,7 +78,7 @@ const WialonDiagnosticsPage: React.FC = () => {
                             name in your API calls.
                           </p>
                         </div>
-                        
+
                         <div>
                           <h4 className="font-medium">Error Code 2: Rate Limit Exceeded</h4>
                           <p className="text-sm text-gray-600 mt-1">
@@ -88,7 +88,7 @@ const WialonDiagnosticsPage: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div>
                       <h3 className="text-lg font-medium">Network Issues</h3>
                       <ul className="list-disc pl-5 space-y-2 mt-2 text-sm text-gray-600">
@@ -103,21 +103,21 @@ const WialonDiagnosticsPage: React.FC = () => {
                           firewall settings.
                         </li>
                         <li>
-                          <strong>DNS resolution problems:</strong> If the Wialon domain can't be 
+                          <strong>DNS resolution problems:</strong> If the Wialon domain can't be
                           resolved, check your DNS settings or try using IP addresses directly.
                         </li>
                       </ul>
                     </div>
-                    
+
                     <div>
                       <h3 className="text-lg font-medium">Authentication Issues</h3>
                       <ul className="list-disc pl-5 space-y-2 mt-2 text-sm text-gray-600">
                         <li>
-                          <strong>Token format:</strong> Ensure your token is correctly formatted and 
+                          <strong>Token format:</strong> Ensure your token is correctly formatted and
                           hasn't been corrupted by whitespace or encoding issues.
                         </li>
                         <li>
-                          <strong>Token expiration:</strong> Wialon tokens have expiration times. 
+                          <strong>Token expiration:</strong> Wialon tokens have expiration times.
                           Implement token refresh logic to obtain new tokens when needed.
                         </li>
                         <li>
@@ -130,7 +130,7 @@ const WialonDiagnosticsPage: React.FC = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="configuration" className="space-y-6">
               <Card>
                 <CardHeader>
@@ -145,20 +145,20 @@ const WialonDiagnosticsPage: React.FC = () => {
                       </p>
                       <ul className="list-disc pl-5 space-y-2 mt-2 text-sm text-gray-600">
                         <li>
-                          <code className="bg-gray-100 px-1 py-0.5 rounded">VITE_WIALON_API_URL</code>: 
+                          <code className="bg-gray-100 px-1 py-0.5 rounded">VITE_WIALON_API_URL</code>:
                           The base URL for Wialon API requests (default: https://hst-api.wialon.com)
                         </li>
                         <li>
-                          <code className="bg-gray-100 px-1 py-0.5 rounded">VITE_WIALON_SDK_URL</code>: 
+                          <code className="bg-gray-100 px-1 py-0.5 rounded">VITE_WIALON_SDK_URL</code>:
                           The URL to load the Wialon JavaScript SDK
                         </li>
                         <li>
-                          <code className="bg-gray-100 px-1 py-0.5 rounded">VITE_WIALON_TOKEN</code>: 
+                          <code className="bg-gray-100 px-1 py-0.5 rounded">VITE_WIALON_TOKEN</code>:
                           Your Wialon API token (for automated login)
                         </li>
                       </ul>
                     </div>
-                    
+
                     <div>
                       <h3 className="text-lg font-medium">Configuration Files</h3>
                       <p className="text-sm text-gray-600 mt-1">
@@ -166,11 +166,11 @@ const WialonDiagnosticsPage: React.FC = () => {
                       </p>
                       <ul className="list-disc pl-5 space-y-2 mt-2 text-sm text-gray-600">
                         <li>
-                          <code className="bg-gray-100 px-1 py-0.5 rounded">/workspaces/matanuska/src/utils/wialonConfig2.ts</code>: 
+                          <code className="bg-gray-100 px-1 py-0.5 rounded">/workspaces/matanuska/src/utils/wialonConfig2.ts</code>:
                           Main configuration file for Wialon settings
                         </li>
                         <li>
-                          <code className="bg-gray-100 px-1 py-0.5 rounded">/workspaces/matanuska/.env.local</code>: 
+                          <code className="bg-gray-100 px-1 py-0.5 rounded">/workspaces/matanuska/.env.local</code>:
                           Local environment variables (not committed to git)
                         </li>
                       </ul>

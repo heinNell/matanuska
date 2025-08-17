@@ -76,11 +76,11 @@ export const WialonLoginPanel: React.FC = () => {
       // Add type annotation for err
       appendLog(`Login failed: ${err.message || err}`);
       appendLog('Running diagnostics...');
-      
+
       try {
-        await diagnoseWialon({ 
-          redirect: false, 
-          silent: true 
+        await diagnoseWialon({
+          redirect: false,
+          silent: true
         });
         appendLog('Diagnostics complete. Check the diagnostics page for results.');
       } catch (diagError) {
@@ -166,6 +166,12 @@ export const WialonLoginPanel: React.FC = () => {
           disabled={isLoading || !user}
         >
           Logout
+        </button>
+        <button
+          className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
+          onClick={() => navigate('/admin-management/wialon-diagnostics')}
+        >
+          Diagnostics
         </button>
         <button
           className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"

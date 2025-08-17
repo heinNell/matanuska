@@ -201,7 +201,7 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
       });
     }
   };
-  
+
   const runDiagnostics = async () => {
     try {
       // Import the diagnostic tools dynamically to avoid circular dependencies
