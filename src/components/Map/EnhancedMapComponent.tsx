@@ -93,8 +93,16 @@ const EnhancedMapComponent: React.FC<EnhancedMapProps> = ({
   // Initialize Places service when map is loaded
   useEffect(() => {
     if (mapInstance && showPlacesSearch && isGoogleMapsAPILoaded()) {
-      const service = initPlacesService(mapInstance);
-      setPlacesService(service);
+      try {
+        const service = initPlacesService(mapInstance);
+        if (service) {
+          setPlacesService(service);
+        } else {
+          console.warn("Places service could not be initialized");
+        }
+      } catch (error) {
+        console.error("Error initializing Places service:", error);
+      }
     }
   }, [mapInstance, showPlacesSearch]);
 

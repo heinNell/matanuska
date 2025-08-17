@@ -33,7 +33,7 @@ interface CompletedTripsProps {
   onView: (trip: Trip) => void;
 }
 
-const CompletedTrips: React.FC<CompletedTripsProps> = ({ trips, onView }) => {
+const CompletedTrips: React.FC<CompletedTripsProps> = ({ trips = [], onView }) => {
   const { updateTrip, deleteTrip, connectionStatus } = useAppContext();
   const [filters, setFilters] = useState({
     startDate: "",
@@ -50,7 +50,10 @@ const CompletedTrips: React.FC<CompletedTripsProps> = ({ trips, onView }) => {
   // Mock user role - in real app, get from auth context
   const userRole: "admin" | "manager" | "operator" = "admin";
 
-  const filteredTrips = trips.filter((trip) => {
+  // Ensure trips is an array before filtering
+  const tripsArray = Array.isArray(trips) ? trips : [];
+
+  const filteredTrips = tripsArray.filter((trip) => {
     if (filters.startDate && trip.startDate < filters.startDate) return false;
     if (filters.endDate && trip.endDate > filters.endDate) return false;
     if (filters.client && trip.clientName !== filters.client) return false;

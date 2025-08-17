@@ -202,6 +202,14 @@ export const loadGoogleMapsScript = async (libraries: string = "places"): Promis
 
     // Handle successful load
     script.onload = () => {
+      // Check if Google Maps API is actually available
+      if (!window.google || !window.google.maps) {
+        const error = new Error("[Maps Loader] Google Maps API failed to initialize correctly");
+        promise = null;
+        reject(error);
+        return;
+      }
+
       // Even if script loads, we need to check for auth errors that might happen after loading
       // We use a small delay to allow the auth check to complete
       setTimeout(() => {
