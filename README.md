@@ -28,6 +28,9 @@ APppp is a comprehensive fleet management platform built with React, TypeScript,
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run serve` - Serve production build locally
+- `npm run verify:ui-connections` - Run the UI connection verification tool
+- `npm run check:integration` - Check component integration with routes and navigation
+- `npm run scan:ui-connections` - Scan for UI elements without handlers
 
 ## Environment Setup
 
@@ -48,6 +51,29 @@ The application uses a unified routing system tied to the sidebar navigation. Se
 ## Google Maps Integration
 
 See the [Google Maps Integration](docs/GOOGLE_MAPS.md) document for details on the maps functionality.
+
+## Development Tools
+
+### UI Connection Verification
+
+The project includes a tool to verify that UI elements are properly connected to handlers.
+This helps identify potential issues with buttons, forms, and modals.
+
+See the [UI Verification Tool Guide](UI_VERIFICATION_TOOL.md) for detailed usage instructions.
+
+### Component Integration Check
+
+This tool verifies proper integration between routes, navigation, and components.
+It helps identify missing components, duplicate implementations, and inconsistent routes.
+
+See the [Integration Check Tool Guide](INTEGRATION_CHECK_TOOL.md) for detailed usage instructions.
+
+### UI Connection Scanner
+
+This tool scans components for UI elements (buttons, forms, inputs, links) and checks if they
+have corresponding handler functions, helping identify potentially unresponsive UI elements.
+
+See the [UI Connection Scanner Tool Guide](UI_CONNECTION_SCANNER_TOOL.md) for detailed usage instructions.
 
 ## Resilience & Offline Capabilities
 

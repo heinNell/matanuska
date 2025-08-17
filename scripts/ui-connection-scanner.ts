@@ -1,20 +1,10 @@
-#!/usr/bin/env node
-
-/**
- * ui-connection-scanner.mjs - Component UI connection analyzer for Matanuska Transport Platform
- * ES Module version
- */
-
-import fs from 'fs';
-import path from 'path';
+// ui-connection-scanner.ts
+import * as fs from 'fs';
+import * as path from 'path';
 import { fileURLToPath } from 'url';
 
-// Get current directory name in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // Simple colorize function for output (replacing chalk)
-function colorize(text, color) {
+function colorize(text: string, color: 'blue' | 'green' | 'yellow' | 'red' | 'cyan' | 'bold-blue'): string {
   const colors = {
     blue: '\x1b[34m',
     green: '\x1b[32m',
@@ -29,8 +19,62 @@ function colorize(text, color) {
   return colorCode + text + colors.reset;
 }
 
+// Get current directory name in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Types for our data structures
+interface FileAnalysis {
+  filePath: string;
+  buttons: number;
+  forms: number;
+  inputs: number;
+  links: number;
+  handlers: number;
+  uiElements: number;
+  hasHandlers: boolean;
+  hasElements: boolean;
+  potentialIssue: boolean;
+}
+
+interface SummaryTotals {
+  buttons: number;
+  forms: number;
+  inputs: number;
+  links: number;
+  handlers: number;
+  uiElements: number;
+}
+
+interface ReportData {
+  scanDate: string;
+  summary: {
+    totalFiles: number;
+    buttons: number;
+    forms: number;
+    inputs: number;
+    links: number;
+    handlers: number;
+    uiElements: number;
+    ratio: number;
+    potentialIssuesCount: number;
+  };
+  potentialIssues: Array<{
+    file: string;
+    buttons: number;
+    forms: number;
+    inputs: number;
+    links: number;
+  }>;
+}
+
 // Function to find files recursively (replacement for glob)
-function findFiles(dir, pattern, ignorePatterns = [], results = []) {
+function findFiles(
+  dir: string,
+  pattern: RegExp,
+  ignorePatterns: string[] = [],
+  results: string[] = []
+): string[] {
   const files = fs.readdirSync(dir);
 
   for (const file of files) {
@@ -70,18 +114,18 @@ const COMPONENT_PATTERNS = {
 
 // Colors for terminal output
 const colors = {
-  heading: (text) => colorize(text, 'bold-blue'),
-  file: (text) => colorize(text, 'green'),
-  count: (text) => colorize(String(text), 'yellow'),
-  good: (text) => colorize(text, 'green'),
-  bad: (text) => colorize(text, 'red'),
-  info: (text) => colorize(text, 'cyan'),
-  warning: (text) => colorize(text, 'yellow'),
-  error: (text) => colorize(text, 'red')
+  heading: (text: string) => colorize(text, 'bold-blue'),
+  file: (text: string) => colorize(text, 'green'),
+  count: (text: string | number) => colorize(String(text), 'yellow'),
+  good: (text: string) => colorize(text, 'green'),
+  bad: (text: string) => colorize(text, 'red'),
+  info: (text: string) => colorize(text, 'cyan'),
+  warning: (text: string) => colorize(text, 'yellow'),
+  error: (text: string) => colorize(text, 'red')
 };
 
 // Function to count patterns in file content
-function countPatterns(content, patterns) {
+function countPatterns(content: string, patterns: RegExp[]): number {
   let count = 0;
   for (const pattern of patterns) {
     const matches = content.match(pattern);
@@ -93,7 +137,7 @@ function countPatterns(content, patterns) {
 }
 
 // Function to analyze a single file
-function analyzeFile(filePath) {
+function analyzeFile(filePath: string): FileAnalysis | null {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
 
@@ -128,13 +172,13 @@ function analyzeFile(filePath) {
       potentialIssue
     };
   } catch (error) {
-    console.error(`Error analyzing ${filePath}:`, error.message);
+    console.error(`Error analyzing ${filePath}:`, error instanceof Error ? error.message : String(error));
     return null;
   }
 }
 
 // Main scan function
-function scanForUIConnections() {
+function scanForUIConnections(): void {
   console.log(colors.heading('\n=== UI Connection Scanner ===\n'));
 
   // Find all component files using our custom finder
@@ -145,10 +189,10 @@ function scanForUIConnections() {
   console.log(colors.info(`Scanning ${files.length} files for UI components and handlers...\n`));
 
   // Analyze each file
-  const results = files.map(analyzeFile).filter(Boolean);
+  const results = files.map(analyzeFile).filter((r): r is FileAnalysis => r !== null);
 
   // Calculate totals
-  const totals = {
+  const totals: SummaryTotals = {
     buttons: results.reduce((sum, r) => sum + r.buttons, 0),
     forms: results.reduce((sum, r) => sum + r.forms, 0),
     inputs: results.reduce((sum, r) => sum + r.inputs, 0),
@@ -198,7 +242,7 @@ function scanForUIConnections() {
   }
 
   // Generate report file
-  const report = {
+  const report: ReportData = {
     scanDate: new Date().toISOString(),
     summary: {
       totalFiles: results.length,

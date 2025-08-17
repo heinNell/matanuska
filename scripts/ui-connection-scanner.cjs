@@ -1,17 +1,14 @@
 #!/usr/bin/env node
-
 /**
- * ui-connection-scanner.mjs - Component UI connection analyzer for Matanuska Transport Platform
- * ES Module version
+ * ui-connection-scanner.cjs - Component UI connection analyzer for Matanuska Transport Platform
+ * CommonJS version
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const fs = require('fs');
+const path = require('path');
 
-// Get current directory name in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Get current directory
+const __dirname = path.dirname(require.main.filename);
 
 // Simple colorize function for output (replacing chalk)
 function colorize(text, color) {
@@ -170,7 +167,7 @@ function scanForUIConnections() {
   console.log(`Total Handlers: ${colors.count(totals.handlers)}`);
 
   // Display handler to UI element ratio
-  const ratio = totals.uiElements > 0 ? totals.handlers / totals.uiElements : 1;
+  const ratio = totals.handlers / totals.uiElements;
   console.log(`\nHandler to UI Element Ratio: ${colors.count(ratio.toFixed(2))}`);
 
   if (ratio >= 0.8) {
@@ -216,12 +213,16 @@ function scanForUIConnections() {
   };
 
   fs.writeFileSync(
-    path.join(__dirname, '..', 'ui-connection-report.json'),
+    path.join(__dirname, 'ui-connection-report.json'),
     JSON.stringify(report, null, 2)
   );
 
-  console.log(colors.info(`\nReport written to ui-connection-report.json`));
+  console.log(colors.info('\nDetailed report saved to ui-connection-report.json'));
 }
 
-// Execute the scanner
-scanForUIConnections();
+// Run the scanner
+try {
+  scanForUIConnections();
+} catch (err) {
+  console.error(colors.error('Error scanning UI connections:'), err);
+}

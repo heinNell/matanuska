@@ -2,13 +2,20 @@ import fs from 'fs';
 import path from 'path';
 import { globSync } from 'glob';
 
+// Utility type for pattern objects
+type FixPattern = {
+  pattern: RegExp;
+  replacement: string;
+  description: string;
+};
+
 // Find all TypeScript and TypeScript React files in the src directory
-const files = globSync('src/**/*.{ts,tsx}', { absolute: true });
+const files: string[] = globSync('src/**/*.{ts,tsx}', { absolute: true });
 
 console.log(`Found ${files.length} TypeScript files to check`);
 
 // Patterns to fix with their replacements
-const fixPatterns = [
+const fixPatterns: FixPattern[] = [
   // Event handler patterns
   {
     pattern: /onClick={(\w+)\s*\|\|\s*\(\s*\(\s*\)\s*=>\s*\{\s*\}\s*\)}/g,
@@ -45,23 +52,22 @@ const fixPatterns = [
 
 let fixedCount = 0;
 
-files.forEach(file => {
+files.forEach((file: string) => {
   let content = fs.readFileSync(file, 'utf8');
-  let originalContent = content;
   let fileFixes = 0;
-  
+
   fixPatterns.forEach(({ pattern, replacement, description }) => {
     const newContent = content.replace(pattern, replacement);
-    
+
     if (newContent !== content) {
       content = newContent;
       fileFixes++;
     }
   });
-  
+
   if (fileFixes > 0) {
-    fs.writeFileSync(file, content);
-    console.log(`Fixed ${fileFixes} issues in ${file}`);
+    fs.writeFileSync(file, content, 'utf8');
+    console.log(`Fixed ${fileFixes} issues in ${path.relative(process.cwd(), file)}`);
     fixedCount += fileFixes;
   }
 });

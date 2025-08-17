@@ -1,15 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Matanuska Transport - Unified Data Seeding Utility
- *
- * This script provides an integrated approach to seeding all reference data
- * required by the Matanuska Transport Platform:
- * - Routes and distances
- * - Fleet vehicles
- * - Tyre reference data (brands, sizes, patterns)
- * - Vehicle-tyre mappings
- * - Workshop inventory
+ * Matanuska Transport - Unified Data Seeding Utility (CommonJS version)
  *
  * Usage:
  *   node data-seeder.js [options] [collection]
@@ -20,20 +12,21 @@
  *   --no-validate : Skip data validation
  *
  * Collections:
- *   routes        : Route and distance data
- *   fleet         : Fleet vehicle data
- *   tyres         : All tyre reference data (brands, sizes, patterns, positions)
- *   tyrestore     : Vehicle-tyre mappings
- *   inventory     : Workshop inventory items
- *   all           : All collections (default)
+ *   routes      : Route and distance data
+ *   fleet       : Fleet vehicle data
+ *   tyres       : All tyre reference data (brands, sizes, patterns, positions)
+ *   tyrestore   : Vehicle-tyre mappings
+ *   inventory   : Workshop inventory items
+ *   all         : All collections (default)
  */
 
+// --- Imports ---
 const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const { readFileSync, existsSync } = require("fs");
 const path = require("path");
 
-// Parse command line arguments
+// --- CLI Arguments ---
 const args = process.argv.slice(2);
 const options = {
   force: args.includes("--force"),
@@ -41,18 +34,13 @@ const options = {
   validate: !args.includes("--no-validate"),
 };
 
-// Find which collection(s) to seed
 const collections = args.filter((arg) => !arg.startsWith("--")).map((arg) => arg.toLowerCase());
+if (collections.length === 0) collections.push("all");
 
-// If no specific collections, default to all
-if (collections.length === 0) {
-  collections.push("all");
-}
-
-// Configuration
+// --- Config ---
 const CONFIG = {
   serviceAccountPath: "./serviceAccountKey.json",
-  batchSize: 500, // Maximum items per batch (Firestore limit)
+  batchSize: 500,
   collections: {
     routes: "routeDistances",
     fleet: "fleet",
@@ -65,7 +53,7 @@ const CONFIG = {
   },
 };
 
-// Validation schemas
+// --- Validation Schemas ---
 const schemas = {
   routes: (item) => {
     if (!item.route || typeof item.route !== "string") return "Missing or invalid route";
@@ -77,14 +65,8 @@ const schemas = {
     if (!item.registrationNumber) return "Missing registration number";
     return null;
   },
-  tyreBrands: (item) => {
-    if (!item.name) return "Missing tyre brand name";
-    return null;
-  },
-  tyreSizes: (item) => {
-    if (!item.size) return "Missing tyre size";
-    return null;
-  },
+  tyreBrands: (item) => (!item.name ? "Missing tyre brand name" : null),
+  tyreSizes: (item) => (!item.size ? "Missing tyre size" : null),
   tyrePatterns: (item) => {
     if (!item.brand) return "Missing tyre pattern brand";
     if (!item.size) return "Missing tyre pattern size";
@@ -93,8 +75,7 @@ const schemas = {
   },
   vehiclePositions: (item) => {
     if (!item.vehicleType) return "Missing vehicle type";
-    if (!item.positions || !Array.isArray(item.positions))
-      return "Missing or invalid positions array";
+    if (!item.positions || !Array.isArray(item.positions)) return "Missing or invalid positions array";
     return null;
   },
   tyreStore: (item) => {
@@ -111,13 +92,7 @@ const schemas = {
   },
 };
 
-// Initialize Firebase
-console.log("🚀 Matanuska Transport - Unified Data Seeding Utility");
-console.log("====================================================");
-
-let db;
-
-// Helper function to colorize console output
+// --- Console Coloring ---
 const colors = {
   reset: "\x1b[0m",
   red: "\x1b[31m",
@@ -128,19 +103,23 @@ const colors = {
   cyan: "\x1b[36m",
   white: "\x1b[37m",
 };
-
 function colorize(text, color) {
-  return `${colors[color]}${text}${colors.reset}`;
+  return colors[color] + text + colors.reset;
 }
 
-// Initialize Firebase Admin SDK
+// --- Firebase Initialization ---
+let db;
+
+function logStartup() {
+  console.log(colorize("🚀 Matanuska Transport - Unified Data Seeding Utility", "cyan"));
+  console.log(colorize("====================================================", "cyan"));
+}
+logStartup();
+
 async function initializeFirebase() {
   try {
-    // Check if service account key exists
     if (!existsSync(CONFIG.serviceAccountPath)) {
-      console.error(
-        colorize("❌ Service account key not found at: " + CONFIG.serviceAccountPath, "red")
-      );
+      console.error(colorize("❌ Service account key not found at: " + CONFIG.serviceAccountPath, "red"));
       console.log("\n📝 INSTRUCTIONS:");
       console.log("1. Go to Firebase Console → Project Settings → Service Accounts");
       console.log('2. Click "Generate new private key"');
@@ -148,85 +127,57 @@ async function initializeFirebase() {
       console.log("4. Run this script again\n");
       process.exit(1);
     }
-
-    // Load service account
     const serviceAccount = JSON.parse(readFileSync(CONFIG.serviceAccountPath, "utf8"));
     console.log(colorize("✅ Service account key loaded successfully", "green"));
 
-    // Initialize app
-    initializeApp({
-      credential: cert(serviceAccount),
-    });
-
-    // Get Firestore instance
+    initializeApp({ credential: cert(serviceAccount) });
     db = getFirestore();
     console.log(colorize("✅ Firebase initialized successfully", "green"));
-
     return true;
   } catch (error) {
-    console.error(colorize(`❌ Failed to initialize Firebase: ${error.message}`, "red"));
+    console.error(colorize("❌ Failed to initialize Firebase: " + error.message, "red"));
     return false;
   }
 }
 
-// Generic seeding function for any collection
-async function seedCollection(collectionName, data, options = {
-  force: false,
-  validate: true,
-  verbose: false,
-  idGenerator: (item) =>
-    item.id ||
-    `${Object.values(item)
-      .join("_")
-      .replace(/[^a-zA-Z0-9]/g, "_")}`,
-  preprocessor: (item) => item,
-}) {
-  console.log(colorize(`\n🔄 Starting to seed collection: ${collectionName}`, "cyan"));
-  console.log(`Found ${data.length} items to process`);
-
+// --- Generic Seeding Function ---
+async function seedCollection(collectionName, data, customOptions) {
   const {
-    force,
-    validate,
-    verbose,
-    idGenerator,
-    preprocessor,
-  } = options;
+    force = false,
+    validate = true,
+    verbose = false,
+    idGenerator = (item) => item.id || Object.values(item).join("_").replace(/[^a-zA-Z0-9]/g, "_"),
+    preprocessor = (item) => item,
+  } = customOptions;
+
+  console.log(colorize("\n🔄 Starting to seed collection: " + collectionName, "cyan"));
+  console.log("Found " + data.length + " items to process");
 
   try {
-    // Delete existing data if force is true
+    // Delete existing if force
     if (force) {
-      console.log(`Deleting existing data from ${collectionName}...`);
+      console.log("Deleting existing data from " + collectionName + "...");
       const snapshot = await db.collection(collectionName).get();
       if (snapshot.size > 0) {
         const batches = [];
         let batch = db.batch();
         let operationCount = 0;
-
         snapshot.docs.forEach((doc) => {
           batch.delete(doc.ref);
           operationCount++;
-
-          // Commit batch if size limit is reached
           if (operationCount === CONFIG.batchSize) {
             batches.push(batch.commit());
             batch = db.batch();
             operationCount = 0;
           }
         });
-
-        // Commit final batch if any operations remain
-        if (operationCount > 0) {
-          batches.push(batch.commit());
-        }
-
+        if (operationCount > 0) batches.push(batch.commit());
         await Promise.all(batches);
-        console.log(
-          colorize(`✅ Deleted ${snapshot.size} existing items from ${collectionName}`, "yellow")
-        );
+        console.log(colorize("✅ Deleted " + snapshot.size + " existing items from " + collectionName, "yellow"));
       }
     }
 
-    // Process data in batches
+    // Batch insert
     const batches = [];
     let batch = db.batch();
     let operationCount = 0;
@@ -235,25 +186,19 @@ async function seedCollection(collectionName, data, options = {
     let errorCount = 0;
     let validationErrors = [];
 
-    // Iterate through data
     for (const item of data) {
-      // Generate document ID
       const docId = idGenerator(item);
       const ref = db.collection(collectionName).doc(docId);
 
-      // Check if document exists (unless force is true)
       if (!force) {
         const doc = await ref.get();
         if (doc.exists) {
-          if (options.verbose) {
-            console.log(colorize(`ℹ️ Skipping existing item: ${docId}`, "blue"));
-          }
+          if (verbose) console.log(colorize("ℹ️ Skipping existing item: " + docId, "blue"));
           skipCount++;
           continue;
         }
       }
 
-      // Validate data if required
       if (validate && schemas[collectionName]) {
         const validationError = schemas[collectionName](item);
         if (validationError) {
@@ -263,71 +208,44 @@ async function seedCollection(collectionName, data, options = {
         }
       }
 
-      // Process item
       const processedItem = preprocessor(item);
-
-      // Add to batch
       batch.set(ref, {
         ...processedItem,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
-
       operationCount++;
       successCount++;
-
-      // Commit batch if size limit is reached
       if (operationCount === CONFIG.batchSize) {
         batches.push(batch.commit());
-        if (options.verbose) {
-          console.log(colorize(`✅ Committed batch of ${operationCount} items`, "green"));
-        }
+        if (verbose) console.log(colorize("✅ Committed batch of " + operationCount + " items", "green"));
         batch = db.batch();
         operationCount = 0;
       }
     }
-
-    // Commit final batch if any operations remain
-    if (operationCount > 0) {
-      batches.push(batch.commit());
-    }
-
-    // Wait for all batches to complete
+    if (operationCount > 0) batches.push(batch.commit());
     await Promise.all(batches);
 
-    console.log(
-      colorize(`✅ Successfully added ${successCount} items to ${collectionName}`, "green")
-    );
-    if (skipCount > 0) {
-      console.log(colorize(`ℹ️ Skipped ${skipCount} existing items`, "blue"));
-    }
+    console.log(colorize("✅ Successfully added " + successCount + " items to " + collectionName, "green"));
+    if (skipCount > 0) console.log(colorize("ℹ️ Skipped " + skipCount + " existing items", "blue"));
     if (errorCount > 0) {
-      console.log(colorize(`❌ Failed to add ${errorCount} items due to validation errors`, "red"));
-      if (options.verbose) {
+      console.log(colorize("❌ Failed to add " + errorCount + " items due to validation errors", "red"));
+      if (verbose) {
         console.log("Validation errors:");
         console.log(validationErrors);
       }
     }
 
-    return {
-      success: successCount,
-      skipped: skipCount,
-      errors: errorCount,
-    };
+    return { success: successCount, skipped: skipCount, errors: errorCount };
   } catch (error) {
-    console.error(
-      colorize(`❌ Error seeding collection ${collectionName}: ${error.message}`, "red")
-    );
+    console.error(colorize("❌ Error seeding collection " + collectionName + ": " + error.message, "red"));
     console.error(error);
-    return {
-      success: 0,
-      skipped: 0,
-      errors: data.length,
-    };
+    return { success: 0, skipped: 0, errors: data.length };
   }
 }
 
-// Import data modules
+// --- Data Modules ---
+
 const routeDistances = [
   { route: "JHB - HARARE (NORTH BOUND)", distance: 1120 },
   { route: "JHB - BLANTYRE (NORTH BOUND)", distance: 1616 },
@@ -354,48 +272,20 @@ const routeDistances = [
   { route: "CPT - LUSAKA (NORTH BOUND)", distance: 2962 },
   { route: "CPT - BLANTYRE (NORTH BOUND)", distance: 3127 },
   { route: "CPT - LILONGWE (NORTH BOUND)", distance: 3256 },
-  // Additional routes omitted for brevity but included in full implementation
 ];
 
 const tyreBrands = [
-  "Bridgestone",
-  "Michelin",
-  "Goodyear",
-  "Continental",
-  "Pirelli",
-  "Dunlop",
-  "Hankook",
-  "Yokohama",
-  "Kumho",
-  "Toyo",
-  "Firemax",
-  "Triangle",
-  "Terraking",
-  "Compasal",
-  "Windforce",
-  "Perelli",
-  "Powertrac",
-  "Sunfull",
-  "Wellplus",
-  "Techshield",
-  "Sonix",
-  "Formula",
+  "Bridgestone", "Michelin", "Goodyear", "Continental", "Pirelli", "Dunlop", "Hankook",
+  "Yokohama", "Kumho", "Toyo", "Firemax", "Triangle", "Terraking", "Compasal", "Windforce",
+  "Perelli", "Powertrac", "Sunfull", "Wellplus", "Techshield", "Sonix", "Formula"
 ];
 
 const tyreSizes = [
-  "295/80R22.5",
-  "315/80R22.5",
-  "295/75R22.5",
-  "11R22.5",
-  "12R22.5",
-  "385/65R22.5",
-  "275/70R22.5",
-  "315/80R22.16",
-  "315/80R22.17",
+  "295/80R22.5", "315/80R22.5", "295/75R22.5", "11R22.5", "12R22.5",
+  "385/65R22.5", "275/70R22.5", "315/80R22.16", "315/80R22.17"
 ];
 
 const tyrePatterns = [
-  // Sample entries - actual implementation would include all patterns
   { brand: "Firemax", pattern: "", size: "315/80R22.5", position: "Drive" },
   { brand: "TRIANGLE", pattern: "TR688", size: "315/80R22.5", position: "Drive" },
   { brand: "Terraking", pattern: "HS102", size: "315/80R22.5", position: "Drive" },
@@ -420,18 +310,15 @@ const vehiclePositions = [
       { id: "Trailer Axle 2 Right", name: "Trailer Axle 2 Right" },
       { id: "Spare", name: "Spare" },
     ],
-  },
-  // Other vehicle types would be included here
+  }
 ];
 
-// Sample of vehicle tyre mappings (abbreviated)
 const vehicleTyreMappings = [
   { RegistrationNo: "AAX2987", StoreName: "15L", TyrePosDescription: "V1", TyreCode: "MAT0171" },
   { RegistrationNo: "AAX2987", StoreName: "15L", TyrePosDescription: "V2", TyreCode: "MAT0172" },
   { RegistrationNo: "AAX2987", StoreName: "15L", TyrePosDescription: "V3", TyreCode: "MAT0173" },
 ];
 
-// Sample of stock inventory (abbreviated)
 const stockInventory = [
   {
     StoreName: "MUTARE DEPOT STOCK",
@@ -455,7 +342,6 @@ const stockInventory = [
   },
 ];
 
-// Fleet data (to be loaded from an external file in real implementation)
 const fleetData = [
   {
     fleetNumber: "15L",
@@ -477,29 +363,21 @@ const fleetData = [
   },
 ];
 
-// Main execution function
+// --- Main Execution ---
 async function main() {
   try {
-    // Initialize Firebase
     const initialized = await initializeFirebase();
-    if (!initialized) {
-      process.exit(1);
-    }
+    if (!initialized) process.exit(1);
 
     console.log(colorize("\n📊 Configuration", "magenta"));
-    console.log(`Force update: ${options.force}`);
-    console.log(`Verbose mode: ${options.verbose}`);
-    console.log(`Validate data: ${options.validate}`);
-    console.log(`Selected collections: ${collections.join(", ")}`);
+    console.log("Force update: " + options.force);
+    console.log("Verbose mode: " + options.verbose);
+    console.log("Validate data: " + options.validate);
+    console.log("Selected collections: " + collections.join(", "));
 
-    const stats = {
-      total: 0,
-      success: 0,
-      skipped: 0,
-      errors: 0,
-    };
+    const stats = { total: 0, success: 0, skipped: 0, errors: 0 };
 
-    // Seed route distances
+    // routes
     if (collections.includes("all") || collections.includes("routes")) {
       const routeStats = await seedCollection(CONFIG.collections.routes, routeDistances, {
         force: options.force,
@@ -514,7 +392,7 @@ async function main() {
       stats.errors += routeStats.errors;
     }
 
-    // Seed fleet data
+    // fleet
     if (collections.includes("all") || collections.includes("fleet")) {
       const fleetStats = await seedCollection(CONFIG.collections.fleet, fleetData, {
         force: options.force,
@@ -529,50 +407,42 @@ async function main() {
       stats.errors += fleetStats.errors;
     }
 
-    // Seed tyre reference data
+    // tyres
     if (collections.includes("all") || collections.includes("tyres")) {
-      // Seed tyre brands
-      const brandStats = await seedCollection(
-        CONFIG.collections.tyreBrands,
-        tyreBrands.map((name) => ({ name })),
-        {
-          force: options.force,
-          validate: options.validate,
-          verbose: options.verbose,
-          idGenerator: (item) => item.name.toLowerCase().replace(/[^a-z0-9]/g, ""),
-          preprocessor: (item) => item,
-        }
-      );
+      // brands
+      const brandStats = await seedCollection(CONFIG.collections.tyreBrands, tyreBrands.map((name) => ({ name })), {
+        force: options.force,
+        validate: options.validate,
+        verbose: options.verbose,
+        idGenerator: (item) => item.name.toLowerCase().replace(/[^a-z0-9]/g, ""),
+        preprocessor: (item) => item,
+      });
       stats.total += tyreBrands.length;
       stats.success += brandStats.success;
       stats.skipped += brandStats.skipped;
       stats.errors += brandStats.errors;
 
-      // Seed tyre sizes
-      const sizeStats = await seedCollection(
-        CONFIG.collections.tyreSizes,
-        tyreSizes.map((size) => ({ size })),
-        {
-          force: options.force,
-          validate: options.validate,
-          verbose: options.verbose,
-          idGenerator: (item) => item.size.replace(/[^a-z0-9]/g, ""),
-    preprocessor: (item) => item,
-        }
-      );
+      // sizes
+      const sizeStats = await seedCollection(CONFIG.collections.tyreSizes, tyreSizes.map((size) => ({ size })), {
+        force: options.force,
+        validate: options.validate,
+        verbose: options.verbose,
+        idGenerator: (item) => item.size.replace(/[^a-z0-9]/g, ""),
+        preprocessor: (item) => item,
+      });
       stats.total += tyreSizes.length;
       stats.success += sizeStats.success;
       stats.skipped += sizeStats.skipped;
       stats.errors += sizeStats.errors;
 
-      // Seed tyre patterns
+      // patterns
       const patternStats = await seedCollection(CONFIG.collections.tyrePatterns, tyrePatterns, {
         force: options.force,
         validate: options.validate,
         verbose: options.verbose,
         idGenerator: (item) => {
           const patternName = item.pattern || "standard";
-          return `${item.brand.toLowerCase()}_${patternName.toLowerCase()}_${item.size.replace(/[^a-z0-9]/g, "")}`;
+          return item.brand.toLowerCase() + "_" + patternName.toLowerCase() + "_" + item.size.replace(/[^a-z0-9]/g, "");
         },
         preprocessor: (item) => item,
       });
@@ -581,51 +451,43 @@ async function main() {
       stats.skipped += patternStats.skipped;
       stats.errors += patternStats.errors;
 
-      // Seed vehicle positions
-      const positionStats = await seedCollection(
-        CONFIG.collections.vehiclePositions,
-        vehiclePositions,
-        {
-          force: options.force,
-          validate: options.validate,
-          verbose: options.verbose,
-          idGenerator: (item) => item.vehicleType,
-    preprocessor: (item) => item,
-        }
-      );
+      // positions
+      const positionStats = await seedCollection(CONFIG.collections.vehiclePositions, vehiclePositions, {
+        force: options.force,
+        validate: options.validate,
+        verbose: options.verbose,
+        idGenerator: (item) => item.vehicleType,
+        preprocessor: (item) => item,
+      });
       stats.total += vehiclePositions.length;
       stats.success += positionStats.success;
       stats.skipped += positionStats.skipped;
       stats.errors += positionStats.errors;
     }
 
-    // Seed tyre store mappings
+    // tyrestore
     if (collections.includes("all") || collections.includes("tyrestore")) {
-      const tyreStoreStats = await seedCollection(
-        CONFIG.collections.tyreStore,
-        vehicleTyreMappings,
-        {
-          force: options.force,
-          validate: options.validate,
-          verbose: options.verbose,
-          idGenerator: (item) => `${item.StoreName}_${item.TyrePosDescription}_${item.TyreCode}`,
-          preprocessor: (item) => item, // Add default preprocessor that returns item unchanged
-        }
-      );
+      const tyreStoreStats = await seedCollection(CONFIG.collections.tyreStore, vehicleTyreMappings, {
+        force: options.force,
+        validate: options.validate,
+        verbose: options.verbose,
+        idGenerator: (item) => item.StoreName + "_" + item.TyrePosDescription + "_" + item.TyreCode,
+        preprocessor: (item) => item,
+      });
       stats.total += vehicleTyreMappings.length;
       stats.success += tyreStoreStats.success;
       stats.skipped += tyreStoreStats.skipped;
       stats.errors += tyreStoreStats.errors;
     }
 
-    // Seed inventory data
+    // inventory
     if (collections.includes("all") || collections.includes("inventory")) {
       const inventoryStats = await seedCollection(CONFIG.collections.inventory, stockInventory, {
         force: options.force,
         validate: options.validate,
         verbose: options.verbose,
         idGenerator: (item) => item.StockCde.replace(/[^a-zA-Z0-9]/g, "_"),
-    preprocessor: (item) => item,
+        preprocessor: (item) => item,
       });
       stats.total += stockInventory.length;
       stats.success += inventoryStats.success;
@@ -633,21 +495,19 @@ async function main() {
       stats.errors += inventoryStats.errors;
     }
 
-    // Print summary
+    // --- Summary ---
     console.log(colorize("\n📊 Seeding Summary", "magenta"));
-    console.log(`Total items processed: ${stats.total}`);
-    console.log(colorize(`✅ Successfully added: ${stats.success}`, "green"));
-    console.log(colorize(`ℹ️ Skipped existing: ${stats.skipped}`, "blue"));
-    console.log(colorize(`❌ Failed to add: ${stats.errors}`, "red"));
-
+    console.log("Total items processed: " + stats.total);
+    console.log(colorize("✅ Successfully added: " + stats.success, "green"));
+    console.log(colorize("ℹ️ Skipped existing: " + stats.skipped, "blue"));
+    console.log(colorize("❌ Failed to add: " + stats.errors, "red"));
     console.log(colorize("\n🏁 Data seeding completed", "green"));
     process.exit(0);
   } catch (error) {
-    console.error(colorize(`\n❌ Unhandled error during data seeding: ${error.message}`, "red"));
+    console.error(colorize("\n❌ Unhandled error during data seeding: " + error.message, "red"));
     console.error(error);
     process.exit(1);
   }
 }
 
-// Run the main function
 main();
