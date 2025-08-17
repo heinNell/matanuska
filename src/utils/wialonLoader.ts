@@ -45,7 +45,7 @@ export const loadWialonSDK = (options: WialonLoadOptions = {}): Promise<void> =>
       // Get configuration
       const baseUrl =
         options.baseUrl ||
-        "https://hosting.wialon.com/?token=c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053&lang=en";
+        "https://hst-api.wialon.com";
 
       // Create script element with optimal loading
       const script = document.createElement("script");
@@ -88,7 +88,7 @@ export const loadWialonSDK = (options: WialonLoadOptions = {}): Promise<void> =>
  */
 export const initWialonSession = async (
   token: string,
-  baseUrl: string = "https://hosting.wialon.com/?token=c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053&lang=en"
+  baseUrl: string = "https://hst-api.wialon.com"
 ): Promise<any> => {
   // Ensure Wialon SDK is loaded
   await loadWialonSDK({ baseUrl });
@@ -101,17 +101,31 @@ export const initWialonSession = async (
     const sess = window.wialon.core.Session.getInstance();
     sess.initSession(baseUrl);
 
-    sess.loginToken(token, "", (code: any) => {
-      if (code) {
-        const errorText = window.wialon.core.Errors.getErrorText(code);
-        console.error("Wialon login failed:", errorText);
-        reject(new Error(`Wialon login failed: ${errorText}`));
-        return;
-      }
+    try {
+      sess.loginToken(token, "", (code: any) => {
+        if (code) {
+          // Get detailed error information
+          const errorText = window.wialon.core.Errors.getErrorText(code);
+          console.error("Wialon login failed:", errorText, "Error code:", code);
+          
+          // Check for specific error codes
+          if (code === 5) {
+            console.warn("Error performing request - Possible network issue or invalid API endpoint");
+            console.warn("API URL being used:", baseUrl);
+            console.warn("Token format correct:", token && token.length > 20 ? "Yes" : "No");
+          }
+          
+          reject(new Error(`Wialon login failed: ${errorText}`));
+          return;
+        }
 
-      console.log("✅ Wialon session initialized successfully");
-      resolve(sess);
-    });
+        console.log("✅ Wialon session initialized successfully");
+        resolve(sess);
+      });
+    } catch (err) {
+      console.error("Exception during Wialon login:", err);
+      reject(new Error(`Wialon login exception: ${err instanceof Error ? err.message : String(err)}`));
+    }
   });
 };
 

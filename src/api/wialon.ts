@@ -15,7 +15,8 @@ declare global {
 // Configuration
 const TOKEN =
   import.meta.env.VITE_WIALON_TOKEN ||
-  "c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053";
+  ""; // Removed hardcoded token for security
+
 // Fix for spaces in the URL from environment variables
 const WIALON_API_URL = import.meta.env.VITE_WIALON_API_URL?.trim() || "https://hst-api.wialon.com";
 const WIALON_SDK_URL = "https://hst-api.wialon.com/wsdk/script/wialon.js";
@@ -116,24 +117,71 @@ export async function initializeWialon(): Promise<boolean> {
       return false;
     }
 
-    session.initSession(WIALON_API_URL);
+    // Check if API URL is valid
+    if (!WIALON_API_URL) {
+      log("WIALON_API_URL is empty or invalid", true);
+      return false;
+    }
 
-    const loginSuccess = await new Promise<boolean>((resolve) => {
-      session.loginToken(TOKEN, "", (code: number) => {
-        if (code) {
-          const errorText = W.core.Errors.getErrorText(code);
-          logError(`Wialon login failed: ${errorText}`, {
-            category: ErrorCategory.API,
-            severity: ErrorSeverity.ERROR,
-            context: { code, errorText },
+    // Check if TOKEN is valid
+    if (!TOKEN) {
+      log("Wialon token is missing. Please provide a valid token in environment variables.", true);
+      return false;
+    }
+    
+    // Initialize session with proper error logging
+    try {
+      session.initSession(WIALON_API_URL);
+      
+      log(`Connecting to Wialon API: ${WIALON_API_URL}`);
+      
+      const loginSuccess = await new Promise<boolean>((resolve) => {
+        try {
+          session.loginToken(TOKEN, "", (code: number) => {
+            if (code) {
+              const errorText = W.core.Errors.getErrorText(code);
+              
+              // Add more detailed diagnostics for common error codes
+              let errorDetails = "";
+              if (code === 5) {
+                errorDetails = " - This may be due to network issues, incorrect API URL, or invalid token format";
+              } else if (code === 7) {
+                errorDetails = " - The provided token may be expired or invalid";
+              } else if (code === 1) {
+                errorDetails = " - Invalid session";
+              } else if (code === 4) {
+                errorDetails = " - Access denied with the provided credentials";
+              }
+              
+              logError(`Wialon login failed: ${errorText}${errorDetails}`, {
+                category: ErrorCategory.API,
+                severity: ErrorSeverity.ERROR,
+                context: { 
+                  code, 
+                  errorText,
+                  apiUrl: WIALON_API_URL,
+                  tokenLength: TOKEN ? TOKEN.length : 0,
+                  // Don't log the actual token for security
+                },
+              });
+              
+              log(`Error details - Code: ${code}, Text: ${errorText}${errorDetails}`, true);
+              
+              resolve(false);
+            } else {
+              log("Wialon login successful");
+              resolve(true);
+            }
           });
+        } catch (err) {
+          log(`Exception during login: ${err instanceof Error ? err.message : String(err)}`, true);
           resolve(false);
-        } else {
-          log("Wialon login successful");
-          resolve(true);
         }
       });
-    });
+    } catch (err) {
+      log(`Error initializing session: ${err instanceof Error ? err.message : String(err)}`, true);
+      return false;
+    }
 
     if (!loginSuccess) {
       return false;

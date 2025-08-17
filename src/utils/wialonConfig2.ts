@@ -23,7 +23,7 @@ export const WIALON_SESSION_TOKEN = getEnvVar("VITE_WIALON_SESSION_TOKEN", "");
 
 // SDK URL for loading the Wialon JavaScript SDK
 export const WIALON_SDK_URL =
-  "https://hosting.wialon.com/?token=c1099bc37c906fd0832d8e783b60ae0dD9D1A721B2944486AC08F8AA3ACAC2D2FD45FF053&lang=en/wsdk/script/wialon.js";
+  "https://hst-api.wialon.com/wsdk/script/wialon.js";
 
 // Helper function to get the Wialon login URL with a specific token
 export const getWialonLoginUrlWithToken = (token: string): string => {
