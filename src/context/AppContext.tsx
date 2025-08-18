@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getFirestore, Timestamp, writeBatch } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getFirestore, Timestamp, writeBatch, serverTimestamp } from "firebase/firestore";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   ActionItem,
@@ -2003,6 +2003,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     triggerTripImport,
     importCostsFromCSV: placeholder,
     importTripsFromWebhook: placeholderWebhook,
+  importDieselRecords,
     importDriverBehaviorEventsFromWebhook: async () => {
       try {
         console.log("🔄 Importing driver behavior events from webhook...");

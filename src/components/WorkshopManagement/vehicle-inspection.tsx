@@ -1,47 +1,44 @@
 import React, { useState } from "react";
-import InspectionReportForm from "../forms/workshop/InspectionReportForm";
+import InspectionReportForm, {
+  InspectionReport,
+  InspectionItem,
+} from "../forms/workshop/InspectionReportForm";
 
-/**
- * Vehicle Inspection Page
- * Used for conducting and submitting vehicle inspections
- */
 const VehicleInspectionPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Mock data for initial form values
-  const initialData = {
-    id: "",
+  const initialData: InspectionReport = {
+    id: `insp-${Date.now()}`,
     reportNumber: "INS-" + new Date().getTime().toString().substring(6),
     vehicleId: "TRK-001",
-    inspectionDate: new Date().toISOString().split("T")[0],
+    inspectionDate: new Date().toISOString(),
     inspector: "John Mechanic",
     items: [
-      { id: "item-1", name: "Headlights", status: "Pass" as const },
-      { id: "item-2", name: "Brake Lights", status: "Pass" as const },
-      { id: "item-3", name: "Indicators", status: "Pass" as const },
-      { id: "item-4", name: "Wipers", status: "Pass" as const },
-      { id: "item-5", name: "Horn", status: "Pass" as const },
-      { id: "item-6", name: "Tires", status: "Pass" as const },
-      { id: "item-7", name: "Brakes", status: "Pass" as const },
-      { id: "item-8", name: "Suspension", status: "Pass" as const },
-      { id: "item-9", name: "Oil Level", status: "Pass" as const },
-      { id: "item-10", name: "Coolant Level", status: "Pass" as const },
-      { id: "item-11", name: "Washer Fluid", status: "Pass" as const },
-      { id: "item-12", name: "Battery", status: "Pass" as const },
-    ],
-    overallCondition: "Pass" as const,
+      { id: "item-1", name: "Headlights", status: "Pass" },
+      { id: "item-2", name: "Brake Lights", status: "Pass" },
+      { id: "item-3", name: "Indicators", status: "Pass" },
+      { id: "item-4", name: "Wipers", status: "Pass" },
+      { id: "item-5", name: "Horn", status: "Pass" },
+      { id: "item-6", name: "Tires", status: "Pass" },
+      { id: "item-7", name: "Brakes", status: "Pass" },
+      { id: "item-8", name: "Suspension", status: "Pass" },
+      { id: "item-9", name: "Oil Level", status: "Pass" },
+      { id: "item-10", name: "Coolant Level", status: "Pass" },
+      { id: "item-11", name: "Washer Fluid", status: "Pass" },
+      { id: "item-12", name: "Battery", status: "Pass" },
+    ] as InspectionItem[],
+    overallCondition: "Pass",
     notes: "",
-    attachments: [],
+    attachments: [] as string[],
   };
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: InspectionReport) => {
     console.log("Inspection report submitted:", data);
     setIsSubmitted(true);
-
-    // In a real app, this would save to Firestore
     setTimeout(() => {
       setIsSubmitted(false);
-      window.location.href = "/workshop/inspections"; // Redirect to inspections list
+      window.location.href = "/workshop/inspections";
     }, 2000);
   };
 
@@ -64,16 +61,13 @@ const VehicleInspectionPage: React.FC = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              Inspection report submitted successfully!
             </div>
           )}
         </div>
-
         <p className="text-gray-600 mb-6">
           Complete this form to document the inspection of a vehicle. Check all systems and note any
           issues or maintenance needs.
         </p>
-
         <InspectionReportForm
           initialData={initialData}
           onSave={handleSubmit}

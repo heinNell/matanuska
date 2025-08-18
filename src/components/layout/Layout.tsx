@@ -25,7 +25,7 @@ const normalizeTrip = (t: Partial<Trip>): Trip => {
 };
 
 const Layout: React.FC<LayoutProps> = ({ setShowTripForm, setEditingTrip }) => {
-  
+
 
   // State to manage the selected trip
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);

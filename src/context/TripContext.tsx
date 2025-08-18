@@ -40,8 +40,16 @@ export const TripProvider: React.FC<TripProviderProps> = ({ children }) => {
 
   useEffect(() => {
     setLoading(true);
-    
+
     // Initialize Firestore
+    if (!firebaseApp) {
+      const error = new Error('Firebase app is not initialized');
+      console.error(error);
+      setError(error);
+      setLoading(false);
+      return;
+    }
+
     const db = getFirestore(firebaseApp);
 
     try {
@@ -57,7 +65,7 @@ export const TripProvider: React.FC<TripProviderProps> = ({ children }) => {
               ...data
             };
           });
-          
+
           setTrips(tripsData);
           setLoading(false);
         },
@@ -67,7 +75,7 @@ export const TripProvider: React.FC<TripProviderProps> = ({ children }) => {
           setLoading(false);
         }
       );
-      
+
       // Clean up subscription on unmount
       return () => unsubscribe();
     } catch (err: any) {
@@ -77,7 +85,7 @@ export const TripProvider: React.FC<TripProviderProps> = ({ children }) => {
       return () => {}; // Return empty function for consistency
     }
   }, []);
-  
+
   // Filter trips based on status
   const activeTrips = trips.filter(trip => trip.status !== 'completed');
   const completedTrips = trips.filter(trip => trip.status === 'completed');

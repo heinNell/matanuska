@@ -299,7 +299,28 @@ const TripDetailsPage: React.FC<TripDetailsProps> = ({ trip: propTrip, onBack })
 
   const handleAddAdditionalCost = (cost: Omit<AdditionalCost, "id">, files?: FileList) => {
     try {
-      addAdditionalCost(trip.id, cost, files);
+      // Create attachments from files if provided
+      const attachments = files ? Array.from(files).map((file, index) => ({
+        id: `AC${Date.now()}-${index}`,
+        costEntryId: `addcost-${Date.now()}`,
+        filename: file.name,
+        fileUrl: URL.createObjectURL(file),
+        fileType: file.type,
+        fileSize: file.size,
+        uploadedAt: new Date().toISOString(),
+        fileData: "",
+      })) : [];
+
+      const newCost = {
+        ...cost,
+        attachments,
+        addedBy: "Current User",
+        addedAt: new Date().toISOString(),
+      };
+
+      addAdditionalCost(trip.id, newCost, files);
+
+      alert(`Additional cost of ${formatCurrency(cost.amount, trip.revenueCurrency)} added successfully!`);
     } catch (error) {
       console.error("Error adding additional cost:", error);
       alert("Error adding additional cost. Please try again.");
@@ -307,11 +328,30 @@ const TripDetailsPage: React.FC<TripDetailsProps> = ({ trip: propTrip, onBack })
   };
 
   const handleRemoveAdditionalCost = (costId: string) => {
+    if (!trip || !costId) {
+      console.error("Cannot remove cost: Invalid trip or cost ID");
+      alert("Error: Could not remove the additional cost due to missing information.");
+      return;
+    }
+
     try {
-      removeAdditionalCost(trip.id, costId);
+      if (confirm(`Are you sure you want to remove this additional cost? This action cannot be undone.`)) {
+        removeAdditionalCost(trip.id, costId);
+
+        // Update local state
+        setTrip(prev => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            additionalCosts: prev.additionalCosts.filter(cost => cost.id !== costId)
+          };
+        });
+
+        alert("Additional cost removed successfully!");
+      }
     } catch (error) {
       console.error("Error removing additional cost:", error);
-      alert("Error removing additional cost. Please try again.");
+      alert("Failed to remove the additional cost. Please try again or contact support if the problem persists.");
     }
   };
 

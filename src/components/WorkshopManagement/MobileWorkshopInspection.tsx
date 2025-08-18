@@ -61,10 +61,6 @@ interface InspectionPhoto {
   location?: { lat: number; lng: number };
 }
 
-// Utility to guarantee a string (never undefined/null)
-const safeString = (value: string | null | undefined, fallback = ""): string =>
-  typeof value === "string" ? value : fallback;
-
 export const MobileWorkshopInspection: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -667,6 +663,10 @@ export const MobileWorkshopInspection: React.FC = () => {
         )}
       </div>
     </div>
+  );
+};
+
+export default MobileWorkshopInspection;
   );
 };
 
