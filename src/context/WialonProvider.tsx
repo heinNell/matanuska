@@ -1,8 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { getWialonUnits, initializeWialon } from "../api/wialon";
-import { getEnvVar } from "../utils/envUtils";
+// src/context/WialonProvider.tsx
 
-// Define Wialon context type
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { getWialonUnits } from "../api/wialon"; // keep your helper
+import { getEnvVar } from "../utils/envUtils";
+import type { DiagnosticResult } from "../utils/wialonDiagnostics";
+import { initWialonSession, logoutWialon } from "../utils/wialonInit";
+
+// ---- Context types (unchanged API) ----
 interface WialonContextType {
   session: any;
   loggedIn: boolean;
@@ -11,12 +15,12 @@ interface WialonContextType {
   units: any[];
   error: Error | null;
   token: string | null;
-  login: () => void;
+  login: (customToken?: string) => void;
   logout: () => void;
   refreshUnits: () => Promise<any[]>;
   setToken: (token: string) => void;
-  runDiagnostics: () => Promise<void>;
-  diagnosticResults: any[];
+  runDiagnostics: () => Promise<DiagnosticResult[]>;
+  diagnosticResults: DiagnosticResult[];
   isDiagnosticRunning: boolean;
 }
 
@@ -32,7 +36,7 @@ export const WialonContext = createContext<WialonContextType>({
   logout: () => {},
   refreshUnits: async () => [],
   setToken: () => {},
-  runDiagnostics: async () => {},
+  runDiagnostics: async () => [],
   diagnosticResults: [],
   isDiagnosticRunning: false,
 });
@@ -44,175 +48,117 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
   const [initialized, setInitialized] = useState(false);
   const [units, setUnits] = useState<any[]>([]);
   const [error, setError] = useState<Error | null>(null);
-  const [token, setTokenState] = useState<string | null>(() => {
-    // Initialize from localStorage if available
-    const storedToken = localStorage.getItem('wialonToken');
-    return storedToken || getEnvVar("VITE_WIALON_SESSION_TOKEN", "");
-  });
-  const [diagnosticResults, setDiagnosticResults] = useState<any[]>([]);
+  const [diagnosticResults, setDiagnosticResults] = useState<DiagnosticResult[]>([]);
   const [isDiagnosticRunning, setIsDiagnosticRunning] = useState(false);
 
-  // Auto-initialize Wialon when component mounts
+  // Prefer persisted token, then env
+  const [token, setTokenState] = useState<string | null>(() => {
+    const stored = localStorage.getItem("wialonToken");
+    return stored || getEnvVar("VITE_WIALON_SESSION_TOKEN", "") || null;
+  });
+
+  const apiHost =
+    getEnvVar("VITE_WIALON_API_URL", "https://hst-api.wialon.com") ||
+    "https://hst-api.wialon.com";
+
+  // -------- Auto-initialize once --------
   useEffect(() => {
     let mounted = true;
-    let checkCount = 0;
-    const MAX_CHECKS = 20; // Maximum number of checks (20 seconds)
+    setInitializing(true);
 
-    const initWialon = async () => {
-      // Increment check counter
-      checkCount++;
-
-      if (!window.wialon) {
-        console.log(
-          `Wialon SDK not available yet, waiting... (attempt ${checkCount}/${MAX_CHECKS})`
-        );
-
-        // If we've exceeded max checks, show a more helpful error
-        if (checkCount >= MAX_CHECKS) {
-          console.error(
-            "Failed to load Wialon SDK after multiple attempts. Check network connection and script URL."
-          );
-          if (mounted) {
-            setError(
-              new Error(
-                "Failed to load Wialon SDK. Please check your internet connection and try refreshing the page."
-              )
-            );
-            setInitializing(false);
-          }
+    const boot = async () => {
+      try {
+        if (!token) {
+          setError(new Error("No Wialon token configured. Please set a valid token."));
+          setLoggedIn(false);
+          setInitialized(false);
           return;
         }
+        // Use improved initWialonSession (handles SDK, session, login, and diagnostics)
+        const sess = await initWialonSession({ apiUrl: apiHost, token });
+        if (!mounted) return;
+        setSession(sess);
+        setLoggedIn(true);
+        setInitialized(true);
 
-        // If SDK not loaded, wait and check again
-        setTimeout(initWialon, 1000);
-        return;
-      }
-
-      setInitializing(true);
-
-      try {
-        // Get session instance
-        const sess = window.wialon.core.Session.getInstance();
-        if (mounted) setSession(sess);
-
-        // Initialize Wialon using our auto-init function
-        const success = await initializeWialon();
-
-        if (mounted) {
-          setInitialized(success);
-          setLoggedIn(success);
-
-          if (success) {
-            // Load units automatically
-            const unitsList = await getWialonUnits();
-            setUnits(unitsList);
-            console.log(`Wialon auto-initialized with ${unitsList.length} units`);
-          }
+        // Fetch units after successful login
+        try {
+          const list = await getWialonUnits();
+          if (mounted) setUnits(list);
+        } catch (e) {
+          console.error("Error fetching Wialon units after login:", e);
         }
-      } catch (err) {
-        console.error("Error during Wialon auto-initialization:", err);
-        if (mounted) {
-          setError(err instanceof Error ? err : new Error(String(err)));
-        }
+      } catch (e: any) {
+        if (!mounted) return;
+        // Improved error reporting for Wialon codes
+        const errorMsg = (e && e.message && e.message.includes("code 5"))
+          ? `Wialon login failed (code 5): Authentication failed.
+            • Check your token: it may be expired, revoked, or invalid.
+            • See: https://sdk.wialon.com/wiki/en/sidebar/remoteapi/errors`
+          : e instanceof Error ? e.message : String(e);
+
+        setError(new Error(errorMsg));
+        setLoggedIn(false);
+        setInitialized(false);
+        setSession(null);
       } finally {
         if (mounted) setInitializing(false);
       }
     };
 
-    // Start initialization immediately
-    initWialon();
-
+    boot();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [token, apiHost]);
 
+  // -------- Actions --------
   const refreshUnits = async () => {
     try {
-      const unitsList = await getWialonUnits();
-      setUnits(unitsList);
-      return unitsList;
-    } catch (err) {
-      console.error("Error refreshing units:", err);
-      setError(err instanceof Error ? err : new Error(String(err)));
+      const list = await getWialonUnits();
+      setUnits(list);
+      return list;
+    } catch (e) {
+      console.error("Error refreshing Wialon units:", e);
+      setError(e instanceof Error ? e : new Error(String(e)));
       return [];
     }
   };
 
-  // Method to set token from external components (like WialonIntegration)
   const setToken = (newToken: string) => {
-    // Store in state
     setTokenState(newToken);
-
-    // Store in localStorage for persistence
-    localStorage.setItem('wialonToken', newToken);
-
-    // If we have a session, try to login with the new token
-    if (session) {
-      // Attempt to login with the new token
-      login(newToken);
-    }
+    localStorage.setItem("wialonToken", newToken);
+    // Triggers useEffect re-initialization via [token] dep
   };
 
-  const login = async (customToken?: string) => {
-    if (!session) return;
-
-    try {
-      setInitializing(true);
-
-      // Use the provided token, or fall back to the state token
-      const tokenToUse = customToken || token;
-
-      if (!tokenToUse) {
-        setError(new Error("No token available for login"));
-        setInitializing(false);
-        return;
-      }
-
-      // Initialize the session
-      session.initSession("https://hosting.wialon.com");
-
-      // Login with the token
-      session.loginToken(tokenToUse, "", async (code: number) => {
-        const success = code === 0;
-        setLoggedIn(success);
-
-        if (success) {
-          setInitialized(true);
-          await refreshUnits();
-        } else {
-          setError(new Error(`Login failed with code: ${code}`));
-        }
-        setInitializing(false);
-      });
-    } catch (err) {
-      console.error("Error during login:", err);
-      setError(err instanceof Error ? err : new Error(String(err)));
-      setInitializing(false);
-    }
+  // Unified login re-init (re-runs effect by updating token)
+  const login = (customToken?: string) => {
+    if (customToken) setToken(customToken);
+    else if (token) setToken(token);
+    else setError(new Error("No token available for login"));
   };
 
   const logout = () => {
-    if (session) {
-      session.logout(() => {
-        setLoggedIn(false);
-        setInitialized(false);
-        setUnits([]);
-      });
-    }
+    logoutWialon();
+    setLoggedIn(false);
+    setInitialized(false);
+    setUnits([]);
+    setSession(null);
+    setError(null);
+    // Optionally clear token in storage (comment if you want persistent token for user convenience)
+    // localStorage.removeItem("wialonToken");
   };
 
   const runDiagnostics = async () => {
+    setIsDiagnosticRunning(true);
     try {
-      // Import the diagnostic tools dynamically to avoid circular dependencies
-      setIsDiagnosticRunning(true);
-      const { runWialonDiagnostics } = await import('../utils/wialonDiagnostics');
+      const { runWialonDiagnostics } = await import("../utils/wialonDiagnostics");
       const results = await runWialonDiagnostics();
       setDiagnosticResults(results);
       return results;
-    } catch (error) {
-      console.error('Failed to run Wialon diagnostics:', error);
-      setError(error instanceof Error ? error : new Error('Unknown diagnostic error'));
+    } catch (e) {
+      console.error("Failed to run Wialon diagnostics:", e);
+      setError(e instanceof Error ? e : new Error("Unknown diagnostic error"));
       return [];
     } finally {
       setIsDiagnosticRunning(false);
@@ -235,7 +181,7 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
         setToken,
         runDiagnostics,
         diagnosticResults,
-        isDiagnosticRunning
+        isDiagnosticRunning,
       }}
     >
       {children}

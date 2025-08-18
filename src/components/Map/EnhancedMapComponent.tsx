@@ -1,7 +1,6 @@
 import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
 import React, { useEffect, useState } from "react";
 import { Location, RouteOptions } from "../../types/mapTypes";
-import { isGoogleMapsAPILoaded, useLoadGoogleMaps } from "../../utils/googleMapsLoader";
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_OPTIONS,
@@ -10,10 +9,12 @@ import {
   getBoundsForLocations,
 } from "../../utils/mapConfig";
 import { initPlacesService, placeToLocation, searchPlacesByText } from "../../utils/placesService";
-// Import the Google Maps API patch
-import "../../utils/googleMapsApiPatch";
 import RouteDrawer from "../Models/maps/RouteDrawer";
-// Creating a simple component to replace the missing LocationDetailPanel
+
+// ———— REMOVE ALL PATCHERS & LOADERS ————
+// Removed: import "../../utils/googleMapsApiPatch";
+// Removed: import { isGoogleMapsAPILoaded, useLoadGoogleMaps } from "../../utils/googleMapsLoader";
+
 const LocationDetailPanel = ({
   locationId,
   onClose,
@@ -80,9 +81,6 @@ const EnhancedMapComponent: React.FC<EnhancedMapProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Location[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  // Removed unused loadError state
-
-  useLoadGoogleMaps();
 
   // Make container style responsive with default height that adapts to screen size
   const containerStyle = {
@@ -94,7 +92,7 @@ const EnhancedMapComponent: React.FC<EnhancedMapProps> = ({
 
   // Initialize Places service when map is loaded
   useEffect(() => {
-    if (mapInstance && showPlacesSearch && isGoogleMapsAPILoaded()) {
+    if (mapInstance && showPlacesSearch && window.google?.maps) {
       try {
         const service = initPlacesService(mapInstance);
         if (service) {
@@ -138,8 +136,6 @@ const EnhancedMapComponent: React.FC<EnhancedMapProps> = ({
     }
   };
 
-  // Removed unused renderErrorState function and related code
-
   // Handle map load
   const handleMapLoad = (map: google.maps.Map) => {
     setMapInstance(map);
@@ -177,97 +173,92 @@ const EnhancedMapComponent: React.FC<EnhancedMapProps> = ({
       )}
 
       {/* Google Map */}
-      {!isGoogleMapsAPILoaded() ? (
-        <div
-          className="flex items-center justify-center h-[250px] sm:h-[300px] md:h-[400px] bg-gray-100 rounded-md"
-          style={{ height: typeof height === "string" ? height : `${height}px` }}
-        >
-          <div className="text-center">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin mx-auto mb-2"></div>
-            <p className="text-sm sm:text-base">Loading map...</p>
-          </div>
-        </div>
-      ) : (
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
-          zoom={zoom}
-          options={{
-            ...DEFAULT_MAP_OPTIONS,
-            fullscreenControl: showFullscreenControl,
-            mapTypeControl: showMapTypeControl && window.innerWidth > 768, // Only show on larger screens
-            streetViewControl: showStreetViewControl && window.innerWidth > 640, // Only show on larger screens
-            zoomControl: showZoomControl,
-            zoomControlOptions: {
-              // Position zoom controls on the right side for better mobile UX
-              position: window.google?.maps?.ControlPosition?.RIGHT_BOTTOM || 11,
-            },
-            styles: customMapStyles || MAP_STYLES.clean,
-          }}
-          onLoad={handleMapLoad}
-          onUnmount={() => setMapInstance(null)}
-        >
-          {/* Markers */}
-          {allLocations.map((location, index) => (
-            <Marker
-              key={`marker-${index}`}
-              position={location}
-              title={location.title}
-              onClick={() => {
-                setSelectedLocation(location);
-                if (onLocationSelect) onLocationSelect(location);
-              }}
-              onMouseOver={() => showInfoOnHover && setSelectedLocation(location)}
-              onMouseOut={() => showInfoOnHover && setSelectedLocation(null)}
-              icon={(() => {
-                const icon = createMarkerIcon(location.iconType || defaultIconType);
-                if (
-                  icon &&
-                  icon.anchor &&
-                  window.google?.maps &&
-                  !(icon.anchor instanceof window.google.maps.Point)
-                ) {
-                  icon.anchor = new window.google.maps.Point(icon.anchor.x, icon.anchor.y);
-                }
-                return icon as unknown as google.maps.Icon;
-              })()}
-            />
-          ))}
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={center}
+        zoom={zoom}
+        options={{
+          ...DEFAULT_MAP_OPTIONS,
+          fullscreenControl: showFullscreenControl,
+          mapTypeControl: showMapTypeControl && window.innerWidth > 768,
+          streetViewControl: showStreetViewControl && window.innerWidth > 640,
+          zoomControl: showZoomControl,
+          zoomControlOptions: {
+            // Position zoom controls on the right side for better mobile UX
+            position: window.google?.maps?.ControlPosition?.RIGHT_BOTTOM || 11,
+          },
+          styles: customMapStyles || MAP_STYLES.clean,
+        }}
+        onLoad={handleMapLoad}
+        onUnmount={() => setMapInstance(null)}
+      >
+        {/* Markers */}
+        {allLocations.map((location, index) => (
+          <Marker
+            key={`marker-${index}`}
+            position={location}
+            title={location.title}
+            onClick={() => {
+              setSelectedLocation(location);
+              if (onLocationSelect) onLocationSelect(location);
+            }}
+            onMouseOver={() => showInfoOnHover && setSelectedLocation(location)}
+            onMouseOut={() => showInfoOnHover && setSelectedLocation(null)}
+            icon={(() => {
+              const icon = createMarkerIcon(location.iconType || defaultIconType);
+              if (
+                icon &&
+                icon.anchor &&
+                window.google?.maps &&
+                !(icon.anchor instanceof window.google.maps.Point)
+              ) {
+                icon.anchor = new window.google.maps.Point(icon.anchor.x, icon.anchor.y);
+              }
+              return icon as unknown as google.maps.Icon;
+            })()}
+          />
+        ))}
 
-          {/* Routes between locations */}
-          {showRoutePaths && (
-            <RouteDrawer
-              origin={allLocations[0]}
-              destination={allLocations[allLocations.length - 1]}
-              waypoints={allLocations.slice(1, -1)}
-              options={routeOptions}
-            />
-          )}
+        {/* Routes between locations */}
+        {showRoutePaths && allLocations.length >= 2 && (() => {
+          const origin = allLocations[0];
+          const destination = allLocations[allLocations.length - 1];
+          if (origin && destination) {
+            return (
+              <RouteDrawer
+                origin={origin}
+                destination={destination}
+                waypoints={allLocations.slice(1, -1)}
+                options={routeOptions}
+              />
+            );
+          }
+          return null;
+        })()}
 
-          {/* Info window for selected location */}
-          {selectedLocation && (
-            <InfoWindow position={selectedLocation} onCloseClick={() => setSelectedLocation(null)}>
-              <div className="p-1 sm:p-2 max-w-[200px] sm:max-w-xs">
-                {selectedLocation.title && (
-                  <h3 className="font-medium text-xs sm:text-sm mb-0.5 sm:mb-1">
-                    {selectedLocation.title}
-                  </h3>
-                )}
-                {selectedLocation.info && (
-                  <p className="text-xs text-gray-600 line-clamp-2 sm:line-clamp-none">
-                    {selectedLocation.info}
-                  </p>
-                )}
-                {selectedLocation.address && (
-                  <p className="text-xs text-gray-500 mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-none">
-                    {selectedLocation.address}
-                  </p>
-                )}
-              </div>
-            </InfoWindow>
-          )}
-        </GoogleMap>
-      )}
+        {/* Info window for selected location */}
+        {selectedLocation && (
+          <InfoWindow position={selectedLocation} onCloseClick={() => setSelectedLocation(null)}>
+            <div className="p-1 sm:p-2 max-w-[200px] sm:max-w-xs">
+              {selectedLocation.title && (
+                <h3 className="font-medium text-xs sm:text-sm mb-0.5 sm:mb-1">
+                  {selectedLocation.title}
+                </h3>
+              )}
+              {selectedLocation.info && (
+                <p className="text-xs text-gray-600 line-clamp-2 sm:line-clamp-none">
+                  {selectedLocation.info}
+                </p>
+              )}
+              {selectedLocation.address && (
+                <p className="text-xs text-gray-500 mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-none">
+                  {selectedLocation.address}
+                </p>
+              )}
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
 
       {/* Location detail panel */}
       {selectedLocation && selectedLocation.id && (

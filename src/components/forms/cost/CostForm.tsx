@@ -51,9 +51,10 @@ const CostForm: React.FC<CostFormProps> = ({ tripId, cost, onSubmit, onCancel, e
       }
     } else {
       // Set today's date as default for new cost entries
+      const todayDate = new Date().toISOString().split("T")[0] || "";
       setFormData((prev) => ({
         ...prev,
-        date: new Date().toISOString().split("T")[0],
+        date: todayDate,
       }));
     }
   }, [cost]);

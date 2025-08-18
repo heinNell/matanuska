@@ -1,13 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getEnvVar } from '../utils/envUtils'; // Assuming envUtils.ts exists and exports getEnvVar
-import { WialonUnit } from "../types/wialon-types";
 
-
-// After (if only WialonCore and WialonItem were unused):
-// (Remove from import line, or remove entire line if not needed)
-
-
-// Define Wialon SDK types (minimal for this context to satisfy TypeScript)
+// --- Wialon SDK minimal typing for this context ---
 interface WialonPosition {
   y: number; // latitude
   x: number; // longitude
@@ -24,69 +18,26 @@ interface WialonUnitSDK { // Represents the actual Wialon SDK Unit object with m
   getIconUrl(size: number): string;
   getUniqueId(): string;
   getCustomProperty(propName: string): string | undefined;
-  // Common Wialon SDK properties that might be directly available
-  ci?: number; // Connection interval (e.g., 1 for online, 0 for offline)
-  tp?: string; // Unit type string (e.g., "car", "truck")
-  prp?: { [key: string]: any }; // Custom properties map
+  ci?: number;
+  tp?: string;
+  prp?: { [key: string]: any };
 }
 
-interface WialonSession {
-  initSession(url: string): void;
-  loginToken(token: string, flags: string, callback: (code: number) => void): void;
-  loadLibrary(libraryName: string): void;
-  updateDataFlags(flags: Array<{ type: string; data: string; flags: number; mode: number }>, callback: (code: number) => void): void;
-  getItems(type: string): WialonUnitSDK[];
-  // Added missing methods to WialonSession interface
-  getUser(): { getName(): string };
-  addListener(event: string, callback: (id: number, item: WialonUnitSDK, flags: number) => void): void;
-  removeListener(event: string, callback: (id: number, item: WialonUnitSDK, flags: number) => void): void;
-  logout(callback: (code: number) => void): void;
-}
+// --- Removed unused WialonCore and WialonItem interface declarations ---
+// If you plan to use them, comment them back in below:
+// interface WialonCore { ... }
+// interface WialonItem { ... }
 
-interface WialonCore {
-  Session: {
-    getInstance(): WialonSession;
-  };
-  Errors: {
-    getErrorText(code: number): string;
-  };
-}
-
-interface WialonItem {
-  Item: {
-    dataFlag: { base: number; };
-  };
-  Unit: {
-    dataFlag: { sensors: number; lastMessage: number; lastPosition: number; };
-  };
-}
-
-// IMPORTANT: Removed 'declare global' block from here to avoid conflicts.
-// Ensure these global types are declared once in a .d.ts file (e.g., src/types/wialon-sdk.d.ts)
-// Example content for src/types/wialon-sdk.d.ts:
-/*
-declare global {
-  interface Window {
-    wialon?: {
-      core: WialonCore;
-      item: WialonItem;
-    };
-    W?: typeof window.wialon;
-  }
-}
-*/
-
-
-// Extended Wialon unit interface (plain data for components)
+// --- Extended Wialon unit interface (plain data for components) ---
 export interface ExtendedWialonUnit {
   id: number;
   name: string;
-  cls_id?: number; // Class ID (e.g., from unit.prp.cls_id or similar)
-  type?: string; // Unit type string (e.g., from unit.tp)
-  hw_id?: string; // Hardware ID (often unit.getUniqueId())
-  last_message?: number; // Timestamp of last message (from position.t)
-  connection_state?: number; // 1 for online, 0 for offline (from unit.ci)
-  iconUrl?: string; // Icon URL from Wialon SDK
+  cls_id?: number;
+  type?: string;
+  hw_id?: string;
+  last_message?: number;
+  connection_state?: number;
+  iconUrl?: string;
   position?: {
     latitude: number;
     longitude: number;
@@ -96,11 +47,11 @@ export interface ExtendedWialonUnit {
     satellites: number;
   } | null;
   uniqueId?: string;
-  registration?: string; // Example custom property
-  [key: string]: any; // Allow any other properties for dynamic access
+  registration?: string;
+  [key: string]: any;
 }
 
-// Wialon constants (centralized here, using envUtils)
+// --- Wialon constants ---
 const TOKEN = getEnvVar("VITE_WIALON_SESSION_TOKEN", "c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053");
 const WIALON_API_URL = getEnvVar("VITE_WIALON_API_URL", "https://hst-api.wialon.com");
 const WIALON_SDK_URL = getEnvVar("VITE_WIALON_SDK_URL", "https://hst-api.wialon.com/wsdk/script/wialon.js");
@@ -111,49 +62,46 @@ export const useWialon = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [units, setUnits] = useState<ExtendedWialonUnit[] | null>(null);
-  const sessionRef = useRef<WialonSession | null>(null);
-  const unitsMapRef = useRef<Map<number, ExtendedWialonUnit>>(new Map()); // To keep track of units by ID
+  const sessionRef = useRef<any>(null);
+  const unitsMapRef = useRef<Map<number, ExtendedWialonUnit>>(new Map());
 
   const log = useCallback((msg: string, isError = false) => {
     isError ? console.error(`[Wialon SDK Hook] ${msg}`) : console.log(`[Wialon SDK Hook] ${msg}`);
   }, []);
 
-  // Function to load the Wialon SDK script dynamically
+  // Load Wialon SDK script dynamically
   const loadWialonSdkScript = useCallback(async () => {
     return new Promise<void>((resolve, reject) => {
-      if (typeof window === "undefined") return resolve(); // Skip on server-side rendering
-      // Access window.wialon and window.W directly as they are expected to be globally declared elsewhere
-      if (window.wialon && window.W) return resolve(); // SDK already loaded
+      if (typeof window === "undefined") return resolve();
+      if (window.wialon && window.W) return resolve();
 
       const script = document.createElement("script");
       script.src = WIALON_SDK_URL;
       script.async = true;
       script.onload = () => {
-        // Poll for wialon object as it might not be immediately available after script load
         const check = setInterval(() => {
           if (window.wialon && window.W) {
             clearInterval(check);
             resolve();
           }
         }, 100);
-        // Set a timeout to reject if SDK doesn't load within a reasonable time
         setTimeout(() => {
           clearInterval(check);
           reject(new Error("Wialon SDK load timeout"));
-        }, 10000); // 10 seconds timeout
+        }, 10000);
       };
       script.onerror = () => reject(new Error("Failed to load Wialon SDK script"));
       document.head.appendChild(script);
     });
   }, [WIALON_SDK_URL]);
 
-  // Function to transform Wialon SDK unit object to plain ExtendedWialonUnit
+  // Transform Wialon SDK unit object to plain ExtendedWialonUnit
   const transformWialonUnit = useCallback((unitSDK: WialonUnitSDK): ExtendedWialonUnit => {
     const pos = unitSDK.getPosition();
     return {
       id: unitSDK.getId(),
       name: unitSDK.getName(),
-      iconUrl: unitSDK.getIconUrl(32), // Get a 32x32 icon
+      iconUrl: unitSDK.getIconUrl(32),
       position: pos ? {
         latitude: pos.y,
         longitude: pos.x,
@@ -164,27 +112,25 @@ export const useWialon = () => {
       } : null,
       uniqueId: unitSDK.getUniqueId(),
       registration: unitSDK.getCustomProperty("registration_plate"),
-      cls_id: (unitSDK as any).cls_id || (unitSDK.prp ? unitSDK.prp.cls_id : undefined), // Try to get cls_id from direct prop or prp
-      type: (unitSDK as any).type || unitSDK.tp, // Try to get type from direct prop or tp
+      cls_id: (unitSDK as any).cls_id || (unitSDK.prp ? unitSDK.prp.cls_id : undefined),
+      type: (unitSDK as any).type || unitSDK.tp,
       last_message: pos ? pos.t : undefined,
-      connection_state: (unitSDK as any).cn_st || unitSDK.ci, // Try to get connection state from direct prop or ci
+      connection_state: (unitSDK as any).cn_st || unitSDK.ci,
     };
   }, []);
 
   // Main initialization function for Wialon SDK and session
   const initializeWialonSession = useCallback(async () => {
-    if (initialized || loading) return; // Prevent re-initialization if already initialized or loading
+    if (initialized || loading) return;
     setLoading(true);
     setError(null);
 
     try {
-      await loadWialonSdkScript(); // Load the SDK script
-      const W = window.wialon!; // Ensure wialon object is available and non-null
+      await loadWialonSdkScript();
+      const W = window.wialon!;
 
-      // Corrected: Use double cast to assert the type of the session instance
-      sessionRef.current = W.core.Session.getInstance() as unknown as WialonSession;
+      sessionRef.current = W.core.Session.getInstance();
 
-      // Ensure sessionRef.current is not null before proceeding
       if (!sessionRef.current) {
         throw new Error("Failed to create Wialon session instance.");
       }
@@ -208,9 +154,9 @@ export const useWialon = () => {
         throw new Error("Wialon login failed.");
       }
 
-      sessionRef.current!.loadLibrary("itemIcon"); // Load item icon library
+      sessionRef.current!.loadLibrary("itemIcon");
 
-      // Define data flags for units to receive necessary properties
+      // Data flags for units
       const flags =
         W.item.Item.dataFlag.base |
         W.item.Unit.dataFlag.sensors |
@@ -242,13 +188,12 @@ export const useWialon = () => {
       });
       setUnits(Array.from(unitsMapRef.current.values()));
 
-      // Add listener for real-time unit updates
+      // Listener for real-time unit updates
       const unitUpdateListener = (id: number, item: WialonUnitSDK, flags: number) => {
-        // Only update if the unit is already in our map or if it's a new unit (optional: filter by type if needed)
-        if (unitsMapRef.current.has(id) || item.tp === 'avl_unit') { // Assuming 'avl_unit' is the type we care about
+        if (unitsMapRef.current.has(id) || item.tp === 'avl_unit') {
           const updatedUnit = transformWialonUnit(item);
           unitsMapRef.current.set(id, updatedUnit);
-          setUnits(Array.from(unitsMapRef.current.values())); // Trigger re-render
+          setUnits(Array.from(unitsMapRef.current.values()));
         }
       };
       sessionRef.current!.addListener("updateItems", unitUpdateListener);
@@ -269,13 +214,9 @@ export const useWialon = () => {
   useEffect(() => {
     initializeWialonSession();
 
-    // Cleanup function: logout and remove listeners when component unmounts
     return () => {
       if (sessionRef.current) {
         log("Logging out from Wialon session during cleanup.");
-        // Note: Removing listeners is crucial to prevent memory leaks
-        // However, the Wialon SDK's addListener/removeListener might need specific callback references.
-        // For simplicity, this example just logs out. A more advanced setup would manage specific listener callbacks.
         sessionRef.current.logout(() => {
           log("Wialon session logged out.");
           sessionRef.current = null;
@@ -285,7 +226,7 @@ export const useWialon = () => {
         });
       }
     };
-  }, [initializeWialonSession, log]); // Re-run if initializeWialonSession changes (unlikely due to useCallback)
+  }, [initializeWialonSession, log]);
 
   return { units, loading, error, initialized, session: sessionRef.current };
 };

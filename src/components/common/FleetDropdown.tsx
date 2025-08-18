@@ -1,5 +1,4 @@
-import { useFleetList, FleetOption } from '../../hooks/useFleetList';
-import { useState, useEffect, useRef } from 'react';
+import { useFleetList } from '../../hooks/useFleetList';
 import { Truck } from 'lucide-react';
 
 interface FleetDropdownProps {
@@ -33,7 +32,7 @@ export const FleetDropdown: React.FC<FleetDropdownProps> = ({
     filterType,
     includeDetails: false
   });
-  
+
   return (
     <div className={className}>
       {label && (
@@ -41,7 +40,7 @@ export const FleetDropdown: React.FC<FleetDropdownProps> = ({
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      
+
       <div className="relative">
         <Truck className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
         <select
@@ -59,7 +58,7 @@ export const FleetDropdown: React.FC<FleetDropdownProps> = ({
           ))}
         </select>
       </div>
-      
+
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );

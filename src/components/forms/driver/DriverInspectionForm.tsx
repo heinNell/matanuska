@@ -51,14 +51,18 @@ const DriverInspectionForm: React.FC = () => {
 
   const handleStatusChange = (index: number, status: "passed" | "failed") => {
     const updatedItems = [...inspectionItems];
-    updatedItems[index].status = status;
-    setInspectionItems(updatedItems);
+    if (updatedItems[index]) {
+      updatedItems[index].status = status;
+      setInspectionItems(updatedItems);
+    }
   };
 
   const handleCommentsChange = (index: number, comments: string) => {
     const updatedItems = [...inspectionItems];
-    updatedItems[index].comments = comments;
-    setInspectionItems(updatedItems);
+    if (updatedItems[index]) {
+      updatedItems[index].comments = comments;
+      setInspectionItems(updatedItems);
+    }
   };
 
   const isFormValid = () => {

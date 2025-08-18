@@ -154,8 +154,8 @@ const YearToDateKPIs: React.FC<YearToDateKPIsProps> = (props) => {
       if (!weeklyData[weekKey]) {
         weeklyData[weekKey] = {
           weekNumber: getWeekNumber(monday),
-          weekStart: monday.toISOString().split("T")[0],
-          weekEnd: sunday.toISOString().split("T")[0],
+          weekStart: monday.toISOString().split("T")[0] || monday.toDateString(),
+          weekEnd: sunday.toISOString().split("T")[0] || sunday.toDateString(),
           totalRevenue: 0,
           totalCosts: 0,
           grossProfit: 0,
@@ -169,6 +169,11 @@ const YearToDateKPIs: React.FC<YearToDateKPIsProps> = (props) => {
       }
 
       const week = weeklyData[weekKey];
+      if (!week) {
+        console.warn(`Week data not found for key: ${weekKey}`);
+        return; // Skip this iteration
+      }
+
       const tripCosts = calculateTotalCosts(trip.costs);
       const additionalCosts =
         trip.additionalCosts?.reduce((sum, cost) => sum + cost.amount, 0) || 0;
@@ -203,8 +208,36 @@ const YearToDateKPIs: React.FC<YearToDateKPIsProps> = (props) => {
     return 1 + Math.round(diff / (7 * 24 * 60 * 60 * 1000));
   }
 
-  const current2025 = ytdData[2025];
-  const previous2024 = ytdData[2024];
+  const current2025 = ytdData[2025] || {
+    year: 2025,
+    totalKms: 0,
+    ipk: 0,
+    operationalCpk: 0,
+    revenue: 0,
+    ebit: 0,
+    ebitMargin: 0,
+    netProfit: 0,
+    netProfitMargin: 0,
+    roe: 0,
+    roic: 0,
+    lastUpdated: new Date().toISOString(),
+    updatedBy: 'system'
+  };
+  const previous2024 = ytdData[2024] || {
+    year: 2024,
+    totalKms: 0,
+    ipk: 0,
+    operationalCpk: 0,
+    revenue: 0,
+    ebit: 0,
+    ebitMargin: 0,
+    netProfit: 0,
+    netProfitMargin: 0,
+    roe: 0,
+    roic: 0,
+    lastUpdated: new Date().toISOString(),
+    updatedBy: 'system'
+  };
 
   const calculateChange = (current: number, previous: number) => {
     if (previous === 0) return { value: 0, percentage: 0 };

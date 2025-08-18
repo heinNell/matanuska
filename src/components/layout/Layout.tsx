@@ -1,5 +1,5 @@
-import React, { Suspense, useMemo, useState } from "react";
-import { Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import React, { Suspense, useState } from "react";
+import { Outlet } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 import { TripSelectionProvider, useTripSelection } from "../../context/TripSelectionContext";
 import type { Trip } from "../../types"; // canonical Trip from your barrel
@@ -25,9 +25,7 @@ const normalizeTrip = (t: Partial<Trip>): Trip => {
 };
 
 const Layout: React.FC<LayoutProps> = ({ setShowTripForm, setEditingTrip }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  
 
   // State to manage the selected trip
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
@@ -37,26 +35,6 @@ const Layout: React.FC<LayoutProps> = ({ setShowTripForm, setEditingTrip }) => {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   useAppContext();
-
-  const currentView = useMemo(() => {
-    const parts = location.pathname.split("/").filter(Boolean);
-    if (parts.length === 0) return "dashboard";
-    if (parts.length > 1) return parts.join("/");
-    return parts[0] === "workshop" && searchParams.get("tab")
-      ? `workshop-${searchParams.get("tab")}`
-      : parts[0];
-  }, [location.pathname, searchParams]);
-
-  // The onNavigate function is not used in this file's rendering, but it's
-  // good practice to have it defined in case it's needed in the future.
-  const handleNavigate = (view: string) => {
-    const hasQuery = view.includes("?");
-    navigate(
-      hasQuery
-        ? `/${view.split("?")[0]}?${view.split("?")[1]}`
-        : `/${view.startsWith("/") ? view.slice(1) : view}`
-    );
-  };
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">

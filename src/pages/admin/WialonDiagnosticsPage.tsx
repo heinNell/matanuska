@@ -5,18 +5,19 @@
  * Wialon API integration issues.
  */
 import React from 'react';
-import { Helmet } from 'react-helmet';
-import WialonDiagnosticTool from '../components/diagnostic/WialonDiagnosticTool';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+// Using a simple title component instead of Helmet since react-helmet is not installed
+import WialonDiagnosticTool from '@/components/diagnostic/WialonDiagnosticTool';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 
 const WialonDiagnosticsPage: React.FC = () => {
+  // Set document title using React's useEffect if needed
+  React.useEffect(() => {
+    document.title = "Wialon Diagnostics | Matanuska";
+  }, []);
+
   return (
     <>
-      <Helmet>
-        <title>Wialon Diagnostics | Matanuska</title>
-      </Helmet>
-
       <div className="container py-10">
         <div className="flex flex-col gap-6">
           <div>

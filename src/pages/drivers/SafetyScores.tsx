@@ -4,8 +4,21 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Card, { CardContent, CardHeader } from "../../components/ui/Card";
 
+// Add type definitions
+interface DriverSafetyData {
+  id: string;
+  name: string;
+  safetyScore: number;
+  trend: "up" | "down";
+  incidents: number;
+  lastIncidentDate: string | null;
+  riskLevel: "Low" | "Medium" | "High";
+  trainingStatus: "Complete" | "Due" | "Overdue";
+  safetyTips: string[];
+}
+
 // Mock data for driver safety scores
-const mockSafetyData = [
+const mockSafetyData: DriverSafetyData[] = [
   {
     id: "1",
     name: "John Doe",
@@ -68,6 +81,9 @@ const SafetyScores: React.FC = () => {
 
   // Sort by safety score (descending)
   const sortedData = [...filteredData].sort((a, b) => b.safetyScore - a.safetyScore);
+
+  // Update to handle the safety tips section more safely
+  const selectedDriver = filteredData[0];
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -259,14 +275,14 @@ const SafetyScores: React.FC = () => {
       </div>
 
       {/* Safety Tips Section */}
-      {driverId && filteredData.length > 0 && (
+      {driverId && selectedDriver && (
         <Card className="mt-6">
           <CardHeader>
             <h3 className="text-lg font-medium">Safety Recommendations</h3>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {filteredData[0].safetyTips.map((tip, index) => (
+              {selectedDriver.safetyTips.map((tip, index) => (
                 <li key={index} className="flex items-start">
                   <CheckCircle className="w-5 h-5 text-green-600 mr-2 mt-0.5" />
                   <span>{tip}</span>

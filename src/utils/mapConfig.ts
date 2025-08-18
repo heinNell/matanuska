@@ -1,9 +1,6 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
-
 /**
  * Map Configuration Utility
- * 
+ *
  * This file contains common map configurations, styles, and helper functions
  * to ensure consistent maps throughout the application.
  */
@@ -29,7 +26,7 @@ export const MAP_STYLES = {
       stylers: [{ visibility: "off" }]
     }
   ],
-  
+
   // Night mode style
   night: [
     { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
@@ -111,7 +108,7 @@ export const MAP_STYLES = {
       stylers: [{ color: "#17263c" }]
     }
   ],
-  
+
   // Satellite with roads style - similar to "hybrid" mapTypeId but can be used with other map types
   satelliteRoads: [
     {
@@ -130,7 +127,7 @@ export const MAP_STYLES = {
       stylers: [{ visibility: "on" }]
     }
   ],
-  
+
   // Transport/logistics focused style
   logistics: [
     {
@@ -184,7 +181,7 @@ export type MapIconType = 'default' | 'vehicle' | 'alert' | 'driver' | 'depot' |
 
 // Helper to create marker icons with different colors or predefined types
 export const createMarkerIcon = (
-  iconTypeOrColor: MapIconType | string = 'default', 
+  iconTypeOrColor: MapIconType | string = 'default',
   scale = 1
 ) => {
   // If it's a predefined icon type
@@ -269,27 +266,27 @@ export const TRUCK_ICON = {
 // Calculate the bounds to fit an array of locations
 export const getBoundsForLocations = (locations: { lat: number; lng: number }[]) => {
   if (!locations || locations.length === 0) return null;
-  
+
   // Use Google Maps API to calculate bounds
   if (window.google && window.google.maps) {
     const bounds = new google.maps.LatLngBounds();
-    
+
     locations.forEach((location) => {
       bounds.extend(new google.maps.LatLng(location.lat, location.lng));
     });
-    
+
     return bounds;
   }
-  
+
   // Fallback manual calculation if Google Maps isn't loaded
   const latitudes = locations.map(loc => loc.lat);
   const longitudes = locations.map(loc => loc.lng);
-  
+
   const south = Math.min(...latitudes);
   const north = Math.max(...latitudes);
   const west = Math.min(...longitudes);
   const east = Math.max(...longitudes);
-  
+
   return {
     south,
     north,
@@ -301,14 +298,19 @@ export const getBoundsForLocations = (locations: { lat: number; lng: number }[])
 // Calculate the center point of multiple locations
 export const getCenterOfLocations = (locations: { lat: number; lng: number }[]): { lat: number; lng: number } => {
   if (!locations || locations.length === 0) return DEFAULT_MAP_CENTER;
-  
-  if (locations.length === 1) return locations[0];
-  
+
+  if (locations.length === 1 && locations[0]) {
+    return {
+      lat: locations[0].lat,
+      lng: locations[0].lng
+    };
+  }
+
   const total = locations.reduce(
     (acc, loc) => ({ lat: acc.lat + loc.lat, lng: acc.lng + loc.lng }),
     { lat: 0, lng: 0 }
   );
-  
+
   return {
     lat: total.lat / locations.length,
     lng: total.lng / locations.length
@@ -318,47 +320,47 @@ export const getCenterOfLocations = (locations: { lat: number; lng: number }[]):
 // Calculate the appropriate zoom level based on the bounds
 export const getZoomLevelForBounds = (bounds: any, mapWidth: number, mapHeight: number) => {
   if (!bounds || !window.google || !window.google.maps) return 10;
-  
+
   const WORLD_DIM = { height: 256, width: 256 };
   const ZOOM_MAX = 21;
-  
+
   const latRadian = (lat: number) => {
     const sin = Math.sin(lat * Math.PI / 180);
     const radX2 = Math.log((1 + sin) / (1 - sin)) / 2;
     return Math.max(Math.min(radX2, Math.PI), -Math.PI) / 2;
   };
-  
+
   const zoom = (mapPx: number, worldPx: number, fraction: number) => {
     return Math.floor(Math.log(mapPx / worldPx / fraction) / Math.LN2);
   };
-  
+
   const ne = bounds.getNorthEast();
   const sw = bounds.getSouthWest();
-  
+
   const latFraction = (latRadian(ne.lat()) - latRadian(sw.lat())) / Math.PI;
-  
+
   const lngDiff = ne.lng() - sw.lng();
   const lngFraction = ((lngDiff < 0) ? (lngDiff + 360) : lngDiff) / 360;
-  
+
   const latZoom = zoom(mapHeight, WORLD_DIM.height, latFraction);
   const lngZoom = zoom(mapWidth, WORLD_DIM.width, lngFraction);
-  
+
   return Math.min(latZoom, lngZoom, ZOOM_MAX);
 };
 
 // Interface for window global
 // Import Google Maps utilities from the centralized loader
-import { 
+import {
   isGoogleMapsAPILoaded,
-  loadGoogleMapsScript, 
-  useLoadGoogleMaps 
+  loadGoogleMapsScript,
+  useLoadGoogleMaps
 } from './googleMapsLoader';
 
 // Re-export for backward compatibility
-export { 
-  isGoogleMapsAPILoaded, 
-  loadGoogleMapsScript, 
-  useLoadGoogleMaps 
+export {
+  isGoogleMapsAPILoaded,
+  loadGoogleMapsScript,
+  useLoadGoogleMaps
 };
 
 

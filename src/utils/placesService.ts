@@ -87,8 +87,7 @@ export const searchPlacesByText = (
       console.error("Exception in Places service call:", error);
       // Return empty array instead of rejecting to prevent app crashes
       resolve([]);
-      }
-    });
+    }
   });
 };
 

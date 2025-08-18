@@ -60,12 +60,21 @@ export const CardContent: React.FC<CardContentProps> = ({ children, className = 
   return <div className={`px-6 py-4 ${className}`}>{children}</div>;
 };
 
+interface CardDescriptionProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const CardDescription: React.FC<CardDescriptionProps> = ({ children, className = "" }) => {
+  return <p className={`text-sm text-slate-500 ${className}`}>{children}</p>;
+};
+
 interface CardFooterProps {
   children: React.ReactNode;
   className?: string;
 }
 
-const CardFooter: React.FC<CardFooterProps> = ({ children, className = "" }) => {
+export const CardFooter: React.FC<CardFooterProps> = ({ children, className = "" }) => {
   return (
     <div className={`px-6 py-3 bg-slate-50 border-t border-slate-200 ${className}`}>{children}</div>
   );

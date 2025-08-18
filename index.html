@@ -1,50 +1,54 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matanuska Transport Platform</title>
 
-  <title>Matanuska Transport Platform</title>
+    <!-- SEO & Theming -->
+    <meta
+      name="description"
+      content="Fleet management, trip P&L, live tracking, Google Maps & Wialon SDK integration."
+    />
+    <meta name="theme-color" content="#2563eb" />
 
-  <!-- SEO & Theming -->
-  <meta name="description" content="Fleet management, trip P&L, live tracking, Google Maps & Wialon SDK integration." />
-  <meta name="theme-color" content="#2563eb" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- Google Font: Inter -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Google Font: Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+    <!-- ✅ Wialon SDK (injected from env) -->
+    <script
+      src="%VITE_WIALON_API_URL%/wsdk/script/wialon.js"
+      async
+      defer
+    ></script>
 
-  <!-- Wialon SDK (globally available as window.wialon) -->
-  <script
-    src="https://hosting.wialon.com/?token=c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053&lang=en"></script>
+    <!-- ❌ Google Maps script removed.
+         Maps will now be injected once by your mapScriptFixer/googleMapsApiPatch. -->
 
-  <!-- Google Maps is loaded dynamically from /src/utils/googleMapsLoader.ts -->
+    <!-- Firebase (browser ESM) – optional helpers exposed globally -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+      import { getAuth } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+      import { getStorage } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-storage.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics.js";
 
-  <!-- Firebase App (the core Firebase SDK) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
-    import { getStorage } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-storage.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics.js";
+      window.Firebase = { initializeApp, getFirestore, getAuth, getStorage, getAnalytics };
+    </script>
+  </head>
 
-    // Your Firebase configuration will be injected during build
-    window.Firebase = { initializeApp, getFirestore, getAuth, getStorage, getAnalytics };
-  </script>
+  <body class="bg-gray-50 dark:bg-gray-900 font-sans antialiased">
+    <div id="root"></div>
 
-  <!-- Styles from Vite build (auto-injected in dev, inlined or linked in production) -->
-</head>
-
-<body class="bg-gray-50 dark:bg-gray-900 font-sans antialiased">
-  <!-- React Mount Point -->
-  <div id="root"></div>
-
-  <!-- Main React Entry Point -->
-  <script type="module" src="./src/main.tsx"></script>
-</body>
-
+    <!-- Main React Entry Point -->
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
 </html>

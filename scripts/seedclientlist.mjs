@@ -31,12 +31,8 @@ try {
 
 const db = getFirestore();
 
-// Driver authorization data - flat array for storing in Firestore
-const authorisationMapping = [
-
-
-
-module.exports = [
+// Define and export the clients data
+export const clientsList = [
   {
     "client": "CRYSTAL CANDY",
     "city": "",
@@ -884,3 +880,25 @@ module.exports = [
     "email": ""
   }
 ];
+
+// Optional: Initialize Firebase and seed data
+async function seedClients() {
+  const batch = db.batch();
+
+  for (const client of clientsList) {
+    const docRef = db.collection('clients').doc();
+    batch.set(docRef, client);
+  }
+
+  try {
+    await batch.commit();
+    console.log('✅ Successfully seeded client data');
+  } catch (error) {
+    console.error('❌ Error seeding client data:', error);
+  }
+}
+
+// Execute seeding if this module is run directly
+if (import.meta.url === new URL(import.meta.url).href) {
+  seedClients();
+}

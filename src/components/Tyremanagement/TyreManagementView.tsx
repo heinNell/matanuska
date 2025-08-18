@@ -1,4 +1,4 @@
-import { Button } from "../../components/ui/Button";
+import { Button } from "../ui/Button";
 import {
   AlertTriangle,
   BarChart3,
@@ -20,9 +20,9 @@ import Modal from "../ui/Modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/Tabs";
 
 // Import type utilities from the tyreConstants file
-import MoveTyreModal from "../../components/Models/Tyre/MoveTyreModal";
-import TyreInspectionModal from "../../components/Models/Tyre/TyreInspectionModal";
-import TyreForm from "../../components/forms/tyre/TyreForm";
+import MoveTyreModal from "../Models/Tyre/MoveTyreModal";
+import TyreInspectionModal from "../Models/Tyre/TyreInspectionModal";
+import TyreForm from "../forms/tyre/TyreForm";
 import { useTyreStores } from "../../context/TyreStoresContext";
 import type { StockEntry } from "../../types/tyre";
 import { getUniqueTyreBrands } from "../../utils/tyreConstants";
@@ -133,10 +133,8 @@ interface TyreManagementViewProps {
 }
 
 const TyreManagementView: React.FC<TyreManagementViewProps> = ({ activeTab = "inventory" }) => {
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [activeTabState, setActiveTab] = useState(activeTab);
-  const [tyres, setTyres] = useState<TyreInventoryItem[]>(mockTyres);
-  /* eslint-enable @typescript-eslint/no-unused-vars */
+  const [tyres] = useState<TyreInventoryItem[]>(mockTyres);
   const [expandedTyre, setExpandedTyre] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     brand: "",
@@ -300,7 +298,7 @@ const TyreManagementView: React.FC<TyreManagementViewProps> = ({ activeTab = "in
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+  <Tabs value={activeTabState} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="inventory" className="flex items-center gap-2">
             <Tag className="w-4 h-4" />

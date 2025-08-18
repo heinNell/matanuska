@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-// Import only Capacitor core statically as it's lightweight and essential
 import { Capacitor } from '@capacitor/core';
-// Import types for type safety without bundling the modules
 import type { BarcodeScanner as BarcodeScannerType } from '@capacitor-community/barcode-scanner';
-import type { Camera as CameraType } from '@capacitor/camera';
 import { Scan, Camera as CameraIcon, X, Check, RefreshCw, Info } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { Card, CardContent, CardHeader } from '../../ui/Card';
@@ -42,14 +39,14 @@ const TyreScanner: React.FC<TyreScannerProps> = ({
 
   useEffect(() => {
     setIsNativeApp(Capacitor.isNativePlatform());
-    
+
     // Dynamically load modules
     const loadModules = async () => {
       try {
         // Load BarcodeScanner module
         const barcodeModule = await import('@capacitor-community/barcode-scanner');
         setBarcodeScannerModule(barcodeModule.BarcodeScanner);
-        
+
         // Load Camera module and store enums
         const cameraModule = await import('@capacitor/camera');
         setCameraModule(cameraModule.Camera);
@@ -57,7 +54,7 @@ const TyreScanner: React.FC<TyreScannerProps> = ({
           resultType: cameraModule.CameraResultType,
           source: cameraModule.CameraSource
         });
-        
+
         // Check permissions after modules are loaded
         await checkPermissions();
       } catch (err) {
@@ -65,7 +62,7 @@ const TyreScanner: React.FC<TyreScannerProps> = ({
         setError('Failed to initialize scanner. Please try again.');
       }
     };
-    
+
     loadModules();
   }, []);
 
@@ -108,7 +105,7 @@ const TyreScanner: React.FC<TyreScannerProps> = ({
       document.body.classList.add('scanner-active');
 
       const result = await barcodeScannerModule.startScan();
-      
+
       if (result.hasContent) {
         setScanResult(prev => ({ ...prev, barcode: result.content }));
       }
@@ -217,7 +214,7 @@ const TyreScanner: React.FC<TyreScannerProps> = ({
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-md">
@@ -237,7 +234,7 @@ const TyreScanner: React.FC<TyreScannerProps> = ({
                 <Scan className="h-4 w-4 mr-2" />
                 {isScanning ? 'Scanning...' : scanResult.barcode ? 'Scan Again' : 'Scan Barcode'}
               </Button>
-              
+
               {scanResult.barcode && (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-md">
                   <p className="text-sm text-green-800">
@@ -260,14 +257,14 @@ const TyreScanner: React.FC<TyreScannerProps> = ({
                 <CameraIcon className="h-4 w-4 mr-2" />
                 {scanResult.photo ? 'Take Another Photo' : 'Take Photo'}
               </Button>
-              
+
               {scanResult.photo && (
                 <div className="space-y-2">
                   <div className="p-2 bg-green-50 border border-green-200 rounded-md">
                     <p className="text-sm text-green-800 mb-2">Photo captured successfully</p>
-                    <img 
-                      src={scanResult.photo} 
-                      alt="Captured" 
+                    <img
+                      src={scanResult.photo}
+                      alt="Captured"
                       className="w-full h-32 object-cover rounded border"
                     />
                   </div>
@@ -287,7 +284,7 @@ const TyreScanner: React.FC<TyreScannerProps> = ({
               <RefreshCw className="h-4 w-4 mr-2" />
               Reset
             </Button>
-            
+
             <Button
               onClick={handleComplete}
               className="flex-1"

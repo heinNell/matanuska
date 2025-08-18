@@ -1,3 +1,4 @@
+// src/components/DriverManagement/DriverPerformanceOverview.tsx
 import React, { ChangeEvent, useMemo, useState } from "react";
 import { useAppContext } from "../../context/AppContext";
 import {
@@ -7,18 +8,20 @@ import {
   FLEET_NUMBERS,
 } from "../../types";
 import Card, { CardContent, CardHeader } from "../ui/Card";
-// Removed erroneous self-import line that broke parsing
 import { Button } from "../../components/ui/Button";
 import { AlertTriangle, Clock, Edit, Eye, Plus, Save, Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/helpers";
-import { FileUpload, Input, Select, TextArea } from "../ui/FormElements"; // Ensure FileUpload is imported if used
+import { FileUpload, Input, Select, TextArea } from "../ui/FormElements";
 import Modal from "../ui/Modal";
+
+const ISO_TODAY = new Date().toISOString().split("T")[0] as string;
+const NOW_HHMM = new Date().toTimeString().slice(0, 5) as string;
 
 interface EventFormState {
   driverName: string;
   fleetNumber: string;
-  eventDate: string;
-  eventTime: string;
+  eventDate: string; // always a string in the form
+  eventTime: string; // always a string in the form
   eventType: DriverBehaviorEvent["eventType"] | "";
   description: string;
   location: string;
@@ -50,12 +53,12 @@ const DriverPerformanceOverview: React.FC = () => {
   const initialEventFormState: EventFormState = {
     driverName: "",
     fleetNumber: "",
-    eventDate: new Date().toISOString().split("T")[0],
-    eventTime: new Date().toTimeString().split(" ")[0].substring(0, 5),
+    eventDate: ISO_TODAY,
+    eventTime: NOW_HHMM,
     eventType: "",
     description: "",
     location: "",
-    severity: "medium",
+    severity: "low",
     status: "pending",
     actionTaken: "",
     points: 0,
@@ -74,10 +77,14 @@ const DriverPerformanceOverview: React.FC = () => {
       const matchesDriver = !selectedDriver || event.driverName === selectedDriver;
       const matchesEventType = !selectedEventType || event.eventType === selectedEventType;
       const matchesSeverity = !selectedSeverity || event.severity === selectedSeverity;
-      const matchesStatus = !selectedStatus || (event.status || "pending") === selectedStatus;
+      const matchesStatus = !selectedStatus || (event.status ?? "pending") === selectedStatus;
+
+      // Guard eventDate (may be undefined on existing data)
+      const evDate = event.eventDate ?? "";
       const matchesDateRange =
-        (!dateRange.start || event.eventDate >= dateRange.start) &&
-        (!dateRange.end || event.eventDate <= dateRange.end);
+        (!dateRange.start || evDate >= dateRange.start) &&
+        (!dateRange.end || evDate <= dateRange.end);
+
       return (
         matchesDriver && matchesEventType && matchesSeverity && matchesStatus && matchesDateRange
       );
@@ -96,7 +103,7 @@ const DriverPerformanceOverview: React.FC = () => {
     const criticalEvents = filteredEvents.filter((e) => e.severity === "critical").length;
     const highSeverityEvents = filteredEvents.filter((e) => e.severity === "high").length;
     const unresolvedEvents = filteredEvents.filter(
-      (e) => (e.status || "pending") !== "resolved"
+      (e) => (e.status ?? "pending") !== "resolved"
     ).length;
 
     const eventsByType = filteredEvents.reduce(
@@ -185,8 +192,8 @@ const DriverPerformanceOverview: React.FC = () => {
       driverId: "dummy-driver-id",
       driverName: eventForm.driverName,
       fleetNumber: eventForm.fleetNumber,
-      eventDate: eventForm.eventDate,
-      eventTime: eventForm.eventTime,
+      eventDate: eventForm.eventDate, // guaranteed string from form
+      eventTime: eventForm.eventTime, // guaranteed string from form
       eventType: eventForm.eventType as DriverBehaviorEvent["eventType"],
       description: eventForm.description,
       location: eventForm.location,
@@ -221,25 +228,23 @@ const DriverPerformanceOverview: React.FC = () => {
   const handleEditEvent = (event: DriverBehaviorEvent) => {
     setSelectedEvent(event);
     setEventForm({
-      driverName: event.driverName,
-      fleetNumber: event.fleetNumber,
-      eventDate: event.eventDate,
-      eventTime: event.eventTime,
+      driverName: event.driverName ?? "",
+      fleetNumber: event.fleetNumber ?? "",
+      eventDate: event.eventDate ?? ISO_TODAY, // <-- ensure string
+      eventTime: event.eventTime ?? NOW_HHMM, // <-- ensure string
       eventType: event.eventType,
-      description: event.description,
-      location: event.location || "",
-      severity: event.severity,
-      status: event.status || "pending",
-      actionTaken: event.actionTaken || "",
-      points: event.points || 0,
+      description: event.description ?? "",
+      location: event.location ?? "",
+      severity: event.severity ?? "low", // use a valid severity from the type
+      status: event.status ?? "pending",
+      actionTaken: event.actionTaken ?? "",
+      points: event.points ?? 0,
       attachments: null,
     });
     setShowAddEventModal(true);
   };
 
   const handleDeleteEvent = (id: string) => {
-    // Replaced window.confirm and alert with console logs as per instructions,
-    // as these are not suitable for the Canvas environment.
     if (window.confirm("Are you sure you want to delete this driver behavior event?")) {
       deleteDriverBehaviorEvent(id);
       console.log("Event deleted successfully");
@@ -421,7 +426,7 @@ const DriverPerformanceOverview: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
               <div className="flex space-x-2">
                 <Input
-                  label="" // Label is visually handled by the parent div's label
+                  label=""
                   type="date"
                   value={dateRange.start}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -430,7 +435,7 @@ const DriverPerformanceOverview: React.FC = () => {
                   className="w-1/2"
                 />
                 <Input
-                  label="" // Label is visually handled by the parent div's label
+                  label=""
                   type="date"
                   value={dateRange.end}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -455,28 +460,16 @@ const DriverPerformanceOverview: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Driver
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Event Count
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Critical Events
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Performance Score
                     </th>
                   </tr>
@@ -503,11 +496,11 @@ const DriverPerformanceOverview: React.FC = () => {
                                 driver.score > 80
                                   ? "bg-green-500"
                                   : driver.score > 60
-                                    ? "bg-yellow-500"
-                                    : "bg-red-500"
+                                  ? "bg-yellow-500"
+                                  : "bg-red-500"
                               }`}
                               style={{ width: `${driver.score}%` }}
-                            ></div>
+                            />
                           </div>
                           <span>{driver.score}%</span>
                         </div>
@@ -532,46 +525,25 @@ const DriverPerformanceOverview: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Date
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Driver
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Fleet #
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Event Type
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Severity
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -580,7 +552,7 @@ const DriverPerformanceOverview: React.FC = () => {
                   {filteredEvents.map((event) => (
                     <tr key={event.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(event.eventDate)}
+                        {formatDate(event.eventDate ?? ISO_TODAY)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {event.driverName}
@@ -603,7 +575,7 @@ const DriverPerformanceOverview: React.FC = () => {
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(event.status)}`}
                         >
-                          {event.status || "pending"}
+                          {event.status ?? "pending"}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -811,7 +783,6 @@ const DriverPerformanceOverview: React.FC = () => {
           {/* Supporting Documents FileUpload */}
           <FileUpload
             label="Supporting Documents"
-            // Explicitly cast e.target.files to FileList | null to resolve 'implicitly has an any type' error
             onFileSelect={(files: FileList | null) => handleFormChange("attachments", files)}
             multiple
           />
@@ -856,7 +827,7 @@ const DriverPerformanceOverview: React.FC = () => {
               <div>
                 <h4 className="text-sm font-medium text-gray-500">Event Date & Time</h4>
                 <p className="mt-1 text-sm text-gray-900">
-                  {formatDateTime(`${selectedEvent.eventDate}T${selectedEvent.eventTime}`)}
+                  {formatDateTime(`${selectedEvent.eventDate ?? ISO_TODAY}T${selectedEvent.eventTime ?? NOW_HHMM}`)}
                 </p>
               </div>
               <div>
@@ -882,7 +853,7 @@ const DriverPerformanceOverview: React.FC = () => {
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(selectedEvent.status)}`}
                   >
-                    {selectedEvent.status || "pending"}
+                    {selectedEvent.status ?? "pending"}
                   </span>
                 </p>
               </div>

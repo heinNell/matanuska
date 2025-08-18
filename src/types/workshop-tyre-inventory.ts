@@ -399,10 +399,15 @@ export function parseTyreSizeFromString(sizeStr: string): TyreSize {
     const match = sizeStr.match(regex);
 
     if (match && match.length >= 4) {
+      // Add null checks and provide default values if parsing fails
+      const width = match[1] ? parseInt(match[1], 10) : 295;
+      const aspectRatio = match[2] ? parseInt(match[2], 10) : 80;
+      const rimDiameter = match[3] ? parseFloat(match[3]) : 22.5;
+
       return {
-        width: parseInt(match[1], 10),
-        aspectRatio: parseInt(match[2], 10),
-        rimDiameter: parseFloat(match[3]),
+        width,
+        aspectRatio,
+        rimDiameter,
         displayString: sizeStr,
       };
     }

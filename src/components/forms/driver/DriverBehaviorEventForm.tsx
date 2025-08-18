@@ -30,8 +30,8 @@ const DriverBehaviorEventForm: React.FC<DriverBehaviorEventFormProps> = ({
   const [formData, setFormData] = useState({
     driverName: "",
     fleetNumber: "",
-    eventDate: new Date().toISOString().split("T")[0],
-    eventTime: new Date().toTimeString().split(" ")[0].substring(0, 5),
+    eventDate: new Date().toISOString().split("T")[0] || "",
+    eventTime: new Date().toTimeString().split(" ")[0]?.substring(0, 5) || "",
     eventType: "" as DriverBehaviorEventType,
     description: "",
     location: "",
@@ -67,8 +67,8 @@ const DriverBehaviorEventForm: React.FC<DriverBehaviorEventFormProps> = ({
       setFormData({
         driverName: "",
         fleetNumber: "",
-        eventDate: new Date().toISOString().split("T")[0],
-        eventTime: new Date().toTimeString().split(" ")[0].substring(0, 5),
+        eventDate: new Date().toISOString().split("T")[0] || "",
+        eventTime: new Date().toTimeString().split(" ")[0]?.substring(0, 5) || "",
         eventType: "" as DriverBehaviorEventType,
         description: "",
         location: "",
@@ -130,8 +130,8 @@ const DriverBehaviorEventForm: React.FC<DriverBehaviorEventFormProps> = ({
       driverId: "unknown", // Placeholder - in a real app, get from selected driver
       driverName: formData.driverName,
       fleetNumber: formData.fleetNumber,
-      eventDate: formData.eventDate,
-      eventTime: formData.eventTime,
+      eventDate: formData.eventDate || "",
+      eventTime: formData.eventTime || "",
       eventType: formData.eventType,
       description: formData.description,
       location: formData.location,

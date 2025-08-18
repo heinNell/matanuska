@@ -20,7 +20,9 @@ const PurchaseOrderPage: React.FC = () => {
     poNumber: `PO-${Date.now().toString().slice(-6)}`,
     title: "",
     description: "",
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0] as string,
     vendor: "",
     requester: "Fleet Manager",
     priority: "Medium",
@@ -82,7 +84,9 @@ const PurchaseOrderPage: React.FC = () => {
               >
                 Back to Purchase Orders
               </button>
-              <h1 className="text-2xl font-semibold text-gray-900">Create Purchase Order</h1>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                Create Purchase Order
+              </h1>
             </div>
 
             {submitted && (

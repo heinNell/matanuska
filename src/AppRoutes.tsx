@@ -12,7 +12,7 @@ const withSuspense = (Comp: React.LazyExoticComponent<any>, props = {}) => (
 /* -----------------------------
  * Top-level / dashboard pages
  * ----------------------------- */
-const DashboardPage = lazy(() => import("./pages/Dashboard"));
+const DashboardPage = lazy(() => import("@/pages/Dashboard"));
 const FormsIntegrationPage = lazy(() => import("./pages/FormsIntegrationPage"));
 const FleetLocationMapPage = lazy(() => import("./pages/FleetLocationMapPage"));
 
@@ -76,7 +76,6 @@ const TripCalendarPage = lazy(() => import("./pages/trips/TripCalendarPage"));
 const SystemCostGenerator = lazy(() => import("./pages/trips/SystemCostGenerator"));
 const RoutePlanningPage = lazy(() => import("./pages/trips/RoutePlanningPage"));
 const RouteOptimizationPage = lazy(() => import("./pages/trips/RouteOptimizationPage"));
-const ReportingPanel = lazy(() => import("./pages/trips/ReportingPanel"));
 const PaymentTrackingPanel = lazy(() => import("./pages/trips/PaymentTrackingPanel"));
 const MissedLoadsTracker = lazy(() => import("./pages/trips/MissedLoadsTracker"));
 const MainTripWorkflow = lazy(() => import("./pages/trips/MainTripWorkflow"));
@@ -260,6 +259,7 @@ export const AppRoutes: React.FC = () => {
           <Route index element={withSuspense(TripManager)} />
           <Route path="dashboard" element={withSuspense(TripDashboardPage)} />
           <Route path="management" element={withSuspense(TripManagementPage)} />
+          <Route path="details/:tripId" element={withSuspense(TripDetailsPage)} />
           <Route path="active" element={withSuspense(ActiveTrips)} />
           <Route path="active-enhanced" element={withSuspense(ActiveTripsPageEnhanced)} />
           <Route path="active-manager" element={withSuspense(ActiveTripsManager)} />
@@ -304,3 +304,4 @@ export const AppRoutes: React.FC = () => {
 };
 
 export default AppRoutes;
+

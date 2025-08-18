@@ -156,3 +156,31 @@ interface Window {
   wialon: typeof W;
   W: typeof W;
 }
+
+// MReport interfaces
+interface WialonMReport {
+  intervalFlag: {
+    absolute: number;
+  };
+}
+
+interface WialonItem {
+  MReport: WialonMReport;
+}
+
+interface WialonSDK {
+  core: {
+    Errors: {
+      getErrorText(code: number): string;
+    };
+  };
+  item: WialonItem;
+}
+
+declare global {
+  interface Window {
+    wialon: WialonSDK;
+  }
+}
+
+export {};

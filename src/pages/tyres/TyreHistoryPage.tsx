@@ -79,7 +79,7 @@ function csvEscape(s: unknown): string {
 
 function toCSV(rows: Record<string, unknown>[], headerOrder?: string[]) {
   if (rows.length === 0) return "data:text/csv;charset=utf-8,\uFEFF";
-  const headers = headerOrder ?? Object.keys(rows[0]);
+  const headers = headerOrder ?? (rows[0] ? Object.keys(rows[0]) : []);
   const lines = [
     headers.map(csvEscape).join(","),
     ...rows.map((r) => headers.map((h) => csvEscape(r[h])).join(",")),

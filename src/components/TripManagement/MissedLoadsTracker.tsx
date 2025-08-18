@@ -45,7 +45,21 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
   const [showResolutionModal, setShowResolutionModal] = useState(false);
   const [editingLoad, setEditingLoad] = useState<MissedLoad | null>(null);
   const [resolvingLoad, setResolvingLoad] = useState<MissedLoad | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    customerName: string;
+    loadRequestDate: string;
+    requestedPickupDate: string;
+    requestedDeliveryDate: string;
+    route: string;
+    estimatedRevenue: string;
+    currency: "ZAR" | "USD";
+    reason: string;
+    reasonDescription: string;
+    resolutionStatus: "pending" | "resolved" | "lost_opportunity" | "rescheduled";
+    followUpRequired: boolean;
+    competitorWon: boolean;
+    impact: "low" | "medium" | "high";
+  }>({
     customerName: "",
     loadRequestDate: new Date().toISOString().split("T")[0],
     requestedPickupDate: "",

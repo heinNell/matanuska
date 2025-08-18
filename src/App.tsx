@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import AppRoutes from "./AppRoutes";
-import "./utils/mapScriptFixer"; // Prevent duplicate Google Maps API loading
 
 // ---------- Context Providers ----------
 import { AppProvider } from "./context/AppContext";
@@ -89,13 +88,14 @@ const App: React.FC = () => {
   const [emitError, setEmitError] = useState<((error: any) => void) | null>(null);
 
   useEffect(() => {
+    let cleanup: (() => void) | undefined;
     const initializeServices = async () => {
       try {
         // Show fallback for debugging or critical errors from env variables
         if (import.meta.env.VITE_DEBUG_DEPLOYMENT || import.meta.env.VITE_SHOW_FALLBACK) {
           console.log("🐛 Debug mode enabled - showing fallback");
           setStatus(AppStatus.Error);
-          return;
+          return; // exit initializeServices early
         }
 
         const unregisterErrorHandler = registerErrorHandler((errLike) => {
@@ -175,8 +175,7 @@ const App: React.FC = () => {
         if (status !== AppStatus.Error) {
           setStatus(AppStatus.Ready);
         }
-
-        return () => {
+        cleanup = () => {
           window.removeEventListener("online", handleOnline);
           window.removeEventListener("unhandledrejection", handleUnhandledRejection);
           window.removeEventListener("error", handleGlobalError);
@@ -189,6 +188,9 @@ const App: React.FC = () => {
     };
 
     initializeServices();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [status]); // Add status to dependencies to prevent infinite loop if an error occurs
 
   if (status === AppStatus.Loading) {
@@ -209,7 +211,7 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary
-      onError={(error, errorInfo) => {
+      onError={(error, _errorInfo) => {
         const normalized = normalizeError(error);
         console.error("🚨 React Error Boundary triggered:", normalized);
 

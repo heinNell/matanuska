@@ -1,9 +1,8 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { CostEntry, FlaggedCost } from '../types';
-import { useAppContext } from './AppContext';
-// Firebase imports commented out until Firebase is fully set up
-// import { collection, query, where, onSnapshot } from 'firebase/firestore';
-// import { db } from '../firebase/firebase';
+import { CostEntry, FlaggedCost, Trip } from '../types';
+import { AppContext } from './AppContext';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 
 interface FlagsContextType {
   flaggedCosts: FlaggedCost[];
@@ -28,7 +27,17 @@ export const FlagsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { trips, updateCostEntry } = useAppContext();
+  // Try to get the app context safely, without throwing errors
+  const appContext = useContext(AppContext);
+
+  const trips: Trip[] = appContext?.trips || [];
+  const updateCostEntry: ((costEntry: CostEntry) => Promise<void>) =
+    appContext?.updateCostEntry || (async () => {
+      console.warn('updateCostEntry called but AppContext not available');
+    });
+
+  // Optional realtime mode toggled by env flag
+  const enableRealtime: boolean = (import.meta as any)?.env?.VITE_FLAGS_REALTIME === 'true';
 
   useEffect(() => {
     // Extract flagged costs from trips
@@ -36,9 +45,9 @@ export const FlagsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       try {
         const allFlaggedCosts: FlaggedCost[] = [];
 
-        trips.forEach(trip => {
+        trips.forEach((trip: Trip) => {
           if (trip.costs) {
-            const tripFlaggedCosts = trip.costs.filter(cost => cost.isFlagged) as FlaggedCost[];
+            const tripFlaggedCosts = trip.costs.filter((cost: CostEntry) => cost.isFlagged) as FlaggedCost[];
             if (tripFlaggedCosts.length > 0) {
               allFlaggedCosts.push(...tripFlaggedCosts);
             }
@@ -54,18 +63,56 @@ export const FlagsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       }
     };
 
-    extractFlaggedCosts();
+    let unsubscribe: (() => void) | undefined;
+    if (!enableRealtime) {
+      extractFlaggedCosts();
+    } else {
+      try {
+        const qRef = query(collection(db, 'trips'), where('hasFlaggedCosts', '==', true));
+        unsubscribe = onSnapshot(
+          qRef,
+          (querySnapshot) => {
+            try {
+              const allFlaggedCosts: FlaggedCost[] = [];
+              querySnapshot.forEach((docSnap) => {
+                const data: any = docSnap.data() || {};
+                const costs: CostEntry[] = Array.isArray(data.costs) ? data.costs : [];
+                costs.forEach((c) => {
+                  if (c && (c as any).isFlagged) {
+                    const fc: FlaggedCost = {
+                      ...(c as any),
+                      id: c.id || `${docSnap.id}-${c.referenceNumber || Math.random().toString(36).slice(2)}`,
+                      tripId: c.tripId || docSnap.id,
+                      isFlagged: true,
+                    } as FlaggedCost;
+                    allFlaggedCosts.push(fc);
+                  }
+                });
+              });
+              setFlaggedCosts(allFlaggedCosts);
+              setIsLoading(false);
+            } catch (innerErr) {
+              setError('Failed to process flagged costs snapshot');
+              console.error(innerErr);
+            }
+          },
+          (err) => {
+            setError('Failed to subscribe to flagged costs');
+            console.error(err);
+            setIsLoading(false);
+          }
+        );
+      } catch (err) {
+        console.error('FlagsContext realtime listener setup failed:', err);
+      }
+    }
 
-    // You could also set up a real-time listener if needed
-    // const q = query(collection(db, 'trips'), where('hasFlaggedCosts', '==', true));
-    // const unsubscribe = onSnapshot(q, (querySnapshot) => {
-    //   // Process snapshot and update flaggedCosts
-    // });
-    // return () => unsubscribe();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [trips, enableRealtime]);
 
-  }, [trips]);
-
-  const resolveFlaggedCost = async (updatedCost: CostEntry, resolutionComment: string) => {
+  const resolveFlaggedCost = async (updatedCost: CostEntry, _resolutionComment: string) => {
     try {
       // Update the cost entry in the parent context
       await updateCostEntry(updatedCost);
@@ -83,24 +130,39 @@ export const FlagsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const flagCost = async (costId: string, tripId: string, reason: string) => {
     try {
       // Find the trip and cost
-      const trip = trips.find(t => t.id === tripId);
+      const trip = trips.find((t: Trip) => t.id === tripId);
       if (!trip || !trip.costs) {
         throw new Error('Trip or costs not found');
       }
 
-      const costIndex = trip.costs.findIndex(c => c.id === costId);
+      const costIndex = trip.costs.findIndex((c: CostEntry) => c.id === costId);
       if (costIndex === -1) {
         throw new Error('Cost entry not found');
       }
 
       // Update the cost with flag information
-      const updatedCost = {
-        ...trip.costs[costIndex],
+      const costEntry = trip.costs[costIndex];
+      if (!costEntry || !costEntry.id || !costEntry.tripId) {
+        throw new Error('Cost entry is invalid or missing required fields');
+      }
+
+      const updatedCost: CostEntry = {
+        ...costEntry,
+        id: costEntry.id,
+        tripId: costEntry.tripId,
+        category: costEntry.category || 'Other',
+        subCategory: costEntry.subCategory || '',
+        amount: costEntry.amount,
+        currency: costEntry.currency,
+        date: costEntry.date,
+        referenceNumber: costEntry.referenceNumber || '',
+        notes: costEntry.notes || '',
+        attachments: costEntry.attachments || [],
         isFlagged: true,
         flagReason: reason,
         flaggedAt: new Date().toISOString(),
-        flaggedBy: 'Current User', // In a real app, use the logged-in user
-        investigationStatus: 'pending' as 'pending' | 'in-progress' | 'resolved'
+        flaggedBy: 'Current User',
+        investigationStatus: 'pending'
       };
 
       // Update in the main context

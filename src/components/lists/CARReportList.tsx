@@ -69,7 +69,7 @@ const CARReportList: React.FC = () => {
   // Handle filter changes
   const handleFilterChange = (field: string, value: string) => {
     if (field.includes("dateRange")) {
-      const [, dateField] = field.split(".");
+      const [, dateField] = field.split(".") as [string, "start" | "end"];
       setFilters((prev) => ({
         ...prev,
         dateRange: {

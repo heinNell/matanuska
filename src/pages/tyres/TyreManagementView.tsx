@@ -133,10 +133,8 @@ interface TyreManagementViewProps {
 }
 
 const TyreManagementView: React.FC<TyreManagementViewProps> = ({ activeTab = "inventory" }) => {
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [activeTabState, setActiveTab] = useState(activeTab);
-  const [tyres, setTyres] = useState<TyreInventoryItem[]>(mockTyres);
-  /* eslint-enable @typescript-eslint/no-unused-vars */
+  const [tyres] = useState<TyreInventoryItem[]>(mockTyres);
   const [expandedTyre, setExpandedTyre] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     brand: "",
@@ -300,7 +298,7 @@ const TyreManagementView: React.FC<TyreManagementViewProps> = ({ activeTab = "in
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+  <Tabs value={activeTabState} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="inventory" className="flex items-center gap-2">
             <Tag className="w-4 h-4" />

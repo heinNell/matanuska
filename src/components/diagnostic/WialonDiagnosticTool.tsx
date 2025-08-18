@@ -5,9 +5,16 @@
  * and displaying results with troubleshooting recommendations.
  */
 import React, { useState } from 'react';
-import { runWialonDiagnostics, DiagnosticResult } from '../utils/wialonDiagnostics';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { runWialonDiagnostics, DiagnosticResult } from '@/utils/wialonDiagnostics';
+import { Button } from '@/components/ui/Button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/Card';
 import { AlertCircle, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 
 export const WialonDiagnosticTool: React.FC = () => {

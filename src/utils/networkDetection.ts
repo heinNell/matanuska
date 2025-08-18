@@ -18,11 +18,11 @@ interface NetworkState {
   isInternetReachable: boolean;
 }
 
-const PING_ENDPOINTS = [
-  'https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel',
-  'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js',
-  'https://www.google.com/favicon.ico'
-];
+const PING_ENDPOINTS = {
+  firebase: 'https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel',
+  firebaseJS: 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js',
+  google: 'https://www.google.com/favicon.ico'
+} as const;
 
 const initialState: NetworkState = {
   status: navigator.onLine ? 'online' : 'offline',
@@ -70,8 +70,8 @@ export const checkNetworkConnectivity = async (forceCheck = false): Promise<Netw
 
   try {
     // Test Firebase reachability
-    const firebaseEndpoint = PING_ENDPOINTS[0];
-    const googleEndpoint = PING_ENDPOINTS[2];
+    const firebaseEndpoint = PING_ENDPOINTS.firebase;
+    const googleEndpoint = PING_ENDPOINTS.google;
     
     const startTime = Date.now();
     

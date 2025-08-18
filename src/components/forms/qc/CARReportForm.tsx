@@ -15,6 +15,40 @@ interface CARReportFormProps {
   existingReport?: CARReport;
 }
 
+// Define a proper type for form data to ensure type safety
+interface FormData {
+  responsibleReporter: string;
+  responsiblePerson: string;
+  dateOfIncident: string;
+  dateDue: string;
+  clientReport: string;
+  severity: "high" | "medium" | "low";
+  incidentType: string;
+  description: string;
+  dueDate: string;
+  issueDate: string;
+  issuedBy: string;
+  priority: "high" | "medium" | "low";
+  rootCause: string;
+  contributingFactors: string;
+  immediateActions: string;
+  preventativeMeasures: string;
+  problemIdentification: string;
+  causeAnalysisPeople: string;
+  causeAnalysisMaterials: string;
+  causeAnalysisEquipment: string;
+  causeAnalysisMethods: string;
+  causeAnalysisMetrics: string;
+  causeAnalysisEnvironment: string;
+  rootCauseAnalysis: string;
+  correctiveActions: string;
+  preventativeActionsImmediate: string;
+  preventativeActionsLongTerm: string;
+  financialImpact: string;
+  generalComments: string;
+  status: "draft" | "submitted" | "in_progress" | "completed";
+}
+
 const CARReportForm: React.FC<CARReportFormProps> = ({
   isOpen,
   onClose,
@@ -23,10 +57,10 @@ const CARReportForm: React.FC<CARReportFormProps> = ({
 }) => {
   const { addCARReport, updateCARReport } = useAppContext();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     responsibleReporter: "",
     responsiblePerson: "",
-    dateOfIncident: new Date().toISOString().split("T")[0],
+    dateOfIncident: new Date().toISOString().split("T")[0] as string, // Always a string
     dateDue: "",
     clientReport: "",
     severity: "medium" as "high" | "medium" | "low",
@@ -34,8 +68,8 @@ const CARReportForm: React.FC<CARReportFormProps> = ({
     // New fields based on CARReport type
     incidentType: "",
     description: "",
-    dueDate: new Date().toISOString().split("T")[0],
-    issueDate: new Date().toISOString().split("T")[0],
+    dueDate: new Date().toISOString().split("T")[0] as string,
+    issueDate: new Date().toISOString().split("T")[0] as string, // Always a string
     issuedBy: "Current User", // In a real app, use the logged-in user
     priority: "medium" as "high" | "medium" | "low",
     rootCause: "",
@@ -95,19 +129,19 @@ const CARReportForm: React.FC<CARReportFormProps> = ({
         clientReport: existingReport.clientReport,
         severity: existingReport.severity,
 
-        // New fields
+        // New fields - ensure all fields have fallbacks to prevent undefined values
         incidentType: existingReport.incidentType || "general",
         description: existingReport.description || existingReport.problemIdentification,
         dueDate: existingReport.dueDate || existingReport.dateDue,
-        issueDate: existingReport.issueDate || new Date().toISOString().split("T")[0],
-        issuedBy: existingReport.issuedBy || "Current User",
+        issueDate: existingReport.issueDate, // This is a required field in CARReport, so it should always exist
+        issuedBy: existingReport.issuedBy, // This is also required in CARReport
         priority: existingReport.priority || existingReport.severity,
-        rootCause: existingReport.rootCause || existingReport.rootCauseAnalysis,
+        rootCause: existingReport.rootCause || existingReport.rootCauseAnalysis || "",
         contributingFactors: existingReport.contributingFactors || "",
         immediateActions:
-          existingReport.immediateActions || existingReport.preventativeActionsImmediate,
+          existingReport.immediateActions || existingReport.preventativeActionsImmediate || "",
         preventativeMeasures:
-          existingReport.preventativeMeasures || existingReport.preventativeActionsLongTerm,
+          existingReport.preventativeMeasures || existingReport.preventativeActionsLongTerm || "",
 
         // Legacy fields
         problemIdentification: existingReport.problemIdentification,
@@ -142,7 +176,7 @@ const CARReportForm: React.FC<CARReportFormProps> = ({
         ...prev,
         responsiblePerson: linkedEvent.driverName,
         dateOfIncident: linkedEvent.eventDate,
-        dateDue: dueDate.toISOString().split("T")[0],
+        dateDue: dueDate.toISOString().split("T")[0] as string,
         severity:
           linkedEvent.severity === "critical"
             ? "high"

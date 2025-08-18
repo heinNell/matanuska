@@ -271,26 +271,33 @@ export const generateMockInventory = (): TyreInventoryItem[] => {
 
     tyres.slice(0, 3).forEach((tyre, index) => {
       const vendorIndex = Math.floor(Math.random() * VENDORS.length);
+      // Ensure we always have a valid vendor
+      const vendor = VENDORS[vendorIndex] || VENDORS[0];
+      if (!vendor) {
+        throw new Error('No vendors available in VENDORS array');
+      }
       const quantity = Math.floor(Math.random() * 10);
       const reorderLevel = Math.floor(Math.random() * 3) + 1;
+      const purchaseDate = new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0] || '2023-01-01';
+      const storeLocation = storeLocationOptions[randomStoreIndex] || TyreStoreLocation.VICHELS_STORE;
 
       inventory.push({
         id: `INV-${position.charAt(0)}${posIndex}${index}`,
         tyreRef: tyre,
         serialNumber: `SN${Math.floor(Math.random() * 10000000)}`,
         dotCode: `DOT${Math.floor(Math.random() * 1000)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 1000)}`,
-        purchaseDate: new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
+        purchaseDate,
         cost: Math.floor(Math.random() * 1000) + 500,
-        supplier: VENDORS[vendorIndex],
+        supplier: vendor,
         status: Math.random() > 0.3 ? 'in_stock' : (Math.random() > 0.5 ? 'installed' : 'scrapped'),
-        storeLocation: storeLocationOptions[randomStoreIndex],
+        storeLocation,
         quantity,
         reorderLevel,
         brand: tyre.brand,
         pattern: tyre.pattern,
         size: tyre.size,
         position: tyre.position,
-        supplierId: VENDORS[vendorIndex].id
+        supplierId: vendor.id
       });
     });
   });

@@ -54,7 +54,7 @@ const parseTyreSize = (sizeStr: string): TyreSizeData => {
   const regex = /([0-9]+)\/([0-9]+)R([0-9.]+)/;
   const match = regex.exec(sizeStr);
 
-  if (match) {
+  if (match && match[1] && match[2] && match[3]) {
     return {
       width: parseInt(match[1], 10),
       aspectRatio: parseInt(match[2], 10),
@@ -128,7 +128,7 @@ const TyreInspection: React.FC = () => {
 
   // Form data state
   const [formData, setFormData] = useState<TyreInspectionFormData>({
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split("T")[0] as string,
     inspector: "",
     fleetNumber: "",
     tyrePosition: "",
@@ -422,7 +422,7 @@ const TyreInspection: React.FC = () => {
         setTimeout(() => {
           setSuccess(false);
           setFormData({
-            date: new Date().toISOString().split("T")[0],
+            date: new Date().toISOString().split("T")[0] as string,
             inspector: formData.inspector, // Keep the inspector name
             fleetNumber: "",
             tyrePosition: "",

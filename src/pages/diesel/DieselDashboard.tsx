@@ -169,14 +169,6 @@ const DieselDashboard: React.FC<DieselDashboardProps> = ({ className = "" }) => 
     setSortConfig({ key, direction });
   };
 
-  const getSortIndicator = (key: keyof ExtendedDieselConsumptionRecord) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === "ascending" ? " ▲" : " ▼";
-    }
-    return "";
-  };
-
-  // Calculate total fuel and costs
   const totalLiters = filteredRecords.reduce(
     (sum, record) => sum + (record.liters || record.litresFilled || 0),
     0

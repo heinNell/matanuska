@@ -25,7 +25,7 @@ const ReceivePartsPage: React.FC = () => {
     unitPrice: 0,
     supplier: "",
     receivedDate: new Date().toISOString().split("T")[0],
-    notes: "",
+    notes: undefined, // Changed to undefined to match the interface
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
@@ -78,7 +78,7 @@ const ReceivePartsPage: React.FC = () => {
         unitPrice: 0,
         supplier: "",
         receivedDate: new Date().toISOString().split("T")[0],
-        notes: "",
+        notes: undefined, // Changed to undefined to match the interface
       });
     } catch (error) {
       console.error("Error receiving parts:", error);
@@ -185,7 +185,7 @@ const ReceivePartsPage: React.FC = () => {
                       unitPrice: 0,
                       supplier: "",
                       receivedDate: new Date().toISOString().split("T")[0],
-                      notes: "",
+                      notes: undefined, // Correctly set notes to undefined on clear
                     });
                     setSuccessMessage(null);
                     setErrorMessage(null);

@@ -51,8 +51,7 @@ interface ImportedDieselRecord {
 }
 
 const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }) => {
-  // Removed importDieselRecords, since diesel import is not supported in context
-  const { connectionStatus } = useAppContext();
+  const { connectionStatus, importDieselRecords } = useAppContext();
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -179,15 +178,8 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
         }
       });
 
-      // Create FormData for upload
-      const formData = new FormData();
-      formData.append("records", JSON.stringify(dieselRecords));
-
-      // TODO: The `importDieselRecords` function from AppContext was removed.
-      // You need to implement the actual upload logic here, for example,
-      // by calling a Firebase Function with the `formData`.
-      // For now, this will just show a success message without uploading.
-      // You may want to implement your own upload logic here or disable the upload button
+      // Import records using context function
+      await importDieselRecords(dieselRecords);
 
       setSuccess(`Successfully imported ${dieselRecords.length} diesel records.`);
       setFile(null);

@@ -94,7 +94,7 @@ export const TyreCostAnalysis: React.FC<TyreCostAnalysisProps> = ({ tyreData }) 
 
     const metrics: TyreCostMetrics[] = [];
     metricsMap.forEach((data, key) => {
-      const [brand, pattern] = key.split("-");
+      const [brand = "", pattern = ""] = key.split("-");
       const averageCost = data.costs.reduce((sum, cost) => sum + cost, 0) / data.costs.length;
       const averageLifespan =
         data.lifespans.reduce((sum, life) => sum + life, 0) / data.lifespans.length;

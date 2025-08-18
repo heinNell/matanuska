@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "../../components/ui/Button";
-import { Autocomplete, DirectionsRenderer, GoogleMap, Libraries } from "@react-google-maps/api";
+import { Autocomplete, DirectionsRenderer, GoogleMap, Libraries, LoadScript } from "@react-google-maps/api";
 import {
   ChevronDown,
   ChevronUp,
@@ -18,7 +18,9 @@ import Card, { CardContent, CardHeader } from "../../components/ui/Card";
 import LoadingIndicator from "../../components/ui/LoadingIndicator";
 import { useAppContext } from "../../context/AppContext";
 import { normalizeError, safeLogError } from "../../utils/error-utils";
-import { isGoogleMapsAPILoaded, useLoadGoogleMaps } from "../../utils/googleMapsLoader";
+
+// Google Maps API key
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 // Map container styles
 const mapContainerStyle = {
@@ -39,7 +41,7 @@ const libraries: Libraries = ["places"];
 const RoutePlanningPage: React.FC = () => {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
-  const { getTrip, updateTrip, planRoute, optimizeRoute, isLoading } = useAppContext();
+  const { getTrip, planRoute, optimizeRoute } = useAppContext();
 
   const [trip, setTrip] = useState<any>(null);
   const [origin, setOrigin] = useState<string>("");
@@ -79,10 +81,12 @@ const RoutePlanningPage: React.FC = () => {
         });
         setDirections(result);
         const route = result.routes[0];
-        const distance =
-          route.legs.reduce((total, leg) => total + (leg.distance?.value || 0), 0) / 1000;
-        const duration =
-          route.legs.reduce((total, leg) => total + (leg.duration?.value || 0), 0) / 60;
+        const distance = route
+          ? route.legs.reduce((total, leg) => total + (leg.distance?.value || 0), 0) / 1000
+          : 0;
+        const duration = route
+          ? route.legs.reduce((total, leg) => total + (leg.duration?.value || 0), 0) / 60
+          : 0;
         console.log("Route calculated:", { distance, duration });
         return {
           distance,
@@ -178,8 +182,7 @@ const RoutePlanningPage: React.FC = () => {
     null,
   ]);
 
-  // Use our improved Google Maps loader with fallback capabilities
-  const { isLoaded: isApiLoaded, error: mapsLoadError } = useLoadGoogleMaps(libraries.join(","));
+  // Removed custom Google Maps loader - using LoadScript component instead
 
   // Fetch trip data on component mount
   useEffect(() => {
@@ -210,15 +213,8 @@ const RoutePlanningPage: React.FC = () => {
     }
   }, [tripId, getTrip]);
 
-  // Update error state if maps loader has an error
-  useEffect(() => {
-    if (mapsLoadError) {
-      setError(`Error loading Google Maps: ${mapsLoadError.message}`);
-    }
-  }, [mapsLoadError]);
-
   // Map load callback
-  const onMapLoad = useCallback((map: google.maps.Map) => {
+  const onMapLoad = useCallback((_map: google.maps.Map) => {
     // Map initialization code could go here if needed
   }, []);
 
@@ -248,28 +244,30 @@ const RoutePlanningPage: React.FC = () => {
 
   // (Original calculateRoute/saveRoute/handleOptimizeRoute blocks moved above)
 
-  // Check if map is ready
-  const isMapReady = isGoogleMapsAPILoaded() && isApiLoaded;
-
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Route Planning & Optimization</h1>
-          <p className="text-gray-600">
-            {trip
-              ? `Planning route for ${trip.fleetNumber} - ${trip.route}`
-              : "Create and optimize routes for your trips"}
-          </p>
+    <LoadScript
+      googleMapsApiKey={GOOGLE_MAPS_API_KEY || ""}
+      libraries={libraries}
+      loadingElement={<LoadingIndicator text="Loading Google Maps..." />}
+    >
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Route Planning & Optimization</h1>
+            <p className="text-gray-600">
+              {trip
+                ? `Planning route for ${trip.fleetNumber} - ${trip.route}`
+                : "Create and optimize routes for your trips"}
+            </p>
+          </div>
+          <div>
+            {trip && (
+              <Button onClick={handleBackToTrip} variant="outline">
+                Back to Trip Details
+              </Button>
+            )}
+          </div>
         </div>
-        <div>
-          {trip && (
-            <Button onClick={handleBackToTrip} variant="outline">
-              Back to Trip Details
-            </Button>
-          )}
-        </div>
-      </div>
 
       {error && (
         <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
@@ -296,12 +294,6 @@ const RoutePlanningPage: React.FC = () => {
           <Card>
             <CardHeader title="Route Details" />
             <CardContent className="space-y-4">
-              {!isMapReady ? (
-                <div className="flex justify-center items-center h-40">
-                  <LoadingIndicator text="Loading Google Maps..." />
-                </div>
-              ) : (
-                <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Origin</label>
                     <Autocomplete
@@ -462,13 +454,11 @@ const RoutePlanningPage: React.FC = () => {
                       </div>
                     )}
                   </div>
-                </>
-              )}
 
               <div className="flex space-x-2 pt-4 border-t">
                 <Button
                   onClick={() => calculateRoute()}
-                  disabled={!isMapReady || !origin || !destination}
+                  disabled={!origin || !destination}
                   icon={<Route className="w-4 h-4" />}
                 >
                   Calculate Route
@@ -497,12 +487,12 @@ const RoutePlanningPage: React.FC = () => {
                       <span className="text-sm font-medium">Distance</span>
                     </div>
                     <p className="text-lg font-bold text-blue-900">
-                      {(
-                        directions.routes[0]?.legs.reduce(
+                      {directions.routes[0] ? (
+                        directions.routes[0].legs.reduce(
                           (total, leg) => total + (leg.distance?.value || 0),
                           0
                         ) / 1000
-                      ).toFixed(1)}{" "}
+                      ).toFixed(1) : '0'}{" "}
                       km
                     </p>
                   </div>
@@ -513,12 +503,12 @@ const RoutePlanningPage: React.FC = () => {
                       <span className="text-sm font-medium">Duration</span>
                     </div>
                     <p className="text-lg font-bold text-blue-900">
-                      {Math.round(
-                        directions.routes[0]?.legs.reduce(
+                      {directions.routes[0] ? Math.round(
+                        directions.routes[0].legs.reduce(
                           (total, leg) => total + (leg.duration?.value || 0),
                           0
                         ) / 60
-                      )}{" "}
+                      ) : 0}{" "}
                       mins
                     </p>
                   </div>
@@ -618,17 +608,12 @@ const RoutePlanningPage: React.FC = () => {
           <Card>
             <CardHeader title="Route Map" />
             <CardContent>
-              {!isMapReady ? (
-                <div className="flex justify-center items-center h-96">
-                  <LoadingIndicator text="Loading Google Maps..." />
-                </div>
-              ) : (
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={center}
-                  zoom={5}
-                  onLoad={onMapLoad}
-                >
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={center}
+                zoom={5}
+                onLoad={onMapLoad}
+              >
                   {directions && (
                     <DirectionsRenderer
                       directions={directions}
@@ -641,12 +626,12 @@ const RoutePlanningPage: React.FC = () => {
                     />
                   )}
                 </GoogleMap>
-              )}
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
+    </LoadScript>
   );
 };
 

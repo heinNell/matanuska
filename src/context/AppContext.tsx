@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getFirestore } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getFirestore, Timestamp, writeBatch } from "firebase/firestore";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   ActionItem,
@@ -49,8 +49,8 @@ function adaptTripForFirebase(trip: Trip | Partial<Trip>): Partial<TripFromTripT
   const statusMap: Record<string, TripStatus> = {
     active: "active",
     completed: "completed",
-    invoiced: "active", // Map 'invoiced' to 'active' since it doesn't exist in TripStatus
-    paid: "active", // Map 'paid' to 'active' since it doesn't exist in TripStatus
+  invoiced: "active", // Map 'invoiced' to 'active' since it doesn't exist in TripStatus
+  paid: "active", // Map 'paid' to 'active' since it doesn't exist in TripStatus
     shipped: "shipped",
     delivered: "delivered",
   };
@@ -59,7 +59,7 @@ function adaptTripForFirebase(trip: Trip | Partial<Trip>): Partial<TripFromTripT
   const paymentStatusMap: Record<string, "paid" | "unpaid" | undefined> = {
     paid: "paid",
     unpaid: "unpaid",
-    partial: "unpaid", // Map 'partial' to 'unpaid' since it doesn't exist in TripFromTripTs
+    partial: "unpaid" // Map 'partial' to 'unpaid' since it doesn't exist in TripFromTripTs
   };
 
   // Helper to adapt cost entry
@@ -323,9 +323,13 @@ interface AppContextType {
   deleteJobCard: (id: string) => Promise<void>;
   getJobCard: (id: string) => JobCardType | undefined;
   refreshJobCards: () => Promise<void>;
+
+  importDieselRecords: (records: DieselConsumptionRecord[]) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export { AppContext };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [trips, setTrips] = useState<Trip[]>([]);
@@ -1054,8 +1058,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     // Convert the date string to a Timestamp for Firebase
-    // Import Timestamp from firebase/firestore at the top of the file if not already
-    const { Timestamp } = require("firebase/firestore");
     const recordForFirebase = {
       ...newRecord,
       date:
@@ -1872,6 +1874,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const importDieselRecords = async (records: DieselConsumptionRecord[]) => {
+    try {
+      const db = getFirestore();
+      const batch = writeBatch(db);
+
+      // Create a new batch write for all records
+      records.forEach((record) => {
+        const docRef = doc(collection(db, 'diesel'));
+        batch.set(docRef, {
+          ...record,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      });
+
+      // Commit the batch
+      await batch.commit();
+
+      // Update local storage
+      const savedRecords = JSON.parse(localStorage.getItem('dieselRecords') || '[]');
+      localStorage.setItem('dieselRecords', JSON.stringify([...savedRecords, ...records]));
+
+    } catch (error) {
+      console.error('Error importing diesel records:', error);
+      throw error;
+    }
+  };
+
   const value = {
     // Connection status
     isOnline,
@@ -1995,6 +2025,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addDieselRecord,
     updateDieselRecord: async (record: DieselConsumptionRecord): Promise<void> => {
       try {
+
         // Get the original record to track changes
         const originalRecord = dieselRecords.find((r) => r.id === record.id);
 
@@ -2015,13 +2046,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             if (costIndex !== -1) {
               // Update the existing cost entry
               const updatedCosts = [...trip.costs];
-              updatedCosts[costIndex] = {
-                ...updatedCosts[costIndex],
-                amount: record.totalCost,
-                currency: record.currency || trip.revenueCurrency,
-                notes: `Diesel: ${record.litresFilled} liters at ${record.fuelStation}${record.isReeferUnit ? " (Reefer)" : ""}`,
-                // Removed updatedAt property as it doesn't exist in CostEntry type
-              };
+              const existingCost = updatedCosts[costIndex];
+              if (existingCost) {
+                updatedCosts[costIndex] = {
+                  ...existingCost,
+                  id: existingCost.id || uuidv4(), // Ensure id is always present
+                  tripId: existingCost.tripId || trip.id, // Ensure tripId is present
+                  amount: record.totalCost,
+                  currency: record.currency || trip.revenueCurrency,
+                  notes: `Diesel: ${record.litresFilled} liters at ${record.fuelStation}${record.isReeferUnit ? " (Reefer)" : ""}`,
+                  // Removed updatedAt property as it doesn't exist in CostEntry type
+                };
+              }
 
               // Use helper to map costs with description property before updating
               const costsWithDescription = updatedCosts.map((cost) => ({

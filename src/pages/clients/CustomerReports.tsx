@@ -83,6 +83,24 @@ const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({
       (a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime()
     )[0];
 
+    // Guard against undefined trips
+    if (!firstTrip || !mostRecentTrip) {
+      return {
+        totalRevenue: 0,
+        totalTrips: 0,
+        activeTrips: 0,
+        completedTrips: 0,
+        flaggedTrips: 0,
+        averageTripValue: 0,
+        lastTripDate: null,
+        firstTripDate: null,
+        relationshipLength: 0,
+        revenueTrend: "stable" as const,
+        tripFrequency: 0,
+        onTimeDeliveryRate: 0,
+      };
+    }
+
     // Calculate metrics
     const totalRevenue = clientTrips.reduce((sum, trip) => sum + trip.baseRevenue, 0);
     const activeTrips = clientTrips.filter((trip) => trip.status === "active").length;
@@ -115,12 +133,19 @@ const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({
       const middleRecentTrip = recentTrips[1];
       const newestRecentTrip = recentTrips[0];
 
+      // Ensure all trips exist before comparing
       if (
+        newestRecentTrip &&
+        middleRecentTrip &&
+        oldestRecentTrip &&
         newestRecentTrip.baseRevenue > middleRecentTrip.baseRevenue &&
         middleRecentTrip.baseRevenue > oldestRecentTrip.baseRevenue
       ) {
         revenueTrend = "increasing";
       } else if (
+        newestRecentTrip &&
+        middleRecentTrip &&
+        oldestRecentTrip &&
         newestRecentTrip.baseRevenue < middleRecentTrip.baseRevenue &&
         middleRecentTrip.baseRevenue < oldestRecentTrip.baseRevenue
       ) {
@@ -180,7 +205,8 @@ const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({
         };
       }
 
-      clientRevenues[trip.clientName].revenue += trip.baseRevenue;
+      // Safely add revenue - we know it exists because we just created it if it didn't
+      clientRevenues[trip.clientName]!.revenue += trip.baseRevenue;
     });
 
     // Convert to array and sort

@@ -41,6 +41,14 @@ const navSections: NavSection[] = [
     ],
   },
   {
+    title: "Fleet Tracking",
+    items: [
+      { name: "Wialon Dashboard", path: "/wialon" },
+      { name: "Wialon Configuration", path: "/wialon/config" },
+      { name: "Wialon Diagnostics", path: "/wialon/diagnostics" },
+    ],
+  },
+  {
     title: "Trips",
     items: [
       { name: "Trip Management", path: "/trips/management" },

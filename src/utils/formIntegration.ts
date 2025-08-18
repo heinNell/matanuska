@@ -340,12 +340,12 @@ export const useVehiclePositionOptions = (vehicleType: string) => {
           query(collection(db, "vehiclePositions"), where("vehicleType", "==", vehicleType))
         );
 
-        if (!docSnap.empty) {
+        if (!docSnap.empty && docSnap.docs[0]) {
           const data = docSnap.docs[0].data();
-          const positionOptions = data.positions.map((pos: any) => ({
+          const positionOptions = data.positions?.map((pos: any) => ({
             value: pos.id,
             label: pos.name,
-          }));
+          })) || [];
           setPositions(positionOptions);
         } else {
           setPositions([]);

@@ -510,6 +510,8 @@ const DriverViolations: React.FC = () => {
                     }
 
                     const entry = acc[violation.driverId];
+                    if (!entry) return acc; // Safety check, though this shouldn't happen
+
                     entry.count += 1;
                     entry.violations.push(violation);
                     const currentDate = new Date(violation.date);

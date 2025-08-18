@@ -21,7 +21,7 @@ export const generateQRValue = (): string => {
 export const createQRCodeUrl = (type: string, id: string, params?: Record<string, string>): string => {
   const baseUrl = window.location.origin;
   let url = `${baseUrl}/workshop/${type}/${id}`;
-  
+
   // Add query parameters if provided
   if (params && Object.keys(params).length > 0) {
     const queryParams = new URLSearchParams();
@@ -30,7 +30,7 @@ export const createQRCodeUrl = (type: string, id: string, params?: Record<string
     });
     url += `?${queryParams.toString()}`;
   }
-  
+
   return url;
 };
 
@@ -45,7 +45,7 @@ export const registerQRCode = async (
   try {
     const db = getFirestore();
     const qrValue = generateQRValue();
-    
+
     await addDoc(collection(db, 'qr_codes'), {
       qrValue,
       type,
@@ -55,7 +55,7 @@ export const registerQRCode = async (
       lastScanned: null,
       scanCount: 0
     });
-    
+
     return qrValue;
   } catch (error) {
     console.error('Error registering QR code:', error);
@@ -76,23 +76,23 @@ export const processQRCode = async (qrValue: string): Promise<{
 } | null> => {
   try {
     const db = getFirestore();
-    
+
     // First, check if this is a URL
     try {
       const url = new URL(qrValue);
       const pathParts = url.pathname.split('/').filter(Boolean);
-      
+
       // If it's one of our workshop URLs
       if (pathParts.length >= 2 && pathParts[0] === 'workshop') {
-        const type = pathParts[1];
+        const type = pathParts[1] || 'unknown';
         const entityId = pathParts[2] || '';
         const params: Record<string, any> = {};
-        
+
         // Extract query parameters
         url.searchParams.forEach((value, key) => {
           params[key] = value;
         });
-        
+
         // Load entity data based on type
         let entity = null;
         switch (type) {
@@ -102,7 +102,7 @@ export const processQRCode = async (qrValue: string): Promise<{
               const vehiclesRef = collection(db, 'vehicles');
               const vehicleQuery = query(vehiclesRef, where('fleetNumber', '==', entityId));
               const vehicleSnapshot = await getDocs(vehicleQuery);
-              if (!vehicleSnapshot.empty) {
+              if (!vehicleSnapshot.empty && vehicleSnapshot.docs[0]) {
                 entity = { id: vehicleSnapshot.docs[0].id, ...vehicleSnapshot.docs[0].data() };
               }
             }
@@ -113,7 +113,7 @@ export const processQRCode = async (qrValue: string): Promise<{
               const stockRef = collection(db, 'stock_items');
               const stockQuery = query(stockRef, where('itemCode', '==', params.part));
               const stockSnapshot = await getDocs(stockQuery);
-              if (!stockSnapshot.empty) {
+              if (!stockSnapshot.empty && stockSnapshot.docs[0]) {
                 entity = { id: stockSnapshot.docs[0].id, ...stockSnapshot.docs[0].data() };
               }
             }
@@ -123,12 +123,12 @@ export const processQRCode = async (qrValue: string): Promise<{
             if (params.fleet && params.position) {
               const tyresRef = collection(db, 'tyre_inventory');
               const tyreQuery = query(
-                tyresRef, 
+                tyresRef,
                 where('fleetNumber', '==', params.fleet),
                 where('position', '==', params.position)
               );
               const tyreSnapshot = await getDocs(tyreQuery);
-              if (!tyreSnapshot.empty) {
+              if (!tyreSnapshot.empty && tyreSnapshot.docs[0]) {
                 entity = { id: tyreSnapshot.docs[0].id, ...tyreSnapshot.docs[0].data() };
               }
             }
@@ -137,10 +137,10 @@ export const processQRCode = async (qrValue: string): Promise<{
             // Generic entity handling
             break;
         }
-        
+
         return {
           type,
-          entityId,
+          entityId: entityId || '',
           metadata: params,
           entity
         };
@@ -148,25 +148,29 @@ export const processQRCode = async (qrValue: string): Promise<{
     } catch (e) {
       // Not a URL or not our URL format
     }
-    
+
     // If not a URL, look up in QR codes collection
     const qrCodesRef = collection(db, 'qr_codes');
     const qrQuery = query(qrCodesRef, where('qrValue', '==', qrValue));
     const qrSnapshot = await getDocs(qrQuery);
-    
+
     if (qrSnapshot.empty) {
       return null; // QR code not found
     }
-    
+
     const qrDoc = qrSnapshot.docs[0];
+    if (!qrDoc) {
+      return null; // Document not found
+    }
+
     const qrData = qrDoc.data();
-    
+
     // Update scan count and last scanned timestamp
     await updateDoc(doc(db, 'qr_codes', qrDoc.id), {
       scanCount: (qrData.scanCount || 0) + 1,
       lastScanned: new Date().toISOString()
     });
-    
+
     // Load the associated entity
     let entity = null;
     switch (qrData.type) {
@@ -193,7 +197,7 @@ export const processQRCode = async (qrValue: string): Promise<{
         break;
       // Add more types as needed
     }
-    
+
     return {
       type: qrData.type,
       entityId: qrData.entityId,
@@ -214,27 +218,27 @@ export const generateStockItemQR = async (itemId: string): Promise<string> => {
     const db = getFirestore();
     const itemRef = doc(db, 'stock_items', itemId);
     const itemSnap = await getDoc(itemRef);
-    
+
     if (!itemSnap.exists()) {
       throw new Error(`Stock item with ID ${itemId} not found`);
     }
-    
+
     const itemData = itemSnap.data();
     const qrValue = generateQRValue();
-    
+
     // Update the stock item with QR code
     await updateDoc(itemRef, {
       qrCode: qrValue,
       updatedAt: new Date().toISOString()
     });
-    
+
     // Register QR code in the dedicated collection
     await registerQRCode('part', itemId, {
       itemCode: itemData.itemCode,
       itemName: itemData.itemName,
       category: itemData.category
     });
-    
+
     return qrValue;
   } catch (error) {
     console.error('Error generating QR for stock item:', error);
@@ -255,20 +259,20 @@ export const parseQRCodeData = (qrData: string): {
     // Check if it's a URL
     const url = new URL(qrData);
     const pathParts = url.pathname.split('/').filter(Boolean);
-    
+
     // Parse our app URLs
     if (pathParts.length >= 2 && pathParts[0] === 'workshop') {
       const type = pathParts[1];
       const id = pathParts[2] || '';
       const params: Record<string, string> = {};
-      
+
       url.searchParams.forEach((value, key) => {
         params[key] = value;
       });
-      
+
       return { isUrl: true, type, id, params };
     }
-    
+
     // It's a URL but not our format
     return { isUrl: true };
   } catch (e) {

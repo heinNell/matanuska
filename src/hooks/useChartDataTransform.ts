@@ -62,8 +62,8 @@ export function useChartDataTransform<T>(data: T[], options: TransformOptions = 
       });
 
       // Apply aggregation method to each group
-      result = Object.entries(groups).map(([key, items]) => {
-        const base = { ...items[0], [groupBy]: key };
+      result = Object.entries(groups).map(([key, items]): T => {
+        const base = { ...items[0], [groupBy]: key } as T;
 
         if (!field) return base;
 

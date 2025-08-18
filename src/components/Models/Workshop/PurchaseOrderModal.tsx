@@ -51,29 +51,46 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
   // Add/Edit/Delete line items
   const handleItemChange = (idx: number, field: keyof POItem, value: any) => {
     const items = [...draft.items];
-    items[idx] = { ...items[idx], [field]: value };
-    if (field === "quantity" || field === "unitCost") {
-      items[idx].totalCost = Number(items[idx].quantity) * Number(items[idx].unitCost);
+    const currentItem = items[idx];
+
+    // Added an explicit check to handle potential undefined items
+    if (!currentItem) {
+      console.error(`Item at index ${idx} not found.`);
+      return;
     }
+
+    const updatedItem = { ...currentItem, [field]: value };
+
+    // Recalculate total cost if quantity or unit cost changes
+    if (field === "quantity" || field === "unitCost") {
+      updatedItem.totalCost = Number(updatedItem.quantity) * Number(updatedItem.unitCost);
+    }
+
+    items[idx] = updatedItem;
     setDraft((d) => ({ ...d, items }));
   };
+
   const handleAddItem = () => {
+    // Create a new POItem with all required properties explicitly defined
+    const newItem: POItem = {
+      id: crypto.randomUUID(),
+      sku: "",
+      name: "",
+      quantity: 1,
+      unit: "",
+      unitCost: 0,
+      totalCost: 0,
+    };
+
     setDraft((d) => ({
       ...d,
       items: [
         ...d.items,
-        {
-          id: Date.now().toString(),
-          sku: "",
-          name: "",
-          quantity: 1,
-          unit: "",
-          unitCost: 0,
-          totalCost: 0,
-        },
+        newItem,
       ],
     }));
   };
+
   const handleRemoveItem = (idx: number) => {
     const items = draft.items.filter((_, i) => i !== idx);
     setDraft((d) => ({ ...d, items }));
@@ -82,6 +99,7 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
   // Attachment logic (placeholder)
   const handleAttach = (file: File) => {
     // Upload logic here
+    console.log("Attached file:", file.name);
   };
 
   // Save/Cancel
@@ -89,6 +107,7 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
     onSave(draft);
     setEditMode(false);
   };
+
   const handleCancel = () => {
     setDraft(po);
     setEditMode(false);
@@ -184,13 +203,13 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
             <table className="w-full text-xs border mb-2">
               <thead>
                 <tr>
-                  <th>SKU</th>
-                  <th>Name</th>
-                  <th>Qty</th>
-                  <th>Unit</th>
-                  <th>Unit Cost</th>
-                  <th>Total</th>
-                  {editMode && <th></th>}
+                  <th className="p-2">SKU</th>
+                  <th className="p-2">Name</th>
+                  <th className="p-2">Qty</th>
+                  <th className="p-2">Unit</th>
+                  <th className="p-2">Unit Cost</th>
+                  <th className="p-2">Total</th>
+                  {editMode && <th className="p-2"></th>}
                 </tr>
               </thead>
               <tbody>
@@ -200,14 +219,14 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
                       <>
                         <td>
                           <input
-                            className="w-20"
+                            className="w-20 p-1 border rounded"
                             value={item.sku}
                             onChange={(e) => handleItemChange(idx, "sku", e.target.value)}
                           />
                         </td>
                         <td>
                           <input
-                            className="w-32"
+                            className="w-32 p-1 border rounded"
                             value={item.name}
                             onChange={(e) => handleItemChange(idx, "name", e.target.value)}
                           />
@@ -215,7 +234,7 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
                         <td>
                           <input
                             type="number"
-                            className="w-16"
+                            className="w-16 p-1 border rounded"
                             value={item.quantity}
                             min={1}
                             onChange={(e) =>
@@ -225,7 +244,7 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
                         </td>
                         <td>
                           <input
-                            className="w-12"
+                            className="w-12 p-1 border rounded"
                             value={item.unit}
                             onChange={(e) => handleItemChange(idx, "unit", e.target.value)}
                           />
@@ -233,7 +252,7 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
                         <td>
                           <input
                             type="number"
-                            className="w-20"
+                            className="w-20 p-1 border rounded"
                             value={item.unitCost}
                             min={0}
                             onChange={(e) =>
@@ -262,7 +281,14 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
                 ))}
               </tbody>
             </table>
-            {editMode && <button onClick={handleAddItem}>Add Line Item</button>}
+            {editMode && (
+              <button
+                onClick={handleAddItem}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Add Line Item
+              </button>
+            )}
           </div>
           <div>
             <h4 className="font-semibold mb-1">Attachments</h4>
@@ -284,7 +310,7 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
             {editMode && (
               <input
                 type="file"
-                onChange={(e) => e.target.files && handleAttach(e.target.files[0])}
+                onChange={(e) => e.target.files?.[0] && handleAttach(e.target.files[0])}
               />
             )}
           </div>

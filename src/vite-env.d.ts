@@ -36,7 +36,6 @@ interface ImportMetaEnv {
   readonly VITE_WIALON_TOKEN?: string
   readonly VITE_WIALON_API_URL?: string
   readonly VITE_WIALON_LOGIN_URL?: string
-  readonly VITE_DISABLE_WIALON_INTEGRATION?: string
 
   // Vercel Deployment
   readonly VERCEL?: string

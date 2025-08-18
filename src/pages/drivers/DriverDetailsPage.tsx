@@ -113,10 +113,18 @@ const DriverDetailsPage: React.FC = () => {
     try {
       // Parse the expiration date (assuming format DD/MM/YYYY)
       const parts = expireDate.split('/');
+      if (parts.length !== 3) return false; // Ensure we have exactly 3 parts
+
+      const day = parts[0];
+      const month = parts[1];
+      const year = parts[2];
+
+      if (!day || !month || !year) return false; // Ensure all parts exist
+
       const expiryDate = new Date(
-        parseInt(parts[2]), // Year
-        parseInt(parts[1]) - 1, // Month (0-based)
-        parseInt(parts[0]) // Day
+        parseInt(year), // Year
+        parseInt(month) - 1, // Month (0-based)
+        parseInt(day) // Day
       );
 
       // Calculate days until expiry
@@ -138,10 +146,18 @@ const DriverDetailsPage: React.FC = () => {
     try {
       // Parse the expiration date (assuming format DD/MM/YYYY)
       const parts = expireDate.split('/');
+      if (parts.length !== 3) return false; // Ensure we have exactly 3 parts
+
+      const day = parts[0];
+      const month = parts[1];
+      const year = parts[2];
+
+      if (!day || !month || !year) return false; // Ensure all parts exist
+
       const expiryDate = new Date(
-        parseInt(parts[2]), // Year
-        parseInt(parts[1]) - 1, // Month (0-based)
-        parseInt(parts[0]) // Day
+        parseInt(year), // Year
+        parseInt(month) - 1, // Month (0-based)
+        parseInt(day) // Day
       );
 
       // Check if expired

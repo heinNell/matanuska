@@ -1,0 +1,60 @@
+import { useState, useCallback } from 'react';
+import { wialonService } from '../services/wialonService';
+import { ReportTableData } from '../types/wialon';
+
+interface UseWialonReportResult {
+  reportData: ReportTableData | null;
+  loading: boolean;
+  error: string | null;
+  executeReport: (resourceId: number, templateName: string, unitId: number, intervalSeconds: number) => void;
+}
+
+export function useWialonReport(): UseWialonReportResult {
+  const [reportData, setReportData] = useState<ReportTableData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const executeReport = useCallback(async (resourceId: number, templateName: string, unitId: number, intervalSeconds: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      if (typeof window === 'undefined' || !window.wialon || !window.wialon.item || !window.wialon.item.MReport) {
+        throw new Error("Wialon SDK or MReport library is not available.");
+      }
+
+      const to = Math.floor(Date.now() / 1000);
+      const from = to - intervalSeconds;
+      const interval = { from, to, flags: window.wialon.item.MReport.intervalFlag.absolute };
+
+      const template = {
+        id: 0,
+        n: templateName,
+        ct: "avl_unit",
+        tbl: [{ n: templateName, c: "time,pos,speed", cl: "Time,Position,Speed" }]
+      };
+
+      const result = await wialonService.executeReport(resourceId, template, unitId, interval);
+
+      if (result.getTables().length > 0) {
+        const table = result.getTables()[0];
+        const headers = table.header;
+        const rows = await new Promise<any[][]>((resolve, reject) => {
+          result.getTableRows(0, 0, table.rows, (code: number, rows: any) => {
+            if (code !== 0) reject(new Error(window.wialon.core.Errors.getErrorText(code)));
+            resolve(rows.map((row: any) => row.c));
+          });
+        });
+
+        setReportData({ headers, rows });
+      } else {
+        setReportData(null);
+      }
+    } catch (err) {
+      setError("Failed to execute report.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { reportData, loading, error, executeReport };
+}

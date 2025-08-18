@@ -2,13 +2,12 @@ import { Button } from "../../../components/ui/Button";
 import { File, Link2, Plus, Save, Trash, Truck, Wrench } from "lucide-react";
 import React, { useState } from "react";
 import { Card, CardContent } from "../../ui/Card";
+import { useWorkshop } from "../../../context/WorkshopContext";
 
-interface DemandPartsFormProps {
+export interface DemandPartsFormProps {
   onSubmit?: (data: DemandPartsFormData) => void;
   onCancel?: () => void;
-  initialData?: DemandPartsFormData;
-  workOrderId?: string;
-  vehicleId?: string;
+  initialData?: Partial<DemandPartsFormData>;
 }
 
 export interface DemandPartsFormData {
@@ -34,38 +33,43 @@ interface DemandPart {
   status: "PENDING" | "ORDERED" | "RECEIVED" | "CANCELLED";
 }
 
+const getFormattedDate = (): string => {
+  return new Date().toISOString().split("T")[0] || '';
+};
+
+const getFormattedTime = (): string => {
+  const timeParts = new Date().toTimeString().split(" ");
+  return timeParts[0]?.substring(0, 5) || '00:00';
+};
+
 const DemandPartsForm: React.FC<DemandPartsFormProps> = ({
   onSubmit,
   onCancel,
-  initialData,
-  workOrderId = "",
-  vehicleId = "",
+  initialData = {},
 }) => {
-  const [formData, setFormData] = useState<DemandPartsFormData>(
-    initialData || {
-      action: "",
-      parts: [{ id: "1", sku: "", description: "", quantity: 1, status: "PENDING" }],
-      createdDate: new Date().toISOString().split("T")[0],
-      createdTime: new Date().toTimeString().split(" ")[0].substring(0, 5),
-      demandBy: "",
-      status: "OPEN",
-      workOrderId,
-      vehicleId,
-      urgency: "MEDIUM",
-      notes: "",
-    }
-  );
+  const [formData, setFormData] = useState<DemandPartsFormData>({
+    id: initialData.id || undefined,
+    action: initialData.action ?? "",
+    parts: initialData.parts && initialData.parts.length > 0 ? initialData.parts : [{ id: crypto.randomUUID(), sku: "", description: "", quantity: 1, status: "PENDING" }],
+    createdDate: initialData.createdDate ?? getFormattedDate(),
+    createdTime: initialData.createdTime ?? getFormattedTime(),
+    demandBy: initialData.demandBy ?? "",
+    status: initialData.status ?? "OPEN",
+    workOrderId: initialData.workOrderId ?? "",
+    vehicleId: initialData.vehicleId ?? "",
+    urgency: initialData.urgency ?? "MEDIUM",
+    notes: initialData.notes ?? "",
+  });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Handle adding a new part
   const handleAddPart = () => {
     setFormData((prev) => ({
       ...prev,
       parts: [
         ...prev.parts,
         {
-          id: String(prev.parts.length + 1),
+          id: crypto.randomUUID(),
           sku: "",
           description: "",
           quantity: 1,
@@ -75,7 +79,6 @@ const DemandPartsForm: React.FC<DemandPartsFormProps> = ({
     }));
   };
 
-  // Handle removing a part
   const handleRemovePart = (id: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -83,7 +86,6 @@ const DemandPartsForm: React.FC<DemandPartsFormProps> = ({
     }));
   };
 
-  // Handle part field changes
   const handlePartChange = (id: string, field: keyof DemandPart, value: string | number) => {
     setFormData((prev) => ({
       ...prev,
@@ -91,18 +93,12 @@ const DemandPartsForm: React.FC<DemandPartsFormProps> = ({
     }));
   };
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      if (onSubmit) {
-        onSubmit(formData);
-      }
-      setIsSubmitting(false);
-    }, 1000);
+    if (onSubmit) {
+      onSubmit(formData);
+    }
   };
 
   return (
@@ -225,7 +221,7 @@ const DemandPartsForm: React.FC<DemandPartsFormProps> = ({
                 placeholder="Will be filled when PO is created"
                 value={formData.poId || ""}
                 onChange={(e) => setFormData((prev) => ({ ...prev, poId: e.target.value }))}
-                disabled={!formData.poId}
+                disabled={!!formData.poId} // Fixed: use boolean casting
               />
             </div>
           </div>

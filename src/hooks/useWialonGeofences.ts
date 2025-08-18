@@ -1,3 +1,4 @@
+// src/hooks/useWialonGeofences.ts
 import { useEffect, useState, useCallback } from "react";
 import type { WialonSession } from "../types/wialon";
 
@@ -5,26 +6,21 @@ import type { WialonSession } from "../types/wialon";
 type WialonResource = {
   id: string | number;
   name: string;
-  // Wialon SDK objects can be complex, so we'll store the raw object as well
   rawObject: any;
 };
 
 type WialonGeofence = {
   id: string | number;
   name: string;
-  // Geofence data can also be complex, this keeps it type-safe
   data: any;
 };
 
+// Narrowing helper: does the object expose getZones()?
+const hasGetZones = (x: any): x is { getZones: () => Record<string, any> | undefined } =>
+  !!x && typeof x.getZones === "function";
+
 /**
- * A custom hook for fetching Wialon resources and their associated geofences.
- * It encapsulates the logic for loading data and managing the state of resources
- * and geofences for a selected resource.
- *
- * @param session The Wialon SDK session instance.
- * @param loggedIn A boolean indicating the user's login status.
- * @returns An object containing the resources, geofences, the selected resource ID,
- * and a function to select a resource.
+ * Fetch Wialon resources and their geofences.
  */
 const useWialonGeofences = (session: WialonSession, loggedIn: boolean) => {
   const [resources, setResources] = useState<WialonResource[]>([]);
@@ -33,22 +29,19 @@ const useWialonGeofences = (session: WialonSession, loggedIn: boolean) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Effect to load resources initially
+  // Load resources initially
   useEffect(() => {
     if (!loggedIn || !session || !window.wialon || !window.wialon.item) return;
 
-    // The flags from the jQuery code to get base data and geofences
-    // FIX: Added a type assertion to resolve the TypeScript error.
     const flags =
-      window.wialon.item.Item.dataFlag.base | (window.wialon.item as any).Resource.dataFlag.zones;
+      window.wialon.item.Item.dataFlag.base |
+      (window.wialon.item as any).Resource.dataFlag.zones;
 
     setIsLoading(true);
     setError(null);
 
-    // The Wialon SDK requires the 'resourceZones' library to be loaded for geofence data
     session.loadLibrary("resourceZones");
 
-    // Use updateDataFlags to load resources and their geofences
     session.updateDataFlags(
       [{ type: "type", data: "avl_resource", flags, mode: 0 }],
       (code: number) => {
@@ -66,8 +59,8 @@ const useWialonGeofences = (session: WialonSession, loggedIn: boolean) => {
             rawObject: r,
           }));
           setResources(formattedResources);
-          // Automatically select the first resource found
-          setSelectedResourceId(formattedResources[0].id);
+          // only auto-select if we actually have the first item
+          if (formattedResources[0]) setSelectedResourceId(formattedResources[0].id);
         } else {
           setResources([]);
           setSelectedResourceId(null);
@@ -78,7 +71,7 @@ const useWialonGeofences = (session: WialonSession, loggedIn: boolean) => {
     );
   }, [session, loggedIn]);
 
-  // Effect to load geofences for the selected resource
+  // Load geofences for the selected resource
   useEffect(() => {
     if (!loggedIn || !session || selectedResourceId === null) {
       setGeofences([]);
@@ -88,30 +81,36 @@ const useWialonGeofences = (session: WialonSession, loggedIn: boolean) => {
     setIsLoading(true);
     setError(null);
 
-    // Find the selected resource object from our state
     const selectedResource = resources.find((r) => r.id === selectedResourceId);
 
     if (selectedResource) {
-      // The getZones() function from the Wialon SDK directly returns the zones data
-      const zones = selectedResource.rawObject.getZones();
+      // ✅ Guard getZones() existence to satisfy TS and runtime
+      let zones: Record<string, any> | undefined;
 
-      if (zones) {
-        const formattedGeofences = Object.values(zones).map((z: any) => ({
-          id: z.id,
-          name: z.n,
-          data: z,
-        }));
-        setGeofences(formattedGeofences);
-      } else {
-        setGeofences([]);
+      if (hasGetZones(selectedResource.rawObject)) {
+        zones = selectedResource.rawObject.getZones();
+      } else if (
+        selectedResource.rawObject &&
+        typeof selectedResource.rawObject.zones === "object"
+      ) {
+        zones = selectedResource.rawObject.zones as Record<string, any>;
       }
+
+      const zoneArray = zones ? Object.values(zones) : [];
+      const formattedGeofences = zoneArray.map((z: any) => ({
+        id: z.id as string | number,
+        name: (z.n as string) ?? String(z.id),
+        data: z,
+      }));
+
+      setGeofences(formattedGeofences);
     } else {
       setGeofences([]);
     }
+
     setIsLoading(false);
   }, [selectedResourceId, resources, session, loggedIn]);
 
-  // A public function to allow the user to select a different resource
   const selectResource = useCallback((id: string | number) => {
     setSelectedResourceId(id);
   }, []);

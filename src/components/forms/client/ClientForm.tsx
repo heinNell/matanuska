@@ -37,14 +37,20 @@ const ClientForm: React.FC<ClientFormProps> = ({
   const handleChange = (field: string, value: any) => {
     // Handle nested address fields
     if (field.includes(".")) {
-      const [parent, child] = field.split(".");
-      setClient({
-        ...client,
-        [parent]: {
-          ...client[parent],
-          [child]: value,
-        },
-      });
+      const parts = field.split(".");
+      const parent = parts[0];
+      const child = parts[1];
+
+      // Ensure both parent and child are valid strings
+      if (parent && child && typeof parent === 'string' && typeof child === 'string') {
+        setClient({
+          ...client,
+          [parent]: {
+            ...client[parent],
+            [child]: value,
+          },
+        });
+      }
     } else {
       setClient({ ...client, [field]: value });
     }

@@ -1,11 +1,11 @@
-// src/components/inspections/InspectionFormPDS.tsx
+// src/components/ui/InspectionFormPDS.tsx
 
 import React, { useState } from "react";
 
 interface InspectionItem {
   sn: number;
   label: string;
-  note?: string;
+  note: string;
   status: "Good" | "Repair" | "Replace" | "NA" | "";
 }
 
@@ -142,7 +142,7 @@ const SECTIONS = [
   },
 ];
 
-const STATUS_OPTIONS = ["Good", "Repair", "Replace", "NA"];
+const STATUS_OPTIONS = ["Good", "Repair", "Replace", "NA"] as const;
 
 export const InspectionFormPDS: React.FC = () => {
   const [inspectionDetails, setInspectionDetails] = useState({
@@ -177,24 +177,40 @@ export const InspectionFormPDS: React.FC = () => {
 
   // Use state to manage item statuses
   const [itemStatuses, setItemStatuses] = useState<Record<number, InspectionItem>>(
-    allItems.reduce((acc, item) => {
-      acc[item.sn] = item;
-      return acc;
-    }, {} as Record<number, InspectionItem>)
+    () =>
+      allItems.reduce((acc, item) => {
+        acc[item.sn] = item;
+        return acc;
+      }, {} as Record<number, InspectionItem>)
   );
 
   const handleStatusChange = (sn: number, status: InspectionItem["status"]) => {
-    setItemStatuses((prev) => ({
-      ...prev,
-      [sn]: { ...prev[sn], status },
-    }));
+    setItemStatuses(prev => {
+      // Always preserve all required InspectionItem fields, especially sn
+      const existingItem = prev[sn];
+      if (existingItem) {
+        return {
+          ...prev,
+          [sn]: { ...existingItem, status },
+        };
+      }
+      // Defensive: should never happen
+      return prev;
+    });
   };
 
   const handleNoteChange = (sn: number, note: string) => {
-    setItemStatuses((prev) => ({
-      ...prev,
-      [sn]: { ...prev[sn], note },
-    }));
+    setItemStatuses(prev => {
+      const existingItem = prev[sn];
+      if (existingItem) {
+        return {
+          ...prev,
+          [sn]: { ...existingItem, note },
+        };
+      }
+      // Defensive: should never happen
+      return prev;
+    });
   };
 
   // Form submission handler (implement backend integration here)
@@ -209,6 +225,9 @@ export const InspectionFormPDS: React.FC = () => {
     // TODO: API call to backend
     alert("Inspection submitted!");
   };
+
+  // Used for rendering: flat index of items
+  let renderSN = 1;
 
   return (
     <form className="p-4" onSubmit={handleSubmit}>
@@ -229,7 +248,7 @@ export const InspectionFormPDS: React.FC = () => {
         <input placeholder="Vehicle Status" value={inspectionDetails.vehicleStatus} onChange={e => setInspectionDetails({ ...inspectionDetails, vehicleStatus: e.target.value })} />
       </div>
       {/* Inspection Sections */}
-      {SECTIONS.map((section, idx) => (
+      {SECTIONS.map((section) => (
         <div key={section.name} className="mb-4">
           <h3 className="font-semibold mb-2">{section.name}</h3>
           <table className="w-full border text-xs">
@@ -244,9 +263,15 @@ export const InspectionFormPDS: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {section.items.map((item, i) => {
-                const itemSN = allItems.find(ai => ai.label === item && ai.sn > idx * 20)!.sn;
+              {section.items.map((item) => {
+                // Serial number mapping is always correct from allItems
+                const thisItem = allItems[renderSN - 1];
+                const itemSN = thisItem.sn;
                 const itemState = itemStatuses[itemSN];
+                renderSN++;
+
+                if (!itemState) return null;
+
                 return (
                   <tr key={itemSN}>
                     <td>{itemSN}</td>
@@ -254,7 +279,7 @@ export const InspectionFormPDS: React.FC = () => {
                     <td>
                       <input
                         className="w-32"
-                        value={itemState.note}
+                        value={itemState.note || ""}
                         onChange={e => handleNoteChange(itemSN, e.target.value)}
                       />
                     </td>

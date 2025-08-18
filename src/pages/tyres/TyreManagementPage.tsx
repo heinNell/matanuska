@@ -37,12 +37,6 @@ import {
   tyreTypes, // This is the array, not an enum
 } from "../../data/tyreData"; // ADJUST THIS PATH IF NECESSARY
 
-// Import TyreStoreLocation from your types/tyre.ts if it's the canonical source
-// If TyreStoreLocation is defined in both tyreData.ts AND types/tyre.ts,
-// you should consolidate to one source or ensure they can merge.
-// For now, I'm assuming tyreData.ts is the single source as per previous conversation.
-// import { TyreStoreLocation } from "../../types/tyre"; // REMOVE THIS LINE IF TyreStoreLocation is in tyreData.ts
-
 // Import tyre components that need to be integrated
 import TyreAnalytics from "../../components/Tyremanagement/TyreAnalytics";
 import { TyreCostAnalysis } from "../../components/Tyremanagement/TyreCostAnalysis";
@@ -164,7 +158,7 @@ const TyreManagementPage: React.FC = () => {
     () => ({
       serialNumber: `TY-${Math.floor(1000 + Math.random() * 9000)}`,
       dotCode: "",
-      manufacturingDate: new Date().toISOString().split("T")[0],
+      manufacturingDate: new Date().toISOString().split("T")[0] as string,
       brand: "",
       model: "",
       pattern: "",
@@ -173,7 +167,7 @@ const TyreManagementPage: React.FC = () => {
       speedRating: "",
       type: tyreTypes[0], // Using the first value from the tyreTypes array
       purchaseDetails: {
-        date: new Date().toISOString().split("T")[0],
+        date: new Date().toISOString().split("T")[0] as string,
         cost: 0,
         supplier: "",
         warranty: "",
@@ -191,7 +185,7 @@ const TyreManagementPage: React.FC = () => {
         pressure: 0,
         temperature: 0,
         status: TyreConditionStatus.GOOD, // Corrected to use enum member
-        lastInspectionDate: new Date().toISOString().split("T")[0],
+        lastInspectionDate: new Date().toISOString().split("T")[0] as string,
         nextInspectionDue: "", // Corrected: Ensures this required field is present
       },
       status: TyreStatus.NEW, // Corrected to use enum member
@@ -587,7 +581,7 @@ const TyreManagementPage: React.FC = () => {
                         quantity: 1,
                         reorderLevel: 5,
                         cost: t.purchaseDetails?.cost || 0,
-                        lastUpdated: new Date().toISOString().split("T")[0],
+                        lastUpdated: new Date().toISOString().split("T")[0] as string,
                         location: t.location || "Warehouse",
                       }))}
                       assignments={tyres
@@ -957,7 +951,7 @@ const TyreManagementPage: React.FC = () => {
             } else {
               // Create a properly typed purchase details object
               tyreData.purchaseDetails = {
-                date: new Date().toISOString().split("T")[0],
+                date: new Date().toISOString().split("T")[0] as string,
                 cost: 0,
                 supplier: "",
                 warranty: "",

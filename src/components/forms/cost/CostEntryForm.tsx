@@ -25,10 +25,12 @@ const CostEntryForm: React.FC<CostEntryFormProps> = ({
   onCancel,
   existingCosts = [],
 }) => {
-  const [description, setDescription] = useState("");
+  const getCurrentDate = () => new Date().toISOString().split("T")[0] || "";
+
+  const [description, setDescription] = useState<string>("");
   const [amount, setAmount] = useState<number>(0);
   const [category, setCategory] = useState<CostEntry["category"]>("other");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState<string>(getCurrentDate());
   const [receipt, setReceipt] = useState<File | null>(null);
 
   const categories = [
@@ -54,7 +56,7 @@ const CostEntryForm: React.FC<CostEntryFormProps> = ({
       description,
       amount,
       category,
-      date,
+      date: date || getCurrentDate(),
       receipt: receipt || undefined,
       isFlagged: amount > 1000, // Auto-flag costs over R1000
     };
@@ -65,7 +67,7 @@ const CostEntryForm: React.FC<CostEntryFormProps> = ({
     setDescription("");
     setAmount(0);
     setCategory("other");
-    setDate(new Date().toISOString().split("T")[0]);
+    setDate(getCurrentDate());
     setReceipt(null);
   };
 
@@ -140,7 +142,7 @@ const CostEntryForm: React.FC<CostEntryFormProps> = ({
 
           <div>
             <label className="block text-sm font-medium mb-1">Date</label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <Input type="date" value={date} onChange={(e) => setDate(e.target.value || "")} />
           </div>
 
           <div>

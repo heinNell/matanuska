@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+import React, { useState, useEffect } from 'react';
+import { DirectionsRenderer } from '@react-google-maps/api';
 import { Location, RouteOptions } from '../../../types/mapTypes';
 
 interface RouteDrawerProps {
@@ -14,7 +14,7 @@ interface RouteDrawerProps {
 
 /**
  * RouteDrawer - A component to draw routes between locations on a Google Map
- * 
+ *
  * Features:
  * - Calculates and draws routes between two points
  * - Supports waypoints for multi-stop routes
@@ -33,7 +33,7 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
   const [directions, setDirections] = useState<any>(null);
   const [calculating, setCalculating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Default route options
   const defaultOptions: RouteOptions = {
     strokeColor: '#3B82F6',
@@ -44,23 +44,23 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
     avoidHighways: false,
     avoidTolls: false
   };
-  
+
   // Merge default and provided options
   const routeOptions = { ...defaultOptions, ...options };
-  
+
   // Effect to calculate route when inputs change
   useEffect(() => {
     if (!origin || !destination) return;
-    
+
     setCalculating(true);
     setError(null);
-    
+
     // Convert waypoints to Google Maps waypoint format
     const formattedWaypoints = waypoints.map(waypoint => ({
       location: { lat: waypoint.lat, lng: waypoint.lng },
       stopover: true
     }));
-    
+
     // Create directions request
     const directionsRequest = {
       origin: { lat: origin.lat, lng: origin.lng },
@@ -71,9 +71,9 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
       avoidHighways: routeOptions.avoidHighways,
       avoidTolls: routeOptions.avoidTolls
     };
-    
-    // Call DirectionsService
-    const directionsService = new window.google.maps.DirectionsService();
+
+    // Call DirectionsService with proper type annotation
+    const directionsService: google.maps.DirectionsService = new window.google.maps.DirectionsService();
     directionsService.route(
       directionsRequest,
       (result: google.maps.DirectionsResult | null, status: google.maps.DirectionsStatus) => {
@@ -89,9 +89,9 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
         }
       }
     );
-  }, [origin, destination, waypoints, routeOptions.mode, 
+  }, [origin, destination, waypoints, routeOptions.mode,
       routeOptions.optimizeWaypoints, routeOptions.avoidHighways, routeOptions.avoidTolls]);
-  
+
   // Render the route on the map
   return (
     <>
@@ -108,7 +108,7 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
           }}
         />
       )}
-      
+
       {calculating && (
         <div className="absolute bottom-4 left-4 bg-white p-2 rounded shadow z-10">
           <div className="flex items-center">
@@ -117,7 +117,7 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
           </div>
         </div>
       )}
-      
+
       {error && (
         <div className="absolute bottom-4 left-4 bg-red-50 p-2 rounded shadow z-10">
           <div className="flex items-center text-red-600">

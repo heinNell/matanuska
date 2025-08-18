@@ -1,7 +1,7 @@
 // Note: Firestore is initialized later with initializeFirestore and local cache settings.
 
 import { getAnalytics } from "firebase/analytics";
-import { FirebaseOptions, getApps, initializeApp } from "firebase/app";
+import { FirebaseOptions, getApps, initializeApp, FirebaseApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import {
   addDoc,
@@ -140,7 +140,15 @@ const validateConfig = () => {
 validateConfig();
 
 // Initialize Firebase with the appropriate configuration - only if not already initialized
-export const firebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+let firebaseApp: FirebaseApp;
+const existingApps = getApps();
+if (existingApps.length === 0) {
+  firebaseApp = initializeApp(firebaseConfig);
+} else {
+  firebaseApp = existingApps[0];
+}
+export { firebaseApp };
+
 
 // =============================================================================
 // FIREBASE SERVICES

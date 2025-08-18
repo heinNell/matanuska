@@ -1,3 +1,4 @@
+// src/components/forms/diesel/FuelEntryForm.tsx
 import { Button } from "../../../components/ui/Button";
 import { Droplet, Save, Truck, X } from "lucide-react";
 import React, { useState } from "react";
@@ -26,31 +27,33 @@ export interface FuelEntryData {
 }
 
 const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initialData = {} }) => {
-  useAppContext(); // Keep the import since it might be needed later
+  useAppContext();
   const [loading, setLoading] = useState(false);
   const [calculatedCost, setCalculatedCost] = useState<number | null>(null);
 
-  // Fetch data from Firestore
   const { data: vehicles, loading: vehiclesLoading } = useFleetVehicles();
   const { data: drivers, loading: driversLoading } = useDrivers();
   const { data: locations, loading: locationsLoading } = useDepots();
 
-  const [formData, setFormData] = useState<FuelEntryData>({
-    vehicle: initialData.vehicle || "",
-    liters: initialData.liters || "",
-    date: initialData.date || new Date().toISOString().split("T")[0],
-    odometer: initialData.odometer || "",
-    location: initialData.location || "",
-    fuelType: initialData.fuelType || "diesel",
-    cost: initialData.cost || "",
-    currency: initialData.currency || "USD",
-    notes: initialData.notes || "",
-    driverId: initialData.driverId || "",
-    fuelCardNumber: initialData.fuelCardNumber || "",
+  // Helper functions for type-safe string conversion and date handling
+  const S = (value: any): string => String(value ?? '');
+  const todayISO = (): string => new Date().toISOString().split('T')[0] || '';
+
+  // ✅ all strings (no undefined)
+  const [formData, setFormData] = useState({
+    vehicle: S(initialData.vehicle),
+    liters: S(initialData.liters),
+    date: S(initialData.date) || todayISO(),
+    odometer: S(initialData.odometer),
+    location: S(initialData.location),
+    fuelType: S(initialData.fuelType) || "diesel",
+    cost: S(initialData.cost),
+    currency: S(initialData.currency) || "USD",
+    notes: S(initialData.notes),
+    driverId: S(initialData.driverId),
+    fuelCardNumber: S(initialData.fuelCardNumber),
   });
 
-  // For fuel cards - typically this would come from Firestore as well
-  // but for now we'll use a static list
   const fuelCards = [
     { id: "FC001", number: "**** **** **** 1234" },
     { id: "FC002", number: "**** **** **** 5678" },
@@ -62,15 +65,10 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
   ) => {
     const { name, value } = e.target;
 
-    // Calculate total cost when liters or cost per liter changes
     if (name === "liters" || name === "cost") {
-      const liters = name === "liters" ? parseFloat(value) : parseFloat(formData.liters);
-      const costPerLiter = name === "cost" ? parseFloat(value) : parseFloat(formData.cost);
-
-      if (!isNaN(liters) && !isNaN(costPerLiter)) {
-        const total = liters * costPerLiter;
-        setCalculatedCost(total);
-      }
+      const liters = name === "liters" ? parseFloat(value) : parseFloat(formData.liters || "0");
+      const costPerLiter = name === "cost" ? parseFloat(value) : parseFloat(formData.cost || "0");
+      setCalculatedCost(!isNaN(liters) && !isNaN(costPerLiter) ? liters * costPerLiter : null);
     }
 
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -79,22 +77,30 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      await onSubmit(formData);
-    } catch (error) {
-      console.error("Error submitting fuel entry:", error);
+      const payload: FuelEntryData = {
+        vehicle: formData.vehicle,
+        liters: formData.liters,
+        date: formData.date,
+        odometer: formData.odometer,
+        location: formData.location,
+        fuelType: formData.fuelType,
+        cost: formData.cost,
+        currency: formData.currency,
+        notes: formData.notes,
+        ...(formData.driverId ? { driverId: formData.driverId } : {}),
+        ...(formData.fuelCardNumber ? { fuelCardNumber: formData.fuelCardNumber } : {}),
+      };
+      await onSubmit(payload);
     } finally {
       setLoading(false);
     }
   };
 
-  // Display a truck icon with vehicle information
   const renderVehicleIcon = () => {
     const selectedVehicle = vehicles?.find(
       (v) => v.fleetNumber === formData.vehicle || v.id === formData.vehicle
     );
-
     return (
       <div className="flex items-center mb-4">
         <Truck className="w-5 h-5 mr-2 text-blue-500" />
@@ -107,7 +113,6 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
     );
   };
 
-  // Determine if any data is still loading
   const isDataLoading = vehiclesLoading || driversLoading || locationsLoading;
 
   return (
@@ -125,7 +130,7 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
         {isDataLoading ? (
           <div className="flex justify-center items-center p-8">
             <div className="text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent align-[-0.125em]"></div>
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent" />
               <p className="mt-2 text-sm text-gray-600">Loading data...</p>
             </div>
           </div>
@@ -145,8 +150,8 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
                   <option value="">Select Vehicle</option>
                   {vehicles?.map((vehicle) => (
                     <option key={vehicle.id} value={vehicle.fleetNumber}>
-                      {vehicle.fleetNumber} - {vehicle.make} {vehicle.model} ({vehicle.registration}
-                      )
+                      {vehicle.fleetNumber} - {vehicle.make} {vehicle.model} (
+                      {vehicle.registration ?? "N/A"})
                     </option>
                   ))}
                 </select>
@@ -165,7 +170,7 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
                   <option value="">Select Driver</option>
                   {drivers?.map((driver) => (
                     <option key={driver.id} value={driver.id}>
-                      {driver.name}
+                      {driver.name ?? driver.id}
                     </option>
                   ))}
                 </select>
@@ -185,9 +190,7 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Liters/Gallons
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Liters/Gallons</label>
                 <input
                   type="number"
                   name="liters"
@@ -201,9 +204,7 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Odometer (km)
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Odometer (km)</label>
                 <input
                   type="number"
                   name="odometer"
@@ -217,9 +218,7 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cost Per Liter
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cost Per Liter</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <span className="text-gray-500">$</span>
@@ -250,7 +249,7 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
                   <option value="">Select Fuel Station</option>
                   {locations?.map((depot) => (
                     <option key={depot.id} value={depot.name}>
-                      {depot.name} ({depot.town})
+                      {depot.name} ({depot.town ?? ""})
                     </option>
                   ))}
                 </select>
@@ -288,10 +287,7 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
             </div>
 
             {calculatedCost !== null && (
-              <div
-                className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded relative"
-                role="alert"
-              >
+              <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded relative">
                 <span className="block sm:inline">
                   Calculated Total Cost: ${calculatedCost.toFixed(2)}
                 </span>
@@ -309,11 +305,7 @@ const FuelEntryForm: React.FC<FuelEntryFormProps> = ({ onSubmit, onCancel, initi
                 <X className="w-4 h-4" />
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className="flex items-center gap-2"
-                disabled={loading || isDataLoading}
-              >
+              <Button type="submit" className="flex items-center gap-2" disabled={loading || isDataLoading}>
                 <Save className="w-4 h-4" />
                 {loading ? "Saving..." : "Save Fuel Entry"}
               </Button>

@@ -200,29 +200,33 @@ const FleetLocationMapPage: React.FC = () => {
     };
 
     // Convert GeoJSON features to Location objects
-    const vehicleLocations: Location[] = vehicleGeoJSON.features.map((feature) => {
-      const [lng, lat] = feature.geometry.coordinates;
-      return {
-        lat,
-        lng,
-        title: feature.properties.name,
-        info: `${feature.properties.brand || ""} ${feature.properties.model || ""}`,
-        customFields: {
-          uid: feature.properties.uid,
-          brand: feature.properties.brand || "",
-          model: feature.properties.model || "",
-          year: feature.properties.year?.toString() || "",
-          fuel_type: feature.properties.fuel_type || "",
-          ...(feature.properties.cargo_type && { cargo_type: feature.properties.cargo_type }),
-          ...(feature.properties.effective_capacity && {
-            effective_capacity: feature.properties.effective_capacity,
-          }),
-          ...(feature.properties.sensors && { sensors: feature.properties.sensors }),
-        },
-      };
-    });
+    const vehicleLocations: Location[] = vehicleGeoJSON.features
+      .filter((feature) => {
+        const coordinates = feature.geometry.coordinates;
+        return typeof coordinates[0] === 'number' && typeof coordinates[1] === 'number';
+      })
+      .map((feature) => {
+        const [lng, lat] = feature.geometry.coordinates as [number, number];
 
-    setVehicles(vehicleLocations);
+        return {
+          lat,
+          lng,
+          title: feature.properties.name,
+          info: `${feature.properties.brand || ""} ${feature.properties.model || ""}`,
+          customFields: {
+            uid: feature.properties.uid,
+            brand: feature.properties.brand || "",
+            model: feature.properties.model || "",
+            year: feature.properties.year?.toString() || "",
+            fuel_type: feature.properties.fuel_type || "",
+            ...(feature.properties.cargo_type && { cargo_type: feature.properties.cargo_type }),
+            ...(feature.properties.effective_capacity && {
+              effective_capacity: feature.properties.effective_capacity,
+            }),
+            ...(feature.properties.sensors && { sensors: feature.properties.sensors }),
+          },
+        };
+      });    setVehicles(vehicleLocations);
   }, []);
 
   // Filter vehicles if a specific one is selected

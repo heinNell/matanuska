@@ -114,6 +114,8 @@ const MOCK_JOB_CARDS: JobCard[] = [
 ];
 
 // Helper types for workshop statistics
+type JobPriority = "low" | "medium" | "high" | "urgent";
+
 interface WorkshopStats {
   totalOpen: number;
   totalInProgress: number;
@@ -122,7 +124,7 @@ interface WorkshopStats {
   completionRate: number;
   averageDuration: number;
   jobsByCategory: Record<JobCardCategory, number>;
-  jobsByPriority: Record<string, number>;
+  jobsByPriority: Record<JobPriority, number>;
 }
 
 export const useWorkshopJobCards = (initialDate: Date = new Date()) => {
@@ -167,7 +169,7 @@ export const useWorkshopJobCards = (initialDate: Date = new Date()) => {
     };
 
     // Initialize priority counters
-    const jobsByPriority: Record<string, number> = {
+    const jobsByPriority: Record<JobPriority, number> = {
       low: 0,
       medium: 0,
       high: 0,

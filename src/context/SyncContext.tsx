@@ -41,6 +41,9 @@ export const useTripSync = (tripId: string | null): { isSyncing: boolean } => {
         // is made for the same tripId
       };
     }
+
+    // Return a no-op cleanup function when tripId is null
+    return () => {};
   }, [tripId]); // Remove syncContext from dependencies as it should be stable
 
   return {

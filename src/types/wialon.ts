@@ -4,6 +4,7 @@ export interface WialonPosition {
   y: number; // Latitude
   z?: number; // Altitude (optional)
   t?: number; // Timestamp (optional)
+  s?: number; // Speed (optional)
 }
 
 /** Unit (vehicle or asset) from Wialon */
@@ -12,6 +13,18 @@ export interface WialonUnit {
   getName: () => string;
   getPosition: () => WialonPosition | undefined;
   getIconUrl: (size?: number) => string;
+  getUniqueId: () => string | number;
+}
+
+/** Lightweight DTO returned by REST adapter (not SDK object) */
+export interface WialonUnitBrief {
+  id: number | string;
+  name: string;
+  lat?: number;
+  lng?: number;
+  speed?: number;
+  course?: number;
+  time?: number;
 }
 
 /** Wialon Driver */
@@ -52,3 +65,26 @@ export interface WialonSession {
 }
 
 // Note: Global window.wialon is declared in wialon-sdk.d.ts; avoid duplicate declaration here.
+
+export interface UnitInfo {
+  id: number;
+  name: string;
+  iconUrl: string;
+}
+
+export interface ReportTableData {
+  headers: string[];
+  rows: any[][];
+}
+
+/** Detailed unit information with computed fields */
+export interface UnitDetail {
+  id: number;
+  name: string;
+  iconUrl: string;
+  uid?: string | number;
+  position: { lat: number; lng: number } | null;
+  speed: number;
+  status: 'onroad' | 'pause' | 'offline';
+  lastMessageTime: number | null;
+}

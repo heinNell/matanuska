@@ -34,7 +34,14 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
   editMode = false,
 }) => {
   // Reference data (brands, sizes, patterns)
-  const { brands, sizes, getPositionsForVehicleType, getPatternsForBrand } = useTyreReferenceData();
+  const { brands, sizes, getPositionsForVehicleType, getPatternsForBrand } =
+    useTyreReferenceData();
+
+  // Helper function to get current date string
+  const getCurrentDateString = (): string => {
+    const dateStr = new Date().toISOString().split("T")[0];
+    return dateStr || new Date().toLocaleDateString("en-CA"); // fallback
+  };
 
   // Serialiseer init size na string (bv. "295/80R22.5") as daar initialData is
   const initialSelectedSize = initialData.size
@@ -45,7 +52,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
   const [formData, setFormData] = useState<Partial<Tyre>>({
     serialNumber: initialData.serialNumber || `TY-${Math.floor(1000 + Math.random() * 9000)}`,
     dotCode: initialData.dotCode || "",
-    manufacturingDate: initialData.manufacturingDate || new Date().toISOString().split("T")[0],
+    manufacturingDate: initialData.manufacturingDate || getCurrentDateString(),
     brand: initialData.brand || "",
     model: initialData.model || "",
     pattern: initialData.pattern || "",
@@ -54,7 +61,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
     speedRating: initialData.speedRating || "",
     type: initialData.type || "steer",
     purchaseDetails: initialData.purchaseDetails || {
-      date: new Date().toISOString().split("T")[0],
+      date: getCurrentDateString(),
       cost: 0,
       supplier: "",
       warranty: "",
@@ -72,7 +79,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
       pressure: 0,
       temperature: 0,
       status: TyreConditionStatus.GOOD, // <-- Changed here
-      lastInspectionDate: new Date().toISOString().split("T")[0],
+      lastInspectionDate: getCurrentDateString(),
       nextInspectionDue: "",
     },
     status: initialData.status || TyreStatus.NEW, // <-- Changed here
@@ -102,7 +109,6 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
   const [selectedSize, setSelectedSize] = useState<string>(initialSelectedSize);
 
   const safeString = (value: string | undefined): string => value ?? "";
-  const safeNumber = (value: number | undefined): number => value ?? 0;
   const safeValue = (value: string | number | undefined): string | number => {
     if (value === undefined) return "";
     return value;
@@ -138,9 +144,9 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
         setFormData((prev) => ({
           ...prev,
           size: {
-            width: parseInt(width),
-            aspectRatio: parseInt(aspectRatio),
-            rimDiameter: parseFloat(rimDiameter),
+            width: parseInt(width || "0"),
+            aspectRatio: parseInt(aspectRatio || "0"),
+            rimDiameter: parseFloat(rimDiameter || "0"),
           },
         }));
       }
@@ -179,17 +185,19 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
 
     if (name && name.includes(".")) {
       const [parent, child] = name.split(".");
+      if (parent && child) {
+        setFormData((prev) => ({
+          ...prev,
+          [parent as string]: {
+            ...(prev[parent as keyof typeof prev] as Record<string, any>),
+            [child as string]: parsedValue, // Use parsedValue here
+          },
+        }));
+      }
+    } else if (name) {
       setFormData((prev) => ({
         ...prev,
-        [parent]: {
-          ...(prev[parent as keyof typeof prev] as Record<string, any>),
-          [child]: parsedValue, // Use parsedValue here
-        },
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: parsedValue, // Use parsedValue here
+        [name as string]: parsedValue, // Use parsedValue here
       }));
     }
   };
@@ -199,17 +207,19 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
     const numValue = parseFloat(value);
     if (name && name.includes(".")) {
       const [parent, child] = name.split(".");
+      if (parent && child) {
+        setFormData((prev) => ({
+          ...prev,
+          [parent as string]: {
+            ...(prev[parent as keyof typeof prev] as Record<string, any>),
+            [child as string]: isNaN(numValue) ? 0 : numValue,
+          },
+        }));
+      }
+    } else if (name) {
       setFormData((prev) => ({
         ...prev,
-        [parent]: {
-          ...(prev[parent as keyof typeof prev] as Record<string, any>),
-          [child]: isNaN(numValue) ? 0 : numValue,
-        },
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: isNaN(numValue) ? 0 : numValue,
+        [name as string]: isNaN(numValue) ? 0 : numValue,
       }));
     }
   };
@@ -630,7 +640,10 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
                     "condition",
                   ];
                   const currentIndex = sections.indexOf(activeSection);
-                  setActiveSection(sections[currentIndex + 1]);
+                  const nextSection = sections[currentIndex + 1];
+                  if (nextSection) {
+                    setActiveSection(nextSection);
+                  }
                 }}
                 icon={<ChevronRight className="w-4 h-4" />}
               >

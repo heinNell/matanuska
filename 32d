@@ -1,0 +1,46 @@
+mapScriptFixer.ts:35 Found 2 Google Maps script tags. Keeping only the first one.
+checkForDuplicateMapScripts	@	mapScriptFixer.ts:35
+detectAndFixDuplicateMapScripts	@	mapScriptFixer.ts:16
+(anonymous)	@	mapScriptFixer.ts:50
+Explanation
+
+Understanding the problem
+The warning "Found 2 Google Maps script tags. Keeping only the first one." indicates that your web page has loaded the Google Maps JavaScript API script more than once. Loading the script multiple times can lead to unexpected behavior, conflicts, and performance issues. The provided code snippet actively detects and removes these duplicate script tags, but the warning is still logged to inform you that duplicates were found in the first place.
+
+How to verify
+You can verify this by examining the HTML source of your page in your browser's developer tools. Look for <script> tags that have a src attribute containing either "maps.googleapis.com" or "maps/api/js". You should find more than one of these tags.
+
+Suggested fix
+The best way to fix this is to identify where the duplicate script tags are being added to your HTML and remove the redundant ones. Common places where this might occur include:
+
+Your main HTML file (index.html).
+Component files in frameworks like React, Angular, or Vue that might be including the script.
+Third-party libraries or plugins that automatically include the Google Maps script.
+Server-side code that is dynamically adding the script.
+Once you locate the duplicate tags, remove all but one instance of the Google Maps JavaScript API script.
+
+Summary
+The warning "Found 2 Google Maps script tags. Keeping only the first one." means the Google Maps JavaScript API script is included multiple times on your page. Remove the duplicate script tags from your HTML source to resolve this issue and prevent potential problems.
+
+
+mapScriptFixer.ts:43 Removing duplicate Google Maps script: https://maps.googleapis.com/maps-api-v3/api/js/61/14/main.js
+(anonymous)	@	mapScriptFixer.ts:43
+checkForDuplicateMapScripts	@	mapScriptFixer.ts:41
+detectAndFixDuplicateMapScripts	@	mapScriptFixer.ts:16
+(anonymous)	@	mapScriptFixer.ts:50
+Explanation
+
+Understanding the problem
+This warning message Removing duplicate Google Maps script: https://maps.googleapis.com/maps-api-v3/api/js/61/14/main.js indicates that your web page is loading the Google Maps JavaScript API multiple times. The Google Maps JavaScript API is designed to be loaded only once per page. Loading it multiple times can lead to unexpected behavior, errors, and performance issues [2, 1]. The code snippet you provided is explicitly detecting and removing these duplicate script tags to prevent such issues.
+
+How to verify
+To verify this, you can inspect the HTML source of your page or use the "Elements" tab in Chrome DevTools. Search for <script> tags where the src attribute contains maps.googleapis.com/maps/api/js. If you find more than one such script tag, the warning is accurate.
+
+Suggested fix
+The most common cause of this issue is including the Google Maps JavaScript API script tag more than once in your HTML or having multiple parts of your application trying to load the API independently.
+
+Review your HTML files and JavaScript code to ensure the Google Maps JavaScript API script tag is included only once, ideally in the <head> of your main HTML file.
+
+Look for code that dynamically creates and appends script tags to the DOM. Ensure this logic prevents adding the Google Maps script if it's already present.
+
+Here's an example of how the script tag should typically appear in your HTML:

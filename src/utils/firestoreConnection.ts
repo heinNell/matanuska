@@ -4,6 +4,11 @@ import { firebaseApp } from '../firebaseConfig';
 type ConnectionStatusType = 'connected' | 'disconnected' | 'reconnecting' | 'error';
 type ConnectionListener = (status: ConnectionStatusType) => void;
 
+// Ensure firebaseApp is defined
+if (!firebaseApp) {
+  throw new Error('Firebase app is not initialized');
+}
+
 // Initialize Firestore
 const db = getFirestore(firebaseApp);
 let connectionStatus: ConnectionStatusType = 'connected';

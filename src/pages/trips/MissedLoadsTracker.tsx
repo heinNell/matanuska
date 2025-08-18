@@ -42,14 +42,14 @@ const MISSED_LOAD_REASONS = [
 const CLIENTS = ["Client A", "Client B", "Client C", "Client D", "Client E"];
 
 interface MissedLoadsTrackerProps {
-  missedLoads: MissedLoad[];
+  missedLoads?: MissedLoad[];
   onAddMissedLoad: (missedLoad: Omit<MissedLoad, "id">) => void;
   onUpdateMissedLoad: (missedLoad: MissedLoad) => void;
   onDeleteMissedLoad?: (id: string) => void;
 }
 
 const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
-  missedLoads,
+  missedLoads = [], // Provide default empty array if missedLoads is undefined
   onAddMissedLoad,
   onUpdateMissedLoad,
   onDeleteMissedLoad,
@@ -139,7 +139,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
 
     const missedLoadData: Omit<MissedLoad, "id"> = {
       customerName: formData.customerName.trim(),
-      loadRequestDate: formData.loadRequestDate,
+      loadRequestDate: formData.loadRequestDate || new Date().toISOString().split('T')[0],
       requestedPickupDate: formData.requestedPickupDate,
       requestedDeliveryDate: formData.requestedDeliveryDate,
       route: formData.route.trim(),
@@ -270,21 +270,21 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
   };
 
   // Calculate summary metrics
-  const totalMissedLoads = missedLoads.length;
+  const totalMissedLoads = missedLoads?.length || 0;
   const revenueLostZAR = missedLoads
-    .filter((load) => load.currency === "ZAR" && load.resolutionStatus !== "resolved")
-    .reduce((sum, load) => sum + load.estimatedRevenue, 0);
+    ?.filter((load) => load.currency === "ZAR" && load.resolutionStatus !== "resolved")
+    .reduce((sum, load) => sum + load.estimatedRevenue, 0) || 0;
   const revenueLostUSD = missedLoads
-    .filter((load) => load.currency === "USD" && load.resolutionStatus !== "resolved")
-    .reduce((sum, load) => sum + load.estimatedRevenue, 0);
-  const resolvedLoads = missedLoads.filter((load) => load.resolutionStatus === "resolved").length;
-  const competitorWins = missedLoads.filter((load) => load.competitorWon).length;
+    ?.filter((load) => load.currency === "USD" && load.resolutionStatus !== "resolved")
+    .reduce((sum, load) => sum + load.estimatedRevenue, 0) || 0;
+  const resolvedLoads = missedLoads?.filter((load) => load.resolutionStatus === "resolved").length || 0;
+  const competitorWins = missedLoads?.filter((load) => load.competitorWon).length || 0;
   const compensationOfferedZAR = missedLoads
-    .filter((load) => load.currency === "ZAR" && load.compensationOffered)
-    .reduce((sum, load) => sum + (load.compensationOffered || 0), 0);
+    ?.filter((load) => load.currency === "ZAR" && load.compensationOffered)
+    .reduce((sum, load) => sum + (load.compensationOffered || 0), 0) || 0;
   const compensationOfferedUSD = missedLoads
-    .filter((load) => load.currency === "USD" && load.compensationOffered)
-    .reduce((sum, load) => sum + (load.compensationOffered || 0), 0);
+    ?.filter((load) => load.currency === "USD" && load.compensationOffered)
+    .reduce((sum, load) => sum + (load.compensationOffered || 0), 0) || 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -392,9 +392,9 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
 
       {/* Missed Loads List */}
       <Card>
-        <CardHeader title={`Missed Loads (${missedLoads.length})`} />
+        <CardHeader title={`Missed Loads (${missedLoads?.length || 0})`} />
         <CardContent>
-          {missedLoads.length === 0 ? (
+          {!missedLoads || missedLoads.length === 0 ? (
             <div className="text-center py-12">
               <TrendingDown className="mx-auto h-10 w-10 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">No missed loads recorded</h3>
@@ -409,7 +409,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {missedLoads.map((load) => (
+              {missedLoads?.map((load) => (
                 <div
                   key={load.id}
                   className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"

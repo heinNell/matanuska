@@ -36,7 +36,7 @@ const TyreForm: React.FC<TyreFormProps> = ({
     speedRating: initialData.speedRating || "",
     type: initialData.type || "standard",
     purchaseDetails: initialData.purchaseDetails || {
-      date: new Date().toISOString().split("T")[0],
+      date: new Date().toISOString().split("T")[0] as string,
       cost: 0,
       supplier: "",
       warranty: "",
@@ -54,7 +54,7 @@ const TyreForm: React.FC<TyreFormProps> = ({
       pressure: 0,
       temperature: 0,
       status: "good",
-      lastInspectionDate: new Date().toISOString().split("T")[0],
+      lastInspectionDate: new Date().toISOString().split("T")[0] as string,
       nextInspectionDue: "",
     },
     status: initialData.status || "new",
@@ -121,9 +121,9 @@ const TyreForm: React.FC<TyreFormProps> = ({
         setFormData((prev) => ({
           ...prev,
           size: {
-            width: parseInt(width),
-            aspectRatio: parseInt(aspectRatio),
-            rimDiameter: parseFloat(rimDiameter),
+            width: parseInt(width || "0", 10),
+            aspectRatio: parseInt(aspectRatio || "0", 10),
+            rimDiameter: parseFloat(rimDiameter || "0"),
             displayString: selectedSize,
           },
         }));
@@ -140,13 +140,15 @@ const TyreForm: React.FC<TyreFormProps> = ({
     // Handle nested properties
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
-      setFormData((prev) => ({
-        ...prev,
-        [parent]: {
-          ...(prev[parent as keyof typeof prev] as Record<string, any>),
-          [child]: value,
-        },
-      }));
+      if (parent && child) {
+        setFormData((prev) => ({
+          ...prev,
+          [parent as string]: {
+            ...(prev[parent as keyof typeof prev] as Record<string, any>),
+            [child as string]: value,
+          },
+        }));
+      }
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -163,13 +165,15 @@ const TyreForm: React.FC<TyreFormProps> = ({
     // Handle nested properties
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
-      setFormData((prev) => ({
-        ...prev,
-        [parent]: {
-          ...(prev[parent as keyof typeof prev] as Record<string, any>),
-          [child]: isNaN(numValue) ? 0 : numValue,
-        },
-      }));
+      if (parent && child) {
+        setFormData((prev) => ({
+          ...prev,
+          [parent as string]: {
+            ...(prev[parent as keyof typeof prev] as Record<string, any>),
+            [child as string]: isNaN(numValue) ? 0 : numValue,
+          },
+        }));
+      }
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -673,7 +677,10 @@ const TyreForm: React.FC<TyreFormProps> = ({
                 "condition",
               ];
               const currentIndex = sections.indexOf(activeSection);
-              setActiveSection(sections[currentIndex - 1]);
+              const previousSection = sections[currentIndex - 1];
+              if (previousSection) {
+                setActiveSection(previousSection);
+              }
             }}
           >
             Previous
@@ -690,7 +697,10 @@ const TyreForm: React.FC<TyreFormProps> = ({
                 "condition",
               ];
               const currentIndex = sections.indexOf(activeSection);
-              setActiveSection(sections[currentIndex + 1]);
+              const nextSection = sections[currentIndex + 1];
+              if (nextSection) {
+                setActiveSection(nextSection);
+              }
             }}
           >
             Next

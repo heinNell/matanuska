@@ -22,7 +22,7 @@ import InvoiceSubmissionModal from "../../components/Models/Invoice/InvoiceSubmi
 import SystemCostGenerator from "../../components/SystemCostGenerator";
 import TripReport from "../../components/TripManagement/TripReport";
 import { useAppContext } from "../../context/AppContext";
-import { CostEntry, DelayReason, Trip } from "../../types";
+import { CostEntry, DelayReason, Trip, AdditionalCost } from "../../types";
 import {
   calculateKPIs,
   canCompleteTrip,
@@ -40,7 +40,7 @@ interface TripDetailsProps {
 const TripDetailsPage: React.FC<TripDetailsProps> = ({ trip: propTrip, onBack }) => {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
-  const { getTrip, addCostEntry, updateCostEntry, deleteCostEntry, updateTrip, addDelayReason } =
+  const { getTrip, addCostEntry, updateCostEntry, deleteCostEntry, updateTrip, addDelayReason, addAdditionalCost, removeAdditionalCost } =
     useAppContext();
 
   // State for trip data - use prop trip or fetch from context
@@ -296,10 +296,7 @@ const TripDetailsPage: React.FC<TripDetailsProps> = ({ trip: propTrip, onBack })
     }
   };
 
-  // Handle additional cost management
-  // These functions are currently not used by InvoiceSubmissionModal
-  // but kept for potential future use
-  /*
+
   const handleAddAdditionalCost = (cost: Omit<AdditionalCost, "id">, files?: FileList) => {
     try {
       addAdditionalCost(trip.id, cost, files);
@@ -317,7 +314,7 @@ const TripDetailsPage: React.FC<TripDetailsProps> = ({ trip: propTrip, onBack })
       alert("Error removing additional cost. Please try again.");
     }
   };
-  */
+
 
   const closeCostForm = () => {
     setShowCostForm(false);

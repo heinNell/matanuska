@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useWialonUnits } from "../../../hooks/useWialonUnits";
-import { CLIENTS, DRIVERS, Trip } from "../../../types/index";
+import { CLIENTS, DRIVERS, FLEET_NUMBERS, Trip } from "../../../types/index";
 import { Button } from "../../../components/ui/Button";
 import { Input, Select, TextArea } from "../../ui/FormElements";
 
@@ -29,15 +28,14 @@ export const TripForm: React.FC<TripFormProps> = ({
   onCancel,
   isSubmitting = false,
 }) => {
-  const { units: wialonUnits, loading: unitsLoading, error: unitsError } = useWialonUnits(true);
 
   const [fleetNumber, setFleetNumber] = useState("");
   const [fleetUnitId, setFleetUnitId] = useState<number | "">("");
   const [clientName, setClientName] = useState("");
   const [driverName, setDriverName] = useState("");
   const [route, setRoute] = useState("");
-  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
-  const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0]);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0] || "");
+  const [endDate, setEndDate] = useState(new Date().toISOString().split("T")[0] || "");
   const [description, setDescription] = useState("");
   const [distanceKm, setDistanceKm] = useState(0);
   const [baseRevenue, setBaseRevenue] = useState(0);
@@ -64,8 +62,8 @@ export const TripForm: React.FC<TripFormProps> = ({
       setClientName(trip.clientName || "");
       setDriverName(trip.driverName || "");
       setRoute(trip.route || "");
-      setStartDate(trip.startDate || new Date().toISOString().split("T")[0]);
-      setEndDate(trip.endDate || new Date().toISOString().split("T")[0]);
+      setStartDate(trip.startDate || new Date().toISOString().split("T")[0] || "");
+      setEndDate(trip.endDate || new Date().toISOString().split("T")[0] || "");
       setDescription(trip.description || "");
       setDistanceKm(trip.distanceKm || 0);
       setBaseRevenue(trip.baseRevenue || 0);
@@ -97,8 +95,8 @@ export const TripForm: React.FC<TripFormProps> = ({
       clientName,
       driverName,
       route,
-      startDate,
-      endDate,
+      startDate: startDate || "",
+      endDate: endDate || "",
       description,
       distanceKm,
       baseRevenue,
@@ -112,9 +110,6 @@ export const TripForm: React.FC<TripFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {unitsLoading && <p>Loading fleet units...</p>}
-      {unitsError && <p className="text-red-500">Error loading units.</p>}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Select
           label="Fleet Number"
@@ -122,21 +117,12 @@ export const TripForm: React.FC<TripFormProps> = ({
           onChange={(e) => {
             const selected = e.target.value;
             setFleetNumber(selected);
-            const unit = wialonUnits.find((u: any) => u.name === selected);
-            setFleetUnitId(
-              unit?.id !== undefined && unit?.id !== null
-                ? typeof unit.id === "string"
-                  ? Number(unit.id)
-                  : unit.id
-                : ""
-            );
+            // No Wialon mapping; reset/leave fleetUnitId unset
+            setFleetUnitId("");
           }}
           options={[
             { value: "", label: "Select fleet number..." },
-            ...wialonUnits.map((unit: any) => ({
-              value: unit.name,
-              label: `${unit.name} (${unit.registration || "No reg"})`,
-            })),
+            ...FLEET_NUMBERS.map((num: string) => ({ value: num, label: num })),
           ]}
         />
 
@@ -144,7 +130,7 @@ export const TripForm: React.FC<TripFormProps> = ({
           label="Client"
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
-          options={CLIENTS.map((client: any) => ({ value: client.name, label: client.name }))}
+          options={CLIENTS.map((client: string) => ({ value: client, label: client }))}
         />
 
         <Select
@@ -161,7 +147,7 @@ export const TripForm: React.FC<TripFormProps> = ({
           label="Driver"
           value={driverName}
           onChange={(e) => setDriverName(e.target.value)}
-          options={DRIVERS.map((driver: any) => ({ value: driver.name, label: driver.name }))}
+          options={DRIVERS.map((driver: string) => ({ value: driver, label: driver }))}
         />
 
         <Input

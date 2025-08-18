@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Trip, SystemCostRates, DEFAULT_SYSTEM_COST_RATES, CostEntry } from "../types";
 import { Calculator, Clock, Navigation, AlertTriangle } from "lucide-react";
 import { formatCurrency } from "../utils/helpers";
-import { useAppContext } from "../context/AppContext";
+import { AppContext } from "../context/AppContext";
 
 interface SystemCostGeneratorProps {
   trip: Trip;
@@ -16,8 +16,9 @@ const SystemCostGenerator: React.FC<SystemCostGeneratorProps> = ({
   const [systemRates] =
     useState<Record<"USD" | "ZAR", SystemCostRates>>(DEFAULT_SYSTEM_COST_RATES);
 
-  // Get the latest system cost rates from the admin configuration
-  const { trips } = useAppContext();
+  // Get the latest system cost rates from the admin configuration (safe access)
+  const appContext = useContext(AppContext);
+  const trips = appContext?.trips || [];
 
   // Find the most recent trip with system costs to get the latest rates
   useEffect(() => {

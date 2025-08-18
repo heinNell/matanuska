@@ -256,7 +256,7 @@ export const convertFleetToGeoJson = (
   units: WialonUnit[], 
   defaultCenter: [number, number] = [17.0832, -22.5597] // Default to Windhoek, Namibia
 ): GeoJsonCollection => {
-  const features: GeoJsonFeature[] = units.map((unit, index) => {
+  const features: GeoJsonFeature[] = units.map((unit) => {
     // Extract common properties from profile
     const brand = getProfileProperty(unit, 'brand');
     const model = getProfileProperty(unit, 'model');

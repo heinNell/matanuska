@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/badge';
 import { AlertCircle } from 'lucide-react';
 import { TyreInventoryStats } from './TyreInventoryStats';
 import { TyreInventoryFilters } from './TyreInventoryFilters';
 import { useTyres } from '../../context/TyreContext';
-import { Tyre, TyreStoreLocation, calculateRemainingLife, calculateCostPerKm } from '../../types/tyre';
+import { Tyre } from '../../types/tyre';
 import LoadingIndicator from '../ui/LoadingIndicator';
 import ErrorMessage from '../ui/ErrorMessage';
 
@@ -33,22 +33,38 @@ export const TyreInventory: React.FC = () => {
   const convertToTyreStock = (tyres: Tyre[]): TyreStock[] => {
     // Group tyres by brand, model, pattern, and size
     const groupedTyres: Record<string, Tyre[]> = {};
-    
+
     tyres.forEach(tyre => {
       // Create a unique key for grouping
       const key = `${tyre.brand}-${tyre.model}-${tyre.pattern}-${formatTyreSize(tyre.size)}`;
-      
+
       if (!groupedTyres[key]) {
         groupedTyres[key] = [];
       }
-      
+
       groupedTyres[key].push(tyre);
     });
-    
+
     // Convert grouped tyres to TyreStock
     return Object.entries(groupedTyres).map(([key, tyreGroup]) => {
       const firstTyre = tyreGroup[0];
-      
+
+      // Safety check to ensure firstTyre exists
+      if (!firstTyre) {
+        return {
+          id: key,
+          brand: 'Unknown',
+          model: 'Unknown',
+          pattern: 'Unknown',
+          size: 'Unknown',
+          quantity: tyreGroup.length,
+          minStock: 5,
+          cost: 0,
+          supplier: 'Unknown',
+          location: 'Unknown'
+        };
+      }
+
       return {
         id: key,
         brand: firstTyre.brand,
@@ -57,13 +73,13 @@ export const TyreInventory: React.FC = () => {
         size: formatTyreSize(firstTyre.size),
         quantity: tyreGroup.length,
         minStock: 5, // Default minimum stock level
-        cost: firstTyre.purchaseDetails.cost,
-        supplier: firstTyre.purchaseDetails.supplier,
-        location: firstTyre.location
+        cost: firstTyre.purchaseDetails?.cost || 0,
+        supplier: firstTyre.purchaseDetails?.supplier || 'Unknown',
+        location: firstTyre.location || 'Unknown'
       };
     });
   };
-  
+
   const formatTyreSize = (size: any): string => {
     if (typeof size === 'string') return size;
     return `${size.width}/${size.aspectRatio}R${size.rimDiameter}`;
@@ -98,11 +114,11 @@ export const TyreInventory: React.FC = () => {
   // Extract unique locations and brands for filter options
   const locations = [...new Set(inventory.map(item => item.location))];
   const brands = [...new Set(inventory.map(item => item.brand))];
-  
+
   if (loading) {
     return <LoadingIndicator text="Loading tyre inventory..." />;
   }
-  
+
   if (error) {
     return <ErrorMessage message={`Error loading tyre inventory: ${error.message}`} />;
   }
@@ -160,7 +176,7 @@ export const TyreInventory: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="text-right space-y-2">
                       <Badge className={getStockStatusColor(status)}>
                         {item.quantity} in stock
@@ -173,7 +189,7 @@ export const TyreInventory: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {status === 'low' && (
                     <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
                       <AlertCircle className="w-4 h-4 inline mr-1" />

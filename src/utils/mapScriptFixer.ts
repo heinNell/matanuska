@@ -40,7 +40,7 @@ function checkForDuplicateMapScripts(): void {
   // Remove duplicates
   scripts.forEach((script, index) => {
     if (index > 0) {
-      console.warn('Removing duplicate Google Maps script:', script.src);
+      console.warn('Removing duplicate Google Maps script:', (script as HTMLScriptElement).src);
       script.parentNode?.removeChild(script);
     }
   });

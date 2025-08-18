@@ -1,3 +1,4 @@
+// src/context/WialonContext.tsx
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { ExtendedWialonUnit, useWialon } from "../hooks/useWialon";
 
@@ -22,12 +23,13 @@ export const WialonProvider: React.FC<WialonProviderProps> = ({ children }) => {
 
   // Auto-select the first unit when units are loaded and none is selected
   useEffect(() => {
-    if (units && units.length > 0 && !selectedUnit) {
-      setSelectedUnit(units[0]);
+    if (!selectedUnit && Array.isArray(units) && units.length > 0) {
+      const first = units[0];
+      if (first) setSelectedUnit(first); // avoids passing `undefined`
     }
   }, [units, selectedUnit]);
 
-  const value = {
+  const value: WialonContextProps = {
     units,
     loading,
     error,

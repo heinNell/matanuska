@@ -173,7 +173,15 @@ export class SyncService {
 
     for (const [key, change] of this.pendingChanges.entries()) {
       try {
-        const [collection, id] = key.split(":");
+        const parts = key.split(":");
+        const collection = parts[0];
+        const id = parts[1];
+
+        if (!collection || !id) {
+          console.warn(`Invalid pending change key: ${key}`);
+          continue;
+        }
+
         const docRef = doc(db, collection, id);
 
         // Add server timestamp
@@ -708,7 +716,12 @@ export class SyncService {
         throw new Error(`Diesel record ${dieselId} not found`);
       }
 
-      const dieselData = dieselSnap.docs[0].data() as DieselConsumptionRecord;
+      const firstDieselDoc = dieselSnap.docs[0];
+      if (!firstDieselDoc) {
+        throw new Error(`Diesel record ${dieselId} not found`);
+      }
+
+      const dieselData = firstDieselDoc.data() as DieselConsumptionRecord;
 
       // Get the trip
       const tripRef = doc(db, "trips", tripId);
@@ -718,7 +731,12 @@ export class SyncService {
         throw new Error(`Trip ${tripId} not found`);
       }
 
-      const tripData = tripSnap.docs[0].data() as Trip;
+      const firstTripDoc = tripSnap.docs[0];
+      if (!firstTripDoc) {
+        throw new Error(`Trip ${tripId} not found`);
+      }
+
+      const tripData = firstTripDoc.data() as Trip;
 
       // Update diesel record with trip ID
       await updateDoc(dieselRef, {
@@ -1863,7 +1881,12 @@ export class SyncService {
         throw new Error(`Tyre ${tyreId} not found`);
       }
 
-      const tyreData = tyreSnap.docs[0].data() as Tyre;
+      const firstTyreDoc = tyreSnap.docs[0];
+      if (!firstTyreDoc) {
+        throw new Error(`Tyre ${tyreId} not found`);
+      }
+
+      const tyreData = firstTyreDoc.data() as Tyre;
 
       // Create a new inspection ID
       const inspectionId = `insp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;

@@ -1,23 +1,16 @@
 import { Button } from "../../../components/ui/Button";
 import React, { useEffect, useState } from "react";
-import { useWialonUnits } from "../../../hooks/useWialonUnits";
-import { CLIENTS, DRIVERS, FLEET_NUMBERS, Trip } from "../../../types/index";
+import { CLIENTS, DRIVERS, FLEET_NUMBERS } from "../../../types/index";
 import { Input, Select, TextArea } from "../../ui/FormElements";
+import type { PlannedRoute } from "../../../types/trip";
+import type { Trip } from "../../../types/index";
+import type { TripFormData as TripFormDataType } from "../../../types/TripTypes";
 
 interface TripFormProps {
   trip?: Trip;
-  onSubmit: (tripData: Omit<Trip, "id" | "costs" | "status" | "additionalCosts">) => void;
+  onSubmit: (tripData: TripFormDataType) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
-}
-
-interface PlannedRoute {
-  origin: string;
-  destination: string;
-  waypoints: string[];
-  coordinates?: { lat: number; lng: number }[];
-  estimatedDistance?: number;
-  estimatedDuration?: number;
 }
 
 export const TripForm: React.FC<TripFormProps> = ({
@@ -26,8 +19,6 @@ export const TripForm: React.FC<TripFormProps> = ({
   onCancel,
   isSubmitting = false,
 }) => {
-  const { units: wialonUnits, loading: unitsLoading, error: unitsError } = useWialonUnits(true);
-
   const [fleetNumber, setFleetNumber] = useState("");
   const [fleetUnitId, setFleetUnitId] = useState<number | "">("");
   const [clientName, setClientName] = useState("");
@@ -87,8 +78,8 @@ export const TripForm: React.FC<TripFormProps> = ({
       clientName,
       driverName,
       route,
-      startDate,
-      endDate,
+  startDate: startDate || "",
+  endDate: endDate || "",
       description,
       distanceKm,
       baseRevenue,
@@ -102,9 +93,6 @@ export const TripForm: React.FC<TripFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {unitsLoading && <p>Loading fleet units...</p>}
-      {unitsError && <p className="text-red-500">Error loading units.</p>}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Select
           label="Fleet Number"
@@ -112,24 +100,12 @@ export const TripForm: React.FC<TripFormProps> = ({
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             const selected = e.target.value;
             setFleetNumber(selected);
-            const unit = wialonUnits?.find((u) => u.name === selected);
-            setFleetUnitId(
-              unit?.id !== undefined && unit?.id !== null
-                ? typeof unit.id === "string"
-                  ? Number(unit.id)
-                  : unit.id
-                : ""
-            );
+            // No Wialon mapping; reset/leave fleetUnitId unset
+            setFleetUnitId("");
           }}
           options={[
             { value: "", label: "Select fleet number..." },
             ...(FLEET_NUMBERS || []).map((fleet: string) => ({ value: fleet, label: fleet })),
-            ...(wialonUnits
-              ?.filter((unit) => !FLEET_NUMBERS.includes(unit.name))
-              .map((unit) => ({
-                value: unit.name,
-                label: `${unit.name} (${unit.registration || "No reg"})`,
-              })) || []),
           ]}
         />
 
@@ -276,3 +252,5 @@ export const TripForm: React.FC<TripFormProps> = ({
     </form>
   );
 };
+
+export default TripForm;

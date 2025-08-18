@@ -42,23 +42,23 @@ const IncidentReportForm: React.FC<IncidentReportFormProps> = ({
   };
 
   const [formData, setFormData] = useState<IncidentFormData>({
-    incidentNumber: initialData?.incidentNumber || generateIncidentNumber(),
-    vehicleNumber: initialData?.vehicleNumber || "",
-    vin: initialData?.vin || "",
-    vehicleName: initialData?.vehicleName || "",
+    incidentNumber: initialData?.incidentNumber ?? generateIncidentNumber(),
+    vehicleNumber: initialData?.vehicleNumber ?? "",
+    vin: initialData?.vin ?? "",
+    vehicleName: initialData?.vehicleName ?? "",
     date: initialData?.date || new Date().toISOString().split("T")[0],
-    time: initialData?.time || new Date().toTimeString().slice(0, 5),
-    location: initialData?.location || "",
-    incidentType: initialData?.incidentType || "",
-    incidentArea: initialData?.incidentArea || "",
-    weatherCondition: initialData?.weatherCondition || "",
-    severityRating: initialData?.severityRating || "Medium",
-    vehicleActivity: initialData?.vehicleActivity || "",
-    description: initialData?.description || "",
-    damageDescription: initialData?.damageDescription || "",
-    reportedBy: initialData?.reportedBy || "",
-    images: [],
-    imageUrls: initialData?.imageUrls || [],
+    time: initialData?.time ?? new Date().toTimeString().slice(0, 5),
+    location: initialData?.location ?? "",
+    incidentType: initialData?.incidentType ?? "",
+    incidentArea: initialData?.incidentArea ?? "",
+    weatherCondition: initialData?.weatherCondition ?? "",
+    severityRating: initialData?.severityRating ?? "Medium",
+    vehicleActivity: initialData?.vehicleActivity ?? "",
+    description: initialData?.description ?? "",
+    damageDescription: initialData?.damageDescription ?? "",
+    reportedBy: initialData?.reportedBy ?? "",
+    images: initialData?.images ?? [],
+    imageUrls: initialData?.imageUrls ?? [],
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,7 +109,11 @@ const IncidentReportForm: React.FC<IncidentReportFormProps> = ({
 
     // Clear validation error when field is edited
     if (validationErrors[name as keyof IncidentFormData]) {
-      setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
+      const field = name as keyof IncidentFormData;
+      setValidationErrors((prev) => {
+        const { [field]: _removed, ...rest } = prev;
+        return rest;
+      });
     }
   };
 

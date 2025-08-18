@@ -42,8 +42,11 @@ const Dashboard: React.FC = () => {
           };
         });
         setLocations(locationData);
-        if (locationData.length > 0) {
-          setMapCenter({ lat: locationData[0].lat, lng: locationData[0].lng });
+        if (locationData.length > 0 && locationData[0]) {
+          const firstLocation = locationData[0];
+          if (firstLocation.lat !== undefined && firstLocation.lng !== undefined) {
+            setMapCenter({ lat: firstLocation.lat, lng: firstLocation.lng });
+          }
         }
       } catch (error) {
         console.error("Error loading locations:", error);

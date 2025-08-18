@@ -8,14 +8,16 @@ import "../types/wialon-sdk.d.ts";
 // Note: The Window interface for wialon is already declared in wialon-sdk.d.ts
 declare global {
   interface Window {
-    W: typeof W;
+    wialon: any; // Use this instead as the SDK exposes wialon global
+    W: any; // Fallback type for W namespace
   }
 }
 
 // Configuration
+// Corrected the variable name to match the .env file
 const TOKEN =
-  import.meta.env.VITE_WIALON_TOKEN ||
-  ""; // Removed hardcoded token for security
+  import.meta.env.VITE_WIALON_SESSION_TOKEN ||
+  ""; // Corrected variable name
 
 // Fix for spaces in the URL from environment variables
 const WIALON_API_URL = import.meta.env.VITE_WIALON_API_URL?.trim() || "https://hst-api.wialon.com";
@@ -135,7 +137,7 @@ export async function initializeWialon(): Promise<boolean> {
 
       log(`Connecting to Wialon API: ${WIALON_API_URL}`);
 
-      const loginSuccess = await new Promise<boolean>((resolve) => {
+      const loginResult = await new Promise<boolean>((resolve) => {
         try {
           session.loginToken(TOKEN, "", (code: number) => {
             if (code) {
@@ -178,17 +180,17 @@ export async function initializeWialon(): Promise<boolean> {
           resolve(false);
         }
       });
+
+      if (!loginResult) {
+        return false;
+      }
+
+      // Load required libraries for icons, etc.
+      session.loadLibrary("itemIcon");
     } catch (err) {
       log(`Error initializing session: ${err instanceof Error ? err.message : String(err)}`, true);
       return false;
     }
-
-    if (!loginSuccess) {
-      return false;
-    }
-
-    // Load required libraries for icons, etc.
-    session.loadLibrary("itemIcon");
 
     const dataFlags =
       W.item.Item.dataFlag.base |

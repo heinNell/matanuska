@@ -118,6 +118,40 @@ const FuelStations: React.FC = () => {
     }
   };
 
+  // Convert raw Firebase data to FuelStation type with proper type checks
+  const convertToFuelStation = (id: string, raw: any): FuelStation => {
+    const lastUpdated = (() => {
+      if (raw.lastUpdated instanceof Timestamp) {
+        return raw.lastUpdated.toDate().toISOString().split("T")[0];
+      }
+      if (typeof raw.lastUpdated === "string") {
+        return raw.lastUpdated;
+      }
+      return new Date().toISOString().split("T")[0];
+    })();
+
+    return {
+      id,
+      name: raw.name?.toString() ?? "Unnamed",
+      brand: raw.brand?.toString() ?? "Other",
+      address: raw.address?.toString() ?? "",
+      city: raw.city?.toString() ?? "",
+      state: raw.state?.toString() ?? "",
+      zipCode: raw.zipCode?.toString() ?? "",
+      phone: raw.phone?.toString() ?? "",
+      pricePerLiter: Number(raw.pricePerLiter) || 0,
+      rating: Number(raw.rating) || 0,
+      isPreferred: Boolean(raw.isPreferred),
+      hasCardAccess: Boolean(raw.hasCardAccess),
+      operatingHours: raw.operatingHours?.toString() ?? "",
+      services: Array.isArray(raw.services) ? raw.services : [],
+      lastUpdated,
+      status: ["active", "inactive", "maintenance"].includes(raw.status)
+        ? (raw.status as FuelStation["status"])
+        : "active",
+    };
+  };
+
   // Subscribe to Firestore collection
   useEffect(() => {
     if (subscribing) return; // avoid double subscription
@@ -126,34 +160,9 @@ const FuelStations: React.FC = () => {
     const unsub = onSnapshot(
       q,
       (snap) => {
-        const data: FuelStation[] = snap.docs.map((d) => {
-          const raw = d.data() as any;
-          // Convert Firestore Timestamp to ISO string if present
-          let lastUpdated: string = new Date().toISOString().split("T")[0];
-          if (raw.lastUpdated instanceof Timestamp) {
-            lastUpdated = raw.lastUpdated.toDate().toISOString().split("T")[0];
-          } else if (typeof raw.lastUpdated === "string") {
-            lastUpdated = raw.lastUpdated;
-          }
-          return {
-            id: d.id,
-            name: raw.name || "Unnamed",
-            brand: raw.brand || "Other",
-            address: raw.address || "",
-            city: raw.city || "",
-            state: raw.state || "",
-            zipCode: raw.zipCode || "",
-            phone: raw.phone || "",
-            pricePerLiter: Number(raw.pricePerLiter) || 0,
-            rating: Number(raw.rating) || 0,
-            isPreferred: !!raw.isPreferred,
-            hasCardAccess: !!raw.hasCardAccess,
-            operatingHours: raw.operatingHours || "",
-            services: Array.isArray(raw.services) ? raw.services : [],
-            lastUpdated,
-            status: raw.status || "active",
-          } as FuelStation;
-        });
+        const data: FuelStation[] = snap.docs.map((d) =>
+          convertToFuelStation(d.id, d.data())
+        );
         setFuelStations(data);
         setLoading(false);
       },
@@ -166,23 +175,23 @@ const FuelStations: React.FC = () => {
     return () => unsub();
   }, [subscribing]);
 
-  const handleAddEdit = async (values: any) => {
+  const handleAddEdit = async (values: Partial<FuelStation>) => {
     try {
+      const sanitizedValues = {
+        ...values,
+        services: values.services || [],
+        isPreferred: Boolean(values.isPreferred),
+        hasCardAccess: Boolean(values.hasCardAccess),
+        pricePerLiter: Number(values.pricePerLiter) || 0,
+        rating: Number(values.rating) || 0,
+        lastUpdated: serverTimestamp(),
+      };
+
       if (editingStation) {
-        await updateDoc(doc(db, "fuelStations", editingStation.id), {
-          ...values,
-          services: values.services || [],
-          lastUpdated: serverTimestamp(),
-        });
+        await updateDoc(doc(db, "fuelStations", editingStation.id), sanitizedValues);
         message.success("Fuel station updated successfully");
       } else {
-        await addDoc(collection(db, "fuelStations"), {
-          ...values,
-          services: values.services || [],
-          isPreferred: !!values.isPreferred,
-          hasCardAccess: !!values.hasCardAccess,
-          lastUpdated: serverTimestamp(),
-        });
+        await addDoc(collection(db, "fuelStations"), sanitizedValues);
         message.success("Fuel station added successfully");
       }
       setIsModalVisible(false);
@@ -224,13 +233,15 @@ const FuelStations: React.FC = () => {
     }
   };
 
-  const filteredStations = fuelStations.filter(
-    (station) =>
-      station.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      station.brand.toLowerCase().includes(searchText.toLowerCase()) ||
-      station.address.toLowerCase().includes(searchText.toLowerCase()) ||
-      station.city.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredStations = fuelStations.filter((station) => {
+    const searchLower = searchText.toLowerCase();
+    return [
+      station.name,
+      station.brand,
+      station.address,
+      station.city,
+    ].some(field => field.toLowerCase().includes(searchLower));
+  });
 
   const columns: ColumnsType<FuelStation> = [
     {

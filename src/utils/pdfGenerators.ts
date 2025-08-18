@@ -93,44 +93,46 @@ export const generateLoadConfirmationPDF = async (
     unit: 'mm',
     format: 'a4'
   });
-  
+
   // Set font for the entire document
   doc.setFont('helvetica');
-  
+
   // Get the correct company details based on entity
-  const companyDetails = data.companyEntity === 'sa' 
+  const companyDetails = data.companyEntity === 'sa'
     ? COMPANY_DETAILS.sa
     : COMPANY_DETAILS.zim;
-  
+
   // Set page margins
   const margin = 20; // 20mm margin
   const pageWidth = doc.internal.pageSize.width;
   const contentWidth = pageWidth - (margin * 2);
-  
+
   // Helper for text wrapping
   const splitText = (text: string, fontSize: number, maxWidth: number): string[] => {
     doc.setFontSize(fontSize);
-    return doc.splitTextToSize(text, maxWidth);
+    const lines = doc.splitTextToSize(text, maxWidth);
+    // Ensure all lines are strings, filter out any undefined values
+    return Array.isArray(lines) ? lines.filter(line => typeof line === 'string') : [lines].filter(line => typeof line === 'string');
   };
-  
+
   // Start Y position
   let yPos = margin;
-  
+
   // Add header with company details
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.text(companyDetails.name, margin, yPos);
   yPos += 7;
-  
+
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  
+
   const addressLines = companyDetails.address.split('\n');
   addressLines.forEach(line => {
     doc.text(line, margin, yPos);
     yPos += 5;
   });
-  
+
   // Add remaining company details based on entity
   if (data.companyEntity === 'sa') {
     const saDetails = companyDetails as SACompanyDetails;
@@ -145,66 +147,66 @@ export const generateLoadConfirmationPDF = async (
     doc.text(`Taxpayer Name: ${zimDetails.taxpayerName}`, margin, yPos); yPos += 5;
     doc.text(`Trade Name: ${zimDetails.tradeName}`, margin, yPos); yPos += 5;
   }
-  
+
   // Add horizontal line
   yPos += 5;
   doc.setLineWidth(0.5);
   doc.line(margin, yPos, pageWidth - margin, yPos);
-  
+
   // Add document title
   yPos += 10;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.text(`LOAD CONFIRMATION (${data.currency})`, pageWidth / 2, yPos, { align: 'center' });
-  
+
   // Reset to normal font
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  
+
   // Add form data in sections
   yPos += 10;
-  
+
   // Customer/Transporter section
   doc.text('To:', margin, yPos);
   yPos += 5;
-  
+
   // Make customer details section
   doc.setFont('helvetica', 'bold');
   doc.text(data.customerName, margin + 10, yPos);
   yPos += 5;
   doc.setFont('helvetica', 'normal');
-  
+
   if (data.contactPerson) {
     doc.text(data.contactPerson, margin + 10, yPos);
     yPos += 5;
   }
-  
+
   if (data.contactDetails) {
     doc.text(data.contactDetails, margin + 10, yPos);
     yPos += 5;
   }
-  
+
   // Add date information
   yPos += 5;
   doc.setFont('helvetica', 'bold');
   doc.text('Date of Confirmation:', margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(format(new Date(data.confirmationDate), 'yyyy-MM-dd'), margin + 50, yPos);
-  
+
   // Load reference
   yPos += 7;
   doc.setFont('helvetica', 'bold');
   doc.text('Load Reference Number:', margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(data.loadRefNumber, margin + 50, yPos);
-  
+
   // Vehicle details
   yPos += 7;
   doc.setFont('helvetica', 'bold');
   doc.text('Vehicle / Truck Reg No:', margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(data.vehicleRegNo, margin + 50, yPos);
-  
+
   if (data.trailerRegNo) {
     yPos += 7;
     doc.setFont('helvetica', 'bold');
@@ -212,44 +214,48 @@ export const generateLoadConfirmationPDF = async (
     doc.setFont('helvetica', 'normal');
     doc.text(data.trailerRegNo, margin + 50, yPos);
   }
-  
+
   // Driver
   yPos += 7;
   doc.setFont('helvetica', 'bold');
   doc.text('Driver Name:', margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(data.driverName, margin + 50, yPos);
-  
+
   // Addresses
   yPos += 10;
   doc.setFont('helvetica', 'bold');
   doc.text('Pickup Address:', margin, yPos);
   doc.setFont('helvetica', 'normal');
-  
-  const pickupLines = splitText(data.pickupAddress, 10, contentWidth - 50);
+
+  const pickupLines = splitText(data.pickupAddress || '', 10, contentWidth - 50);
   for (let i = 0; i < pickupLines.length; i++) {
-    doc.text(pickupLines[i], margin + 50, yPos);
-    yPos += 5;
+    if (pickupLines[i]) {
+      doc.text(pickupLines[i] as string, margin + 50, yPos);
+      yPos += 5;
+    }
   }
-  
+
   yPos += 2;
   doc.setFont('helvetica', 'bold');
   doc.text('Delivery Address:', margin, yPos);
   doc.setFont('helvetica', 'normal');
-  
-  const deliveryLines = splitText(data.deliveryAddress, 10, contentWidth - 50);
+
+  const deliveryLines = splitText(data.deliveryAddress || '', 10, contentWidth - 50);
   for (let i = 0; i < deliveryLines.length; i++) {
-    doc.text(deliveryLines[i], margin + 50, yPos);
-    yPos += 5;
+    if (deliveryLines[i]) {
+      doc.text(deliveryLines[i] as string, margin + 50, yPos);
+      yPos += 5;
+    }
   }
-  
+
   // Cargo details
   yPos += 5;
   doc.setFont('helvetica', 'bold');
   doc.text('Commodity:', margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(data.commodity, margin + 50, yPos);
-  
+
   if (data.totalWeight) {
     yPos += 7;
     doc.setFont('helvetica', 'bold');
@@ -257,32 +263,32 @@ export const generateLoadConfirmationPDF = async (
     doc.setFont('helvetica', 'normal');
     doc.text(data.totalWeight, margin + 50, yPos);
   }
-  
+
   yPos += 7;
   doc.setFont('helvetica', 'bold');
   doc.text('Number of Pallets / Units:', margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(data.palletsOrUnits, margin + 50, yPos);
-  
+
   // Payment details
   yPos += 10;
   doc.setFont('helvetica', 'bold');
   doc.text(`Rate (${data.currency}):`, margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(`${data.currency === 'ZAR' ? 'R' : '$'} ${data.rateAmount} per ${data.rateUnit}`, margin + 50, yPos);
-  
+
   yPos += 7;
   doc.setFont('helvetica', 'bold');
   doc.text(`Total Agreed Amount (${data.currency}):`, margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(`${data.currency === 'ZAR' ? 'R' : '$'} ${data.totalAmount}`, margin + 50, yPos);
-  
+
   yPos += 7;
   doc.setFont('helvetica', 'bold');
   doc.text('Payment Terms:', margin, yPos);
   doc.setFont('helvetica', 'normal');
   doc.text(data.paymentTerms, margin + 50, yPos);
-  
+
   // Special instructions
   if (data.specialInstructions) {
     yPos += 10;
@@ -290,14 +296,16 @@ export const generateLoadConfirmationPDF = async (
     doc.text('Special Instructions / Notes:', margin, yPos);
     doc.setFont('helvetica', 'normal');
     yPos += 7;
-    
-    const instructionLines = splitText(data.specialInstructions, 10, contentWidth);
+
+    const instructionLines = splitText(data.specialInstructions || '', 10, contentWidth);
     for (let i = 0; i < instructionLines.length; i++) {
-      doc.text(instructionLines[i], margin, yPos);
-      yPos += 5;
+      if (instructionLines[i]) {
+        doc.text(instructionLines[i] as string, margin, yPos);
+        yPos += 5;
+      }
     }
   }
-  
+
   // Contact information
   if (data.pickupContact) {
     yPos += 7;
@@ -306,7 +314,7 @@ export const generateLoadConfirmationPDF = async (
     doc.setFont('helvetica', 'normal');
     doc.text(data.pickupContact, margin + 50, yPos);
   }
-  
+
   if (data.deliveryContact) {
     yPos += 7;
     doc.setFont('helvetica', 'bold');
@@ -314,22 +322,24 @@ export const generateLoadConfirmationPDF = async (
     doc.setFont('helvetica', 'normal');
     doc.text(data.deliveryContact, margin + 50, yPos);
   }
-  
+
   // Add a declaration and acceptance section
   yPos += 15;
   doc.setFont('helvetica', 'bold');
   doc.text('DECLARATION & ACCEPTANCE', margin, yPos);
   doc.setFont('helvetica', 'normal');
   yPos += 7;
-  
-  const declarationText = `By accepting this Load Confirmation, the transporter agrees to all terms and conditions stipulated herein, including adherence to all safety, compliance, and operational requirements as communicated by ${companyDetails.name}.`;
-  
+
+  const declarationText = `By accepting this Load Confirmation, the transporter agrees to all terms and conditions stipulated herein, including adherence to all safety, compliance, and operational requirements as communicated by ${companyDetails.name || 'the company'}.`;
+
   const declarationLines = splitText(declarationText, 10, contentWidth);
   for (let i = 0; i < declarationLines.length; i++) {
-    doc.text(declarationLines[i], margin, yPos);
-    yPos += 5;
+    if (declarationLines[i]) {
+      doc.text(declarationLines[i] as string, margin, yPos);
+      yPos += 5;
+    }
   }
-  
+
   // Signature sections
   yPos += 10;
   doc.setFont('helvetica', 'bold');
@@ -345,7 +355,7 @@ export const generateLoadConfirmationPDF = async (
   yPos += 7;
   doc.setFont('helvetica', 'bold');
   doc.text('Date: _____________________________', margin, yPos);
-  
+
   yPos += 15;
   doc.setFont('helvetica', 'bold');
   doc.text(`${data.companyEntity === 'sa' ? 'Matanuska' : 'Matanuska Distribution'} Representative:`, margin, yPos);
@@ -360,13 +370,13 @@ export const generateLoadConfirmationPDF = async (
   yPos += 7;
   doc.setFont('helvetica', 'bold');
   doc.text('Date: _____________________________', margin, yPos);
-  
+
   // Add footer
   const footerYPos = doc.internal.pageSize.height - 10;
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   doc.text(`Generated on ${format(new Date(), 'yyyy-MM-dd HH:mm')} | ${data.currency} Load Confirmation | ${data.loadRefNumber}`, pageWidth / 2, footerYPos, { align: 'center' });
-  
+
   // Return the PDF as a blob
   return doc.output('blob');
 };
@@ -395,11 +405,11 @@ interface InspectionReport {
 
 export const generateInspectionPDF = (report: InspectionReport): void => {
   const doc = new jsPDF();
-  
+
   // Add a title
   doc.setFontSize(20);
   doc.text('Vehicle Inspection Report', 105, 15, { align: 'center' });
-  
+
   // Add report metadata
   doc.setFontSize(12);
   doc.text(`Report #: ${report.reportNumber}`, 20, 30);
@@ -407,19 +417,19 @@ export const generateInspectionPDF = (report: InspectionReport): void => {
   doc.text(`Vehicle ID: ${report.vehicleId}`, 20, 44);
   doc.text(`Inspector: ${report.inspector}`, 20, 51);
   doc.text(`Overall Condition: ${report.overallCondition}`, 20, 58);
-  
+
   // Add inspection items table
   const tableData = report.items.map((item: InspectionItem) => [
     item.name,
     item.status,
     item.comments || ''
   ]);
-  
+
   doc.autoTable({
     startY: 65,
     head: [['Item', 'Status', 'Comments']],
     body: tableData,
-    styles: { 
+    styles: {
       fontSize: 10,
     },
     headStyles: {
@@ -431,7 +441,7 @@ export const generateInspectionPDF = (report: InspectionReport): void => {
       2: { cellWidth: 'auto' },
     }
   });
-  
+
   // Add notes if any
   if (report.notes) {
     const finalY = (doc as any).lastAutoTable.finalY || 150;
@@ -439,7 +449,7 @@ export const generateInspectionPDF = (report: InspectionReport): void => {
     doc.setFontSize(10);
     doc.text(report.notes, 20, finalY + 17);
   }
-  
+
   // Save the PDF
   doc.save(`Inspection_Report_${report.reportNumber}.pdf`);
 };

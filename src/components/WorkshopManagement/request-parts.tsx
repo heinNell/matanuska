@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import DemandPartsForm from "../../components/forms/workshop/DemandPartsForm";
+import { useWorkshop } from "../../context/WorkshopContext";
+import { addDoc, collection, serverTimestamp, db } from "../../firebase";
+import { useSearchParams } from "react-router-dom";
 
 /**
  * Request Parts Page
@@ -7,30 +10,49 @@ import DemandPartsForm from "../../components/forms/workshop/DemandPartsForm";
  */
 const RequestPartsPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mock data for initial form values
+  const workOrderId = searchParams.get("workOrderId") || undefined;
+  const vehicleId = searchParams.get("vehicleId") || undefined;
+  const { addPurchaseOrder } = useWorkshop(); // Assuming addPurchaseOrder exists in context
+
+  const handleSubmit = async (data: any) => {
+    setIsSubmitting(true);
+
+    try {
+      // Use the provided workOrderId and vehicleId
+      const partsDemand = {
+        ...data,
+        workOrderId,
+        vehicleId,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      };
+
+      await addDoc(collection(db, "partsDemands"), partsDemand);
+
+      console.log("Parts demand submitted successfully!");
+      setIsSubmitted(false);
+      window.location.href = "/workshop/parts-ordering";
+    } catch (error) {
+      console.error("Error submitting parts demand:", error);
+      setIsSubmitted(false);
+    }
+  };
+
   const initialData = {
     id: "",
-    action: "Request",
+    action: "",
     parts: [],
     createdDate: new Date().toISOString().split("T")[0],
     createdTime: new Date().toTimeString().split(" ")[0].slice(0, 5),
-    demandBy: "Workshop Manager",
-    workOrderId: "WO-2023-0714",
-    vehicleId: "TRK-001",
+    demandBy: "",
+    workOrderId: workOrderId,
+    vehicleId: vehicleId,
     status: "OPEN" as const,
     urgency: "MEDIUM" as const,
-  };
-
-  const handleSubmit = (data: any) => {
-    console.log("Parts request submitted:", data);
-    setIsSubmitted(true);
-
-    // In a real app, this would save to Firestore
-    setTimeout(() => {
-      setIsSubmitted(false);
-      window.location.href = "/workshop/parts-ordering"; // Redirect to parts ordering page
-    }, 2000);
+    notes: "",
   };
 
   return (
@@ -66,8 +88,6 @@ const RequestPartsPage: React.FC = () => {
           initialData={initialData}
           onSubmit={handleSubmit}
           onCancel={() => window.history.back()}
-          workOrderId="WO-2023-0714"
-          vehicleId="TRK-001"
         />
       </div>
     </div>

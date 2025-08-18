@@ -6,6 +6,10 @@ import {
 } from "firebase/firestore";
 import { firebaseApp } from "../firebaseConfig";
 
+if (!firebaseApp) {
+  throw new Error('Firebase app must be initialized before creating Firestore instance');
+}
+
 // Initialize Firestore
 export const firestore = getFirestore(firebaseApp);
 

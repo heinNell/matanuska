@@ -1,121 +1,139 @@
-# matrefactor - Fleet Management Platform: Copilot Instructions
+---
+applyTo: "**"
+---
 
-This document provides essential context for AI agents working with the APppp Fleet Management codebase. Use this guide to understand the architecture, patterns, and workflows.
+# Code Quality Inspection Instructions
 
-## Project Overview
+## 1. Import Analysis
+- **Scope**: All files under `/src`
+- **Actions**:
+  - Verify each import statement for:
+    - Path correctness (case-sensitive)
+    - Actual usage in file
+    - Circular dependency absence
+  - Flag unused imports for removal
 
-## Matrefactor is a comprehensive fleet management platform built with:
-
-- **Frontend**: React 18+, TypeScript, Tailwind CSS, Vite
-- **Backend**: Firebase (Firestore, Auth, Storage, Functions)
-- **Mobile**: Capacitor for mobile deployment (Android/iOS)
-- **State Management**: React Context API with Firebase real-time data
-- **Key Features**: Trip management, invoice processing, tyre tracking, fleet analytics, offline capabilities
-- **Key Integrations**: Google Maps, Wialon telematics (optional)
-
-## Architecture & Core Patterns
-
-### Directory Structure
-
-src/
-├── pages/ # Main routed pages (by domain)
-├── components/ # UI blocks, forms, modals, cards
-├── forms/ # Embedded forms ONLY – not pages
-├── context/ # React state contexts
-├── hooks/ # useX hooks for data, side effects
-├── api/ # Firebase, Wialon, Sage APIs
-├── utils/ # Shared utilities, validators, etc.
-├── config/ # Sidebar, routes, workflow configs
-├── firebase.ts # Core Firebase entry
-functions/ # Cloud Functions (outside /src)
-
-### Routing & Navigation
-
-- **Routing System**: Uses React Router v6 with nested routes
-- **Key Pattern**: Routes are defined in `AppRoutes.tsx` and mapped to sidebar items in `config/sidebarConfig.ts`
-- **Single Source of Truth**: The sidebar configuration (`sidebarConfig.ts`) defines both navigation and routes
-- **Lazy Loading**: All page components are lazy-loaded using React.Suspense
-- **Route Structure Example**:
-  ```tsx
-  // From AppRoutes.tsx
-  <Route path="trips" element={<TripManagementPage />}>
-    <Route index element={<ActiveTripsPage />} />
-    <Route path="active" element={<ActiveTripsPageEnhanced />} />
-    <Route path="completed" element={<CompletedTrips />} />
-  </Route>
+## 2. Usage Verification
+- **Check Criteria**:
+  - Files must be imported elsewhere or exported via barrel
+  - Types/interfaces must be implemented/referenced
+  - Components must be rendered/imported
+  - Models must be instantiated/used
+- **Validation Rules**:
+  ```typescript
+  isUsed = (
+    isImported ||
+    isExported ||
+    isImplemented ||
+    isReferenced
+  )
   ```
 
-### Form Implementation Pattern
+## 3. Dead Code Elimination
+- **Identification**:
+  - Scan for unused:
+    - Files
+    - Components
+    - Types/Interfaces
+    - Models/Classes
+- **Documentation**:
+  ```
+  format: {
+    path: string
+    type: 'file' | 'component' | 'type' | 'model'
+    reason: string
+    confidence: number // 0-1
+  }
+  ```
+- **Action**:
+  - confidence >= 0.8: Remove
+  - confidence >= 0.5: Comment with TODO
+  - confidence < 0.5: Flag for review
 
-The application uses custom hooks for form handling with offline support:
+## 4. Type Coverage
+- **Requirements**:
+  - Every exported item must have explicit typing
+  - Models must implement interfaces
+  - Components must have prop types
+- **Verification**:
+  - Check type usage in:
+    - Function parameters
+    - Return types
+    - Variable declarations
+    - Class properties
 
-```jsx
-import { useOfflineForm } from "../hooks/useOfflineForm";
+## 5. Refactoring Guidelines
+- **Priorities**:
+  1. Tree-shaking optimization
+     - Implement ES modules with named exports
+     - Use dynamic imports for code splitting
+     - Mark pure functions with /*#__PURE__*/ annotation
+     - Remove side-effects from modules
 
-// Pattern for forms with offline-capable Firebase integration
-const { submit, remove, isSubmitting, isOfflineOperation } = useOfflineForm({
-  collectionPath: "trips", // Firestore collection
-  showOfflineWarning: true, // Show warning when operating offline
-  onSuccess: (data) => {
-    // Handle success
-  },
-});
+  2. Circular dependency removal
+     - Extract shared dependencies into separate modules
+     - Use dependency injection patterns
+     - Implement interface segregation
+     - Create unidirectional data flow
 
-// Use in submit handler
-const handleSubmit = async (formData) => {
-  await submit(formData, id); // id is optional (for updates)
-};
-```
+  3. Type safety improvement
+     - Add strict TypeScript compiler options
+     - Implement discriminated unions for state
+     - Use branded types for validation
+     - Add runtime type checks
 
-### Firebase Integration & Offline-First Pattern
+  4. Bundle size reduction
+     - Implement code splitting by routes
+     - Use webpack bundle analyzer
+     - Configure tree-shaking options
+     - Remove unused polyfills
 
-- Real-time data uses Firestore listeners with `onSnapshot` and offline caching
-- Key Firestore collections: `trips`, `vehicles`, `tyres`, `invoices`, `fuelEntries`, `drivers`
-- Offline capabilities implemented with custom hooks:
-  - `useOfflineQuery` for fetching data that works offline
-  - `useOfflineForm` for submitting form data with offline queuing
-- Environment-specific Firebase configuration in `firebaseConfig.ts`
-- Network state detection with `subscribeToNetworkChanges` from `networkDetection.ts`
+- **Implementation Steps**:
+  1. Analysis:
+     - Run dependency graph analysis
+     - Measure current bundle sizes
+     - Document type coverage
+     - Profile performance metrics
 
-## Development Workflow
+  2. Planning:
+     - Create module boundaries
+     - Define splitting points
+     - Plan migration strategy
+     - Set performance budgets
 
-### Key Scripts
+  3. Execution:
+     - Refactor module structure
+     - Update build configuration
+     - Implement lazy loading
+     - Add performance monitoring
 
-- `npm run dev` - Starts Vite dev server and Node backend concurrently
-- `npm run build` - Builds for production
-- `npm test:all` - Runs all tests
-- `npm run verify:forms` - Verifies form connections
-- `npm run verify:buttons` - Checks button connections
+- **Documentation Format**:
+  ```typescript
+  interface RefactoringChange {
+    change: string;
+    reason: string;
+    impact: {
+      size?: string;
+      performance?: string;
+      maintenance?: string;
+    };
+    priority: 1 | 2 | 3 | 4;
+    effort: 'low' | 'medium' | 'high';
+  }
+  ```
 
-### Testing & Verification
-
-- Form integrations can be tested with `npm run verify:forms`
-- UI components can be verified with `npm run verify:ui`
-- Routing can be tested with `npm run test:routing`
-
-## Common Pitfalls & Best Practices
-
-1. **Component Placement**: Page components belong in `/pages`, reusable components in `/components`
-2. **Firebase Patterns**:
-   - Always use `onSnapshot` for real-time data, unsubscribe in cleanup functions
-   - Always wrap Firebase operations in try/catch blocks
-   - Use offline-capable hooks (`useOfflineQuery`, `useOfflineForm`) instead of direct Firestore calls
-3. **Form Integration**:
-   - Follow offline-first patterns with `useOfflineForm` hook
-   - Check `FORM_IMPLEMENTATION_GUIDE.md` for more details
-4. **TypeScript**:
-   - Use strongly-typed interfaces from `/types` directory
-   - Follow type definitions for Firebase document structures
-5. **Route Configuration**:
-   - When adding routes, update both `AppRoutes.tsx` and `sidebarConfig.ts`
-   - Ensure new components are lazy-loaded with Suspense
-
-## Refactoring Guidelines
-
-This codebase is undergoing refactoring with these priorities:
-
-1. Improve code readability and maintainability
-2. Remove dead code and unused imports
-3. Standardize file organization according to `FILE_ORGANIZATION_RECOMMENDATION.md`
-4. Preserve core functionality during all refactoring efforts
-5. Follow TypeScript best practices with proper typing
+## 6. Output Requirements
+- **Summary Format**:
+  ```
+  {
+    filesScanned: number
+    issuesFound: number
+    deadCodeBytes: number
+    typesCoverage: percentage
+    recommendations: Action[]
+  }
+  ```
+- **Action Items**:
+  - Prioritized list of changes
+  - Impact assessment
+  - Implementation steps

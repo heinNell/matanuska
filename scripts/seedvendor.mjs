@@ -94,30 +94,3 @@ uploadVendors().catch((err) => {
   console.error('❌ Error uploading vendors:', err);
   process.exit(1);
 });
-      <thead>
-        <tr>
-          <th>Vendor ID</th>
-          <th>Vendor Name</th>
-          <th>Contact Person</th>
-          <th>Work Email</th>
-          <th>Mobile</th>
-          <th>Address</th>
-          <th>City</th>
-        </tr>
-      </thead>
-      <tbody>
-        {vendorList.map((v, idx) => (
-          <tr key={idx}>
-            <td>{v.vendorId}</td>
-            <td>{v.vendorName}</td>
-            <td>{v.contactPerson}</td>
-            <td>{v.workEmail}</td>
-            <td>{v.mobile}</td>
-            <td>{v.address}</td>
-            <td>{v.city}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);

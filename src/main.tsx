@@ -5,8 +5,6 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
-// Import the Google Maps API patch to fix the "Cannot read properties of undefined (reading 'wI')" error
-import "./utils/googleMapsApiPatch";
 
 declare global {
   interface Window {
@@ -14,7 +12,7 @@ declare global {
   }
 }
 
-/* ----------------- Minimal, safe env bootstrap ----------------- */
+// Minimal, safe env bootstrap
 (() => {
   try {
     const KEYS = [
@@ -32,17 +30,11 @@ declare global {
       try {
         const v = (import.meta as any)?.env?.[k];
         if (typeof v !== "undefined") return String(v);
-      } catch {
-        // import.meta.env may be unavailable in some bundles
-        void 0;
-      }
+      } catch { /* ignore */ }
       try {
         const v = (process as any)?.env?.[k];
         if (typeof v !== "undefined") return String(v);
-      } catch {
-        // process.env is undefined in the browser
-        void 0;
-      }
+      } catch { /* ignore */ }
       return "";
     };
 
@@ -55,7 +47,7 @@ declare global {
   }
 })();
 
-/* --------------------------- Render app --------------------------- */
+// Render app
 const rootEl = document.getElementById("root");
 if (!rootEl) throw new Error("Root element #root not found");
 

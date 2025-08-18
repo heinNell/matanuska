@@ -12,19 +12,11 @@ import {
   where,
 } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-// 🔧 Adjust this to your Firestore client instance
 import { db } from "../firebase";
 
-// Defensive: ensure Firestore instance exists before using it to avoid
-// cryptic SDK errors (e.g., reading internal property 'wI' on undefined).
-function ensureDbOrSetError(dbInst: unknown, setErr: (e: Error) => void): dbInst is object {
-  const ok = !!dbInst && typeof dbInst === "object";
-  if (!ok) {
-    setErr(new Error("Firestore not initialized. Check firebase.ts initialization."));
-  }
-  return ok as any;
-}
-
+/** -----------------------------
+ * Types
+ * ------------------------------*/
 export type Driver = {
   id: string;
   idNo?: string | null;
@@ -59,26 +51,37 @@ type UseDriverDetailArgs = {
 
 type GroupedAuthorizations = Record<string, Authorization[]>;
 
-function parsePossiblyDayFirst(dateLike: any): Date | null {
+/** -----------------------------
+ * Utilities
+ * ------------------------------*/
+function parsePossiblyDayFirst(dateLike: unknown): Date | null {
   if (!dateLike) return null;
 
-  if (typeof dateLike === "object" && typeof dateLike.toDate === "function") {
+  // Firestore Timestamp
+  if (
+    typeof dateLike === "object" &&
+    dateLike !== null &&
+    typeof (dateLike as { toDate?: () => Date }).toDate === "function"
+  ) {
     try {
-      return dateLike.toDate();
+      return (dateLike as { toDate: () => Date }).toDate();
     } catch {
       /* noop */
     }
   }
 
   if (typeof dateLike === "string") {
+    // Try ISO
     const iso = new Date(dateLike);
     if (!Number.isNaN(iso.getTime())) return iso;
 
-    // DD/MM/YYYY
-    const m = dateLike.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-    if (m) {
-      const [, dd, mm, yyyy] = m; // fix: avoid unused '_' var
-      const d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+    // Try DD/MM/YYYY
+    const match = dateLike.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (match) {
+      const dd = Number(match[1]);
+      const mm = Number(match[2]);
+      const yyyy = Number(match[3]);
+      const d = new Date(yyyy, mm - 1, dd);
       if (!Number.isNaN(d.getTime())) return d;
     }
   }
@@ -102,6 +105,9 @@ function isWithinDays(expireDate: string | null | undefined, days: number): bool
   return d >= now && d <= threshold;
 }
 
+/** -----------------------------
+ * Hook
+ * ------------------------------*/
 export function useDriverDetail({
   idNo,
   driverId,
@@ -113,7 +119,7 @@ export function useDriverDetail({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // used to trigger re-subscribe/refresh without eslint-disable comments
+  // used to trigger re-subscribe/refresh
   const [reloadTick, setReloadTick] = useState(0);
   const isMounted = useRef(true);
 
@@ -134,25 +140,22 @@ export function useDriverDetail({
     setError(null);
 
     try {
-      if (!ensureDbOrSetError(db, (e) => setError(e))) {
-        setLoading(false);
-        return;
-      }
+      // Resolve driver by driverId or idNo
       let foundDriver: Driver | null = null;
 
       if (driverId) {
-        const dref = doc(db, "drivers", driverId);
-        const snap = await getDoc(dref);
+        const driverRef = doc(db, "drivers", driverId);
+        const snap = await getDoc(driverRef);
         if (snap.exists()) {
-          const data = snap.data() as any;
-          foundDriver = { id: snap.id, ...(data || {}) };
+          const data = snap.data() as Record<string, unknown>;
+          foundDriver = { id: snap.id, ...(data as any) };
         }
       } else if (idNo) {
         const dq = query(collection(db, "drivers"), where("idNo", "==", idNo), limit(1));
         const dsnap = await getDocs(dq);
-        if (!dsnap.empty) {
-          const d = dsnap.docs[0];
-          foundDriver = { id: d.id, ...(d.data() as any) };
+        const firstDoc = dsnap.docs.at(0);
+        if (firstDoc) {
+          foundDriver = { id: firstDoc.id, ...(firstDoc.data() as any) };
         }
       }
 
@@ -160,18 +163,22 @@ export function useDriverDetail({
 
       setDriver(foundDriver);
 
-      const key = foundDriver?.idNo ?? idNo ?? null;
-      if (!key) {
+      // Fetch authorizations for idNo
+      const authKey = (foundDriver?.idNo ?? idNo) ?? null;
+      if (!authKey) {
         setAuthorizations([]);
       } else {
-        const aq = query(collection(db, "authorizations"), where("idNo", "==", key));
+        const aq = query(collection(db, "authorizations"), where("idNo", "==", authKey));
         const asnap = await getDocs(aq);
-        const rows = asnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as Authorization[];
+        const rows = asnap.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...(docSnap.data() as any),
+        })) as Authorization[];
         setAuthorizations(rows);
       }
 
       setLoading(false);
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (!isMounted.current) return;
       setError(e instanceof Error ? e : new Error(String(e)));
       setLoading(false);
@@ -188,34 +195,31 @@ export function useDriverDetail({
     setLoading(true);
     setError(null);
 
-    const unsubs: Unsubscribe[] = []; // fix: prefer-const
+    const unsubs: Unsubscribe[] = [];
 
     (async () => {
       try {
-        if (!ensureDbOrSetError(db, (e) => setError(e))) {
-          setLoading(false);
-          return;
-        }
-        let localDriverId: string | null = driverId ?? null;
-        let localIdNo: string | null = idNo ?? null;
+        let resolvedDriverId: string | null = driverId ?? null;
+        let resolvedIdNo: string | null = idNo ?? null;
 
         // Resolve driver doc by idNo if needed
-        if (!localDriverId && idNo) {
+        if (!resolvedDriverId && idNo) {
           const dq = query(collection(db, "drivers"), where("idNo", "==", idNo), limit(1));
           const dsnap = await getDocs(dq);
-          if (!dsnap.empty) {
-            const d = dsnap.docs[0];
-            localDriverId = d.id;
-            localIdNo = (d.data() as any)?.idNo ?? idNo;
-            if (isMounted.current) setDriver({ id: d.id, ...(d.data() as any) });
+          const firstDoc = dsnap.docs.at(0);
+          if (firstDoc) {
+            resolvedDriverId = firstDoc.id;
+            const data = firstDoc.data() as any;
+            resolvedIdNo = (data?.idNo as string | null | undefined) ?? idNo;
+            if (isMounted.current) setDriver({ id: firstDoc.id, ...(data || {}) });
           } else if (isMounted.current) {
             setDriver(null);
           }
         }
 
         // Listen to driver doc
-        if (localDriverId) {
-          const dref = doc(db, "drivers", localDriverId);
+        if (resolvedDriverId) {
+          const dref = doc(db, "drivers", resolvedDriverId);
           const unsubDriver = onSnapshot(
             dref,
             (snap) => {
@@ -239,20 +243,20 @@ export function useDriverDetail({
         }
 
         // Listen to authorizations by idNo
-        const key = localIdNo ?? idNo ?? null;
-        if (key) {
+        const authKey = (resolvedIdNo ?? idNo) ?? null;
+        if (authKey) {
           const aq = query(
             collection(db, "authorizations"),
-            where("idNo", "==", key),
+            where("idNo", "==", authKey),
             orderBy("authorization", "asc")
           );
           const unsubAuth = onSnapshot(
             aq,
             (snap) => {
               if (!isMounted.current) return;
-              const rows = snap.docs.map((d) => ({
-                id: d.id,
-                ...(d.data() as any),
+              const rows = snap.docs.map((docSnap) => ({
+                id: docSnap.id,
+                ...(docSnap.data() as any),
               })) as Authorization[];
               setAuthorizations(rows);
             },
@@ -263,7 +267,7 @@ export function useDriverDetail({
           );
           unsubs.push(unsubAuth);
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!isMounted.current) return;
         setError(e instanceof Error ? e : new Error(String(e)));
         setLoading(false);
@@ -271,13 +275,13 @@ export function useDriverDetail({
     })();
 
     return () => {
-      unsubs.forEach((u) => {
+      for (const u of unsubs) {
         try {
           if (typeof u === "function") u();
         } catch {
           /* ignore */
         }
-      });
+      }
     };
   }, [realtime, idNo, driverId, loadOnce, reloadTick]);
 
@@ -290,10 +294,10 @@ export function useDriverDetail({
   }, [realtime, loadOnce]);
 
   const groupedAuthorizations: GroupedAuthorizations = useMemo(() => {
-    return authorizations.reduce<GroupedAuthorizations>((acc, a) => {
-      const key = (a.authorization || "Unknown").trim();
+    return authorizations.reduce<GroupedAuthorizations>((acc, auth) => {
+      const key = (auth.authorization || "Unknown").trim();
       if (!acc[key]) acc[key] = [];
-      acc[key].push(a);
+      acc[key].push(auth);
       return acc;
     }, {});
   }, [authorizations]);
@@ -322,4 +326,5 @@ export function useDriverDetail({
     refresh,
   };
 }
+
 export default useDriverDetail;

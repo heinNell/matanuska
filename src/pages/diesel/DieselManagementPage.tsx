@@ -161,7 +161,7 @@ const DieselManagementPage: React.FC = () => {
     kmReading: "",
     previousKmReading: "",
     tripId: "",
-    currency: "ZAR",
+    currency: "ZAR" as "ZAR" | "USD", // Add type safety
     probeReading: "",
   });
   const [dieselNorms, setDieselNorms] = useState<DieselNorms[]>(DEFAULT_NORMS);
@@ -302,6 +302,9 @@ const DieselManagementPage: React.FC = () => {
         : undefined;
       const probeReading = editData.probeReading ? parseFloat(editData.probeReading) : undefined;
 
+      // Ensure currency is either ZAR or USD
+      const currency = editData.currency === "USD" ? "USD" : "ZAR";
+
       // Calculate derived values
       const distanceTravelled = previousKmReading
         ? kmReading - previousKmReading
@@ -323,7 +326,7 @@ const DieselManagementPage: React.FC = () => {
         kmPerLitre,
         costPerLitre,
         tripId: editData.tripId || undefined,
-        currency: editData.currency as "USD" | "ZAR",
+        currency, // Always set currency
         probeReading,
         probeDiscrepancy,
         probeVerified: probeReading !== undefined,
@@ -379,7 +382,7 @@ const DieselManagementPage: React.FC = () => {
   const exportCSVTemplate = () => {
     const csvContent = `data:text/csv;charset=utf-8,fleetNumber,date,kmReading,previousKmReading,litresFilled,costPerLitre,totalCost,fuelStation,driverName,notes,currency,probeReading
 6H,2025-01-15,125000,123560,450,18.50,8325,RAM Petroleum Harare,Enock Mukonyerwa,Full tank before long trip,ZAR,
-26H,2025-01-16,89000,87670,380,19.20,7296,Engen Beitbridge,Jonathan Bepete,Border crossing fill-up,ZAR,
+26H,2025-01-16,89000,87670,380,19.20,7296,Engen Beitbridge,Jonathan Bepete,Border crossing fill-up,USD,
 22H,2025-01-17,156000,154824,420,18.75,7875,Shell Mutare,Lovemore Qochiwe,Regular refuel,ZAR,415`;
 
     const encodedUri = encodeURI(csvContent);

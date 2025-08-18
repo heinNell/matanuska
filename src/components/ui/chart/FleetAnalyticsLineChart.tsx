@@ -79,35 +79,36 @@ export function FleetAnalyticsLineChart() {
           <p className="text-sm text-muted-foreground">Cost metrics and ROI over the last 6 months</p>
         </div>
         <div className="flex" role="group" aria-label="Chart metrics">
-          {(Object.keys(chartConfig) as ChartType[]).map((key) => (
-            <button
-              key={key}
-              data-active={activeCharts.includes(key)}
-              className="data-[active=true]:bg-blue-50 flex flex-1 flex-col justify-center gap-1 border-t px-4 py-3 text-left even:border-l sm:border-t-0 sm:border-l sm:px-6 sm:py-4"
-              onClick={() => toggleChart(key)}
-              aria-pressed={activeCharts.includes(key)}
-              aria-label={`Toggle ${chartConfig[key].label} chart ${activeCharts.includes(key) ? "off" : "on"}`}
-            >
-              <span className="text-gray-700 text-xs font-medium">{chartConfig[key].label}</span>
-              <span
-                className="text-lg leading-none font-bold sm:text-xl px-2 py-1 rounded-md"
-                style={{
-                  color: chartConfig[key].color,
-                  backgroundColor: chartConfig[key].bgColor,
-                }}
+          {(Object.keys(chartConfig) as ChartType[]).map((key) => {
+            const lastAnalytic = fleetAnalytics.length > 0 ? fleetAnalytics[fleetAnalytics.length - 1] : null;
+            return (
+              <button
+                key={key}
+                data-active={activeCharts.includes(key)}
+                className="data-[active=true]:bg-blue-50 flex flex-1 flex-col justify-center gap-1 border-t px-4 py-3 text-left even:border-l sm:border-t-0 sm:border-l sm:px-6 sm:py-4"
+                onClick={() => toggleChart(key)}
+                aria-pressed={activeCharts.includes(key)}
+                aria-label={`Toggle ${chartConfig[key].label} chart ${activeCharts.includes(key) ? "off" : "on"}`}
               >
-                {fleetAnalytics.length > 0 &&
-                  fleetAnalytics[fleetAnalytics.length - 1] &&
-                  fleetAnalytics[fleetAnalytics.length - 1][key] !== undefined
-                  ? key === "roi"
-                    ? `${fleetAnalytics[fleetAnalytics.length - 1][key]}%`
-                    : `$${fleetAnalytics[fleetAnalytics.length - 1][key]}K`
-                  : key === "roi"
-                    ? "0%"
-                    : "$0K"}
-              </span>
-            </button>
-          ))}
+                <span className="text-gray-700 text-xs font-medium">{chartConfig[key].label}</span>
+                <span
+                  className="text-lg leading-none font-bold sm:text-xl px-2 py-1 rounded-md"
+                  style={{
+                    color: chartConfig[key].color,
+                    backgroundColor: chartConfig[key].bgColor,
+                  }}
+                >
+                  {lastAnalytic && lastAnalytic[key] !== undefined
+                    ? key === "roi"
+                      ? `${lastAnalytic[key]}%`
+                      : `$${lastAnalytic[key]}K`
+                    : key === "roi"
+                      ? "0%"
+                      : "$0K"}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">

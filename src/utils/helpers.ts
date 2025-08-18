@@ -2,8 +2,6 @@ import { Trip, CostEntry, FlaggedCost } from '../types/index';
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-// import { MapIconType } from '../types/mapIcons'; // Removed because module does not exist
-import { PlaceResult } from '../types/mapTypes';
 // -------------------- Utility Functions --------------------
 
 // -------------------- ID Generation --------------------
@@ -607,7 +605,10 @@ export const sortTripsByLoadingDate = (trips: Trip[]): Record<string, Trip[]> =>
   // Create a new object with sorted dates
   const sortedTripsByDate: Record<string, Trip[]> = {};
   sortedDates.forEach(date => {
-    sortedTripsByDate[date] = tripsByDate[date];
+    const tripsForDate = tripsByDate[date];
+    if (tripsForDate) {
+      sortedTripsByDate[date] = tripsForDate;
+    }
   });
 
   return sortedTripsByDate;

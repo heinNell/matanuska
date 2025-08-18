@@ -24,8 +24,8 @@ export default function WebBookTripsList() {
       clientName: webTrip.customer,
       clientType: "external", // Default value
       route: `${webTrip.origin} to ${webTrip.destination}`,
-      startDate: webTrip.shippedDate || webTrip.startTime || new Date().toISOString().split("T")[0],
-      endDate: webTrip.deliveredDate || webTrip.endTime || new Date().toISOString().split("T")[0],
+      startDate: webTrip.shippedDate ?? webTrip.startTime ?? new Date().toISOString().split("T")[0],
+      endDate: webTrip.deliveredDate ?? webTrip.endTime ?? new Date().toISOString().split("T")[0],
 
       // Required fields with default values
       baseRevenue: 0, // Default value

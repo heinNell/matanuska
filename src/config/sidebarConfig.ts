@@ -894,6 +894,34 @@ export const sidebarConfig: SidebarItem[] = [
     path: "/trip-calendar",
     component: "pages/trips/TripManager",
   },
+  // Wialon Fleet Tracking
+  {
+    id: "wialon",
+    label: "Wialon Tracking",
+    path: "/wialon",
+    component: "pages/WialonMapDashboard",
+    icon: "location-marker",
+    children: [
+      {
+        id: "wialon-dashboard",
+        label: "Wialon Dashboard",
+        path: "/wialon/dashboard",
+        component: "pages/WialonMapDashboard",
+      },
+      {
+        id: "wialon-config",
+        label: "Wialon Config",
+        path: "/wialon/config",
+        component: "pages/WialonConfig",
+      },
+      {
+        id: "wialon-diagnostics",
+        label: "Wialon Diagnostics",
+        path: "/wialon/diagnostics",
+        component: "pages/admin/WialonDiagnosticsPage",
+      }
+    ],
+  },
 ];
 
 // For CommonJS compatibility with scripts

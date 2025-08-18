@@ -1,0 +1,247 @@
+/* MapDashboard.css */
+.map-dashboard-container {
+  display: flex;
+  height: calc(100vh - 64px); /* Adjust based on your header height */
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.map-sidebar {
+  box-sizing: border-box;
+  width: 300px;
+  min-width: 300px; /* Added for better responsive behavior */
+  background-color: #f5f5f5;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.map-search {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box; /* Ensures padding is included in width */
+  width: 100%; /* Now safe because of border-box */
+}
+
+.refresh-button {
+  padding: 8px 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.refresh-button:hover {
+  background-color: #1976D2;
+}
+
+.refresh-button:disabled {
+  background-color: #BBDEFB;
+  cursor: not-allowed;
+}
+
+.wialon-link {
+  display: block;
+  margin-top: 10px;
+  padding: 8px;
+  text-align: center;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.wialon-link:hover {
+  background-color: #e0e0e0;
+  text-decoration: none;
+}
+
+/* Vehicle list */
+.vehicle-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.vehicle-list h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #333;
+}
+
+.vehicle-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+}
+
+.vehicle-item:hover {
+  background-color: #f9f9f9;
+}
+
+.vehicle-item.selected {
+  background-color: #e3f2fd;
+  border-color: #2196F3;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 12px;
+  box-sizing: border-box;
+}
+
+.status-indicator.active {
+  background-color: #4CAF50;
+}
+
+.status-indicator.inactive {
+  background-color: #9E9E9E;
+}
+
+.status-indicator.maintenance {
+  background-color: #FFC107;
+}
+
+.vehicle-details {
+  flex: 1;
+}
+
+.vehicle-details h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.vehicle-details p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #757575;
+}
+
+.no-results,
+.loading-message {
+  text-align: center;
+  color: #757575;
+  padding: 16px;
+}
+
+/* Map container */
+.map-container {
+  flex: 1;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.loading-map {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  color: #757575;
+  font-size: 18px;
+}
+
+.map-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 20px;
+}
+
+.map-error h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.map-error button {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Info window styling */
+.google-map .gm-style .gm-style-iw-c {
+  padding: 12px;
+}
+
+.info-window h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.info-window p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .map-dashboard-container {
+    flex-direction: column;
+    display: flex;
+    flex: 1;
+  }
+
+  .map-sidebar {
+    width: 100%;
+    flex: 0 0 auto;
+    padding: 12px 0;
+    min-width: unset;
+    position: relative;
+  }
+
+  .map-sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #e0e0e0;
+  }
+
+  .map-container {
+    flex: 1 1 auto;
+    position: relative;
+  }
+}

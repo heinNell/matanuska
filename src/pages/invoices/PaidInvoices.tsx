@@ -58,6 +58,19 @@ const PaidInvoicesPage: React.FC = () => {
     fetchInvoices();
   }, []);
 
+  const getMostCommonPaymentMethod = (invoices: PaidInvoice[]): string => {
+    if (!invoices.length) return "N/A";
+
+    const methodCounts = invoices.reduce((acc, invoice) => {
+      const method = invoice.paymentMethod || "Unknown";
+      acc[method] = (acc[method] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(methodCounts)
+      .sort(([, a], [, b]) => b - a)[0][0];
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -306,8 +319,7 @@ const PaidInvoicesPage: React.FC = () => {
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-medium mb-2">Most Common Payment Method</h3>
             <p className="text-2xl font-bold text-gray-700">
-              {/* This would need to calculate the most common method */}
-              {paidInvoices.length > 0 ? paidInvoices[0].paymentMethod : "N/A"}
+              {getMostCommonPaymentMethod(paidInvoices)}
             </p>
           </div>
         </div>
