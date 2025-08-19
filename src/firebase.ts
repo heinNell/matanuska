@@ -32,7 +32,7 @@ import {
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
 
-// Import types
+// Import types from new location
 import {
   Tyre,
   TyreConditionStatus,

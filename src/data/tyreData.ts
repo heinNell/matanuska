@@ -194,14 +194,6 @@ export interface FleetTyreMapping {
 // Define tyre type enum
 export type TyreType = "steer" | "drive" | "trailer" | "spare";
 
-// Define tyre store location enum
-export enum TyreStoreLocation {
-  VICHELS_STORE = "Vichels Store",
-  HOLDING_BAY = "Holding Bay", // Ensured consistent casing
-  RFR = "RFR",
-  SCRAPPED = "Scrapped",
-}
-
 // --- Helper functions for tyre management ---
 
 /**
@@ -355,3 +347,70 @@ export const TYRE_LOAD_RATINGS: Record<string, number> = {
   '275/70R22.5': 3000,
   '11R22.5': 3000,
 };
+
+// --- Enums and additional types for tyre management ---
+
+export enum TyreStatus {
+  ACTIVE = 'ACTIVE',
+  RETIRED = 'RETIRED',
+  SCRAPPED = 'SCRAPPED',
+  UNDER_REPAIR = 'UNDER_REPAIR'
+}
+
+export enum TyreMountStatus {
+  MOUNTED = 'MOUNTED',
+  IN_STORAGE = 'IN_STORAGE',
+  IN_TRANSIT = 'IN_TRANSIT',
+  UNDER_REPAIR = 'UNDER_REPAIR'
+}
+
+export enum TyreConditionStatus {
+  EXCELLENT = 'EXCELLENT',
+  GOOD = 'GOOD',
+  FAIR = 'FAIR',
+  NEEDS_ATTENTION = 'NEEDS_ATTENTION',
+  NEEDS_REPLACEMENT = 'NEEDS_REPLACEMENT',
+  CRITICAL = 'CRITICAL'
+}
+
+export enum TyreStoreLocation {
+  MAIN_WAREHOUSE = 'MAIN_WAREHOUSE',
+  REPAIR_SHOP = 'REPAIR_SHOP',
+  VEHICLE = 'VEHICLE',
+  TRANSIT = 'TRANSIT'
+}
+
+export interface TyreCondition {
+  status: TyreConditionStatus;
+  treadDepth: number;
+  pressure?: number;
+  lastInspectionDate?: string;
+  notes?: string;
+}
+
+export interface TyreInstallation {
+  vehicleId: string;
+  position: string;
+  installDate: string;
+  installedBy: string;
+}
+
+export interface Tyre {
+  id: string;
+  serialNumber: string;
+  brand: string;
+  model?: string;
+  size: string;
+  status: TyreStatus;
+  mountStatus: TyreMountStatus;
+  location: TyreStoreLocation;
+  condition: TyreCondition;
+  installation?: TyreInstallation;
+  purchaseDate?: string;
+  costPrice?: number;
+  vendor?: string;
+  warrantyExpiry?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
