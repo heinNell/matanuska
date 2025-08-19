@@ -34,8 +34,9 @@ const EnhancedDieselDebriefModal: React.FC<EnhancedDieselDebriefModalProps> = ({
 
   // Reset form when modal opens or selected record changes
   useEffect(() => {
-    if (records.length > 0 && !selectedRecordId) {
-      setSelectedRecordId(records[0].id);
+    if (!selectedRecordId) {
+      const first = records[0];
+      if (first) setSelectedRecordId(first.id);
     }
 
     setDebriefNotes("");
@@ -92,12 +93,9 @@ const EnhancedDieselDebriefModal: React.FC<EnhancedDieselDebriefModalProps> = ({
 
       // Remove the completed record from the list if there are more
       if (records.length > 1) {
-        const nextIndex = records.findIndex((r) => r.id === selectedRecordId) + 1;
-        if (nextIndex < records.length) {
-          setSelectedRecordId(records[nextIndex].id);
-        } else {
-          setSelectedRecordId(records[0].id);
-        }
+        const currentIndex = records.findIndex((r) => r.id === selectedRecordId);
+        const nextId = records[currentIndex + 1]?.id ?? records[0]?.id;
+        if (nextId) setSelectedRecordId(nextId);
       }
     } catch (error) {
       console.error("Error during debrief:", error);
