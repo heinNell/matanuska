@@ -32,18 +32,20 @@ const SystemCostGenerator: React.FC<SystemCostGeneratorProps> = ({
         (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       );
 
-      const mostRecentTrip = tripsWithSystemCosts[0];
-      const systemCost = mostRecentTrip.costs.find((c) => c.isSystemGenerated);
+      const [mostRecentTrip] = tripsWithSystemCosts;
+      if (mostRecentTrip) {
+        const systemCost = mostRecentTrip.costs.find((c) => c.isSystemGenerated);
 
-      if (systemCost && systemCost.calculationDetails) {
-        // Extract rate information from the calculation details
-        try {
-          // This is a simplified approach - in a real app, you'd store the actual rates
-          // For now, we'll use the default rates but in a real implementation,
-          // you would extract the actual rates from the system costs
-          console.log("Found system costs from recent trip:", mostRecentTrip.id);
-        } catch (error) {
-          console.error("Error parsing system cost rates:", error);
+        if (systemCost && systemCost.calculationDetails) {
+          // Extract rate information from the calculation details
+          try {
+            // This is a simplified approach - in a real app, you'd store the actual rates
+            // For now, we'll use the default rates but in a real implementation,
+            // you would extract the actual rates from the system costs
+            console.log("Found system costs from recent trip:", mostRecentTrip.id);
+          } catch (error) {
+            console.error("Error parsing system cost rates:", error);
+          }
         }
       }
     }

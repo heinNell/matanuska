@@ -37,7 +37,7 @@ const TripCostEntryModal: React.FC<TripCostEntryModalProps> = ({
     currency: initialData?.currency || "ZAR (R)",
     amount: initialData?.amount || 0,
     referenceNumber: initialData?.referenceNumber || "",
-    date: initialData?.date || new Date().toISOString().split("T")[0],
+    date: initialData?.date ?? new Date().toISOString().split("T")[0],
     notes: initialData?.notes || "",
     missingDocReason: initialData?.missingDocReason || "",
     isFlagged: initialData?.isFlagged || false,

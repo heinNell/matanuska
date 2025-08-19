@@ -489,7 +489,10 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (existingItem) {
           await updateStockItem(existingItem.id, stockItem);
         } else {
-          const itemToAdd: Omit<StockItem, "id"> = stockItem;
+          const itemToAdd: Omit<StockItem, "id"> = {
+            ...stockItem,
+            lastRestocked: stockItem.lastRestocked || new Date().toISOString()
+          };
           await addStockItem(itemToAdd);
         }
 

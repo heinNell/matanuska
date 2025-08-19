@@ -56,7 +56,6 @@ export interface TyreSize {
   width: number;
   aspectRatio: number;
   rimDiameter: number;
-  displayString?: string;
 }
 
 // Types for tyre history events
@@ -258,7 +257,6 @@ export function parseTyreSize(sizeStr: string): TyreSize {
       width: parseInt(match[1], 10),
       aspectRatio: parseInt(match[2], 10),
       rimDiameter: parseFloat(match[3]),
-      displayString: sizeStr,
     };
   }
 
@@ -266,7 +264,6 @@ export function parseTyreSize(sizeStr: string): TyreSize {
     width: 0,
     aspectRatio: 0,
     rimDiameter: 0,
-    displayString: sizeStr,
   };
 }
 
@@ -340,3 +337,21 @@ export const TYRE_SIZES = [
   '285/75R24.5',
   '255/70R22.5'
 ] as const;
+
+// Common tyre size patterns for validation
+export const STANDARD_TYRE_SIZES: TyreSize[] = [
+  { width: 315, aspectRatio: 80, rimDiameter: 22.5 },
+  { width: 295, aspectRatio: 80, rimDiameter: 22.5 },
+  { width: 385, aspectRatio: 65, rimDiameter: 22.5 },
+  { width: 275, aspectRatio: 70, rimDiameter: 22.5 },
+  { width: 11, aspectRatio: 22.5, rimDiameter: 22.5 }, // For 11R22.5
+];
+
+// Mapping of common tyre sizes to their load ratings
+export const TYRE_LOAD_RATINGS: Record<string, number> = {
+  '315/80R22.5': 3550,
+  '295/80R22.5': 3150,
+  '385/65R22.5': 4500,
+  '275/70R22.5': 3000,
+  '11R22.5': 3000,
+};
