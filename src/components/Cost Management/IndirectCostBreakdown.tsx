@@ -331,7 +331,7 @@ const IndirectCostBreakdown: React.FC = () => {
                         nameKey="name"
                         label={({ name, percentage }) => `${name}: ${percentage}%`}
                       >
-                        {selectedCategory.subcategories.map((entry, index) => (
+                        {selectedCategory.subcategories.map((_, index) => (
                           <Cell
                             key={`subcell-${index}`}
                             fill={COLORS[(index + 3) % COLORS.length]}
