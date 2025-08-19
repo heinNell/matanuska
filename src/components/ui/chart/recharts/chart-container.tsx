@@ -44,6 +44,24 @@ interface ChartTooltipContentProps {
   labelKey?: string;
 }
 
-export function ChartTooltipContent(props: ChartTooltipContentProps) {
-  return null; // Placeholder implementation
+export function ChartTooltipContent({
+  hideLabel = false,
+  hideIndicator = false,
+  indicator = "line",
+  nameKey = "name",
+  labelKey = "value"
+}: ChartTooltipContentProps) {
+  return (
+    <div className="chart-tooltip-content">
+      {!hideIndicator && (
+        <div className={`chart-indicator ${indicator}`} />
+      )}
+      {!hideLabel && (
+        <div className="chart-label">
+          <span className="name">{nameKey}</span>
+          <span className="label">{labelKey}</span>
+        </div>
+      )}
+    </div>
+  );
 }

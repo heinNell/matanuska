@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React from "react";
 
 // Type definition for Ant Design's default export
 type AntDesignModule = {

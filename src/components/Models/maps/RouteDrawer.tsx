@@ -28,7 +28,7 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
   options = {},
   onRouteCalculated,
   onError,
-  className = ''
+  className
 }) => {
   const [directions, setDirections] = useState<any>(null);
   const [calculating, setCalculating] = useState<boolean>(false);
@@ -94,7 +94,7 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
 
   // Render the route on the map
   return (
-    <>
+    <div className={`relative ${className || ''}`}>
       {directions && (
         <DirectionsRenderer
           directions={directions}
@@ -128,7 +128,7 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

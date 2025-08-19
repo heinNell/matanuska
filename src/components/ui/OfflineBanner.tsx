@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { WifiOff, RefreshCw, Database, AlertTriangle } from 'lucide-react';
+import { WifiOff, RefreshCw , AlertTriangle } from 'lucide-react';
 import useNetworkStatus from '../../hooks/useNetworkStatus';
 import { syncOfflineOperations } from '../../utils/offlineOperations';
 
@@ -26,14 +26,14 @@ const OfflineBanner: React.FC = () => {
 
   const handleRetry = async () => {
     await networkStatus.checkConnection();
-    
+
     if (networkStatus.isOnline) {
       // If we're back online, try to sync offline operations
       setIsSyncing(true);
       try {
         const result = await syncOfflineOperations();
         setSyncStats(result);
-        
+
         // Show the sync results briefly, then hide
         setTimeout(() => {
           setIsVisible(false);
@@ -88,11 +88,11 @@ const OfflineBanner: React.FC = () => {
           ) : (
             <AlertTriangle className="mr-2 h-5 w-5 text-yellow-500" />
           )}
-          
+
           <div className="flex-1">
             <p className={`text-sm font-medium ${colors.text}`}>
-              {networkStatus.isOffline 
-                ? "You're currently offline" 
+              {networkStatus.isOffline
+                ? "You're currently offline"
                 : "You're on a limited connection"}
             </p>
             <p className="text-xs">
@@ -100,7 +100,7 @@ const OfflineBanner: React.FC = () => {
                 ? "Changes you make will be saved locally and synced when you're back online"
                 : "Some features may be limited or slower than usual"}
             </p>
-            
+
             {syncStats && (
               <div className="mt-1 text-xs">
                 <span className="font-medium">Sync results:</span> {syncStats.success} successful,{' '}
@@ -109,7 +109,7 @@ const OfflineBanner: React.FC = () => {
             )}
           </div>
         </div>
-        
+
         <div className="mt-2 flex space-x-2 sm:mt-0">
           <button
             onClick={handleRetry}
@@ -119,7 +119,7 @@ const OfflineBanner: React.FC = () => {
             <RefreshCw className={`mr-1.5 h-3 w-3 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Syncing...' : networkStatus.isOffline ? 'Check Connection' : 'Retry Connection'}
           </button>
-          
+
           <button
             onClick={handleDismiss}
             className="rounded px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100"

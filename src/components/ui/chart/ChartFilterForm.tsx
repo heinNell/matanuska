@@ -4,16 +4,6 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-// Simple Form component for our needs
-const Form = ({ children, ...props }: { children: React.ReactNode; [key: string]: any }) => (
-  <form {...props}>{children}</form>
-);
-
-// Simple FormDescription component
-const FormDescription = ({ children }: { children: React.ReactNode }) => (
-  <p className="text-sm text-gray-500">{children}</p>
-);
-
 // Define the schema for the form
 const FormSchema = z.object({
   dataPoints: z.array(z.string()).refine((value) => value.some((item) => item), {

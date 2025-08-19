@@ -86,10 +86,7 @@ const Calendar: React.FC = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
   };
 
-  // Helper to get day of month for a given date
-  const getDayOfMonth = (dateString: string): number => {
-    return new Date(dateString).getDate();
-  };
+  // (Removed unused helper getDayOfMonth)
 
   // Helper to check if a trip event is on a specific day
   const hasTripOnDay = (day: number): TripEvent[] => {

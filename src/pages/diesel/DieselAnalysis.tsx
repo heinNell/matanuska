@@ -60,9 +60,13 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
     // Group by fleet for fleet consumption analysis
     const fleetConsumption: Record<string, { litres: number; cost: number }> = {};
     filtered.forEach((r) => {
+      if (!r.fleetNumber) return; // Skip records without fleet number
+
+      // Initialize fleet if it doesn't exist
       if (!fleetConsumption[r.fleetNumber]) {
         fleetConsumption[r.fleetNumber] = { litres: 0, cost: 0 };
       }
+
       fleetConsumption[r.fleetNumber].litres += r.litresFilled;
       fleetConsumption[r.fleetNumber].cost += r.totalCost;
     });

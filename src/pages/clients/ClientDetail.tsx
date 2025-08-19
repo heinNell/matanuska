@@ -89,7 +89,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({ client, onEdit, onManageRel
       (a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime()
     );
 
-    const lastTripDate = sortedTrips.length > 0 ? sortedTrips[0].endDate : null;
+    const lastTripDate = sortedTrips.length > 0 ? sortedTrips[0]?.endDate : null;
 
     return {
       totalRevenue,
