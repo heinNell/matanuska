@@ -335,7 +335,7 @@ export const useVehiclePositionOptions = (vehicleType: string) => {
       setError(null);
 
       try {
-        const docRef = doc(db, "vehiclePositions", vehicleType);
+        // Remove unused docRef
         const docSnap = await getDocs(
           query(collection(db, "vehiclePositions"), where("vehicleType", "==", vehicleType))
         );

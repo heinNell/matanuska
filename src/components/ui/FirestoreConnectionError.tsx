@@ -1,7 +1,7 @@
 import { AlertTriangle, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import type { ConnectionStatus } from "../../utils/firebaseConnectionHandler";
 import {
-  ConnectionStatus,
   attemptReconnect,
   getConnectionStatus,
   onConnectionStatusChanged,

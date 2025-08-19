@@ -15,6 +15,8 @@ export const firestore = getFirestore(firebaseApp);
 
 import type { ConnectionStatus } from "../types/connection";
 
+export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
+
 let connectionStatus: ConnectionStatus = "connecting";
 let connectionError: Error | null = null;
 let connectionListeners: ((status: ConnectionStatus, error?: Error | null) => void)[] = [];
@@ -98,8 +100,11 @@ export const onConnectionStatusChanged = (
   };
 };
 
-export const getConnectionStatus = (): { status: ConnectionStatus; error: Error | null } => {
-  return { status: connectionStatus, error: connectionError };
+export const getConnectionStatus = () => {
+  return {
+    status: connectionStatus as ConnectionStatus,
+    error: connectionError
+  };
 };
 
 // --- INITIALIZE MONITORING ---
