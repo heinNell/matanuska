@@ -480,7 +480,7 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
           vendor: record.vendor || "",
           vendorId: record.vendorId || "",
           location: record.location || "",
-          lastRestocked: record.lastRestocked || new Date().toISOString().split("T")[0],
+          lastRestocked: record.lastRestocked || new Date().toISOString().split("T")[0], // Ensure this is always a string
         };
 
         // Check for existing item to update instead of adding duplicate
@@ -489,7 +489,8 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (existingItem) {
           await updateStockItem(existingItem.id, stockItem);
         } else {
-          await addStockItem(stockItem);
+          const itemToAdd: Omit<StockItem, "id"> = stockItem;
+          await addStockItem(itemToAdd);
         }
 
         importResults.success++;

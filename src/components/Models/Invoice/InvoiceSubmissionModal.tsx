@@ -29,6 +29,16 @@ interface InvoiceSubmissionModalProps {
   onRemoveAdditionalCost: (costId: string) => void;
 }
 
+interface InvoiceFormData {
+  invoiceNumber: string;
+  invoiceDate: string;
+  invoiceDueDate: string;
+  finalArrivalDateTime: string;
+  finalOffloadDateTime: string;
+  finalDepartureDateTime: string;
+  validationNotes: string;
+}
+
 const InvoiceSubmissionModal: React.FC<InvoiceSubmissionModalProps> = ({
   isOpen,
   trip,
@@ -37,9 +47,9 @@ const InvoiceSubmissionModal: React.FC<InvoiceSubmissionModalProps> = ({
   onAddAdditionalCost,
   onRemoveAdditionalCost,
 }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<InvoiceFormData>({
     invoiceNumber: "",
-    invoiceDate: new Date().toISOString().split("T")[0],
+    invoiceDate: (new Date().toISOString().split("T")[0] as string) || "",
     invoiceDueDate: "",
     finalArrivalDateTime: trip.actualArrivalDateTime || trip.plannedArrivalDateTime || "",
     finalOffloadDateTime: trip.actualOffloadDateTime || trip.plannedOffloadDateTime || "",
@@ -110,19 +120,18 @@ const InvoiceSubmissionModal: React.FC<InvoiceSubmissionModalProps> = ({
   };
 
   const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-
-    // Auto-calculate due date based on currency
-    if (field === "invoiceDate") {
-      const invoiceDate = new Date(value);
-      const daysToAdd = trip.revenueCurrency === "USD" ? 14 : 30;
-      const dueDate = new Date(invoiceDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
-      setFormData((prev) => ({
-        ...prev,
-        invoiceDate: value,
-        invoiceDueDate: dueDate.toISOString().split("T")[0],
-      }));
-    }
+    // Single update to avoid race conditions; auto-calc due date when invoiceDate changes
+    setFormData((prev) => {
+      const next: InvoiceFormData = { ...prev, [field]: value } as InvoiceFormData;
+      if (field === "invoiceDate") {
+        const invoiceDate = new Date(value);
+        const daysToAdd = trip.revenueCurrency === "USD" ? 14 : 30;
+        const dueDate = new Date(invoiceDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+        next.invoiceDate = value;
+  next.invoiceDueDate = (dueDate.toISOString().split("T")[0] as string) || "";
+      }
+      return next;
+    });
 
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));

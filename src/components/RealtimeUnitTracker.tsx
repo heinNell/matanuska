@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { wialonService } from '../services/wialonService';
 import { WialonUnit } from '../types/wialon'; // FIX: Removed UnitDetail as it is not needed here
 

@@ -3,17 +3,8 @@
  * Used to configure and test Wialon API connection settings
  */
 
-import React, { useState, useEffect } from 'react';
-import {
-  initWialonApi,
-  loginToWialon,
-  getWialonUnits
-} from '../utils/wialonService';
-import {
-  validateTokenFormat,
-  verifyWialonApiUrl,
-  TokenValidationResult
-} from '../utils/wialonTroubleshooting';
+import React, { useState } from 'react';
+import { wialonService } from '../utils/wialonService';
 import './WialonConfig.css';
 
 interface WialonError extends Error {
@@ -43,31 +34,9 @@ const WialonConfig: React.FC = () => {
 
   const [isTokenVisible, setIsTokenVisible] = useState(false);
 
-  // Validation state
-  const [urlValidation, setUrlValidation] = useState<TokenValidationResult>({
-    isValid: true,
-    message: ''
-  });
-
-  const [tokenValidation, setTokenValidation] = useState<TokenValidationResult>({
-    isValid: true,
-    message: ''
-  });
-
   // Test connection state
   const [isLoading, setIsLoading] = useState(false);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
-
-  // Effect to validate inputs when they change
-  useEffect(() => {
-    const validation = verifyWialonApiUrl(apiUrl ?? '');
-    setUrlValidation(validation);
-  }, [apiUrl]);
-
-  useEffect(() => {
-    const validation = validateTokenFormat(token ?? '');
-    setTokenValidation(validation);
-  }, [token]);
 
   // Save settings
   const saveSettings = () => {
@@ -85,20 +54,12 @@ const WialonConfig: React.FC = () => {
     setTestResult(null);
 
     try {
-      // Step 1: Initialize API
-      const initialized = await initWialonApi(apiUrl ?? '');
-      if (!initialized) {
-        throw new Error('Failed to initialize Wialon API');
-      }
-
-      // Step 2: Login with token
-      await loginToWialon({
-        token: token ?? '',
-        baseUrl: apiUrl ?? ''
-      });
+      // Step 1 & 2: Initialize and login using the service class.
+      (wialonService as any).TOKEN = token;
+      await wialonService.initSession();
 
       // Step 3: Fetch units to verify full access
-      const units = await getWialonUnits();
+      const units = wialonService.getUnits();
 
       setTestResult({
         success: true,
@@ -132,15 +93,9 @@ const WialonConfig: React.FC = () => {
             type="text"
             value={apiUrl}
             onChange={(e) => setApiUrl(e.target.value)}
-            className={`form-control ${!urlValidation.isValid ? 'is-invalid' : ''}`}
+            className="form-control"
             placeholder="https://hst-api.wialon.com"
           />
-          {!urlValidation.isValid && (
-            <div className="validation-message error">
-              {urlValidation.message}
-              {urlValidation.details && <div className="details">{urlValidation.details}</div>}
-            </div>
-          )}
         </div>
 
         <div className="form-group">
@@ -151,7 +106,7 @@ const WialonConfig: React.FC = () => {
               type={isTokenVisible ? 'text' : 'password'}
               value={token}
               onChange={(e) => setToken(e.target.value)}
-              className={`form-control ${!tokenValidation.isValid ? 'is-invalid' : ''}`}
+              className="form-control"
               placeholder="Enter your Wialon token"
             />
             <button
@@ -162,12 +117,6 @@ const WialonConfig: React.FC = () => {
               {isTokenVisible ? 'Hide' : 'Show'}
             </button>
           </div>
-          {!tokenValidation.isValid && (
-            <div className="validation-message error">
-              {tokenValidation.message}
-              {tokenValidation.details && <div className="details">{tokenValidation.details}</div>}
-            </div>
-          )}
         </div>
 
         <div className="form-actions">
@@ -175,7 +124,6 @@ const WialonConfig: React.FC = () => {
             type="button"
             className="btn btn-primary"
             onClick={saveSettings}
-            disabled={!urlValidation.isValid || !tokenValidation.isValid}
           >
             Save Settings
           </button>
@@ -184,7 +132,7 @@ const WialonConfig: React.FC = () => {
             type="button"
             className="btn btn-secondary"
             onClick={testConnection}
-            disabled={isLoading || !urlValidation.isValid || !tokenValidation.isValid}
+            disabled={isLoading}
           >
             {isLoading ? 'Testing...' : 'Test Connection'}
           </button>

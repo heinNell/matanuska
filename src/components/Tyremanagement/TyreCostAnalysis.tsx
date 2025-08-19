@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-import { SAMPLE_TYRES, TYRE_BRANDS, TYRE_PATTERNS, Tyre } from "../../data/tyreData";
+import { TYRE_BRANDS, TYRE_PATTERNS, Tyre } from "../../data/tyreData";
 import { BarChart3, DollarSign, Download, TrendingDown, TrendingUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -51,7 +51,6 @@ export const TyreCostAnalysis: React.FC<TyreCostAnalysisProps> = ({ tyreData }) 
     // Check data imports
     console.log("Data imports:");
     try {
-      console.log("SAMPLE_TYRES:", SAMPLE_TYRES ? SAMPLE_TYRES.length : "undefined");
       console.log("TYRE_BRANDS:", TYRE_BRANDS ? TYRE_BRANDS.length : "undefined");
       console.log("TYRE_PATTERNS:", TYRE_PATTERNS ? TYRE_PATTERNS.length : "undefined");
     } catch (error) {
@@ -78,7 +77,7 @@ export const TyreCostAnalysis: React.FC<TyreCostAnalysisProps> = ({ tyreData }) 
       }
     >();
 
-    SAMPLE_TYRES.forEach((tyre: Tyre) => {
+    tyreData.forEach((tyre: Tyre) => {
       const key = `${tyre.brand}-${tyre.pattern}`;
       if (!metricsMap.has(key)) {
         metricsMap.set(key, { costs: [], lifespans: [], tyres: [] });

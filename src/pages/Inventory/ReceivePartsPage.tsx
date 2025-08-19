@@ -66,8 +66,10 @@ const ReceivePartsPage: React.FC = () => {
 
         if (!partsSnapshot.empty) {
           // Update existing part quantity
-          const partDoc = partsSnapshot.docs[0];
-          const currentQuantity = parseInt(partDoc.data().quantity) || 0;
+          const partDoc = partsSnapshot.docs[0]!; // non-null: guarded by empty check
+          const qtyRaw = partDoc.data().quantity ?? 0;
+          const currentQuantity =
+            typeof qtyRaw === "number" ? qtyRaw : Number.parseInt(String(qtyRaw), 10) || 0;
           await updateDoc(doc(db, "parts", partDoc.id), {
             quantity: currentQuantity + part.receivingQuantity,
             lastUpdated: serverTimestamp(),
@@ -96,7 +98,7 @@ const ReceivePartsPage: React.FC = () => {
         const poSnapshot = await getDocs(poQuery);
 
         if (!poSnapshot.empty) {
-          const orderDoc = poSnapshot.docs[0];
+          const orderDoc = poSnapshot.docs[0]!; // non-null: guarded by empty check
           const orderData = orderDoc.data();
 
           // Update parts status

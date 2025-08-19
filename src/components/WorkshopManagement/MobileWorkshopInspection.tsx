@@ -103,8 +103,7 @@ export const MobileWorkshopInspection: React.FC = () => {
             photos: [],
           })),
         }));
-        // Set first category as current with explicit type casting
-        // @ts-expect-error nullish coalescing ensures string
+  // Set first category as current with explicit type casting
         setCurrentCategory(foundTemplate.categories[0] ?? "");
       }
     };
@@ -663,10 +662,6 @@ export const MobileWorkshopInspection: React.FC = () => {
         )}
       </div>
     </div>
-  );
-};
-
-export default MobileWorkshopInspection;
   );
 };
 

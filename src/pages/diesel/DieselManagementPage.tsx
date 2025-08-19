@@ -155,13 +155,21 @@ const DieselManagementPage: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedDieselId, setSelectedDieselId] = useState<string>("");
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState({
+  const [editData, setEditData] = useState<{
+    litresFilled: string;
+    totalCost: string;
+    kmReading: string;
+    previousKmReading: string;
+    tripId: string;
+    currency: "USD" | "ZAR";
+    probeReading: string;
+  }>({
     litresFilled: "",
     totalCost: "",
     kmReading: "",
     previousKmReading: "",
     tripId: "",
-    currency: "ZAR" as "ZAR" | "USD", // Add type safety
+    currency: "ZAR",
     probeReading: "",
   });
   const [dieselNorms, setDieselNorms] = useState<DieselNorms[]>(DEFAULT_NORMS);
@@ -275,22 +283,6 @@ const DieselManagementPage: React.FC = () => {
     return true;
   });
 
-  const handleEdit = (recordId: string) => {
-    const record = dieselRecords.find((r) => r.id === recordId);
-    if (record) {
-      setEditingId(recordId);
-      setEditData({
-        litresFilled: record.litresFilled.toString(),
-        totalCost: record.totalCost.toString(),
-        kmReading: record.kmReading.toString(),
-        previousKmReading: record.previousKmReading?.toString() || "",
-        tripId: record.tripId || "",
-        currency: record.currency || "ZAR",
-        probeReading: record.probeReading?.toString() || "",
-      });
-    }
-  };
-
   const handleSave = (recordId: string) => {
     const record = dieselRecords.find((r) => r.id === recordId);
     if (record) {
@@ -303,7 +295,7 @@ const DieselManagementPage: React.FC = () => {
       const probeReading = editData.probeReading ? parseFloat(editData.probeReading) : undefined;
 
       // Ensure currency is either ZAR or USD
-      const currency = editData.currency === "USD" ? "USD" : "ZAR";
+      const currency = editData.currency;
 
       // Calculate derived values
       const distanceTravelled = previousKmReading
@@ -905,7 +897,10 @@ const DieselManagementPage: React.FC = () => {
                           className="border rounded px-2 py-1 text-sm"
                           value={editData.currency}
                           onChange={(e) =>
-                            setEditData((prev) => ({ ...prev, currency: e.target.value }))
+                            setEditData((prev) => ({
+                              ...prev,
+                              currency: e.target.value as "USD" | "ZAR",
+                            }))
                           }
                         >
                           <option value="ZAR">ZAR</option>

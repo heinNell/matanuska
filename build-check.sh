@@ -30,8 +30,11 @@ npm list jspdf || (
 )
 
 # Run TypeScript type check
-echo "Running TypeScript type check..."
-npx tsc --noEmit
+echo "Cleaning dist to avoid stale type artifacts..."
+rm -rf dist 2>/dev/null || true
+
+echo "Running TypeScript type check (typecheck config)..."
+npx tsc -p tsconfig.typecheck.json --noEmit
 
 # Run ESLint
 echo "Running ESLint..."
@@ -44,7 +47,7 @@ npm run build
 # Check if build was successful
 if [ -d "dist" ] && [ -f "dist/index.html" ]; then
   echo "✅ Build successful!"
-  
+
   # Additional deployment checks
   echo "Checking for environment configuration..."
   if [ -f ".env" ]; then
@@ -52,7 +55,7 @@ if [ -d "dist" ] && [ -f "dist/index.html" ]; then
   else
     echo "⚠️ No .env file found. Using default environment variables."
   fi
-  
+
   echo "==================================="
   echo "✅ Project is ready for deployment!"
   echo "Run one of the deployment scripts to deploy:"

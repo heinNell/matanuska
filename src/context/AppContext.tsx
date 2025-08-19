@@ -1874,7 +1874,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const importDieselRecords = async (records: DieselConsumptionRecord[]) => {
+  const importDieselRecordsFn = async (records: DieselConsumptionRecord[]) => {
     try {
       const db = getFirestore();
       const batch = writeBatch(db);
@@ -2002,8 +2002,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     },
     triggerTripImport,
     importCostsFromCSV: placeholder,
-    importTripsFromWebhook: placeholderWebhook,
-  importDieselRecords,
+  importTripsFromWebhook: placeholderWebhook,
+  importDieselRecords: importDieselRecordsFn,
     importDriverBehaviorEventsFromWebhook: async () => {
       try {
         console.log("🔄 Importing driver behavior events from webhook...");

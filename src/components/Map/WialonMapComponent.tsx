@@ -1,18 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { FC, useState, useEffect, useRef, useCallback } from 'react';
+import "leaflet/dist/leaflet.css";
 
-// Import augmentation types
-/// <reference path="../../types/wialon-sdk-augment.d.ts" />
-
-// Using module augmentation instead of global redeclaration
-// to avoid the "Subsequent property declarations must have the same type" error
+// Declare global types for external libraries (Wialon SDK, Leaflet, jQuery)
 declare global {
   interface Window {
-    // Skip declaring wialon to avoid type conflicts with existing declaration
     L: any;
+    wialon: any;
     $: any;
   }
 }
 
+// Data Interfaces
 interface Resource {
   id: string;
   name: string;
@@ -27,6 +25,7 @@ interface Geofence {
 interface Unit {
   id: string;
   name: string;
+  uid: number;
   position?: {
     x: number;
     y: number;
@@ -51,186 +50,143 @@ interface TrackingOrder {
   destination?: string;
 }
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const WialonMapComponent: React.FC = () => {
+// Helper component for Unit List Item
+const UnitListItem: FC<{ unit: Unit, onUnitClick: (unit: Unit) => void, isSelected: boolean }> = ({ unit, onUnitClick, isSelected }) => {
+  return (
+    <div
+      className={`unit-item p-3 rounded-lg flex items-center justify-between shadow-sm hover:bg-gray-100 transition-colors cursor-pointer ${isSelected ? 'border-2 border-blue-500' : ''}`}
+      onClick={() => onUnitClick(unit)}
+    >
+      <span className="unit-title font-medium text-gray-700">{unit.name}</span>
+      <span className="unit-meta text-sm text-gray-500">ID: {unit.id}</span>
+    </div>
+  );
+};
+
+const WialonDashboard: FC = () => {
+  // Wialon SDK Access Token
+  const WIALON_TOKEN = "c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053";
+
+  // State for data and UI
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [geofences, setGeofences] = useState<Geofence[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
+  const [trackingOrders, setTrackingOrders] = useState<TrackingOrder[]>([]);
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+  const [selectedGeofenceId, setSelectedGeofenceId] = useState<string | null>(null);
+  const [selectedResourceId, setSelectedResourceId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [unitSensors, setUnitSensors] = useState<any[]>([]);
+
+  // Refs for map instance and elements
   const mapRef = useRef<HTMLDivElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const unitMarkers = useRef<any>({});
   const trackingPolylines = useRef<any>({});
   const geofenceLayer = useRef<any>(null);
+  const unitEventIds = useRef<any>({});
 
-  // These state variables would be used in a fully implemented component
-  const [_resources, setResources] = useState<Resource[]>([]);
-  const [_geofences, setGeofences] = useState<Geofence[]>([]);
-  const [_units, setUnits] = useState<Unit[]>([]);
-  const [selectedResource, _setSelectedResource] = useState<string>("");
-  const [_selectedUnit, _setSelectedUnit] = useState<string>("");
-  const [_selectedGeofence, _setSelectedGeofence] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [_trackingOrders, setTrackingOrders] = useState<TrackingOrder[]>([]);
-  const [_sensors, setSensors] = useState<any[]>([]);
-  const [unitEventIds, setUnitEventIds] = useState<any>({});
-
-  // Token for immediate activation
-  const WIALON_TOKEN = "c1099bc37c906fd0832d8e783b60ae0d0FFC3299205409AD690223C11B631D38FD0FE04A";
-
-  const msg = (text: string) => {
+  // Function to write log messages
+  const msg = (text: string, type: "info" | "success" | "warning" | "danger" = "info") => {
     if (logRef.current) {
-      logRef.current.innerHTML = text + "<br/>" + logRef.current.innerHTML;
+      const icon = { info: "ℹ️", success: "✅", warning: "⚠️", danger: "❌" }[type];
+      logRef.current.innerHTML = `<p class="text-sm font-mono">${icon} ${text}</p>` + logRef.current.innerHTML;
     }
   };
 
+  // Memoized callback for handling unit clicks
+  const handleUnitClick = useCallback((unit: Unit) => {
+    setSelectedUnitId(unit.id);
+    loadUnitSensors(unit.id);
+    if (unit.position && mapInstance.current) {
+      mapInstance.current.flyTo([unit.position.y, unit.position.x], 13);
+    }
+  }, []);
+
+  // Initialize the Leaflet map
   const initMap = () => {
     if (!mapRef.current || !window.L) return;
-
-    // Create map centered on South Africa/Namibia region
     mapInstance.current = window.L.map(mapRef.current).setView([-22.95764, 18.49041], 6);
-
-    // Add OpenStreetMap tile layer
     window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(mapInstance.current);
-
-    msg("✅ Map initialized successfully");
+    msg("Map initialized successfully.", "success");
   };
 
-  const initResources = () => {
+  // Load Wialon resources and units
+  const initResourcesAndUnits = () => {
     if (!window.wialon) return;
-
     const sess = window.wialon.core.Session.getInstance();
-    const flags =
-      window.wialon.item.Item.dataFlag.base |
-      // @ts-expect-error: Wialon SDK typing issue
-      window.wialon.item.Resource.dataFlag.zones;
+    const resFlags = window.wialon.item.Item.dataFlag.base | window.wialon.item.Resource.dataFlag.zones;
+    const unitFlags = window.wialon.item.Item.dataFlag.base | window.wialon.item.Unit.dataFlag.lastMessage | window.wialon.item.Unit.dataFlag.sensors;
+
     sess.loadLibrary("resourceZones");
-    sess.updateDataFlags(
-      [{ type: "type", data: "avl_resource", flags: flags, mode: 0 }],
-      function (code: number) {
-        if (code) {
-          msg(`❌ Error loading resources: ${window.wialon.core.Errors.getErrorText(code)}`);
-          return;
-        }
-
-        const res = sess.getItems("avl_resource");
-        if (!res || !res.length) {
-          msg("⚠️ No resources found");
-          return;
-        }
-
-        const resourceList: Resource[] = [];
-        for (let i = 0; i < res.length; i++) {
-          resourceList.push({
-            id: res[i].getId(),
-            name: res[i].getName(),
-          });
-        }
-        setResources(resourceList);
-        msg(`✅ ${resourceList.length} resources loaded successfully`);
-      }
-    );
-  };
-
-  const initUnits = () => {
-    if (!window.wialon) return;
-
-    const sess = window.wialon.core.Session.getInstance();
-    const flags =
-      window.wialon.item.Item.dataFlag.base |
-      window.wialon.item.Unit.dataFlag.lastMessage |
-      window.wialon.item.Unit.dataFlag.sensors;
-
     sess.loadLibrary("itemIcon");
     sess.loadLibrary("unitSensors");
+
     sess.updateDataFlags(
-      [{ type: "type", data: "avl_unit", flags: flags, mode: 0 }],
+      [
+        { type: "type", data: "avl_resource", flags: resFlags, mode: 0 },
+        { type: "type", data: "avl_unit", flags: unitFlags, mode: 0 },
+      ],
       function (code: number) {
         if (code) {
-          msg(`❌ Error loading units: ${window.wialon.core.Errors.getErrorText(code)}`);
+          msg(`Error loading data: ${window.wialon.core.Errors.getErrorText(code)}`, "danger");
           return;
+        }
+
+        const resourcesData = sess.getItems("avl_resource");
+        if (resourcesData && resourcesData.length) {
+          const resourceList: Resource[] = resourcesData.map((r: any) => ({ id: r.getId(), name: r.getName() }));
+          setResources(resourceList);
+          setSelectedResourceId(resourceList[0]?.id || null);
+          msg(`Successfully loaded ${resourceList.length} resources.`, "success");
+        } else {
+          msg("No resources found.", "warning");
         }
 
         const unitsData = sess.getItems("avl_unit");
         if (!unitsData || !unitsData.length) {
-          msg("⚠️ No units found");
+          msg("No units found.", "warning");
           return;
         }
 
         const unitsList: Unit[] = [];
         const bounds: any[] = [];
-
-        for (let i = 0; i < unitsData.length; i++) {
-          const unit = unitsData[i];
+        for (const unit of unitsData) {
           const pos = unit.getPosition();
           const sensors = unit.getSensors() || [];
-
           const unitInfo: Unit = {
             id: unit.getId(),
             name: unit.getName(),
-            position: pos
-              ? {
-                  x: pos.x,
-                  y: pos.y,
-                  s: pos.s || 0,
-                  t: pos.t || 0,
-                }
-              : undefined,
+            uid: unit.getUid(),
+            position: pos ? { x: pos.x, y: pos.y, s: pos.s || 0, t: pos.t || 0 } : undefined,
             sensors: sensors,
             status: pos ? (pos.s > 5 ? "active" : "idle") : "offline",
           };
-
           unitsList.push(unitInfo);
 
           if (pos && mapInstance.current) {
-            const icon = window.L.icon({
-              iconUrl: unit.getIconUrl(24),
-              iconAnchor: [12, 12],
-            });
-
-            const marker = window.L.marker({ lat: pos.y, lng: pos.x }, { icon: icon })
-              .bindPopup(
-                `
-                <div class="p-2">
-                  <strong>${unit.getName()}</strong><br/>
-                  <div class="text-sm">
-                    Position: ${pos.x.toFixed(4)}, ${pos.y.toFixed(4)}<br/>
-                    Speed: ${pos.s || 0} km/h<br/>
-                    Sensors: ${sensors.length}<br/>
-                    Status: ${unitInfo.status}
-                  </div>
-                </div>
-              `
-              )
-              .addTo(mapInstance.current);
-
+            const icon = window.L.icon({ iconUrl: unit.getIconUrl(24), iconAnchor: [12, 12] });
+            const marker = window.L.marker({ lat: pos.y, lng: pos.x }, { icon: icon, title: unit.getName() }).addTo(mapInstance.current);
             unitMarkers.current[unit.getId()] = marker;
             bounds.push([pos.y, pos.x]);
 
-            // Set up real-time tracking
             const eventId = unit.addListener("messageRegistered", (event: any) => {
               handleUnitUpdate(unit.getId(), event.getData());
             });
-
-            setUnitEventIds((prev: Record<string, number>) => ({
-              ...prev,
-              [unit.getId()]: eventId,
-            }));
+            unitEventIds.current[unit.getId()] = eventId;
           }
         }
-
         setUnits(unitsList);
+        msg(`Successfully loaded and displayed ${unitsList.length} units on map.`, "success");
 
-        // Fit map to show all units
         if (bounds.length > 0 && mapInstance.current) {
           const group = new window.L.featureGroup(Object.values(unitMarkers.current));
           mapInstance.current.fitBounds(group.getBounds().pad(0.1));
         }
-
-        msg(`✅ ${unitsList.length} units loaded and displayed on map`);
-
-        // Generate mock tracking orders
         generateMockTrackingOrders(unitsList);
       }
     );
@@ -238,44 +194,24 @@ const WialonMapComponent: React.FC = () => {
 
   const handleUnitUpdate = (unitId: string, data: any) => {
     if (!data.pos || !mapInstance.current) return;
-
     const marker = unitMarkers.current[unitId];
     if (marker) {
       const newPos = { lat: data.pos.y, lng: data.pos.x };
       marker.setLatLng(newPos);
-
-      // Update or create polyline for tracking
       if (!trackingPolylines.current[unitId]) {
-        trackingPolylines.current[unitId] = window.L.polyline([newPos], {
-          color: "#3B82F6",
-          weight: 3,
-          opacity: 0.8,
-        }).addTo(mapInstance.current);
+        trackingPolylines.current[unitId] = window.L.polyline([newPos], { color: "#3B82F6", weight: 3, opacity: 0.8 }).addTo(mapInstance.current);
       } else {
         trackingPolylines.current[unitId].addLatLng(newPos);
       }
-
-      // Update unit data
-      setUnits((prev) =>
-        prev.map((unit) =>
-          unit.id === unitId
-            ? {
-                ...unit,
-                position: {
-                  x: data.pos.x,
-                  y: data.pos.y,
-                  s: data.pos.s || 0,
-                  t: data.pos.t || 0,
-                },
-                status: (data.pos.s || 0) > 5 ? "active" : "idle",
-              }
-            : unit
+      setUnits((prev) => prev.map((unit) =>
+          unit.id === unitId ? {
+              ...unit,
+              position: { x: data.pos.x, y: data.pos.y, s: data.pos.s || 0, t: data.pos.t || 0 },
+              status: (data.pos.s || 0) > 5 ? "active" : "idle",
+            } : unit
         )
       );
-
-      msg(
-        `📍 Unit ${unitId} position updated: ${data.pos.x.toFixed(4)}, ${data.pos.y.toFixed(4)} - Speed: ${data.pos.s || 0} km/h`
-      );
+      msg(`Unit ${unitId} position updated.`, "info");
     }
   };
 
@@ -284,239 +220,163 @@ const WialonMapComponent: React.FC = () => {
       id: `ORD${index + 1}`,
       orderId: `#AD345JK75${index + 8}`,
       status: index === 0 ? "in_transit" : index === 1 ? "checking" : "delivered",
-      timeline: {
-        checking: `${21 + index} Jan`,
-        inTransit: index === 0 ? "Current" : `${22 + index} Jan`,
-        delivered: index === 2 ? `${25 + index} Jan` : "---",
-      },
-      currentLocation: unit.position
-        ? `${unit.position.y.toFixed(2)}, ${unit.position.x.toFixed(2)}`
-        : "Unknown",
+      timeline: { checking: `${21 + index} Jan`, inTransit: index === 0 ? "Current" : `${22 + index} Jan`, delivered: index === 2 ? `${25 + index} Jan` : "---" },
+      currentLocation: unit.position ? `${unit.position.y.toFixed(2)}, ${unit.position.x.toFixed(2)}` : "Unknown",
       destination: "Delivery Point",
     }));
-
     setTrackingOrders(mockOrders);
   };
 
+  // Load geofences for a specific resource
   const loadGeofences = (resourceId: string) => {
-    if (!window.wialon || !resourceId) return;
-
+    if (!window.wialon) return;
     const sess = window.wialon.core.Session.getInstance();
     const resource = sess.getItem(parseInt(resourceId, 10));
-
     if (!resource) {
-      msg("❌ Resource not found");
+      msg("Resource not found.", "danger");
       return;
     }
 
-    // @ts-expect-error: Wialon SDK typing issue
     const flags = window.wialon.item.Resource.dataFlag.zones;
-
     sess.updateDataFlags(
       [{ type: "id", data: resourceId, flags: flags, mode: 1 }],
       function (code: number) {
         if (code) {
-          msg(`❌ Error loading geofences: ${window.wialon.core.Errors.getErrorText(code)}`);
+          msg(`Error loading geofences: ${window.wialon.core.Errors.getErrorText(code)}`, "danger");
           return;
         }
 
         const zones = resource.getZones();
         if (!zones || !zones.length) {
-          msg("⚠️ No geofences found for this resource");
+          msg("No geofences found for this resource.", "warning");
           setGeofences([]);
           return;
         }
-
-        const geofenceList: Geofence[] = [];
-        for (let i = 0; i < zones.length; i++) {
-          geofenceList.push({
-            id: zones[i].getId(),
-            name: zones[i].getName(),
-            type: zones[i].getType(),
-          });
-        }
-
+        const geofenceList: Geofence[] = zones.map((zone: any) => ({ id: zone.getId(), name: zone.getName(), type: zone.getType() }));
         setGeofences(geofenceList);
-        msg(`✅ ${zones.length} geofences loaded for ${resource.getName()}`);
+        msg(`Successfully loaded ${zones.length} geofences.`, "success");
       }
     );
   };
 
+  // Display a geofence on the map
   const showGeofence = (geofenceId: string) => {
-    if (!window.wialon || !selectedResource || !geofenceId || !mapInstance.current) return;
-
+    if (!window.wialon || !selectedResourceId || !geofenceId || !mapInstance.current) return;
     const sess = window.wialon.core.Session.getInstance();
-    const resource = sess.getItem(parseInt(selectedResource, 10));
+    const resource = sess.getItem(parseInt(selectedResourceId, 10));
     const geofence = resource.getZone(parseInt(geofenceId, 10));
 
-    if (!geofence) return;
+    if (!geofence) {
+      msg("Geofence not found.", "danger");
+      return;
+    }
 
-    // Clear previous geofence layer
     if (geofenceLayer.current) {
       mapInstance.current.removeLayer(geofenceLayer.current);
     }
-
     const points = geofence.getPoints();
-    if (!points || !points.length) return;
-
-    // Convert points to Leaflet format
+    if (!points || !points.length) {
+      msg("Geofence has no points.", "warning");
+      return;
+    }
     const latLngs = points.map((point: any) => [point.y, point.x]);
-
-    // Create polygon
-    geofenceLayer.current = window.L.polygon(latLngs, {
-      color: "#10B981",
-      fillColor: "#10B981",
-      fillOpacity: 0.2,
-      weight: 2,
-    }).addTo(mapInstance.current);
-
-    // Fit map to geofence bounds
+    geofenceLayer.current = window.L.polygon(latLngs, { color: "#10B981", fillColor: "#10B981", fillOpacity: 0.2, weight: 2 }).addTo(mapInstance.current);
     mapInstance.current.fitBounds(geofenceLayer.current.getBounds());
-
-    msg(`🏁 Geofence "${geofence.getName()}" displayed on map`);
+    msg(`Geofence "${geofence.getName()}" displayed on map.`, "success");
   };
 
+  // Load sensors for a specific unit
   const loadUnitSensors = (unitId: string) => {
-    if (!window.wialon || !unitId) return;
-
+    if (!window.wialon) return;
     const sess = window.wialon.core.Session.getInstance();
     const unit = sess.getItem(parseInt(unitId, 10));
-
     if (!unit) {
-      msg("❌ Unit not found");
+      msg("Unit not found.", "danger");
       return;
     }
-
-    const unitSensors = unit.getSensors();
-    if (!unitSensors || !unitSensors.length) {
-      msg("⚠️ No sensors found for this unit");
-      setSensors([]);
+    const unitSensorsData = unit.getSensors();
+    if (!unitSensorsData || !unitSensorsData.length) {
+      msg("No sensors found for this unit.", "warning");
+      setUnitSensors([]);
       return;
     }
-
-    const sensorsWithValues = unitSensors.map((sensor: any) => {
+    const sensorsWithValues = unitSensorsData.map((sensor: any) => {
       const lastMessage = unit.getLastMessage();
       let value = unit.calculateSensorValue(sensor, lastMessage);
       if (value === -348201.3876) value = "N/A";
-
-      return {
-        ...sensor,
-        value: value,
-        unit: sensor.m || "",
-      };
+      return { ...sensor, value: value, unit: sensor.m || "" };
     });
+    setUnitSensors(sensorsWithValues);
+    msg(`Successfully loaded ${sensorsWithValues.length} sensors.`, "success");
+  };
 
-    setSensors(sensorsWithValues);
-    msg(`✅ ${sensorsWithValues.length} sensors loaded for ${unit.getName()}`);
+  // Helper function to handle resource selection
+  const handleSelectResource = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const resourceId = e.target.value;
+    setSelectedResourceId(resourceId);
+    if (resourceId) {
+      loadGeofences(resourceId);
+    }
+  };
+
+  // Helper function to handle geofence selection
+  const handleSelectGeofence = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const geofenceId = e.target.value;
+    setSelectedGeofenceId(geofenceId);
+    if (geofenceId) {
+      showGeofence(geofenceId);
+    } else {
+      if (geofenceLayer.current) {
+        mapInstance.current.removeLayer(geofenceLayer.current);
+      }
+    }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "checking":
-        return "bg-yellow-100 text-yellow-800";
-      case "in_transit":
-        return "bg-blue-100 text-blue-800";
-      case "delivered":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+      case "checking": return "bg-yellow-100 text-yellow-800";
+      case "in_transit": return "bg-blue-100 text-blue-800";
+      case "delivered": return "bg-green-100 text-green-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getUnitStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-600";
-      case "idle":
-        return "bg-yellow-100 text-yellow-600";
-      case "offline":
-        return "bg-red-100 text-red-600";
-      default:
-        return "bg-gray-100 text-gray-600";
-    }
-  };
-
+  // Main effect to load dependencies and initialize
   useEffect(() => {
-    // Load external dependencies and initialize immediately
-    const loadScript = (src: string) => {
-      return new Promise((resolve, reject) => {
-        // Check if script is already loaded
-        if (document.querySelector(`script[src="${src}"]`)) {
-          resolve(true);
-          return;
-        }
-
-        const script = document.createElement("script");
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
+    const loadScript = (src: string) => new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) { resolve(true); return; }
+        const script = document.createElement("script"); script.src = src; script.onload = resolve; script.onerror = reject; document.head.appendChild(script);
       });
-    };
-
-    const loadCSS = (href: string) => {
-      // Check if CSS is already loaded
-      if (document.querySelector(`link[href="${href}"]`)) {
-        return;
-      }
-
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = href;
-      document.head.appendChild(link);
-    };
-
     const initializeWialon = async () => {
       try {
-        msg("🔄 Starting Wialon initialization...");
+        msg("Starting Wialon initialization...", "info");
         setIsLoading(true);
+        await Promise.all([
+          loadScript("https://code.jquery.com/jquery-latest.min.js"),
+          loadScript("https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.2/leaflet.js"),
+        ]);
+        await loadScript(`https://hst-api.wialon.com/wsdk/script/wialon.js?v=${Date.now()}`);
 
-        // Load Leaflet CSS
-        loadCSS("https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.2/leaflet.css");
-
-        // Load dependencies in sequence for faster loading
-        await loadScript("https://code.jquery.com/jquery-latest.min.js");
-        await loadScript("https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.2/leaflet.js");
-        await loadScript(
-          "https://hosting.wialon.com/?token=c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053&lang=en/wsdk/script/wialon.js"
-        );
-
-        msg("📡 Dependencies loaded, initializing Wialon session...");
-
-        // Initialize Wialon session
-        window.wialon.core.Session.getInstance().initSession(
-          "https://hosting.wialon.com/?token=c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053&lang=en"
-        );
-
-        // Login with token immediately
-        window.wialon.core.Session.getInstance().loginToken(
-          WIALON_TOKEN,
-          "",
-          function (code: number) {
-            if (code) {
-              msg(`❌ Login failed: ${window.wialon.core.Errors.getErrorText(code)}`);
-              setIsLoading(false);
-              return;
-            }
-
-            msg("✅ Logged in successfully!");
-            setIsLoggedIn(true);
+        msg("Dependencies loaded. Initializing Wialon session...", "info");
+        window.wialon.core.Session.getInstance().initSession("https://hst-api.wialon.com");
+        window.wialon.core.Session.getInstance().loginToken(WIALON_TOKEN, "", (code: number) => {
+          if (code) {
+            msg(`Login failed: ${window.wialon.core.Errors.getErrorText(code)}`, "danger");
             setIsLoading(false);
-
-            // Initialize everything immediately after login
-            initMap();
-            initUnits();
-            initResources();
+            return;
           }
-        );
+          msg("Login successful!", "success");
+          setIsLoggedIn(true);
+          setIsLoading(false);
+          initMap();
+          initResourcesAndUnits();
+        });
       } catch (error) {
         console.error("Failed to load Wialon dependencies:", error);
-        msg("❌ Failed to load map dependencies");
+        msg("Failed to load map dependencies.", "danger");
         setIsLoading(false);
       }
     };
-
-    // Start initialization immediately
     initializeWialon();
 
     // Cleanup
@@ -524,9 +384,7 @@ const WialonMapComponent: React.FC = () => {
       if (mapInstance.current) {
         mapInstance.current.remove();
       }
-
-      // Remove event listeners
-      Object.entries(unitEventIds).forEach(([unitId, eventId]) => {
+      Object.entries(unitEventIds.current).forEach(([unitId, eventId]) => {
         const sess = window.wialon?.core?.Session?.getInstance();
         const unit = sess?.getItem(parseInt(unitId, 10));
         if (unit && eventId) {
@@ -536,27 +394,144 @@ const WialonMapComponent: React.FC = () => {
     };
   }, []);
 
+  // Effect to load geofences whenever a new resource is selected
+  useEffect(() => {
+    if (selectedResourceId) {
+      loadGeofences(selectedResourceId);
+    }
+  }, [selectedResourceId]);
+
+  // Placeholder for a detailed info panel for the selected unit
+  const InfoPanel = () => {
+    const selectedUnitDetail = units.find(unit => unit.id === selectedUnitId);
+    if (!selectedUnitDetail) return null;
+    return (
+      <div id="info-panel" className="bg-white p-4 rounded-lg shadow-lg mt-4">
+        <div id="panel-unit-name" className="text-lg font-bold text-gray-800">{selectedUnitDetail.name}</div>
+        <div id="panel-unit-meta" className="text-sm text-gray-500">UID: {selectedUnitDetail.uid}</div>
+        <div id="panel-details" className="mt-2 text-gray-600">
+          <div className="font-semibold">Last Position:</div>
+          <ul className="timeline list-disc list-inside mt-1">
+            <li><b>Speed:</b> {selectedUnitDetail.position?.s.toFixed(1) || 0} km/h</li>
+            <li>
+              <b>Status: </b>
+              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(selectedUnitDetail.status)}`}>
+                {selectedUnitDetail.status}
+              </span>
+            </li>
+          </ul>
+        </div>
+        <div className="mt-4">
+            <h4 className="font-semibold text-gray-800">Sensors</h4>
+            <ul className="list-disc list-inside mt-1">
+                {unitSensors.length > 0 ? (
+                  unitSensors.map((sensor, index) => (
+                    <li key={index} className="text-sm text-gray-600">
+                      {sensor.n}: {sensor.value} {sensor.unit}
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-xs text-gray-500">No sensor data available.</p>
+                )}
+            </ul>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="w-full h-screen flex flex-col md:flex-row bg-gray-50">
-      {/* Side panel - hidden on mobile, visible on desktop */}
-      <div className="hidden md:flex md:w-80 bg-white border-r border-gray-200 flex-col">
-        {/* Header */}
-        <div className="p-3 md:p-4 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-2 md:mb-4">
-            <div>
-              <h1 className="text-lg md:text-xl font-bold text-gray-900">Tracking Delivery</h1>
-              {isLoading && (
-                <p className="text-xs md:text-sm text-blue-600">⏳ Loading Wialon data...</p>
+    <div className="w-full h-screen flex flex-col md:flex-row bg-gray-100 font-sans">
+      {/* Sidebar */}
+      <div className="md:w-96 bg-white border-r border-gray-200 flex flex-col h-full overflow-hidden">
+        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+          <h1 className="text-xl font-bold text-gray-900">Wialon Live Dashboard</h1>
+          {isLoading && <p className="text-sm text-blue-600">⏳ Loading...</p>}
+          {!isLoading && isLoggedIn && <p className="text-sm text-green-600">✅ Connected to Wialon</p>}
+          {!isLoading && !isLoggedIn && <p className="text-sm text-red-600">❌ Not connected</p>}
+        </div>
+
+        <div className="overflow-y-auto flex-grow p-4">
+          {/* Section: Unit Status */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2 text-gray-800">Vehicle Status</h3>
+            <ul className="space-y-2">
+              {units.length > 0 ? (
+                units.map((unit) => (
+                  <UnitListItem
+                    key={unit.id}
+                    unit={unit}
+                    onUnitClick={handleUnitClick}
+                    isSelected={selectedUnitId === unit.id}
+                  />
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No units available.</p>
               )}
-              {isLoggedIn && (
-                <p className="text-xs md:text-sm text-green-600">✅ Connected to Wialon</p>
+            </ul>
+          </div>
+
+          <hr className="my-4 border-gray-200" />
+
+          {/* Section: Selected Unit Info Panel */}
+          {selectedUnitId && <InfoPanel />}
+
+          <hr className="my-4 border-gray-200" />
+
+          {/* Section: Tracking Orders */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2 text-gray-800">Tracking Orders</h3>
+            <ul className="space-y-2">
+              {trackingOrders.length > 0 ? (
+                trackingOrders.map((order) => (
+                  <li key={order.id} className="bg-gray-50 p-3 rounded-lg shadow-sm">
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="font-medium text-gray-700">{order.orderId}</p>
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>{order.status.replace('_', ' ')}</span>
+                    </div>
+                    <p className="text-sm text-gray-500">Current Location: {order.currentLocation}</p>
+                  </li>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No tracking orders available.</p>
               )}
+            </ul>
+          </div>
+
+          <hr className="my-4 border-gray-200" />
+
+          {/* Section: Geofence Management */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-2 text-gray-800">Geofences</h3>
+            <div className="space-y-2">
+              <select className="w-full p-2 border rounded-lg bg-gray-50" value={selectedResourceId || ""} onChange={handleSelectResource}>
+                <option value="">-- Select Resource --</option>
+                {resources.map((res) => (
+                  <option key={res.id} value={res.id}>{res.name}</option>
+                ))}
+              </select>
+              <select className="w-full p-2 border rounded-lg bg-gray-50" value={selectedGeofenceId || ""} onChange={handleSelectGeofence} disabled={!selectedResourceId}>
+                <option value="">-- Select Geofence --</option>
+                {geofences.map((geo) => (
+                  <option key={geo.id} value={geo.id}>{geo.name}</option>
+                ))}
+              </select>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Main Content (Map and Log) */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <div ref={mapRef} className="flex-1 min-h-0 z-0"></div>
+        {/* Log Panel */}
+        <div className="bg-gray-900 text-gray-300 p-4 text-sm font-mono overflow-y-auto max-h-48 md:max-h-32 flex-shrink-0 z-10">
+          <p className="text-white font-bold mb-1">Log:</p>
+          <div ref={logRef}></div>
         </div>
       </div>
     </div>
   );
 };
 
-export default WialonMapComponent;
+export default WialonDashboard;
+

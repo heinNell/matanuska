@@ -1,7 +1,8 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef } from 'react';
+import * as L from 'leaflet'; // Explicitly import Leaflet as a module
 
-// This file assumes a global 'map' object is available from a parent component
-// and that Leaflet.js is loaded in the HTML.
+// This file assumes a parent component manages the Leaflet map instance
+// and passes it down as a prop.
 
 interface Position {
     lat: number;
@@ -22,15 +23,16 @@ interface WialonUnitsMapMarkersProps {
 }
 
 const WialonUnitsMapMarkers: FC<WialonUnitsMapMarkersProps> = ({ units, map }) => {
-    const markersRef = useRef<{ [key: number]: L.Marker }>({});
+    // Use a Map object to store markers, with number as the key
+    const markersRef = useRef<Map<number, L.Marker>>(new Map());
 
     useEffect(() => {
         if (!map) return;
 
-        // Cleanup function
+        // Cleanup function: remove all markers from the map
         return () => {
-            Object.values(markersRef.current).forEach(marker => map.removeLayer(marker));
-            markersRef.current = {};
+            markersRef.current.forEach(marker => map.removeLayer(marker));
+            markersRef.current.clear();
         };
     }, [map]);
 
@@ -38,42 +40,44 @@ const WialonUnitsMapMarkers: FC<WialonUnitsMapMarkersProps> = ({ units, map }) =
         if (!map || !units) return;
 
         const currentMarkers = markersRef.current;
-        const newMarkers = {};
+        const newUnits = new Map<number, UnitData>();
+        units.forEach(unit => newUnits.set(unit.id, unit));
 
-        units.forEach(unit => {
-            const { id, position, name, iconUrl } = unit;
-
+        // Update existing markers and add new ones
+        newUnits.forEach((unit, id) => {
+            const { position, name, iconUrl } = unit;
             if (!position) return;
 
-            let marker = currentMarkers[id];
+            let marker = currentMarkers.get(id);
 
             if (marker) {
                 // Update existing marker position
                 marker.setLatLng([position.lat, position.lng]);
                 marker.setIcon(L.icon({ iconUrl, iconAnchor: [16, 16] }));
             } else {
-                // Create new marker
+                // Create a new marker and add it to the map
                 marker = L.marker([position.lat, position.lng], {
                     icon: L.icon({ iconUrl, iconAnchor: [16, 16] })
                 }).addTo(map);
+                currentMarkers.set(id, marker);
             }
 
             // Update marker popup content
-            marker.setPopupContent(`<b>${name}</b><br>Lat: ${position.lat}<br>Lng: ${position.lng}`);
-            newMarkers[id] = marker;
+            marker.setPopupContent(`<b>${name}</b><br>Lat: ${position.lat.toFixed(4)}<br>Lng: ${position.lng.toFixed(4)}`);
         });
 
         // Remove markers that are no longer in the units list
-        Object.keys(currentMarkers).forEach(id => {
-            if (!newMarkers[id]) {
-                map.removeLayer(currentMarkers[id]);
+        currentMarkers.forEach((marker, id) => {
+            if (!newUnits.has(id)) {
+                map.removeLayer(marker);
+                currentMarkers.delete(id);
             }
         });
 
-        markersRef.current = newMarkers;
     }, [map, units]);
 
-    return null; // This component doesn't render any DOM elements itself
+    // This component doesn't render anything to the DOM
+    return null;
 };
 
 export default WialonUnitsMapMarkers;

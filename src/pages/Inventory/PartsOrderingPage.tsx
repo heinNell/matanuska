@@ -327,11 +327,13 @@ const PartsOrderingPage: React.FC = () => {
           if (!partsSnapshot.empty) {
             // Update existing part quantity
             const partDoc = partsSnapshot.docs[0];
-            const currentQuantity = partDoc.data().quantity || 0;
-            await updateDoc(doc(db, "parts", partDoc.id), {
-              quantity: parseInt(currentQuantity) + receivedPart.receivingQuantity,
-              lastUpdated: serverTimestamp(),
-            });
+            if (partDoc) { // Add null/undefined check
+              const currentQuantity = partDoc.data().quantity || 0;
+              await updateDoc(doc(db, "parts", partDoc.id), {
+                quantity: parseInt(currentQuantity) + receivedPart.receivingQuantity,
+                lastUpdated: serverTimestamp(),
+              });
+            }
           } else {
             // Add new part to inventory
             await addDoc(collection(db, "parts"), {

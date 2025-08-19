@@ -8,6 +8,8 @@ export interface DemandPartsFormProps {
   onSubmit?: (data: DemandPartsFormData) => void;
   onCancel?: () => void;
   initialData?: Partial<DemandPartsFormData>;
+  workOrderId: string;
+  vehicleId: string;
 }
 
 export interface DemandPartsFormData {

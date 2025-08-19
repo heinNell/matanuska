@@ -41,7 +41,7 @@ export const TripProvider: React.FC<TripProviderProps> = ({ children }) => {
   useEffect(() => {
     setLoading(true);
 
-    // Initialize Firestore
+    // Check Firebase app before initializing Firestore
     if (!firebaseApp) {
       const error = new Error('Firebase app is not initialized');
       console.error(error);
@@ -50,6 +50,7 @@ export const TripProvider: React.FC<TripProviderProps> = ({ children }) => {
       return;
     }
 
+    // This assertion is now safe due to the check above
     const db = getFirestore(firebaseApp);
 
     try {

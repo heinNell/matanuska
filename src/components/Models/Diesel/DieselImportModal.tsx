@@ -27,35 +27,15 @@ interface DieselImportModalProps {
   dieselRecords?: DieselConsumptionRecord[];
 }
 
-// Define a type for imported diesel records to include derived fields
-interface ImportedDieselRecord {
-  id: string;
-  fleetNumber: string;
-  date: string;
-  kmReading: number;
-  previousKmReading?: number;
-  litresFilled: number;
-  costPerLitre?: number;
-  totalCost: number;
-  fuelStation: string;
-  driverName: string;
-  notes: string;
-  currency: string;
-  probeReading?: number;
-  isReeferUnit: boolean;
-  hoursOperated?: number;
-  // Derived fields
-  distanceTravelled?: number;
-  kmPerLitre?: number;
-  probeDiscrepancy?: number;
-}
+// Preview rows parsed from CSV
+type CsvRow = Record<string, string>;
 
 const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }) => {
   const { connectionStatus, importDieselRecords } = useAppContext();
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [previewData, setPreviewData] = useState<any[]>([]);
+  const [previewData, setPreviewData] = useState<CsvRow[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Handler for downloading template (invokes generator below)
@@ -92,19 +72,21 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
   };
 
   const parseCSV = (text: string) => {
-    const lines = text.split("\n");
-    const headers = lines[0].split(",").map((h) => h.trim());
-    const data: any[] = [];
+    const lines = (text || "").split("\n").filter((l) => l !== undefined);
+    if (lines.length === 0 || !lines[0]) return [] as CsvRow[];
+    const headers = (lines[0] || "")
+      .split(",")
+      .map((h) => (h ?? "").trim());
+    const data: CsvRow[] = [];
 
-    for (let i = 1; i < lines.length; i++) {
-      if (lines[i].trim()) {
-        const values = lines[i].split(",").map((v) => v.trim());
-        const row: any = {};
-        headers.forEach((header, index) => {
-          row[header] = values[index] || "";
-        });
-        data.push(row);
-      }
+    for (const line of lines.slice(1)) {
+      if (!line || !line.trim()) continue;
+      const values = line.split(",").map((v) => (v ?? "").trim());
+      const row: CsvRow = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || "";
+      });
+      data.push(row);
     }
 
     return data;
@@ -121,61 +103,71 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
       const text = await file.text();
       const data = parseCSV(text);
 
-      // Convert to diesel records
-      const dieselRecords: ImportedDieselRecord[] = data.map((row: any) => {
+      // Convert to app diesel records with normalized types/derived fields
+      const dieselRecords: DieselConsumptionRecord[] = data.map((row: CsvRow) => {
+        const fleetNumber = row.fleetNumber || "";
         const isReeferUnit =
-          row.isReeferUnit === "true" ||
-          row.isReeferUnit === true ||
-          ["4F", "5F", "6F", "7F", "8F"].includes(row.fleetNumber);
+          row.isReeferUnit === "true" || ["4F", "5F", "6F", "7F", "8F"].includes(fleetNumber);
 
-        return {
-          id: `diesel-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-          fleetNumber: row.fleetNumber || "",
-          date: row.date || new Date().toISOString().split("T")[0],
-          kmReading: isReeferUnit ? 0 : parseFloat(row.kmReading || "0"),
-          previousKmReading: isReeferUnit
+        // Parse numbers safely
+        const litresFilled = Number.parseFloat(row.litresFilled || "0") || 0;
+        const totalCost = Number.parseFloat(row.totalCost || "0") || 0;
+        const rawCostPerLitre = row.costPerLitre ? Number.parseFloat(row.costPerLitre) : NaN;
+        const costPerLitre = Number.isFinite(rawCostPerLitre)
+          ? rawCostPerLitre
+          : litresFilled > 0
+            ? totalCost / litresFilled
+            : 0;
+
+        const kmReading = isReeferUnit ? 0 : Number.parseFloat(row.kmReading || "0") || 0;
+        const previousKmReading =
+          isReeferUnit
             ? undefined
             : row.previousKmReading
-              ? parseFloat(row.previousKmReading)
-              : undefined,
-          litresFilled: parseFloat(row.litresFilled || "0"),
-          costPerLitre: row.costPerLitre ? parseFloat(row.costPerLitre) : undefined,
-          totalCost: parseFloat(row.totalCost || "0"),
+              ? Number.parseFloat(row.previousKmReading)
+              : undefined;
+
+        // Derived values
+        const distanceTravelled =
+          !isReeferUnit && previousKmReading !== undefined ? kmReading - previousKmReading : undefined;
+        const kmPerLitre = distanceTravelled && litresFilled > 0 ? distanceTravelled / litresFilled : undefined;
+
+        // Probe
+        const probeReading =
+          FLEETS_WITH_PROBES.includes(fleetNumber) && row.probeReading
+            ? Number.parseFloat(row.probeReading)
+            : undefined;
+        const probeDiscrepancy = probeReading !== undefined ? litresFilled - probeReading : undefined;
+
+        // Currency normalization to union
+        const currency = (row.currency?.toUpperCase() === "USD" ? "USD" : "ZAR") as "USD" | "ZAR";
+
+        const dateStr: string = (row.date ?? "").trim() !== ""
+          ? (row.date as string)
+          : new Date().toISOString().split("T")[0];
+
+        const record: DieselConsumptionRecord = {
+          id: `diesel-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+          fleetNumber,
+          date: dateStr,
+          kmReading,
+          previousKmReading,
+          litresFilled,
+          costPerLitre,
+          totalCost,
           fuelStation: row.fuelStation || "",
           driverName: row.driverName || "",
           notes: row.notes || "",
-          currency: row.currency || "ZAR",
-          probeReading:
-            FLEETS_WITH_PROBES.includes(row.fleetNumber) && row.probeReading
-              ? parseFloat(row.probeReading)
-              : undefined,
+          currency,
+          probeReading,
           isReeferUnit,
-          hoursOperated:
-            isReeferUnit && row.hoursOperated ? parseFloat(row.hoursOperated) : undefined,
-          // Derived fields appended later
+          hoursOperated: isReeferUnit && row.hoursOperated ? Number.parseFloat(row.hoursOperated) : undefined,
+          distanceTravelled,
+          kmPerLitre,
+          probeDiscrepancy,
         };
-      });
 
-      // Calculate derived values
-      dieselRecords.forEach((record) => {
-        // Skip distance calculations for reefer units
-        if (!record.isReeferUnit) {
-          if (record.previousKmReading !== undefined && record.kmReading) {
-            record.distanceTravelled = record.kmReading - record.previousKmReading;
-          }
-
-          if (record.distanceTravelled && record.litresFilled) {
-            record.kmPerLitre = record.distanceTravelled / record.litresFilled;
-          }
-        }
-
-        if (!record.costPerLitre && record.totalCost && record.litresFilled) {
-          record.costPerLitre = record.totalCost / record.litresFilled;
-        }
-
-        if (record.probeReading !== undefined) {
-          record.probeDiscrepancy = record.litresFilled - record.probeReading;
-        }
+        return record;
       });
 
       // Import records using context function
@@ -319,7 +311,7 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
                 <table className="min-w-full text-xs">
                   <thead>
                     <tr className="border-b">
-                      {Object.keys(previewData[0])
+                      {Object.keys(previewData[0] || {})
                         .slice(0, 6)
                         .map((header) => (
                           <th
@@ -329,7 +321,7 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
                             {header}
                           </th>
                         ))}
-                      {Object.keys(previewData[0]).length > 6 && (
+                      {Object.keys(previewData[0] || {}).length > 6 && (
                         <th className="px-2 py-1 text-left font-medium text-gray-700">...</th>
                       )}
                     </tr>

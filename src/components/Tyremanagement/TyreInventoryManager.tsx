@@ -15,6 +15,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { firestore } from "../../firebase";
 import { tyreConverter } from "../../types/TyreFirestoreConverter";
 
+// Corrected Tyre interface to align with component logic
 interface Tyre {
   id: string;
   brand: string;
@@ -26,7 +27,7 @@ interface Tyre {
   vehicleId?: string;
   vehicleReg?: string;
   position?: string;
-  purchaseDate: string;
+  purchaseDate?: string; // Made optional
   purchasePrice: number;
   treadDepth?: number;
   lastInspection?: string;
@@ -60,6 +61,7 @@ const TyreInventoryManager: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [tyresPerPage] = useState(10);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   // Offline cache + op queue keys
   const TYRES_CACHE_KEY = "tyres_cache_v1";
   const TYRES_OP_QUEUE_KEY = "tyres_op_queue_v1";
@@ -84,7 +86,7 @@ const TyreInventoryManager: React.FC = () => {
   };
 
   const processQueue = async () => {
-    if (!navigator.onLine) return; // only process when online
+    if (!navigator.onLine) return;
     const q = loadQueue();
     if (!q.length) return;
     const remaining: PendingOp[] = [];
@@ -96,7 +98,6 @@ const TyreInventoryManager: React.FC = () => {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
-          // Replace temp id in local state
           setTyres((prev) => prev.map((t) => (t.id === op.tempId ? { ...t, id: ref.id } : t)));
         } else if (op.type === "update") {
           await updateDoc(doc(firestore, "tyres", op.id), {
@@ -108,7 +109,7 @@ const TyreInventoryManager: React.FC = () => {
         }
       } catch (err) {
         console.warn("Queue op failed, retaining for retry", op, err);
-        remaining.push(op); // keep for retry
+        remaining.push(op);
       }
     }
     saveQueue(remaining);
@@ -128,9 +129,8 @@ const TyreInventoryManager: React.FC = () => {
       /* ignore */
     }
   };
-  // Pagination helpers (existing state below)
 
-  // ACTION HANDLERS replacing placeholder onClick tokens
+  // ACTION HANDLERS
   const handleToggleAddForm = () => {
     setShowAddForm(!showAddForm);
     setEditingTyreId(null);
@@ -167,14 +167,12 @@ const TyreInventoryManager: React.FC = () => {
   const handleGotoPage = (page: number) => setCurrentPage(page);
 
   useEffect(() => {
-    // Seed from cache immediately (stale-while-revalidate) for fast paint / offline
     const cached = loadCache();
     if (cached.length) {
       setTyres(cached);
       applyFilters(cached, searchTerm, statusFilter, brandFilter, sizeFilter);
       setLoading(false);
     }
-    // Subscribe to Firestore (with converter for stronger typing)
     const tyresRef = collection(firestore, "tyres").withConverter(tyreConverter as any);
     const unsubscribe = onSnapshot(
       tyresRef,
@@ -192,7 +190,6 @@ const TyreInventoryManager: React.FC = () => {
         setLoading(false);
       }
     );
-    // Attempt queued ops when coming back online
     window.addEventListener("online", processQueue);
     processQueue();
     return () => {
@@ -209,8 +206,6 @@ const TyreInventoryManager: React.FC = () => {
     size: string = sizeFilter
   ) => {
     let filtered = tyreList;
-
-    // Apply search
     if (search) {
       const searchLower = search.toLowerCase();
       filtered = filtered.filter(
@@ -222,27 +217,19 @@ const TyreInventoryManager: React.FC = () => {
           false
       );
     }
-
-    // Apply status filter
     if (status !== "all") {
       filtered = filtered.filter((tyre) => tyre.status === status);
     }
-
-    // Apply brand filter
     if (brand !== "all") {
       filtered = filtered.filter((tyre) => tyre.brand === brand);
     }
-
-    // Apply size filter
     if (size !== "all") {
       filtered = filtered.filter((tyre) => tyre.size === size);
     }
-
     setFilteredTyres(filtered);
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1);
   };
 
-  // Handle search and filter changes
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -275,14 +262,13 @@ const TyreInventoryManager: React.FC = () => {
     applyFilters(tyres, "", "all", "all", "all");
   };
 
-  // Form handling
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "purchasePrice" ? parseFloat(value) : value,
+      [name]: name === "purchasePrice" || name === "treadDepth" ? parseFloat(value) || 0 : value,
     });
   };
 
@@ -311,12 +297,10 @@ const TyreInventoryManager: React.FC = () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
-      // Replace temp id with real id
       setTyres((prev) => prev.map((t) => (t.id === tempId ? { ...t, id: ref.id } : t)));
     } catch (err) {
       console.error("Error adding tyre:", err);
       setError("Failed to add tyre – reverted.");
-      // Revert optimistic add
       setTyres((prev) => prev.filter((t) => t.id !== tempId));
       applyFilters(tyres, searchTerm, statusFilter, brandFilter, sizeFilter);
     }
@@ -325,8 +309,13 @@ const TyreInventoryManager: React.FC = () => {
   const handleUpdateTyre = async () => {
     if (!editingTyreId) return;
     const previous = tyres.find((t) => t.id === editingTyreId);
-    const updated: Tyre = { ...(previous as Tyre), ...formData, id: editingTyreId } as Tyre;
-    // Optimistic
+    if (!previous) {
+      setError("Tyre not found for update.");
+      return;
+    }
+
+    const updated: Tyre = { ...previous, ...formData, id: editingTyreId };
+
     setTyres((prev) => {
       const next = prev.map((t) => (t.id === editingTyreId ? updated : t));
       applyFilters(next);
@@ -347,8 +336,10 @@ const TyreInventoryManager: React.FC = () => {
     } catch (err) {
       console.error("Error updating tyre:", err);
       setError("Failed to update tyre – reverting.");
-      if (previous) setTyres((prev) => prev.map((t) => (t.id === editingTyreId ? previous : t)));
-      applyFilters(tyres, searchTerm, statusFilter, brandFilter, sizeFilter);
+      if (previous) {
+        setTyres((prev) => prev.map((t) => (t.id === editingTyreId ? previous : t)));
+        applyFilters(tyres, searchTerm, statusFilter, brandFilter, sizeFilter);
+      }
     }
   };
 
@@ -375,7 +366,6 @@ const TyreInventoryManager: React.FC = () => {
 
   const handleDeleteTyre = async (id: string) => {
     const backup = tyres.find((t) => t.id === id);
-    // Optimistic removal
     setTyres((prev) => {
       const next = prev.filter((t) => t.id !== id);
       applyFilters(next);
@@ -390,23 +380,20 @@ const TyreInventoryManager: React.FC = () => {
     } catch (err) {
       console.error("Error deleting tyre:", err);
       setError("Failed to delete tyre – reverting.");
-      if (backup)
+      if (backup) {
         setTyres((prev) => {
           const next = [...prev, backup];
           applyFilters(next);
           return next;
         });
+      }
     }
   };
 
-  // CSV import
-  // Pagination
   const indexOfLastTyre = currentPage * tyresPerPage;
   const indexOfFirstTyre = indexOfLastTyre - tyresPerPage;
   const currentTyres = filteredTyres.slice(indexOfFirstTyre, indexOfLastTyre);
   const totalPages = Math.ceil(filteredTyres.length / tyresPerPage);
-
-  // removed unused paginate helper (using direct handlers)
 
   // Export data
   const handleExportData = () => {
@@ -435,13 +422,13 @@ const TyreInventoryManager: React.FC = () => {
         tyre.size,
         tyre.status,
         tyre.location,
-        tyre.vehicleReg || "",
-        tyre.position || "",
-        tyre.purchaseDate,
+        tyre.vehicleReg ?? "",
+        tyre.position ?? "",
+        tyre.purchaseDate ?? "",
         tyre.purchasePrice.toString(),
-        tyre.treadDepth?.toString() || "",
-        tyre.lastInspection || "",
-        tyre.notes || "",
+        tyre.treadDepth?.toString() ?? "",
+        tyre.lastInspection ?? "",
+        tyre.notes ?? "",
       ]),
     ]
       .map((row) => row.join(","))
@@ -458,8 +445,6 @@ const TyreInventoryManager: React.FC = () => {
     link.click();
     document.body.removeChild(link);
   };
-
-  // Import click handled by top-level handler (duplicate removed)
 
   const parseCSV = (text: string) => {
     try {
@@ -502,51 +487,43 @@ const TyreInventoryManager: React.FC = () => {
 
         if (!parsedData) return;
 
-        // Convert parsed data to Tyre objects
         const newTyres: Omit<Tyre, "id">[] = parsedData.map((item) => {
-          // Map CSV fields to Tyre object properties
-          // This is a simplified example, adjust mapping according to your CSV structure
+          const status = (item["Status"] || "new") as Tyre["status"];
+
           return {
-            brand: item["Brand"] || "",
-            model: item["Model"] || "",
-            serialNumber: item["Serial Number"] || "",
-            size: item["Size"] || "",
-            status: (item["Status"] || "new") as Tyre["status"],
-            location: item["Location"] || "warehouse",
-            vehicleId: item["Vehicle ID"] || undefined,
-            vehicleReg: item["Vehicle Reg"] || undefined,
-            position: item["Position"] || undefined,
-            purchaseDate: item["Purchase Date"] || new Date().toISOString().split("T")[0],
-            purchasePrice: parseFloat(item["Price"]) || 0,
+            brand: item["Brand"] ?? "",
+            model: item["Model"] ?? "",
+            serialNumber: item["Serial Number"] ?? "",
+            size: item["Size"] ?? "",
+            status: status,
+            location: item["Location"] ?? "warehouse",
+            vehicleId: item["Vehicle ID"] ?? undefined,
+            vehicleReg: item["Vehicle Reg"] ?? undefined,
+            position: item["Position"] ?? undefined,
+            purchaseDate: item["Purchase Date"] ?? new Date().toISOString().split("T")[0],
+            purchasePrice: parseFloat(item["Price"] ?? "0") || 0,
             treadDepth: item["Tread Depth"] ? parseFloat(item["Tread Depth"]) : undefined,
-            lastInspection: item["Last Inspection"] || undefined,
-            notes: item["Notes"] || undefined,
+            lastInspection: item["Last Inspection"] ?? undefined,
+            notes: item["Notes"] ?? undefined,
           };
         });
 
-        // Generate IDs for new tyres and add to state
         const tyresWithIds: Tyre[] = newTyres.map((tyre, index) => ({
           ...tyre,
           id: `imported-${Date.now()}-${index}`,
         }));
 
-        // For demo, just update local state
         const updatedTyres = [...tyres, ...tyresWithIds];
         setTyres(updatedTyres);
         applyFilters(updatedTyres, searchTerm, statusFilter, brandFilter, sizeFilter);
 
         setSuccess(`Successfully imported ${tyresWithIds.length} tyres.`);
 
-        // In a real app, we would add these to Firestore
-        // for (const tyre of newTyres) {
-        //   await addDoc(collection(db, "tyres"), tyre);
-        // }
       } catch (err) {
         console.error("Error importing tyres:", err);
         setError("Failed to import tyres. Please check the file format.");
       }
 
-      // Clear the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -559,11 +536,9 @@ const TyreInventoryManager: React.FC = () => {
     reader.readAsText(file);
   };
 
-  // Get unique brands and sizes for filters
   const uniqueBrands = Array.from(new Set(tyres.map((tyre) => tyre.brand)));
   const uniqueSizes = Array.from(new Set(tyres.map((tyre) => tyre.size)));
 
-  // Utility function for status styling
   const getStatusStyle = (status: Tyre["status"]) => {
     switch (status) {
       case "new":
@@ -581,7 +556,6 @@ const TyreInventoryManager: React.FC = () => {
     }
   };
 
-  // Format status for display
   const formatStatus = (status: string) => {
     return status
       .split("_")
@@ -639,11 +613,6 @@ const TyreInventoryManager: React.FC = () => {
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 flex items-center">
           <CheckCircle className="mr-2" size={18} />
-          {success}
-        </div>
-      )}
-      {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           {success}
         </div>
       )}
@@ -773,7 +742,7 @@ const TyreInventoryManager: React.FC = () => {
               <input
                 type="date"
                 name="purchaseDate"
-                value={formData.purchaseDate}
+                value={formData.purchaseDate ?? ''}
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
@@ -801,7 +770,7 @@ const TyreInventoryManager: React.FC = () => {
               <input
                 type="number"
                 name="treadDepth"
-                value={formData.treadDepth || ""}
+                value={formData.treadDepth ?? ""}
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 min="0"
@@ -816,7 +785,7 @@ const TyreInventoryManager: React.FC = () => {
               <input
                 type="date"
                 name="lastInspection"
-                value={formData.lastInspection || ""}
+                value={formData.lastInspection ?? ""}
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
@@ -827,7 +796,7 @@ const TyreInventoryManager: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
             <textarea
               name="notes"
-              value={formData.notes || ""}
+              value={formData.notes ?? ""}
               onChange={handleInputChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
               rows={3}
@@ -1034,7 +1003,7 @@ const TyreInventoryManager: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">${tyre.purchasePrice.toFixed(2)}</div>
                       <div className="text-xs text-gray-500">
-                        {new Date(tyre.purchaseDate).toLocaleDateString()}
+                        {tyre.purchaseDate ? new Date(tyre.purchaseDate).toLocaleDateString() : 'N/A'}
                       </div>
                       {tyre.lastInspection && (
                         <div className="text-xs text-gray-500">
@@ -1087,7 +1056,6 @@ const TyreInventoryManager: React.FC = () => {
               </button>
 
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                // Show pages around current page
                 let pageNum;
                 if (totalPages <= 5) {
                   pageNum = i + 1;

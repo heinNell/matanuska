@@ -308,11 +308,11 @@ const DieselDebriefModal: React.FC<DieselDebriefModalProps> = ({ isOpen, onClose
   const onClick = () => {
     // Check if all records have notes and dates
     const allRecordsHaveNotes = records.every(
-      (r) => debriefNotes[r.id] && debriefNotes[r.id].trim() !== ""
+      (r) => (debriefNotes[r.id] ?? "").trim() !== ""
     );
 
     const allRecordsHaveDates = records.every(
-      (r) => debriefDates[r.id] && debriefDates[r.id].trim() !== ""
+      (r) => (debriefDates[r.id] ?? "").trim() !== ""
     );
 
     if (!allRecordsHaveNotes || !allRecordsHaveDates) {

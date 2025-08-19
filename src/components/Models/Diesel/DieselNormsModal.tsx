@@ -5,7 +5,6 @@ import { FLEET_NUMBERS, FLEETS_WITH_PROBES } from "../../../types";
 import Card, { CardContent, CardHeader } from "../../ui/Card";
 import { Input } from "../../ui/FormElements";
 import Modal from "../../ui/Modal";
-import { useAppContext } from "../../../context/AppContext";
 
 interface DieselNorms {
   fleetNumber: string;
@@ -103,6 +102,11 @@ const DieselNormsModal: React.FC<DieselNormsModalProps> = ({
     }
 
     const selectedFleet = availableFleets[0];
+    if (!selectedFleet) {
+      alert("No fleet available to add.");
+      return;
+    }
+
     const isReeferUnit = ["4F", "5F", "6F", "7F", "8F"].includes(selectedFleet);
 
     const newNorm: DieselNorms = {
@@ -336,4 +340,5 @@ const DieselNormsModal: React.FC<DieselNormsModalProps> = ({
   );
 };
 
+export default DieselNormsModal;
 export default DieselNormsModal;

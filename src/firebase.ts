@@ -140,14 +140,10 @@ const validateConfig = () => {
 validateConfig();
 
 // Initialize Firebase with the appropriate configuration - only if not already initialized
-let firebaseApp: FirebaseApp;
-const existingApps = getApps();
-if (existingApps.length === 0) {
-  firebaseApp = initializeApp(firebaseConfig);
-} else {
-  firebaseApp = existingApps[0];
-}
-export { firebaseApp };
+export const firebaseApp: FirebaseApp = (() => {
+  const existingApps = getApps();
+  return existingApps.length === 0 ? initializeApp(firebaseConfig) : (existingApps[0] as FirebaseApp);
+})();
 
 
 // =============================================================================
@@ -719,10 +715,15 @@ interface DBEventPathArgs {
 }
 
 export function buildDriverBehaviorDocRef(args: DBEventPathArgs) {
-  const [year, month, day] = args.eventDate.split("/");
+  // Ensure all path segments are definite strings to satisfy typings and avoid runtime issues
+  const [yearRaw, monthRaw, dayRaw] = (args.eventDate ?? "").split("/");
+  const year = yearRaw || "0000";
+  const month = monthRaw || "01";
+  const day = dayRaw || "01";
   const eventCategory = `${args.fleetNumber}_${args.eventType}_${year}`; // parent doc id
   const docId = `${day}_${args.eventTime}`; // keep colon → "20_17:23"
-  return doc(firestore, DRIVER_BEHAVIOR_EVENTS_ROOT, eventCategory, month, docId);
+  const fullPath = `${DRIVER_BEHAVIOR_EVENTS_ROOT}/${eventCategory}/${month}/${docId}`;
+  return doc(firestore, fullPath);
 }
 
 export async function updateDriverBehaviorEventInFirebase(
