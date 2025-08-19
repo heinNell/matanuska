@@ -16,7 +16,7 @@ interface StoreStats {
 const TyreStores: React.FC = () => {
   const { tyres, loading, error } = useTyres();
   const [selectedStore, setSelectedStore] = useState<TyreStoreLocation>(
-    TyreStoreLocation.VICHELS_STORE
+  TyreStoreLocation.VEHICLES_STORE
   );
   const [selectedTyre, setSelectedTyre] = useState<string>("");
   const [moveToStore, setMoveToStore] = useState<TyreStoreLocation>(TyreStoreLocation.HOLDING_BAY);

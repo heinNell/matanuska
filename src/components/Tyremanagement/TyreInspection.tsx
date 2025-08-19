@@ -1,5 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { TyreInspectionEntry, TyreSize as TyreSizeData, STANDARD_TYRE_SIZES, TYRE_LOAD_RATINGS } from "../../data/tyreData";
+import { TyreSize as TyreSizeData } from "../../types/tyre";
+import { TyreInspectionEntry } from "../../types/workshop-tyre-inventory";
+import { STANDARD_TYRE_SIZES, TYRE_LOAD_RATINGS } from "../../data/tyreData";
 import VehicleTyreView from "../../pages/tyres/VehicleTyreView";
 import { Tyre } from "../../types/tyre"; // Import Tyre from types/tyre to match VehicleTyreView
 import { VehicleSelector } from "../common/VehicleSelector";

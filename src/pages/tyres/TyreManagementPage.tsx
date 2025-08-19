@@ -28,14 +28,8 @@ import { useTyreReferenceData } from "../../context/TyreReferenceDataContext";
 
 // Import all necessary Enums and Types from your tyreData.ts file
 // Ensure this path is correct relative to TyreManagementPage.tsx
-import {
-  Tyre,
-  TyreConditionStatus,
-  TyreMountStatus,
-  TyreStatus,
-  TyreStoreLocation,
-  tyreTypes, // This is the array, not an enum
-} from "../../data/tyreData"; // ADJUST THIS PATH IF NECESSARY
+import type { Tyre, TyreType, TyreStatus, TyreMountStatus, TyreConditionStatus } from "../../types/tyre";
+import { TyreStoreLocation } from "../../types/tyre";
 
 // Import tyre components that need to be integrated
 import TyreAnalytics from "../../components/Tyremanagement/TyreAnalytics";
@@ -165,7 +159,7 @@ const TyreManagementPage: React.FC = () => {
       size: { width: 0, aspectRatio: 0, rimDiameter: 0 },
       loadIndex: 0,
       speedRating: "",
-      type: tyreTypes[0], // Using the first value from the tyreTypes array
+  type: ("steer" satisfies TyreType),
       purchaseDetails: {
         date: new Date().toISOString().split("T")[0] as string,
         cost: 0,
@@ -184,12 +178,12 @@ const TyreManagementPage: React.FC = () => {
         treadDepth: 20,
         pressure: 0,
         temperature: 0,
-        status: TyreConditionStatus.GOOD, // Corrected to use enum member
+  status: "good" as TyreConditionStatus,
         lastInspectionDate: new Date().toISOString().split("T")[0] as string,
         nextInspectionDue: "", // Corrected: Ensures this required field is present
       },
-      status: TyreStatus.NEW, // Corrected to use enum member
-      mountStatus: TyreMountStatus.UNMOUNTED, // Corrected to use enum member
+  status: "new" as TyreStatus,
+  mountStatus: "unmounted" as TyreMountStatus,
       maintenanceHistory: {
         rotations: [],
         repairs: [],
@@ -347,14 +341,14 @@ const TyreManagementPage: React.FC = () => {
   // Map TyreStatus enum values (domain) to legacy dashboard string statuses used in TyreDashboard logic
   const getStatusColor = (status: TyreStatus) => {
     switch (status) {
-      case TyreStatus.IN_SERVICE:
+      case "in_service":
         return "text-green-600 bg-green-50";
-      case TyreStatus.NEW:
-      case TyreStatus.SPARE:
+      case "new":
+      case "spare":
         return "text-blue-600 bg-blue-50";
-      case TyreStatus.RETREADED:
+      case "retreaded":
         return "text-amber-600 bg-amber-50";
-      case TyreStatus.SCRAPPED:
+      case "scrapped":
         return "text-red-600 bg-red-50";
       default:
         return "text-gray-600 bg-gray-50";
@@ -518,7 +512,7 @@ const TyreManagementPage: React.FC = () => {
                       <div>
                         <p className="text-sm text-gray-600">In Service</p>
                         <p className="text-xl font-bold text-gray-900">
-                          {tyres.filter((t) => t.status === TyreStatus.IN_SERVICE).length}
+                          {tyres.filter((t) => t.status === "in_service").length}
                         </p>
                       </div>
                     </div>
@@ -535,9 +529,7 @@ const TyreManagementPage: React.FC = () => {
                         <p className="text-sm text-gray-600">Available (New/Spare)</p>
                         <p className="text-xl font-bold text-gray-900">
                           {
-                            tyres.filter((t) =>
-                              [TyreStatus.NEW, TyreStatus.SPARE].includes(t.status)
-                            ).length
+                            tyres.filter((t) => ["new", "spare"].includes(t.status as any)).length
                           }
                         </p>
                       </div>
@@ -555,9 +547,7 @@ const TyreManagementPage: React.FC = () => {
                         <p className="text-sm text-gray-600">Retreaded/Scrapped</p>
                         <p className="text-xl font-bold text-gray-900">
                           {
-                            tyres.filter((t) =>
-                              [TyreStatus.RETREADED, TyreStatus.SCRAPPED].includes(t.status)
-                            ).length
+                            tyres.filter((t) => ["retreaded", "scrapped"].includes(t.status as any)).length
                           }
                         </p>
                       </div>
@@ -639,37 +629,37 @@ const TyreManagementPage: React.FC = () => {
                     All
                   </Button>
                   <Button
-                    variant={filterStatus === TyreStatus.IN_SERVICE ? "primary" : "outline"}
+                    variant={filterStatus === "in_service" ? "primary" : "outline"}
                     size="sm"
-                    onClick={() => setFilterStatus(TyreStatus.IN_SERVICE)}
+                    onClick={() => setFilterStatus("in_service")}
                   >
                     In Service
                   </Button>
                   <Button
-                    variant={filterStatus === TyreStatus.NEW ? "primary" : "outline"}
+                    variant={filterStatus === "new" ? "primary" : "outline"}
                     size="sm"
-                    onClick={() => setFilterStatus(TyreStatus.NEW)}
+                    onClick={() => setFilterStatus("new")}
                   >
                     New
                   </Button>
                   <Button
-                    variant={filterStatus === TyreStatus.SPARE ? "primary" : "outline"}
+                    variant={filterStatus === "spare" ? "primary" : "outline"}
                     size="sm"
-                    onClick={() => setFilterStatus(TyreStatus.SPARE)}
+                    onClick={() => setFilterStatus("spare")}
                   >
                     Spare
                   </Button>
                   <Button
-                    variant={filterStatus === TyreStatus.RETREADED ? "primary" : "outline"}
+                    variant={filterStatus === "retreaded" ? "primary" : "outline"}
                     size="sm"
-                    onClick={() => setFilterStatus(TyreStatus.RETREADED)}
+                    onClick={() => setFilterStatus("retreaded")}
                   >
                     Retreaded
                   </Button>
                   <Button
-                    variant={filterStatus === TyreStatus.SCRAPPED ? "primary" : "outline"}
+                    variant={filterStatus === "scrapped" ? "primary" : "outline"}
                     size="sm"
-                    onClick={() => setFilterStatus(TyreStatus.SCRAPPED)}
+                    onClick={() => setFilterStatus("scrapped")}
                   >
                     Scrapped
                   </Button>

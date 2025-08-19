@@ -89,7 +89,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
     },
     installation: initialData.installation || {
       vehicleId: "",
-      position: "",
+      position: "" as any,
       mileageAtInstallation: 0,
       installationDate: "",
       installedBy: "",
@@ -543,7 +543,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
                     vehicleType={formData.type as TyreType}
                     selectedPosition={safeString(formData.installation?.position as string)}
                     positions={vehicleTypePositions}
-                    onPositionClick={(position) => {
+                    onPositionClick={(position: string) => {
             setFormData((prev: Partial<Tyre>) => ({
                         ...prev,
                         installation: {

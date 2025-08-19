@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
 // ─── UI Components ───────────────────────────────────────────────
-import { Button } from "./components/ui/Button";
-import Modal from "./components/ui/Modal";
+import { Button } from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
 
 // ─── Icons ───────────────────────────────────────────────────────
 import {
@@ -172,8 +172,8 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
         const currency = (row.currency?.toUpperCase() === "USD" ? "USD" : "ZAR") as "USD" | "ZAR";
 
         // Fix: Use a safe fallback for row.date, and handle potential undefined
-        const dateStr: string = (row.date ?? "").trim() !== ""
-          ? (row.date as string)
+        const dateStr: string = (row.date?.trim() || "").length > 0
+          ? row.date as string
           : new Date().toISOString().split("T")[0];
 
         const record: DieselConsumptionRecord = {

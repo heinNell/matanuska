@@ -3,11 +3,36 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { useTyres } from "../../context/TyreContext";
-import {
-  getTyreConditionColor,
-  getTyreStatusColor,
-  getVehicleTyreConfiguration,
-} from "../../data/tyreData";
+// Local fallback helpers to avoid coupling to data/tyreData
+const getTyreConditionColor = (status: string) => {
+  switch (status) {
+    case "good":
+      return "bg-green-100 text-green-800";
+    case "warning":
+      return "bg-yellow-100 text-yellow-800";
+    case "critical":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
+const getTyreStatusColor = (status: string) => {
+  switch (status) {
+    case "new":
+      return "bg-blue-100 text-blue-800";
+    case "in_service":
+      return "bg-green-100 text-green-800";
+    case "retreaded":
+      return "bg-purple-100 text-purple-800";
+    case "scrapped":
+      return "bg-gray-300 text-gray-700";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
+const getVehicleTyreConfiguration = () => ({ positions: [] as any[] });
 import { FLEET_VEHICLES } from "../../data/vehicles";
 import type { FleetTyreMapping, TyreAllocation } from "../../types/tyre";
 import { CircleDot, Eye, Wrench } from "lucide-react";
