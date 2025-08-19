@@ -42,7 +42,6 @@ const tyresCollection = collection(db, "tyres");
 
 // Type for sync status
 export type SyncStatus = "idle" | "syncing" | "success" | "error";
-export type ConnectionStatus = "connected" | "disconnected" | "reconnecting";
 
 // Interface for sync listeners
 interface SyncListeners {

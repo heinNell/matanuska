@@ -1,10 +1,9 @@
-import React, { FC, useState, useEffect, useCallback } from 'react';
-import { useWialonUnits } from '../hooks/useWialonUnits';
-import { useWialonUnitDetail } from '../hooks/useWialonUnitDetail';
-import WialonUnitsMapMarkers from './WialonUnitsMapMarkers';
-import WialonUnitMap from './WialonUnitMap'; // Assuming a parent map component
-import RealtimeUnitTracker from './RealtimeUnitTracker'; // FIX: Added import for RealtimeUnitTracker
-import { UnitInfo } from '../types/wialon';
+import { FC, useState, useCallback } from 'react';
+import { useWialonUnits } from '@/hooks/useWialonUnits';
+import { useWialonUnitDetail } from '@/hooks/useWialonUnitDetail';
+import WialonUnitsMapMarkers from '@/components/WialonUnitsMapMarkers';
+import RealtimeUnitTracker from '@/components/RealtimeUnitTracker'; // FIX: Added import for RealtimeUnitTracker
+import { UnitInfo } from '@/types/wialon';
 
 // Helper function to render a single unit item in the sidebar list
 const UnitListItem: FC<{ unit: UnitInfo, onUnitClick: (unit: UnitInfo) => void, isSelected: boolean }> = ({ unit, onUnitClick, isSelected }) => {
