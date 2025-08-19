@@ -1,197 +1,18 @@
-import { Timestamp } from "firebase/firestore";
+// Timestamp no longer used in this module
+// Use canonical types from the shared tyre model to avoid declaration merging conflicts
+import type {
+  Tyre,
+  TyreSize,
+  TyreType,
+  TyreAllocation,
+  StockEntry,
+  StockEntryHistory,
+} from "../types/tyre";
 
 // The full code with corrections
 // (All original interfaces and helper functions are included for completeness)
 
-// Consolidated and comprehensive Tyre interface that will be the main model for all tyre data
-export interface Tyre {
-  id?: string;
-  tyreId?: string; // Made optional for cases when ID is not yet assigned
-  serialNumber?: string;
-  dotCode?: string;
-  manufacturingDate?: string;
-  brand?: string;
-  model?: string;  // Optional model property
-  pattern?: string;
-  size?: TyreSize | string;
-  loadIndex?: number;
-  speedRating?: string;
-  type?: 'drive' | 'steer' | 'trailer';
-  purchaseDetails?: {
-    date: string;
-    cost: number;
-    supplier: string;
-    warranty: string;
-  };
-  installation?: TyreInstallation | {
-    vehicleId: string;
-    position: string;
-    mileageAtInstallation: number;
-    installationDate: string;
-    installedBy?: string;
-  };
-  condition?: TyreCondition | {
-    treadDepth: number;
-    pressure: number;
-    temperature?: number;
-    status: 'good' | 'warning' | 'critical' | 'needs_replacement';
-    lastInspectionDate: string;
-    nextInspectionDue?: string;
-  };
-  status?: 'new' | 'used' | 'scrapped' | TyreStatus;
-  mountStatus?: 'on_vehicle' | 'in_store' | 'at_service' | TyreMountStatus;
-  maintenanceHistory?: any[];
-  kmRun?: number;
-  kmRunLimit?: number;
-  notes?: string;
-  location?: string | TyreStoreLocation;
-  purchaseDate?: string;
-  costPrice?: number;
-  vendor?: string;
-  warrantyExpiry?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-// Define a comprehensive TyreSize interface
-export interface TyreSize {
-  width: number;
-  aspectRatio: number;
-  rimDiameter: number;
-}
-
-// Types for tyre history events
-export interface TyreRotation {
-  id?: string; // Made optional to handle data without initial ID
-  date: string;
-  fromPosition: TyrePosition; // Explicitly TyrePosition
-  toPosition: TyrePosition; // Explicitly TyrePosition
-  mileage: number;
-  technician: string;
-  notes?: string;
-}
-
-export interface TyreRepair {
-  id?: string; // Made optional to handle data without initial ID
-  date: string;
-  type: string;
-  description: string;
-  cost: number;
-  technician: string;
-  notes?: string;
-}
-
-// This is the simpler inspection record used within Tyre's maintenanceHistory
-export interface TyreInspection {
-  id?: string; // Made optional to handle data without initial ID
-  date: string;
-  inspector: string;
-  treadDepth: number;
-  pressure: number;
-  temperature: number;
-  condition: string;
-  notes: string;
-  images?: string[];
-}
-
-// This new interface represents a full inspection record as it might be stored in a separate collection
-// or when adding a new inspection, containing all necessary context.
-export interface TyreInspectionRecord {
-  id?: string; // Changed from required to optional
-  tyreId: string;
-  vehicleId: string;
-  vehicleName: string;
-  position: TyrePosition;
-  date: string;
-  inspectorName: string;
-  mileage: number; // This might be currentOdometer
-  treadDepth: number;
-  pressure: number;
-  temperature: number;
-  condition: string; // e.g., "good", "warning", "critical"
-  notes: string;
-  images?: string[];
-  createdAt?: Timestamp;
-
-  // Added properties based on the TypeScript error message
-  currentOdometer?: number; // Made optional as per latest error
-  previousOdometer?: number;
-  distanceTraveled?: number;
-  damage?: string;
-  photos?: string[]; // Added based on error message
-  location?: TyreStoreLocation; // Added based on error message
-  inspectionDate?: string; // Added based on error message (might be same as 'date')
-  signature?: string; // Added based on error message
-  // Generic field for any other missing properties
-  otherDetails?: Record<string, any>;
-}
-
-// History event for a tyre movement
-export interface StockEntryHistory {
-  event: "mounted" | "removed" | "moved" | "retreaded" | "scrapped";
-  fromStore?: string;
-  toStore: string;
-  vehicleReg?: string;
-  position?: TyrePosition;
-  odometer: number;
-  date: string; // ISO string
-  user: string;
-}
-
-// Core tyre stock entry
-export interface StockEntry {
-  tyreId: string; // unique identifier
-  brand: string;
-  pattern: string;
-  size: string;
-  type: TyreType; // Correctly added to fix the error
-  model?: string;  // Add optional model property here too
-  vehicleReg?: string; // only in VehicleTyreStore
-  position?: TyrePosition; // slot/axle position code
-  currentTreadDepth: number; // mm
-  lastMountOdometer: number; // odometer at mount
-  currentOdometer: number; // latest odometer reading
-  kmCovered: number; // cumulative km
-  status: "active" | "holding" | "retread" | "scrapped";
-  history: StockEntryHistory[];
-}
-
-// Firestore Tyre Store document
-export interface TyreStore {
-  id?: string; // Changed from required to optional
-  name: string; // human-friendly name
-  entries: StockEntry[];
-  dateAdded?: Timestamp; // server timestamp
-}
-
-// Standardized tyre position names (e.g. V1-V10, T1-T16, P1-P6, Q1-Q10, SP)
-export type TyrePosition =
-  | `V${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10}`
-  | `T${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16}`
-  | `P${1 | 2 | 3 | 4 | 5 | 6}`
-  | `Q${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10}`
-  | "SP";
-
-// Allocation entry for a single position on a vehicle
-export interface TyreAllocation {
-  position: TyrePosition;
-  tyreCode?: string;
-  brand?: string;
-  pattern?: string;
-  size?: string;
-  lastInspectionDate?: string;
-  treadDepth?: number;
-  pressure?: number;
-  odometerAtFitment?: number;
-  kmSinceFitment?: number;
-}
-
-// Mapping of a fleet number to its tyre positions
-export interface FleetTyreMapping {
-  fleetNumber: string;
-  vehicleType: string;
-  positions: TyreAllocation[];
-}
+// NOTE: Type declarations were moved to src/types/tyre.ts. This file now imports and uses them.
 
 // Define the structure for the new fleet position data
 export interface FleetPositionData {
@@ -283,9 +104,9 @@ export function parseTyreSize(sizeStr: string): TyreSize {
 
   if (match) {
     return {
-      width: parseInt(match[1], 10),
-      aspectRatio: parseInt(match[2], 10),
-      rimDiameter: parseFloat(match[3]),
+  width: parseInt(match[1]!, 10),
+  aspectRatio: parseInt(match[2]!, 10),
+  rimDiameter: parseFloat(match[3]!),
     };
   }
 
@@ -312,16 +133,16 @@ export function createStockEntryFromAllocation(tyreAllocation: TyreAllocation, t
   };
 
   return {
-    tyreId: tyreAllocation.tyreCode!, // Non-null assertion after check
-    brand: tyreAllocation.brand!, // Non-null assertion after check
-    pattern: tyreAllocation.pattern!, // Non-null assertion after check
-    size: tyreAllocation.size!, // Non-null assertion after check
+    tyreId: tyreAllocation.tyreCode!,
+    brand: tyreAllocation.brand!,
+    pattern: tyreAllocation.pattern!,
+    size: tyreAllocation.size!,
     type: tyreType,
     currentTreadDepth: tyreAllocation.treadDepth ?? 0,
     lastMountOdometer: tyreAllocation.odometerAtFitment ?? 0,
     currentOdometer: tyreAllocation.odometerAtFitment ?? 0,
     kmCovered: tyreAllocation.kmSinceFitment ?? 0,
-    status: "active", // Default status
+    status: "active",
     history: [initialHistory],
     position: tyreAllocation.position,
   };
@@ -354,17 +175,16 @@ export const TYRE_PATTERNS = [
   'HSC1'
 ] as const;
 
-export const TYRE_SIZES = [
-  '315/80R22.5',
+export const tyreSizes = [
   '295/80R22.5',
-  '385/65R22.5',
-  '275/70R22.5',
+  '315/80R22.5',
+  '295/75R22.5',
   '11R22.5',
   '12R22.5',
-  '13R22.5',
-  '295/75R22.5',
-  '285/75R24.5',
-  '255/70R22.5'
+  '385/65R22.5',
+  '275/70R22.5',
+  '315/80R22.16',
+  '315/80R22.17'
 ] as const;
 
 // Common tyre size patterns for validation
@@ -441,17 +261,7 @@ export const tyreBrands = [
 ];
 
 // --- TYRE SIZES ---
-export const tyreSizes = [
-  '295/80R22.5',
-  '315/80R22.5',
-  '295/75R22.5',
-  '11R22.5',
-  '12R22.5',
-  '385/65R22.5',
-  '275/70R22.5',
-  '315/80R22.16',
-  '315/80R22.17'
-];
+// (removed duplicate tyreSizes - using the earlier const version above)
 
 // --- TYRE PATTERN DATA ---
 export const tyrePatterns = [
@@ -588,8 +398,8 @@ export const vehiclePositions = [
       { id: 'P2', name: 'Front Right' },
       { id: 'P3', name: 'Rear Left' },
       { id: 'P4', name: 'Rear Right' },
-      { id: 'P5', name: 'Middle Left' }, // For 6-wheelers
-      { id: 'P6', name: 'Middle Right' }, // For 6-wheelers
+      { id: 'P5', name: 'Middle Left' },
+      { id: 'P6', name: 'Middle Right' },
       { id: 'SP', name: 'Spare' }
     ]
   }
