@@ -89,10 +89,7 @@ export const TyreReports: React.FC = () => {
     alert(`Generating ${type} report for ${dateRange} days`);
   };
 
-  const handlePerformanceSubmit = (data: any) => {
-    console.log("Performance data submitted:", data);
-    alert("Performance data saved successfully!");
-  };
+  // Note: Performance form component is not present in this version.
 
   return (
     <div className="space-y-6">

@@ -91,7 +91,7 @@ export const geocodeAddress = async (address: string): Promise<google.maps.LatLn
 
       const geocoder = new google.maps.Geocoder();
 
-      return new Promise<google.maps.LatLng | null>((resolve, reject) => {
+      return new Promise<google.maps.LatLng | null>((resolve) => {
         geocoder.geocode({ address }, (results, status) => {
           if (status === "OK" && results && results[0]) {
             resolve(results[0].geometry.location);
@@ -117,14 +117,15 @@ export const geocodeAddress = async (address: string): Promise<google.maps.LatLn
  * Example: React useEffect with proper error handling
  */
 export const useDataFetching = (userId: string | undefined) => {
+  const [userData, setUserData] = React.useState<any>(null);
+
   React.useEffect(() => {
     if (!userId) return;
 
-    // Wrap async operations in effects
     safeAsyncEntry(
       async () => {
         const data = await fetchUserData(userId);
-        // Process data...
+        setUserData(data);
       },
       {
         hook: "useEffect",
@@ -133,6 +134,8 @@ export const useDataFetching = (userId: string | undefined) => {
       }
     );
   }, [userId]);
+
+  return userData;
 };
 
 /**

@@ -406,7 +406,7 @@ const TyrePerformanceReport: React.FC = () => {
                   nameKey="pattern"
                   label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                 >
-                  {performanceData.wearPatterns.map((entry, index) => (
+                  {performanceData.wearPatterns.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -544,7 +544,7 @@ const TyrePerformanceReport: React.FC = () => {
                   nameKey="reason"
                   label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                 >
-                  {performanceData.failureReasons.map((entry, index) => (
+                  {performanceData.failureReasons.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

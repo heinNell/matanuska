@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { AlertTriangle, CheckCircle, Package, DollarSign } from 'lucide-react';
+import { AlertTriangle, Package, DollarSign } from 'lucide-react';
 
 interface TyreInventoryStatsProps {
   inventory: Array<{
