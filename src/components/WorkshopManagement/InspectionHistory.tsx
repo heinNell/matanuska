@@ -101,13 +101,6 @@ const InspectionHistory: React.FC = () => {
     return { passed, failed };
   };
 
-  const getStatusColor = (items: InspectionItem[]) => {
-    const { failed } = getStatusCounts(items);
-
-    if (failed > 0) return "text-red-500";
-    return "text-green-500";
-  };
-
   const getStatusIcon = (items: InspectionItem[]) => {
     const { failed } = getStatusCounts(items);
 

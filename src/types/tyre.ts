@@ -238,7 +238,6 @@ export function parseTyreSize(sizeStr: string): TyreSize {
   const match = sizeStr.match(regex);
   if (match) {
     return {
-      // Corrected non-null assertions on the accessors
       width: parseInt(match[1]!, 10),
       aspectRatio: parseInt(match[2]!, 10),
       rimDiameter: parseFloat(match[3]!),
@@ -251,3 +250,4 @@ export function parseTyreSize(sizeStr: string): TyreSize {
     rimDiameter: 0,
     displayString: sizeStr,
   };
+}
