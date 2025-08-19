@@ -50,67 +50,71 @@ const LoadImportModal: React.FC<LoadImportModalProps> = ({ isOpen, onClose }) =>
   } | null>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) {
-      const file = e.target.files[0];
-      setCsvFile(file);
+    const selected = e.target.files?.[0] ?? null;
+    setCsvFile(selected);
 
-      // Generate preview
-      try {
-        const text = await file.text();
-        const data = parseCSV(text);
+    if (!selected) {
+      setPreviewData([]);
+      return;
+    }
 
-        // Create a preview format that's easier to display
-        const previewData = data.slice(0, 3).map((row: string[]) => {
-          return {
-            "Load Ref": row[0] || "",
-            Registration: row[3] || "",
-            Driver: row[5] || "",
-            Client: row[6] || "",
-            "Start Date": row[9] || "",
-            "End Date": row[10] || "",
-            Route: `${row[12] || ""} - ${row[14] || ""}`,
-            "Distance (km)": row[17] || "",
-            Revenue: row[19] || "",
-            Description: row[21] || "",
-          };
-        });
+    // Generate preview
+    try {
+      const text = await selected.text();
+      const data = parseCSV(text);
 
-        setPreviewData(previewData);
-      } catch (error) {
-        console.error("Failed to parse CSV for preview:", error);
-      }
+      // Create a preview format that's easier to display
+      const previewData = data.slice(0, 3).map((row: string[]) => {
+        return {
+          "Load Ref": row[0] || "",
+          Registration: row[3] || "",
+          Driver: row[5] || "",
+          Client: row[6] || "",
+          "Start Date": row[9] || "",
+          "End Date": row[10] || "",
+          Route: `${row[12] || ""} - ${row[14] || ""}`,
+          "Distance (km)": row[17] || "",
+          Revenue: row[19] || "",
+          Description: row[21] || "",
+        };
+      });
+
+      setPreviewData(previewData);
+    } catch (error) {
+      console.error("Failed to parse CSV for preview:", error);
     }
   };
 
   // Parse CSV with position-based mapping instead of header-based
   const parseCSV = (text: string) => {
-    const lines = text.split("\n");
-    const data = [];
+    const lines = (text || "").split("\n");
+    const data: string[][] = [];
 
     // Skip the first row (headers) as requested
     for (let i = 1; i < lines.length; i++) {
-      if (lines[i].trim()) {
-        // Parse CSV values with respect to quotes
-        const values = [];
-        let currentValue = "";
-        let inQuotes = false;
+      const line = lines[i] ?? "";
+      if (!line.trim()) continue;
 
-        for (const char of lines[i]) {
-          if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === "," && !inQuotes) {
-            values.push(currentValue.trim());
-            currentValue = "";
-          } else {
-            currentValue += char;
-          }
-        }
-        values.push(currentValue.trim()); // Don't forget the last value
+      // Parse CSV values with respect to quotes
+      const values: string[] = [];
+      let currentValue = "";
+      let inQuotes = false;
 
-        // Only add if we have enough values
-        if (values.length >= 20) {
-          data.push(values);
+      for (const char of line) {
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === "," && !inQuotes) {
+          values.push(currentValue.trim());
+          currentValue = "";
+        } else {
+          currentValue += char;
         }
+      }
+      values.push(currentValue.trim()); // Don't forget the last value
+
+      // Only add if we have enough values
+      if (values.length >= 20) {
+        data.push(values);
       }
     }
 
@@ -173,9 +177,12 @@ const LoadImportModal: React.FC<LoadImportModalProps> = ({ isOpen, onClose }) =>
           if (!dateStr) return "";
 
           // Check if it's in DD/MM/YYYY format
-          const dateParts = dateStr.split("/");
-          if (dateParts.length === 3) {
-            return `${dateParts[2]}-${dateParts[1].padStart(2, "0")}-${dateParts[0].padStart(2, "0")}`;
+          const parts = dateStr.split("/");
+          if (parts.length === 3) {
+            const [dd = "", mm = "", yyyy = ""] = parts;
+            if (yyyy && mm && dd) {
+              return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+            }
           }
 
           return dateStr; // Return as is if not in expected format
@@ -534,7 +541,7 @@ const LoadImportModal: React.FC<LoadImportModalProps> = ({ isOpen, onClose }) =>
                 <table className="min-w-full text-xs">
                   <thead>
                     <tr className="border-b">
-                      {Object.keys(previewData[0])
+                      {Object.keys(previewData[0] || {})
                         .slice(0, 5)
                         .map((header) => (
                           <th
@@ -544,7 +551,7 @@ const LoadImportModal: React.FC<LoadImportModalProps> = ({ isOpen, onClose }) =>
                             {header}
                           </th>
                         ))}
-                      {Object.keys(previewData[0]).length > 5 && (
+                      {Object.keys(previewData[0] || {}).length > 5 && (
                         <th className="px-2 py-1 text-left font-medium text-gray-700">...</th>
                       )}
                     </tr>
