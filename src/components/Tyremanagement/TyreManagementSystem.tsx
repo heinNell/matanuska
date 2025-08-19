@@ -169,7 +169,7 @@ export const TyreManagementSystem: React.FC = () => {
     size: { width: 315, aspectRatio: 80, rimDiameter: 22.5 },
     type: "drive",
     purchaseDetails: {
-      date: new Date().toISOString().split("T")[0],
+  date: new Date().toISOString().slice(0, 10),
       cost: 0,
       supplier: "",
       warranty: "2 years",
@@ -178,7 +178,7 @@ export const TyreManagementSystem: React.FC = () => {
       treadDepth: 20,
       pressure: 110,
       status: "good",
-      lastInspection: new Date().toISOString().split("T")[0],
+  lastInspection: new Date().toISOString().slice(0, 10),
     },
     status: "new",
     mountStatus: "in_store",
@@ -255,7 +255,7 @@ export const TyreManagementSystem: React.FC = () => {
       return;
     }
 
-    const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().slice(0, 10);
 
     // Deep-merge defaults to avoid any string | undefined issues
     const mergedPurchaseDetails = {
@@ -314,7 +314,7 @@ export const TyreManagementSystem: React.FC = () => {
       size: { width: 315, aspectRatio: 80, rimDiameter: 22.5 },
       type: "drive",
       purchaseDetails: {
-        date: new Date().toISOString().split("T")[0],
+  date: new Date().toISOString().slice(0, 10),
         cost: 0,
         supplier: "",
         warranty: "2 years",
@@ -323,7 +323,7 @@ export const TyreManagementSystem: React.FC = () => {
         treadDepth: 20,
         pressure: 110,
         status: "good",
-        lastInspection: new Date().toISOString().split("T")[0],
+  lastInspection: new Date().toISOString().slice(0, 10),
       },
       status: "new",
       mountStatus: "in_store",

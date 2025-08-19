@@ -21,7 +21,7 @@ const filterByDateRange = (data: any[], startDate: Date, endDate: Date, dateFiel
 
 // Simulate API endpoints for fleet analytics data
 export const api = {
-  async fetchFleetStatus(filters: string[] = [], startDate?: Date, endDate?: Date) {
+  async fetchFleetStatus(_filters: string[] = [], _startDate?: Date, _endDate?: Date) {
     // Simulate network request
     await delay(500);
 
@@ -35,6 +35,10 @@ export const api = {
 
     // Apply date filtering if dates are provided
     let data = [...monthlyROIData];
+
+    if (startDate && endDate) {
+      data = filterByDateRange(data, startDate, endDate);
+    }
 
     // Filter by specific data points if needed
     // In a real application, this would be handled by the backend
@@ -55,13 +59,22 @@ export const api = {
       return [];
     }
 
-    return fleetUtilizationData;
+    let data = [...fleetUtilizationData];
+    if (startDate && endDate) {
+      data = filterByDateRange(data, startDate, endDate);
+    }
+
+    return data;
   },
 
   async fetchPerformanceData(filters: string[] = [], startDate?: Date, endDate?: Date) {
     await delay(700);
 
     let filteredData = [...performanceData];
+
+    if (startDate && endDate) {
+      filteredData = filterByDateRange(filteredData, startDate, endDate);
+    }
 
     // Apply filters - this would be done server-side in a real app
     if (filters.length > 0) {
@@ -83,7 +96,7 @@ export const api = {
     return filteredData;
   },
 
-  async fetchCostAnalysisData(filters: string[] = [], startDate?: Date, endDate?: Date) {
+  async fetchCostAnalysisData(_filters: string[] = [], startDate?: Date, endDate?: Date) {
     await delay(650);
 
     let data = [...costAnalysisData];
@@ -124,7 +137,7 @@ export const api = {
     return data;
   },
 
-  async fetchVehicleUtilizationData(filters: string[] = [], startDate?: Date, endDate?: Date) {
+  async fetchVehicleUtilizationData(_filters: string[] = [], startDate?: Date, endDate?: Date) {
     await delay(700);
 
     let data = [...vehicleUtilizationData];

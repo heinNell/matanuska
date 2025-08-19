@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { useTyres } from '../../context/TyreContext';
-import { Tyre, calculateRemainingLife, calculateCostPerKm, formatTyreSize } from '../../types/tyre';
+import { Tyre, calculateRemainingLife, calculateCostPerKm } from '../../types/tyre';
 import { BarChart3, PieChart, TrendingUp, DollarSign } from 'lucide-react';
 import LoadingIndicator from '../ui/LoadingIndicator';
 import ErrorMessage from '../ui/ErrorMessage';
@@ -24,8 +24,8 @@ const BrandDistributionChart = ({ tyres }: { tyres: Tyre[] }) => {
             <span>{count} tyres</span>
           </div>
           <div className="w-full bg-gray-200 h-2 rounded-full">
-            <div 
-              className="bg-blue-600 h-2 rounded-full" 
+            <div
+              className="bg-blue-600 h-2 rounded-full"
               style={{width: `${(count / tyres.length) * 100}%`}}
             ></div>
           </div>
@@ -43,7 +43,7 @@ const TreadWearChart = ({ tyres }: { tyres: Tyre[] }) => {
     'Fair (3-5mm)': 0,
     'Poor (<3mm)': 0
   };
-  
+
   tyres.forEach(tyre => {
     const depth = tyre.condition.treadDepth;
     if (depth >= 8) wearLevels['New (8mm+)']++;
@@ -62,7 +62,7 @@ const TreadWearChart = ({ tyres }: { tyres: Tyre[] }) => {
             <span>{count} tyres</span>
           </div>
           <div className="w-full bg-gray-200 h-2 rounded-full">
-            <div 
+            <div
               className={`h-2 rounded-full ${
                 level === 'New (8mm+)' ? 'bg-green-500' :
                 level === 'Good (5-8mm)' ? 'bg-blue-500' :
@@ -84,7 +84,7 @@ const TyreAnalytics: React.FC = () => {
   const [avgCostPerKm, setAvgCostPerKm] = useState<number>(0);
   const [totalTyreCost, setTotalTyreCost] = useState<number>(0);
   const [avgTyreLife, setAvgTyreLife] = useState<number>(0);
-  
+
   // Calculate analytics data
   useEffect(() => {
     if (tyres.length > 0) {
@@ -93,36 +93,36 @@ const TyreAnalytics: React.FC = () => {
       tyres.forEach(tyre => {
         brandCount[tyre.brand] = (brandCount[tyre.brand] || 0) + 1;
       });
-      
+
       const sortedBrands = Object.entries(brandCount)
         .map(([brand, count]) => ({ brand, count }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
-      
+
       setTopBrands(sortedBrands);
-      
+
       // Cost calculations
       let totalCost = 0;
       let validCostPerKmCount = 0;
       let totalCostPerKm = 0;
-      
+
       tyres.forEach(tyre => {
         totalCost += tyre.purchaseDetails?.cost || 0;
-        
+
         const costPerKm = calculateCostPerKm(tyre);
         if (costPerKm && costPerKm > 0) {
           totalCostPerKm += costPerKm;
           validCostPerKmCount++;
         }
       });
-      
+
       setTotalTyreCost(totalCost);
       setAvgCostPerKm(validCostPerKmCount > 0 ? totalCostPerKm / validCostPerKmCount : 0);
-      
+
       // Tyre life calculation
       let totalLife = 0;
       let validLifeCount = 0;
-      
+
       tyres.forEach(tyre => {
         const remainingLife = calculateRemainingLife(tyre);
         if (remainingLife > 0) {
@@ -130,7 +130,7 @@ const TyreAnalytics: React.FC = () => {
           validLifeCount++;
         }
       });
-      
+
       setAvgTyreLife(validLifeCount > 0 ? totalLife / validLifeCount : 0);
     }
   }, [tyres]);
@@ -138,7 +138,7 @@ const TyreAnalytics: React.FC = () => {
   if (loading) {
     return <LoadingIndicator text="Loading tyre analytics..." />;
   }
-  
+
   if (error) {
     return <ErrorMessage message={`Error loading analytics: ${error.message}`} />;
   }
@@ -164,7 +164,7 @@ const TyreAnalytics: React.FC = () => {
             <p className="text-xs text-muted-foreground">Fleet average</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Average Tyre Life</CardTitle>
@@ -177,7 +177,7 @@ const TyreAnalytics: React.FC = () => {
             <p className="text-xs text-muted-foreground">Expected lifespan</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Investment</CardTitle>
@@ -205,7 +205,7 @@ const TyreAnalytics: React.FC = () => {
             <BrandDistributionChart tyres={tyres} />
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -244,12 +244,12 @@ const TyreAnalytics: React.FC = () => {
                       const cost = calculateCostPerKm(t) || 0;
                       return sum + cost;
                     }, 0) / (brandTyres.length || 1);
-                    
+
                     const brandAvgLife = brandTyres.reduce((sum, t) => {
                       const life = calculateRemainingLife(t);
                       return sum + life;
                     }, 0) / (brandTyres.length || 1);
-                    
+
                     return (
                       <tr key={brand} className="border-t">
                         <td className="py-3 font-medium">{brand}</td>
