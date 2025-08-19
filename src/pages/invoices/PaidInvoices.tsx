@@ -67,8 +67,9 @@ const PaidInvoicesPage: React.FC = () => {
       return acc;
     }, {} as Record<string, number>);
 
-    return Object.entries(methodCounts)
-      .sort(([, a], [, b]) => b - a)[0][0];
+  const ordered = Object.entries(methodCounts).sort(([, a], [, b]) => b - a);
+  const top = ordered[0];
+  return top ? top[0] : "N/A";
   };
 
   return (

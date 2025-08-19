@@ -35,10 +35,10 @@ const CreateQuotePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().slice(0, 10);
   const fourteenDaysLater = new Date();
   fourteenDaysLater.setDate(fourteenDaysLater.getDate() + 14);
-  const fourteenDaysLaterStr = fourteenDaysLater.toISOString().split('T')[0];
+  const fourteenDaysLaterStr = fourteenDaysLater.toISOString().slice(0, 10);
   
   const generateQuoteNumber = () => {
     const randomNum = Math.floor(10000 + Math.random() * 90000);
@@ -73,37 +73,27 @@ const CreateQuotePage: React.FC = () => {
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
-    // Update the form data based on the field name
-    setFormData(prevData => {
-      const newData = { ...prevData, [name]: value };
-      
-      // Recalculate VAT and total if ratePerTrip changed
-      if (name === 'ratePerTrip') {
-        const rate = parseFloat(value) || 0;
-        const vat = rate * 0.15; // 15% VAT
+
+    setFormData((prevData) => {
+      const typedName = name as keyof QuoteFormData;
+      const base: QuoteFormData = { ...prevData, [typedName]: value } as QuoteFormData;
+
+      if (typedName === 'ratePerTrip') {
+        const rate = parseFloat(String(value)) || 0;
+        const vat = rate * 0.15;
         const total = rate + vat;
-        
-        return {
-          ...newData,
-          vat,
-          total
-        };
+        return { ...base, vat, total } as QuoteFormData;
       }
-      
-      // Recalculate valid until date if validityDays changed
-      if (name === 'validityDays') {
-        const days = parseInt(value) || 0;
+
+      if (typedName === 'validityDays') {
+        const days = parseInt(String(value)) || 0;
         const validDate = new Date();
         validDate.setDate(validDate.getDate() + days);
-        
-        return {
-          ...newData,
-          validUntil: validDate.toISOString().split('T')[0]
-        };
+        const validUntilStr = validDate.toISOString().slice(0, 10);
+        return { ...base, validUntil: validUntilStr } as QuoteFormData;
       }
-      
-      return newData;
+
+      return base;
     });
   };
   

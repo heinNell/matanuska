@@ -34,10 +34,10 @@ const CreateInvoicePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().slice(0, 10);
   const thirtyDaysLater = new Date();
   thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30);
-  const thirtyDaysLaterStr = thirtyDaysLater.toISOString().split('T')[0];
+  const thirtyDaysLaterStr = thirtyDaysLater.toISOString().slice(0, 10);
   
   const generateInvoiceNumber = () => {
     const randomNum = Math.floor(10000 + Math.random() * 90000);

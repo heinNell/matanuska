@@ -60,8 +60,8 @@ const InvoiceBuilder: React.FC = () => {
     invoiceNumber: "INV-" + Math.floor(10000 + Math.random() * 90000),
     customer: "",
     customerId: "",
-    issueDate: new Date().toISOString().split("T")[0],
-    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+  issueDate: new Date().toISOString().slice(0, 10),
+  dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     items: [
       {
         id: "1",
