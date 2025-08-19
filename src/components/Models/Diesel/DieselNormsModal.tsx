@@ -341,4 +341,3 @@ const DieselNormsModal: React.FC<DieselNormsModalProps> = ({
 };
 
 export default DieselNormsModal;
-export default DieselNormsModal;
