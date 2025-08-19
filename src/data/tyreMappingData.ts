@@ -161,7 +161,8 @@ export function buildVehicleTyreStore(): TyreStore {
         brand: '',
         pattern: '',
         size: '',
-        type: row.StoreName,
+  // Default type to a valid TyreType; store name does not represent tyre type
+  type: 'drive',
         vehicleReg: row.RegistrationNo,
         position: row.TyrePosDescription as TyrePosition,
         currentTreadDepth: 0,

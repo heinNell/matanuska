@@ -255,11 +255,35 @@ export const TyreManagementSystem: React.FC = () => {
       return;
     }
 
+    const today = new Date().toISOString().split("T")[0];
+
+    // Deep-merge defaults to avoid any string | undefined issues
+    const mergedPurchaseDetails = {
+      date: newTyre.purchaseDetails?.date ?? today,
+      cost: newTyre.purchaseDetails?.cost ?? 0,
+      supplier: newTyre.purchaseDetails?.supplier ?? "",
+      warranty: newTyre.purchaseDetails?.warranty ?? "2 years",
+    };
+
+    const mergedInstallation = {
+      vehicleId: newTyre.installation?.vehicleId ?? "",
+      position: newTyre.installation?.position ?? "",
+      mileageAtInstallation: newTyre.installation?.mileageAtInstallation ?? 0,
+      installationDate: newTyre.installation?.installationDate ?? "",
+    };
+
+    const mergedCondition = {
+      treadDepth: newTyre.condition?.treadDepth ?? 20,
+      pressure: newTyre.condition?.pressure ?? 110,
+      status: newTyre.condition?.status ?? "good",
+      lastInspection: newTyre.condition?.lastInspection ?? today,
+    };
+
     const tyreToAdd: Tyre = {
       tyreId: `TYR-${Date.now()}`,
       serialNumber: newTyre.serialNumber ?? "",
       dotCode: newTyre.dotCode ?? "",
-      manufacturingDate: newTyre.manufacturingDate ?? new Date().toISOString().split("T")[0],
+      manufacturingDate: newTyre.manufacturingDate ?? today,
       brand: newTyre.brand ?? "",
       model: newTyre.model ?? "",
       pattern: newTyre.pattern ?? "",
@@ -267,26 +291,9 @@ export const TyreManagementSystem: React.FC = () => {
       loadIndex: newTyre.loadIndex ?? 152,
       speedRating: newTyre.speedRating ?? "L",
       type: newTyre.type ?? "drive",
-      purchaseDetails:
-        newTyre.purchaseDetails ?? {
-          date: new Date().toISOString().split("T")[0],
-          cost: 0,
-          supplier: "",
-          warranty: "2 years",
-        },
-      installation: newTyre.installation ?? {
-        vehicleId: "",
-        position: "",
-        mileageAtInstallation: 0,
-        installationDate: "",
-      },
-      condition:
-        newTyre.condition ?? {
-          treadDepth: 20,
-          pressure: 110,
-          status: "good",
-          lastInspection: new Date().toISOString().split("T")[0],
-        },
+      purchaseDetails: mergedPurchaseDetails,
+      installation: mergedInstallation,
+      condition: mergedCondition,
       status: newTyre.status ?? "new",
       mountStatus: newTyre.mountStatus ?? "in_store",
       kmRun: newTyre.kmRun ?? 0,
