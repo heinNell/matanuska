@@ -14,6 +14,7 @@ import type {
   TyreStatus,
   TyreMountStatus,
   TyreConditionStatus,
+  TyrePosition, // Add this import
 } from "../../../types/tyre";
 import { TyreStoreLocation } from "../../../types/tyre";
 
@@ -544,11 +545,11 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
                     selectedPosition={safeString(formData.installation?.position as string)}
                     positions={vehicleTypePositions}
                     onPositionClick={(position: string) => {
-            setFormData((prev: Partial<Tyre>) => ({
+                      setFormData((prev: Partial<Tyre>) => ({
                         ...prev,
                         installation: {
                           ...prev.installation!,
-                          position,
+                          position: position as TyrePosition,
                         },
                       }));
                     }}

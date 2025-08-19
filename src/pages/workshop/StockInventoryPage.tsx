@@ -11,10 +11,11 @@ import {
 import Papa from "papaparse";
 import React, { useMemo, useState } from "react";
 import { StockItem, useWorkshop } from "../../context/WorkshopContext";
-import { Button } from "@/components/ui/Button";
 
 // Replace the empty interface with a type alias for clarity
 type StockInventoryPageProps = object;
+
+type StockItemInput = Omit<StockItem, "id">;
 
 const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
   const { stockItems, vendors, addStockItem, updateStockItem, deleteStockItem, isLoading } =
@@ -27,7 +28,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
 
   // Form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<StockItemInput>({
     itemCode: "",
     itemName: "",
     category: "",
@@ -84,27 +85,25 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    const field = name as keyof StockItemInput;
 
-    // Convert numeric fields
-    if (name === "quantity" || name === "reorderLevel" || name === "cost") {
-      setFormData({
-        ...formData,
-        [name]: parseFloat(value) || 0,
-      });
-    } else if (name === "vendor") {
-      // Find the vendor ID when vendor name is selected
-      const selectedVendor = vendors.find((v) => v.vendorName === value);
-      setFormData({
-        ...formData,
-        vendor: value,
-        vendorId: selectedVendor?.id || "",
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+    setFormData((prev) => {
+      const next: StockItemInput = { ...prev };
+
+      if (field === "quantity" || field === "reorderLevel" || field === "cost") {
+        // Numeric fields
+        (next as any)[field] = parseFloat(value) || 0;
+      } else if (field === "vendor") {
+        // Map vendor name to vendorId
+        const selectedVendor = vendors.find((v) => v.vendorName === value);
+        next.vendor = value;
+        next.vendorId = selectedVendor?.id || "";
+      } else {
+        (next as any)[field] = value;
+      }
+
+      return next;
+    });
   };
 
   // Handle form submission
@@ -119,7 +118,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
       }
 
       // Reset form and state
-      setFormData({
+  setFormData({
         itemCode: "",
         itemName: "",
         category: "",
@@ -133,7 +132,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
         vendorId: "",
         location: "",
         lastRestocked: new Date().toISOString().split("T")[0],
-      });
+  });
       setEditingItem(null);
       setShowAddForm(false);
     } catch (error) {
@@ -145,7 +144,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
   // Setup form for editing
   const handleEdit = (item: StockItem) => {
     setEditingItem(item);
-    setFormData({
+  setFormData({
       itemCode: item.itemCode,
       itemName: item.itemName,
       category: item.category,
@@ -159,7 +158,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
       vendorId: item.vendorId,
       location: item.location,
       lastRestocked: item.lastRestocked,
-    });
+  });
     setShowAddForm(true);
   };
 
@@ -244,7 +243,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
             }
 
             // Prepare complete record
-            const stockItem = {
+            const stockItem: StockItemInput = {
               itemCode: record.itemCode || "",
               itemName: record.itemName || "",
               category: record.category || "",
@@ -257,7 +256,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
               vendor: record.vendor || "",
               vendorId: record.vendorId || "",
               location: record.location || "",
-              lastRestocked: record.lastRestocked || new Date().toISOString().split("T")[0],
+              lastRestocked: (record.lastRestocked ?? new Date().toISOString().split("T")[0]) as string,
             };
 
             // Check for existing item to update instead of adding duplicate
