@@ -7,16 +7,36 @@ import { Timestamp } from "firebase/firestore";
 import { ChevronRight, Save, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-// *** HIERDIE IS JOU ENIGSTE TYRE DATA BRON ***
-import type { Tyre } from "../../../data/tyreData";
-import {
-  TyreConditionStatus, // <-- Import TyreStatus
-  TyreMountStatus, // <-- Import TyreConditionStatus
-  TyreStatus,
-  TyreStoreLocation, // <-- Import TyreMountStatus
+// Use canonical shared tyre types (string unions + enum for store location)
+import type {
+  Tyre,
   TyreType,
-  tyreTypes,
-} from "../../../data/tyreData";
+  TyreStatus,
+  TyreMountStatus,
+  TyreConditionStatus,
+} from "../../../types/tyre";
+import { TyreStoreLocation } from "../../../types/tyre";
+
+// Local typed value arrays for selects and validation
+const TYRE_TYPE_VALUES: TyreType[] = ["steer", "drive", "trailer", "spare"];
+const TYRE_STATUS_VALUES: TyreStatus[] = [
+  "new",
+  "in_service",
+  "spare",
+  "retreaded",
+  "scrapped",
+];
+const TYRE_MOUNT_STATUS_VALUES: TyreMountStatus[] = [
+  "unmounted",
+  "mounted",
+  "in_storage",
+];
+const TYRE_CONDITION_STATUS_VALUES: TyreConditionStatus[] = [
+  "good",
+  "warning",
+  "critical",
+  "needs_replacement",
+];
 
 interface TyreFormModalProps {
   isOpen: boolean;
@@ -78,12 +98,12 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
       treadDepth: 20,
       pressure: 0,
       temperature: 0,
-      status: TyreConditionStatus.GOOD, // <-- Changed here
+      status: "good",
       lastInspectionDate: getCurrentDateString(),
       nextInspectionDue: "",
     },
-    status: initialData.status || TyreStatus.NEW, // <-- Changed here
-    mountStatus: initialData.mountStatus || TyreMountStatus.UNMOUNTED, // <-- Changed here
+    status: initialData.status || "new",
+    mountStatus: initialData.mountStatus || "unmounted",
     maintenanceHistory: initialData.maintenanceHistory || {
       rotations: [],
       repairs: [],
@@ -141,7 +161,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
       const parts = selectedSize.match(/^(\d+)\/(\d+)R(\d+\.?\d*)$/);
       if (parts) {
         const [, width, aspectRatio, rimDiameter] = parts;
-        setFormData((prev) => ({
+        setFormData((prev: Partial<Tyre>) => ({
           ...prev,
           size: {
             width: parseInt(width || "0"),
@@ -162,31 +182,22 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
     // Handle string to enum conversion for specific fields if necessary
     // This is important for Select components where the 'value' will be a string
     let parsedValue: any = value;
-    if (
-      name === "condition.status" &&
-      Object.values(TyreConditionStatus).includes(value as TyreConditionStatus)
-    ) {
+    if (name === "condition.status" && TYRE_CONDITION_STATUS_VALUES.includes(value as TyreConditionStatus)) {
       parsedValue = value as TyreConditionStatus;
-    } else if (name === "status" && Object.values(TyreStatus).includes(value as TyreStatus)) {
+    } else if (name === "status" && TYRE_STATUS_VALUES.includes(value as TyreStatus)) {
       parsedValue = value as TyreStatus;
-    } else if (
-      name === "mountStatus" &&
-      Object.values(TyreMountStatus).includes(value as TyreMountStatus)
-    ) {
+    } else if (name === "mountStatus" && TYRE_MOUNT_STATUS_VALUES.includes(value as TyreMountStatus)) {
       parsedValue = value as TyreMountStatus;
-    } else if (
-      name === "location" &&
-      Object.values(TyreStoreLocation).includes(value as TyreStoreLocation)
-    ) {
+    } else if (name === "location" && Object.values(TyreStoreLocation).includes(value as TyreStoreLocation)) {
       parsedValue = value as TyreStoreLocation;
-    } else if (name === "type" && tyreTypes.includes(value as TyreType)) {
+    } else if (name === "type" && TYRE_TYPE_VALUES.includes(value as TyreType)) {
       parsedValue = value as TyreType;
     }
 
     if (name && name.includes(".")) {
       const [parent, child] = name.split(".");
       if (parent && child) {
-        setFormData((prev) => ({
+        setFormData((prev: Partial<Tyre>) => ({
           ...prev,
           [parent as string]: {
             ...(prev[parent as keyof typeof prev] as Record<string, any>),
@@ -195,7 +206,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
         }));
       }
     } else if (name) {
-      setFormData((prev) => ({
+      setFormData((prev: Partial<Tyre>) => ({
         ...prev,
         [name as string]: parsedValue, // Use parsedValue here
       }));
@@ -208,7 +219,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
     if (name && name.includes(".")) {
       const [parent, child] = name.split(".");
       if (parent && child) {
-        setFormData((prev) => ({
+        setFormData((prev: Partial<Tyre>) => ({
           ...prev,
           [parent as string]: {
             ...(prev[parent as keyof typeof prev] as Record<string, any>),
@@ -217,7 +228,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
         }));
       }
     } else if (name) {
-      setFormData((prev) => ({
+      setFormData((prev: Partial<Tyre>) => ({
         ...prev,
         [name as string]: isNaN(numValue) ? 0 : numValue,
       }));
@@ -235,7 +246,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
       newErrors["purchaseDetails.date"] = "Purchase date is required";
     if (formData.purchaseDetails?.cost === 0)
       newErrors["purchaseDetails.cost"] = "Cost is required";
-    if (formData.mountStatus === TyreMountStatus.MOUNTED) {
+  if (formData.mountStatus === "mounted") {
       // <-- Use enum member
       if (!formData.installation?.vehicleId)
         newErrors["installation.vehicleId"] = "Vehicle ID is required for mounted tyres";
@@ -369,7 +380,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
                 onChange={handleChange}
                 options={[
                   { label: "Select type...", value: "" },
-                  ...tyreTypes.map((type) => ({
+                  ...TYRE_TYPE_VALUES.map((type: TyreType) => ({
                     label: type.charAt(0).toUpperCase() + type.slice(1),
                     value: type,
                   })),
@@ -474,12 +485,12 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
                 value={safeString(formData.mountStatus as string)}
                 onChange={handleChange}
                 options={[
-                  { label: "Unmounted", value: TyreMountStatus.UNMOUNTED }, // <-- Use enum member
-                  { label: "Mounted", value: TyreMountStatus.MOUNTED }, // <-- Use enum member
-                  { label: "In Storage", value: TyreMountStatus.IN_STORAGE }, // <-- Use enum member
+                  { label: "Unmounted", value: "unmounted" },
+                  { label: "Mounted", value: "mounted" },
+                  { label: "In Storage", value: "in_storage" },
                 ]}
               />
-              {formData.mountStatus === TyreMountStatus.MOUNTED && ( // <-- Use enum member
+              {formData.mountStatus === "mounted" && (
                 <Input
                   label="Vehicle ID/Registration"
                   name="installation.vehicleId"
@@ -489,7 +500,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
                 />
               )}
             </div>
-            {formData.mountStatus === TyreMountStatus.MOUNTED && ( // <-- Use enum member
+            {formData.mountStatus === "mounted" && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Select
@@ -528,12 +539,12 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
                   <h3 className="text-sm font-medium text-gray-700 mb-2">
                     Vehicle Position Diagram
                   </h3>
-                  <VehiclePositionDiagram
+          <VehiclePositionDiagram
                     vehicleType={formData.type as TyreType}
                     selectedPosition={safeString(formData.installation?.position as string)}
                     positions={vehicleTypePositions}
                     onPositionClick={(position) => {
-                      setFormData((prev) => ({
+            setFormData((prev: Partial<Tyre>) => ({
                         ...prev,
                         installation: {
                           ...prev.installation!,
@@ -551,17 +562,17 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
         {activeSection === "condition" && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select
+        <Select
                 label="Current Status"
                 name="status" // Added name prop
                 value={safeString(formData.status as string)}
                 onChange={handleChange}
                 options={[
-                  { label: "New", value: TyreStatus.NEW }, // <-- Use enum member
-                  { label: "In Service", value: TyreStatus.IN_SERVICE }, // <-- Use enum member
-                  { label: "Spare", value: TyreStatus.SPARE }, // <-- Use enum member
-                  { label: "Retreaded", value: TyreStatus.RETREADED }, // <-- Use enum member
-                  { label: "Scrapped", value: TyreStatus.SCRAPPED }, // <-- Use enum member
+          { label: "New", value: "new" },
+          { label: "In Service", value: "in_service" },
+          { label: "Spare", value: "spare" },
+          { label: "Retreaded", value: "retreaded" },
+          { label: "Scrapped", value: "scrapped" },
                 ]}
               />
               <Input
@@ -580,16 +591,16 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
                 value={safeValue(formData.condition?.pressure)}
                 onChange={handleNumberChange}
               />
-              <Select
+        <Select
                 label="Condition Status"
                 name="condition.status" // Added name prop
                 value={safeString(formData.condition?.status as string)}
                 onChange={handleChange}
                 options={[
-                  { label: "Good", value: TyreConditionStatus.GOOD }, // <-- Use enum member
-                  { label: "Warning", value: TyreConditionStatus.WARNING }, // <-- Use enum member
-                  { label: "Critical", value: TyreConditionStatus.CRITICAL }, // <-- Use enum member
-                  { label: "Needs Replacement", value: TyreConditionStatus.NEEDS_REPLACEMENT }, // <-- Use enum member
+          { label: "Good", value: "good" },
+          { label: "Warning", value: "warning" },
+          { label: "Critical", value: "critical" },
+          { label: "Needs Replacement", value: "needs_replacement" },
                 ]}
               />
             </div>
