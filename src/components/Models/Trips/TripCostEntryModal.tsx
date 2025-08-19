@@ -18,6 +18,20 @@ interface CostEntry {
   manuallyFlagged?: boolean;
 }
 
+// Internal form state uses a fully-required shape for controlled inputs
+type CostEntryFormData = {
+  category: string;
+  subType: string;
+  currency: string;
+  amount: number;
+  referenceNumber: string;
+  date: string;
+  notes: string;
+  missingDocReason: string;
+  isFlagged: boolean;
+  manuallyFlagged: boolean;
+};
+
 interface TripCostEntryModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,18 +45,22 @@ const TripCostEntryModal: React.FC<TripCostEntryModalProps> = ({
   onSubmit,
   initialData,
 }) => {
-  const [formData, setFormData] = useState<Omit<CostEntry, "id" | "attachments">>({
-    category: initialData?.category || "",
-    subType: initialData?.subType || "",
-    currency: initialData?.currency || "ZAR (R)",
-    amount: initialData?.amount || 0,
-    referenceNumber: initialData?.referenceNumber || "",
-    date: initialData?.date ?? new Date().toISOString().split("T")[0],
-    notes: initialData?.notes || "",
-    missingDocReason: initialData?.missingDocReason || "",
-    isFlagged: initialData?.isFlagged || false,
-    manuallyFlagged: initialData?.manuallyFlagged || false,
-  });
+  const today = new Date().toISOString().split("T")[0];
+  const referenceNumberDefault: string = initialData?.referenceNumber ?? "";
+  const initialFormData: CostEntryFormData = {
+    category: String(initialData?.category ?? ""),
+    subType: String(initialData?.subType ?? ""),
+    currency: String(initialData?.currency ?? "ZAR (R)"),
+    amount: Number(initialData?.amount ?? 0),
+    referenceNumber: String(referenceNumberDefault),
+    date: String(initialData?.date ?? today),
+    notes: String(initialData?.notes ?? ""),
+    missingDocReason: String(initialData?.missingDocReason ?? ""),
+    isFlagged: Boolean(initialData?.isFlagged ?? false),
+    manuallyFlagged: Boolean(initialData?.manuallyFlagged ?? false),
+  };
+
+  const [formData, setFormData] = useState<CostEntryFormData>(initialFormData);
 
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});

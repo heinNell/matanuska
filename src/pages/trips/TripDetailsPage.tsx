@@ -608,8 +608,8 @@ const TripDetailsPage: React.FC<TripDetailsProps> = ({ trip: propTrip, onBack })
             trip.status === "completed"
               ? `Completed ${trip.completedAt}`
               : trip.status === "invoiced"
-                ? `Invoiced ${trip.invoiceDate}`
-                : "Active Trip"
+              ? `Invoiced ${trip.invoiceDate}`
+              : "Active Trip"
           }
         />
         <CardContent>
@@ -661,15 +661,15 @@ const TripDetailsPage: React.FC<TripDetailsProps> = ({ trip: propTrip, onBack })
                       trip.status === "completed"
                         ? "bg-green-100 text-green-800"
                         : trip.status === "invoiced"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-yellow-100 text-yellow-800"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
                     {trip.status === "completed"
                       ? "Completed"
                       : trip.status === "invoiced"
-                        ? "Invoiced"
-                        : "Active"}
+                      ? "Invoiced"
+                      : "Active"}
                   </span>
                 </div>
                 {trip.description && (
@@ -883,27 +883,8 @@ const TripDetailsPage: React.FC<TripDetailsProps> = ({ trip: propTrip, onBack })
           trip={trip}
           onClose={() => setShowInvoiceSubmission(false)}
           onSubmit={handleInvoiceSubmission}
-          onAddAdditionalCost={(cost) => {
-            if (trip && trip.id) {
-              // Handle adding additional cost
-              updateTrip({
-                ...trip,
-                additionalCosts: [
-                  ...trip.additionalCosts,
-                  { ...cost, id: `addcost-${Date.now()}` },
-                ],
-              });
-            }
-          }}
-          onRemoveAdditionalCost={(costId) => {
-            if (trip && trip.id) {
-              // Handle removing additional cost
-              updateTrip({
-                ...trip,
-                additionalCosts: trip.additionalCosts.filter((cost) => cost.id !== costId),
-              });
-            }
-          }}
+          onAddAdditionalCost={handleAddAdditionalCost}
+          onRemoveAdditionalCost={handleRemoveAdditionalCost}
         />
       )}
 

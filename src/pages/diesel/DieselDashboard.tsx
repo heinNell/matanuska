@@ -250,10 +250,7 @@ const DieselDashboard: React.FC<DieselDashboardProps> = ({ className = "" }) => 
     setShowProbeModal(true);
   };
 
-  // Format numbers for display
-  const formatNumber = (num: number, decimals = 2) => {
-    return num.toFixed(decimals);
-  };
+  // (removed unused formatNumber helper)
 
   return (
     <div className={`space-y-6 ${className}`}>
