@@ -13,7 +13,7 @@ if (!firebaseApp) {
 // Initialize Firestore
 export const firestore = getFirestore(firebaseApp);
 
-export type ConnectionStatus = "connected" | "disconnected" | "connecting" | "error";
+import type { ConnectionStatus } from "../types/connection";
 
 let connectionStatus: ConnectionStatus = "connecting";
 let connectionError: Error | null = null;

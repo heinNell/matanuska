@@ -14,7 +14,7 @@ const SyncIndicator: React.FC<SyncIndicatorProps> = ({ className = "", showText 
 
   // Simulate sync activity when connection status changes
   useEffect(() => {
-    if (connectionStatus === "reconnecting") {
+    if (connectionStatus === "reconnecting" || connectionStatus === "connecting") {
       setIsSyncing(true);
     } else if (connectionStatus === "connected") {
       // Simulate sync completion after reconnection
@@ -54,8 +54,18 @@ const SyncIndicator: React.FC<SyncIndicatorProps> = ({ className = "", showText 
             }`}
           />
           {showText && (
-            <span className={connectionStatus === "connected" ? "text-gray-500" : "text-red-500"}>
-              {connectionStatus === "connected" ? `Synced ${getTimeSinceSync()}` : "Offline"}
+            <span className={
+              connectionStatus === "connected"
+                ? "text-gray-500"
+                : connectionStatus === "reconnecting" || connectionStatus === "connecting"
+                ? "text-amber-600"
+                : "text-red-500"
+            }>
+              {connectionStatus === "connected"
+                ? `Synced ${getTimeSinceSync()}`
+                : connectionStatus === "reconnecting" || connectionStatus === "connecting"
+                ? "Syncing..."
+                : "Offline"}
             </span>
           )}
         </>

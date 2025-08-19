@@ -2,7 +2,6 @@ import { ArrowDownToLine, Clipboard, Package, QrCode, Truck, Wrench } from "luci
 import { QRCode } from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "../../context/AppContext";
 import { collection, firestore, getDocs } from "../../firebase";
 
 interface Vehicle {
@@ -17,7 +16,6 @@ const QRGenerator = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { isGoogleMapsLoaded } = useAppContext();
   const [qrType, setQrType] = useState<string>("fleet");
   const [fleetNumber, setFleetNumber] = useState<string>("");
   const [position, setPosition] = useState<string>("");

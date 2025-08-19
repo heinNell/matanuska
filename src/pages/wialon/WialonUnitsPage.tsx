@@ -13,7 +13,7 @@ const WialonUnitsPage: React.FC = () => {
   // Retrieve Wialon units, loading and error state from provider
   const { units, initializing, error } = useWialon();
 
-  const handleSelectUnit = (unitId: number, unitInfo: any) => {
+  const handleSelectUnit = (unitInfo: any) => {
     setSelectedUnit(unitInfo);
   };
 

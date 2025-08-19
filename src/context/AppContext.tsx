@@ -273,7 +273,7 @@ interface AppContextType {
   deleteWorkshopInventoryItem: (id: string, currentUser?: string) => Promise<void>;
   refreshWorkshopInventory: () => Promise<void>;
 
-  connectionStatus: "connected" | "disconnected" | "reconnecting";
+  connectionStatus: import("../types/connection").ConnectionStatus;
 
   bulkDeleteTrips: (tripIds: string[]) => Promise<void>;
 

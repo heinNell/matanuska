@@ -58,6 +58,8 @@ interface SyncListeners {
 }
 
 // Sync service class
+import type { ConnectionStatus } from "../types/connection";
+
 export class SyncService {
   private listeners: SyncListeners = {};
   private dataCallbacks: Record<string, (...args: any[]) => void> = {};
