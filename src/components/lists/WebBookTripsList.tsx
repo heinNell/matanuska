@@ -16,6 +16,9 @@ export default function WebBookTripsList() {
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
   // Convert WebBookTrip to Trip format expected by CompletedTripEditModal
   const convertToTripFormat = (webTrip: WebBookTrip): Trip => {
+    const today: string = new Date().toISOString().split("T")[0] ?? new Date().toISOString();
+    const startDate: string = webTrip.shippedDate ?? webTrip.startTime ?? today;
+    const endDate: string = webTrip.deliveredDate ?? webTrip.endTime ?? today;
     return {
       id: webTrip.id,
       // Base trip details
@@ -24,8 +27,8 @@ export default function WebBookTripsList() {
       clientName: webTrip.customer,
       clientType: "external", // Default value
       route: `${webTrip.origin} to ${webTrip.destination}`,
-      startDate: webTrip.shippedDate ?? webTrip.startTime ?? new Date().toISOString().split("T")[0],
-      endDate: webTrip.deliveredDate ?? webTrip.endTime ?? new Date().toISOString().split("T")[0],
+      startDate,
+      endDate,
 
       // Required fields with default values
       baseRevenue: 0, // Default value
