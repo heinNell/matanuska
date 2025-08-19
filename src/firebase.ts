@@ -39,7 +39,7 @@ import {
   TyreMountStatus,
   TyreStatus,
   TyreStoreLocation,
-} from "./data/tyreData";
+} from "./types/tyre";
 import { DieselConsumptionRecord } from "./types/diesel";
 import { Trip } from "./types/trip";
 import { TyreInspectionRecord } from "./types/tyre-inspection";
@@ -1141,7 +1141,7 @@ export async function getTyresByVehicle(vehicleId: string): Promise<Tyre[]> {
   try {
     const q = query(
       tyresCollection,
-      where("mountStatus", "==", TyreMountStatus.MOUNTED),
+  where("mountStatus", "==", "mounted"),
       where("installation.vehicleId", "==", vehicleId)
     );
 
@@ -1177,18 +1177,15 @@ export async function getTyreStats(): Promise<{
   try {
     const totalSnapshot = await getDocs(tyresCollection);
     const mountedSnapshot = await getDocs(
-      query(tyresCollection, where("mountStatus", "==", TyreMountStatus.MOUNTED))
+  query(tyresCollection, where("mountStatus", "==", "mounted"))
     );
     const inStockSnapshot = await getDocs(
-      query(tyresCollection, where("mountStatus", "==", TyreMountStatus.IN_STORAGE))
+  query(tyresCollection, where("mountStatus", "==", "in_storage"))
     );
     const needsAttentionSnapshot = await getDocs(
       query(
         tyresCollection,
-        where("condition.status", "in", [
-          TyreConditionStatus.CRITICAL,
-          TyreConditionStatus.NEEDS_REPLACEMENT,
-        ])
+  where("condition.status", "in", ["critical", "needs_replacement"])
       )
     );
 

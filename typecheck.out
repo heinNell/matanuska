@@ -1,0 +1,157 @@
+src/api/driverBehaviorService.ts(57,11): error TS6133: 'lastSynced' is declared but its value is never read.
+src/api/driverBehaviorService.ts(58,11): error TS6133: 'syncStatus' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(24,26): error TS6133: 'filters' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(24,50): error TS6133: 'startDate' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(24,68): error TS6133: 'endDate' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(33,49): error TS6133: 'startDate' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(33,67): error TS6133: 'endDate' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(49,55): error TS6133: 'startDate' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(49,73): error TS6133: 'endDate' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(61,54): error TS6133: 'startDate' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(61,72): error TS6133: 'endDate' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(86,31): error TS6133: 'filters' is declared but its value is never read.
+src/api/fleetAnalyticsApi.ts(127,37): error TS6133: 'filters' is declared but its value is never read.
+src/components/Cost Management/IndirectCostBreakdown.tsx(334,62): error TS6133: 'entry' is declared but its value is never read.
+src/components/InvoiceManagement/InvoiceApprovalFlow.tsx(8,9): error TS6133: 'isLoading' is declared but its value is never read.
+src/components/InvoiceManagement/TaxReportExport.tsx(4,40): error TS6133: 'Filter' is declared but its value is never read.
+src/components/InvoiceManagement/TaxReportExport.tsx(8,9): error TS6133: 'isLoading' is declared but its value is never read.
+src/components/Models/Diesel/AutomaticProbeVerificationModal.tsx(43,25): error TS6133: 'setUseSensorData' is declared but its value is never read.
+src/components/Models/Trips/TripModel.ts(24,37): error TS6133: 'origin' is declared but its value is never read.
+src/components/Models/Trips/TripModel.ts(24,53): error TS6133: 'destination' is declared but its value is never read.
+src/components/Models/Trips/TripModel.ts(24,74): error TS6133: 'avgSpeed' is declared but its value is never read.
+src/components/Models/Tyre/TyreFormModal.tsx(547,25): error TS2345: Argument of type '(prev: Partial<Tyre>) => { installation: { position: string; vehicleId: string; mileageAtInstallation: number; installationDate: string; installedBy: string; }; id?: string; serialNumber?: string; ... 19 more ...; updatedAt?: Timestamp; }' is not assignable to parameter of type 'SetStateAction<Partial<Tyre>>'.
+  Type '(prev: Partial<Tyre>) => { installation: { position: string; vehicleId: string; mileageAtInstallation: number; installationDate: string; installedBy: string; }; id?: string; serialNumber?: string; ... 19 more ...; updatedAt?: Timestamp; }' is not assignable to type '(prevState: Partial<Tyre>) => Partial<Tyre>'.
+    Call signature return types '{ installation: { position: string; vehicleId: string; mileageAtInstallation: number; installationDate: string; installedBy: string; }; id?: string; serialNumber?: string; dotCode?: string; manufacturingDate?: string; ... 17 more ...; updatedAt?: Timestamp; }' and 'Partial<Tyre>' are incompatible.
+      The types of 'installation.position' are incompatible between these types.
+        Type 'string' is not assignable to type 'TyrePosition'.
+src/components/Models/Workshop/InspectionDetailsModal.tsx(13,3): error TS6133: 'XCircle' is declared but its value is never read.
+src/components/RealtimeUnitTracker.tsx(14,26): error TS7030: Not all code paths return a value.
+src/components/RealtimeUnitTracker.tsx(20,7): error TS7030: Not all code paths return a value.
+src/components/TripManagement/TripDetails.tsx(59,13): error TS6133: 'costId' is declared but its value is never read.
+src/components/TripManagement/TripRouter.tsx(1,17): error TS6133: 'useState' is declared but its value is never read.
+src/components/TripManagement/TripRouter.tsx(9,1): error TS6133: 'CompletedTripEditModal' is declared but its value is never read.
+src/components/TripManagement/TripRouter.tsx(12,9): error TS6133: 'defaultCurrency' is declared but its value is never read.
+src/components/Tyremanagement/TyreAnalytics.tsx(4,60): error TS6133: 'formatTyreSize' is declared but its value is never read.
+src/components/Tyremanagement/TyreCostAnalysis.tsx(13,38): error TS2459: Module '"../../data/tyreData"' declares 'Tyre' locally, but it is not exported.
+src/components/Tyremanagement/TyreInspection.tsx(4,1): error TS6192: All imports in import declaration are unused.
+src/components/Tyremanagement/TyreInspection.tsx(648,43): error TS2367: This comparison appears to be unintentional because the types '"critical" | "warning" | "needs_replacement"' and '"worn"' have no overlap.
+src/components/Tyremanagement/TyreInventoryStats.tsx(3,25): error TS6133: 'CheckCircle' is declared but its value is never read.
+src/components/Tyremanagement/TyrePerformanceReport.tsx(409,54): error TS6133: 'entry' is declared but its value is never read.
+src/components/Tyremanagement/TyrePerformanceReport.tsx(547,56): error TS6133: 'entry' is declared but its value is never read.
+src/components/Tyremanagement/TyreReports.tsx(1,10): error TS2459: Module '"../../data/tyreData"' declares 'Tyre' locally, but it is not exported.
+src/components/Tyremanagement/TyreReports.tsx(1,44): error TS2724: '"../../data/tyreData"' has no exported member named 'TYRE_SIZES'. Did you mean 'tyreSizes'?
+src/components/Tyremanagement/TyreReports.tsx(91,9): error TS6133: 'handlePerformanceSubmit' is declared but its value is never read.
+src/components/UIConnector.tsx(37,20): error TS7030: Not all code paths return a value.
+src/components/WialonUnitsMapMarkers.tsx(30,19): error TS7030: Not all code paths return a value.
+src/components/WorkshopManagement/EnhancedTyreInspectionForm.tsx(47,21): error TS6133: 'hasPermissions' is declared but its value is never read.
+src/components/WorkshopManagement/EnhancedTyreInspectionForm.tsx(47,60): error TS6133: 'stopScan' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(118,9): error TS6133: 'assignedParts' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(123,10): error TS6133: 'isLoading' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(166,9): error TS6133: 'handleTaskAdd' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(176,9): error TS6133: 'handleTaskDelete' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(193,9): error TS6133: 'handleVerifyTask' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(234,9): error TS6133: 'handleVerifyAllTasks' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(276,9): error TS6133: 'handleAssignPart' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(283,9): error TS6133: 'handleRemovePart' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(290,9): error TS6133: 'handleUpdatePart' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(323,9): error TS6133: 'handleCompleteJob' is declared but its value is never read.
+src/components/WorkshopManagement/JobCard.tsx(346,9): error TS6133: 'handleGenerateInvoice' is declared but its value is never read.
+src/components/WorkshopManagement/QRScanner.tsx(3,10): error TS6133: 'QrCode' is declared but its value is never read.
+src/components/WorkshopManagement/QRScanner.tsx(3,29): error TS6133: 'Check' is declared but its value is never read.
+src/components/WorkshopManagement/WorkshopIntegration.tsx(32,9): error TS6133: 'sampleVendors' is declared but its value is never read.
+src/components/WorkshopManagement/WorkshopIntegration.tsx(49,9): error TS6133: 'sampleJobCards' is declared but its value is never read.
+src/components/WorkshopManagement/request-parts.tsx(14,10): error TS6133: 'isSubmitting' is declared but its value is never read.
+src/components/WorkshopManagement/request-parts.tsx(18,9): error TS6133: 'addPurchaseOrder' is declared but its value is never read.
+src/components/WorkshopManagement/request-parts.tsx(87,10): error TS2739: Type '{ initialData: { id: string; action: string; parts: any[]; createdDate: string; createdTime: string; demandBy: string; workOrderId: string; vehicleId: string; status: "OPEN"; urgency: "MEDIUM"; notes: string; }; onSubmit: (data: any) => Promise<...>; onCancel: () => void; }' is missing the following properties from type 'DemandPartsFormProps': workOrderId, vehicleId
+src/components/forms/workshop/DemandPartsForm.tsx(5,1): error TS6133: 'useWorkshop' is declared but its value is never read.
+src/components/ui/Modal.tsx(41,18): error TS7030: Not all code paths return a value.
+src/components/ui/SyncIndicator.tsx(16,13): error TS7030: Not all code paths return a value.
+src/components/ui/UIComponentsDemo.tsx(10,10): error TS6133: 'activeStep' is declared but its value is never read.
+src/components/ui/UIComponentsDemo.tsx(10,22): error TS6133: 'setActiveStep' is declared but its value is never read.
+src/components/ui/UIComponentsDemo.tsx(13,9): error TS6133: 'steps' is declared but its value is never read.
+src/components/ui/UIComponentsDemo.tsx(20,9): error TS6133: 'verticalSteps' is declared but its value is never read.
+src/components/ui/UIConnector.tsx(37,20): error TS7030: Not all code paths return a value.
+src/components/ui/chart/ChartFilterForm.tsx(3,68): error TS2614: Module '"../../../components/ui/form"' has no exported member 'FormDescription'. Did you mean to use 'import FormDescription from "../../../components/ui/form"' instead?
+src/components/ui/chart/DateRangePicker.tsx(6,7): error TS6133: 'SelectItem' is declared but its value is never read.
+src/components/ui/chart/DateRangePicker.tsx(9,7): error TS6133: 'SelectValue' is declared but its value is never read.
+src/components/wialon/WialonFeulsettings.tsx(1,27): error TS6133: 'useEffect' is declared but its value is never read.
+src/components/wialon/WialonFeulsettings.tsx(112,7): error TS6133: 'App' is declared but its value is never read.
+src/components/wialon/WialonGeofenceManager.tsx(14,9): error TS6133: 'resources' is declared but its value is never read.
+src/components/wialon/WialonIntegration.tsx(30,3): error TS6133: 'token' is declared but its value is never read.
+src/components/wialon/WialonIntegration.tsx(34,3): error TS6133: 'language' is declared but its value is never read.
+src/components/wialon/WialonIntegration.tsx(35,3): error TS6133: 'additionalParams' is declared but its value is never read.
+src/components/wialon/WialonStatus.tsx(20,87): error TS2339: Property 'token' does not exist on type 'WialonConnectionStatus'.
+src/context/TripContext.tsx(50,7): error TS7030: Not all code paths return a value.
+src/context/WorkshopContext.tsx(204,16): error TS7030: Not all code paths return a value.
+src/context/WorkshopContext.tsx(235,16): error TS7030: Not all code paths return a value.
+src/context/WorkshopContext.tsx(266,16): error TS7030: Not all code paths return a value.
+src/data/tyreMappingData.ts(147,9): error TS2322: Type '{ tyreId: string; brand: string; pattern: string; size: string; type: string; vehicleReg: string; position: TyrePosition; currentTreadDepth: number; lastMountOdometer: number; currentOdometer: number; kmCovered: number; status: "active"; history: StockEntryHistory[]; }[]' is not assignable to type 'StockEntry[]'.
+  Type '{ tyreId: string; brand: string; pattern: string; size: string; type: string; vehicleReg: string; position: TyrePosition; currentTreadDepth: number; lastMountOdometer: number; currentOdometer: number; kmCovered: number; status: "active"; history: StockEntryHistory[]; }' is not assignable to type 'StockEntry'.
+    Types of property 'type' are incompatible.
+      Type 'string' is not assignable to type 'TyreType'.
+src/firebase.ts(37,3): error TS2459: Module '"./data/tyreData"' declares 'Tyre' locally, but it is not exported.
+src/hooks/useClients.ts(137,7): error TS7030: Not all code paths return a value.
+src/hooks/useFirestoreQuery.ts(44,33): error TS7030: Not all code paths return a value.
+src/hooks/useInventoryItem.ts(60,7): error TS7030: Not all code paths return a value.
+src/hooks/useOfflineFormMock.ts(36,36): error TS6133: 'id' is declared but its value is never read.
+src/hooks/useRealtimeTrips.ts(32,13): error TS7030: Not all code paths return a value.
+src/hooks/useTaskHistory.ts(19,7): error TS7030: Not all code paths return a value.
+src/hooks/useTyreAssignments.tsx(1,34): error TS6133: 'useMemo' is declared but its value is never read.
+src/hooks/useTyreAssignments.tsx(7,3): error TS6133: 'setDoc' is declared but its value is never read.
+src/hooks/useTyreAssignments.tsx(10,3): error TS6133: 'updateDoc' is declared but its value is never read.
+src/hooks/useTyreAssignments.tsx(11,3): error TS6133: 'where' is declared but its value is never read.
+src/hooks/useTyreAssignments.tsx(14,10): error TS6133: 'Tyre' is declared but its value is never read.
+src/hooks/useTyreAssignments.tsx(15,1): error TS6133: 'Vehicle' is declared but its value is never read.
+src/hooks/useTyreInspections.ts(26,7): error TS7030: Not all code paths return a value.
+src/hooks/useWialon.ts(192,68): error TS6133: 'flags' is declared but its value is never read.
+src/hooks/useWialonDrivers.ts(2,15): error TS6196: 'WialonSession' is declared but never used.
+src/hooks/useWialonDrivers.ts(2,30): error TS6196: 'WialonUnit' is declared but never used.
+src/hooks/useWialonDrivers.ts(2,56): error TS6196: 'WialonGeofence' is declared but never used.
+src/hooks/usedriverdetail.tsx(192,7): error TS7030: Not all code paths return a value.
+src/pages/MapDashboard.tsx(50,19): error TS2345: Argument of type 'Vehicle[]' is not assignable to parameter of type 'SetStateAction<Vehicle[]>'.
+  Type 'import("/workspaces/matanuska/src/types/vehicle").Vehicle[]' is not assignable to type 'Vehicle[]'.
+    Type 'Vehicle' is missing the following properties from type 'Vehicle': name, location, lastUpdate
+src/pages/MapDashboard.tsx(102,9): error TS6133: 'handleMapError' is declared but its value is never read.
+src/pages/analytics/FleetAnalyticsPage.tsx(9,3): error TS6133: 'Layers' is declared but its value is never read.
+src/pages/diesel/FuelStations.tsx(157,22): error TS7030: Not all code paths return a value.
+src/pages/drivers/DriverManagementPageIntegrated.tsx(96,34): error TS6133: 'driverData' is declared but its value is never read.
+src/pages/invoices/PendingInvoicesPage.tsx(173,16): error TS6133: 'text' is declared but its value is never read.
+src/pages/qc/ActionLog.tsx(179,11): error TS6133: 'newId' is declared but its value is never read.
+src/pages/qc/ComplianceDashboard.tsx(6,3): error TS6133: 'CheckCircle' is declared but its value is never read.
+src/pages/qc/ComplianceDashboard.tsx(8,3): error TS6133: 'FileWarning' is declared but its value is never read.
+src/pages/qc/QAReviewPanel.tsx(19,3): error TS6133: 'jobCardId' is declared but its value is never read.
+src/pages/trips/ActiveTrips.tsx(92,10): error TS6133: 'isAddTripModalOpen' is declared but its value is never read.
+src/pages/trips/ActiveTrips.tsx(455,9): error TS6133: 'handleAddTrip' is declared but its value is never read.
+src/pages/trips/RoutePlanningPage.tsx(68,9): error TS7030: Not all code paths return a value.
+src/pages/tyres/TyreManagementPage.tsx(151,9): error TS2322: Type '{ serialNumber: string; dotCode: string; manufacturingDate: string; brand: string; model: string; pattern: string; size: { width: number; aspectRatio: number; rimDiameter: number; }; loadIndex: number; ... 11 more ...; location: TyreStoreLocation.HOLDING_BAY; }' is not assignable to type 'Partial<Tyre>'.
+  The types of 'installation.position' are incompatible between these types.
+    Type '""' is not assignable to type 'TyrePosition'.
+src/pages/wialon/WialonDashboard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/pages/wialon/WialonDashboard.tsx(1,31): error TS6133: 'useEffect' is declared but its value is never read.
+src/pages/wialon/WialonDashboard.tsx(2,32): error TS2307: Cannot find module '../hooks/useWialonUnits' or its corresponding type declarations.
+src/pages/wialon/WialonDashboard.tsx(3,37): error TS2307: Cannot find module '../hooks/useWialonUnitDetail' or its corresponding type declarations.
+src/pages/wialon/WialonDashboard.tsx(4,35): error TS2307: Cannot find module './WialonUnitsMapMarkers' or its corresponding type declarations.
+src/pages/wialon/WialonDashboard.tsx(5,1): error TS6133: 'WialonUnitMap' is declared but its value is never read.
+src/pages/wialon/WialonDashboard.tsx(5,27): error TS2307: Cannot find module './WialonUnitMap' or its corresponding type declarations.
+src/pages/wialon/WialonDashboard.tsx(6,33): error TS2307: Cannot find module './RealtimeUnitTracker' or its corresponding type declarations.
+src/pages/wialon/WialonDashboard.tsx(7,26): error TS2307: Cannot find module '../types/wialon' or its corresponding type declarations.
+src/pages/wialon/WialonDashboard.tsx(26,36): error TS6133: 'refreshUnits' is declared but its value is never read.
+src/pages/wialon/WialonDashboard.tsx(28,48): error TS6133: 'detailLoading' is declared but its value is never read.
+src/pages/wialon/WialonUnitsPage.tsx(16,29): error TS6133: 'unitId' is declared but its value is never read.
+src/pages/workshop/NewJobCardPage.tsx(60,10): error TS6133: 'isPOModalOpen' is declared but its value is never read.
+src/pages/workshop/NewJobCardPage.tsx(90,9): error TS6133: 'openDefectModal' is declared but its value is never read.
+src/pages/workshop/NewJobCardPage.tsx(95,9): error TS6133: 'handleDefectImport' is declared but its value is never read.
+src/pages/workshop/QRGenerator.tsx(18,9): error TS6133: 'navigate' is declared but its value is never read.
+src/pages/workshop/QRGenerator.tsx(20,9): error TS6133: 'isGoogleMapsLoaded' is declared but its value is never read.
+src/pages/workshop/StockInventoryPage.tsx(14,1): error TS6133: 'Button' is declared but its value is never read.
+src/utils/errorHandling.ts(109,9): error TS6133: 'errorId' is declared but its value is never read.
+src/utils/errorHandlingExamples.ts(94,63): error TS6133: 'reject' is declared but its value is never read.
+src/utils/errorHandlingExamples.ts(126,15): error TS6133: 'data' is declared but its value is never read.
+src/utils/formIntegration.ts(338,15): error TS6133: 'docRef' is declared but its value is never read.
+src/utils/mapScriptFixer.ts(38,7): error TS6133: 'keepScript' is declared but its value is never read.
+src/utils/mapUtils.ts(24,7): error TS6133: 'findAddressComponent' is declared but its value is never read.
+src/utils/networkDetection.ts(133,11): error TS6133: 'response' is declared but its value is never read.
+src/utils/triphelpers.ts(5,1): error TS6133: 'PlaceResult' is declared but its value is never read.
+src/utils/wialonConfig.tsx(67,33): error TS6133: 'baseUrl' is declared but its value is never read.
+src/utils/wialonService.ts(95,17): error TS2339: Property 'addListener' does not exist on type 'WialonUnit'.
+src/utils/wialonService.ts(99,10): error TS2339: Property 'removeListenerById' does not exist on type 'WialonUnit'.

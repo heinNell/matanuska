@@ -21,7 +21,7 @@ export const formatAddress = (location: LocationInput): string => {
 /**
  * Find a specific address component type from the Google Maps geocoder result
  */
-const findAddressComponent = (
+export const findAddressComponent = (
   components: google.maps.GeocoderAddressComponent[],
   type: string
 ): google.maps.GeocoderAddressComponent | undefined => {

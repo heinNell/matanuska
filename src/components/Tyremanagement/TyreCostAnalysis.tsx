@@ -10,7 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-import { TYRE_BRANDS, TYRE_PATTERNS, Tyre } from "../../data/tyreData";
+import { TYRE_BRANDS, TYRE_PATTERNS } from "../../data/tyreData";
+import type { Tyre } from "../../types/tyre";
 import { BarChart3, DollarSign, Download, TrendingDown, TrendingUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 

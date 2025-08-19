@@ -1,4 +1,5 @@
-import { Tyre, TYRE_BRANDS, TYRE_PATTERNS, TYRE_SIZES } from "../../data/tyreData";
+import type { Tyre } from "../../types/tyre";
+import { TYRE_BRANDS, TYRE_PATTERNS, tyreSizes as TYRE_SIZES } from "../../data/tyreData";
 import { getBestTyres, getTyrePerformanceStats, RankedTyre } from "../../utils/tyreAnalytics";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
@@ -70,7 +71,7 @@ export const TyreReports: React.FC = () => {
   const transformedTyreData = tyreData.map((tyre) => ({
     brand: tyre.brand,
     model: tyre.model,
-    totalDistance: tyre.installation.mileageAtInstallation || 0, // Derived from installation data
+    totalDistance: tyre.installation?.mileageAtInstallation || 0, // Derived from installation data
     totalCost: tyre.purchaseDetails.cost || 0, // Derived from purchase details
   }));
 
