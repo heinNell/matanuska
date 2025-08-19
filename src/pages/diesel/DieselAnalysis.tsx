@@ -15,11 +15,11 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
     end: "",
   });
 
-  // Calculate statistics for all records
+  // Defensive: Accept possibly undefined fields everywhere
   const calculateStats = (records: DieselConsumptionRecord[]) => {
     const filtered = records.filter((record) => {
-      if (dateRange.start && record.date < dateRange.start) return false;
-      if (dateRange.end && record.date > dateRange.end) return false;
+      if (dateRange.start && (!record.date || record.date < dateRange.start)) return false;
+      if (dateRange.end && (!record.date || record.date > dateRange.end)) return false;
       return true;
     });
 
@@ -29,8 +29,8 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
         avgLitresPerDay: 0,
         totalCostZAR: 0,
         avgKmPerLitre: 0,
-        fleetConsumption: {},
-        monthlyConsumption: {},
+        fleetConsumption: {} as Record<string, { litres: number; cost: number }>,
+        monthlyConsumption: {} as Record<string, { litres: number; cost: number }>,
         avgCostPerLitre: 0,
         percentReeferUsage: 0,
         avgLitresPerHour: 0,
@@ -38,65 +38,67 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
       };
     }
 
-    const totalLitres = filtered.reduce((sum, r) => sum + r.litresFilled, 0);
+    const totalLitres = filtered.reduce((sum, r) => sum + (r.litresFilled ?? 0), 0);
 
     // Group by date to calculate avg per day
-    const uniqueDates = new Set(filtered.map((r) => r.date));
+    const uniqueDates = new Set(filtered.map((r) => r.date ?? ""));
     const avgLitresPerDay = totalLitres / Math.max(uniqueDates.size, 1);
 
     const totalCostZAR = filtered
       .filter((r) => r.currency !== "USD")
-      .reduce((sum, r) => sum + r.totalCost, 0);
+      .reduce((sum, r) => sum + (r.totalCost ?? 0), 0);
 
     // Calculate average km per litre for non-reefer units
     const nonReeferRecords = filtered.filter((r) => !r.isReeferUnit);
-
-    const validKmRecords = nonReeferRecords.filter((r) => r.kmPerLitre && r.kmPerLitre > 0);
+    const validKmRecords = nonReeferRecords.filter((r) => (r.kmPerLitre ?? 0) > 0);
     const avgKmPerLitre =
       validKmRecords.length > 0
-        ? validKmRecords.reduce((sum, r) => sum + (r.kmPerLitre || 0), 0) / validKmRecords.length
+        ? validKmRecords.reduce((sum, r) => sum + (r.kmPerLitre ?? 0), 0) / validKmRecords.length
         : 0;
 
     // Group by fleet for fleet consumption analysis
     const fleetConsumption: Record<string, { litres: number; cost: number }> = {};
     filtered.forEach((r) => {
-      if (!r.fleetNumber) return; // Skip records without fleet number
+      const fleetNum = r.fleetNumber ?? "";
+      if (!fleetNum) return; // Skip if empty
 
-      // Initialize fleet if it doesn't exist
-      if (!fleetConsumption[r.fleetNumber]) {
-        fleetConsumption[r.fleetNumber] = { litres: 0, cost: 0 };
+      if (!fleetConsumption[fleetNum]) {
+        fleetConsumption[fleetNum] = { litres: 0, cost: 0 };
       }
 
-      fleetConsumption[r.fleetNumber].litres += r.litresFilled;
-      fleetConsumption[r.fleetNumber].cost += r.totalCost;
+      fleetConsumption[fleetNum].litres += r.litresFilled ?? 0;
+      fleetConsumption[fleetNum].cost += r.totalCost ?? 0;
     });
 
     // Group by month for trend analysis
     const monthlyConsumption: Record<string, { litres: number; cost: number }> = {};
     filtered.forEach((r) => {
-      const yearMonth = r.date.substring(0, 7); // YYYY-MM
+      const yearMonth = r.date?.substring(0, 7) ?? "";
+      if (!yearMonth) return;
       if (!monthlyConsumption[yearMonth]) {
         monthlyConsumption[yearMonth] = { litres: 0, cost: 0 };
       }
-      monthlyConsumption[yearMonth].litres += r.litresFilled;
-      monthlyConsumption[yearMonth].cost += r.totalCost;
+      monthlyConsumption[yearMonth].litres += r.litresFilled ?? 0;
+      monthlyConsumption[yearMonth].cost += r.totalCost ?? 0;
     });
 
     // Calculate average cost per litre
     const avgCostPerLitre =
-      totalLitres > 0 ? filtered.reduce((sum, r) => sum + r.totalCost, 0) / totalLitres : 0;
+      totalLitres > 0
+        ? filtered.reduce((sum, r) => sum + (r.totalCost ?? 0), 0) / totalLitres
+        : 0;
 
     // Calculate percentage of reefer usage
     const reeferLitres = filtered
       .filter((r) => r.isReeferUnit)
-      .reduce((sum, r) => sum + r.litresFilled, 0);
+      .reduce((sum, r) => sum + (r.litresFilled ?? 0), 0);
     const percentReeferUsage = totalLitres > 0 ? (reeferLitres / totalLitres) * 100 : 0;
 
     // Calculate average litres per hour for reefer units
-    const reeferRecords = filtered.filter((r) => r.isReeferUnit && r.litresPerHour);
+    const reeferRecords = filtered.filter((r) => r.isReeferUnit && (r.litresPerHour ?? 0) > 0);
     const avgLitresPerHour =
       reeferRecords.length > 0
-        ? reeferRecords.reduce((sum, r) => sum + (r.litresPerHour || 0), 0) / reeferRecords.length
+        ? reeferRecords.reduce((sum, r) => sum + (r.litresPerHour ?? 0), 0) / reeferRecords.length
         : 0;
 
     return {
@@ -115,18 +117,21 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
 
   const stats = calculateStats(dieselRecords);
 
-  // Get sorted fleet consumption for chart
-  const sortedFleetConsumption = Object.entries(stats.fleetConsumption)
+  // Top 5 fleets by consumption
+  const sortedFleetConsumption = Object.entries(stats.fleetConsumption ?? {})
     .sort(([, a], [, b]) => b.litres - a.litres)
     .slice(0, 5);
 
-  // Get sorted monthly consumption for trends
-  const sortedMonthlyConsumption = Object.entries(stats.monthlyConsumption)
+  // Last 6 months
+  const sortedMonthlyConsumption = Object.entries(stats.monthlyConsumption ?? {})
     .sort(([a], [b]) => a.localeCompare(b))
-    .slice(-6); // Last 6 months
+    .slice(-6);
 
-  const formatMonthName = (yearMonth: string) => {
+  // Defensive: Accept undefined and handle safely
+  const formatMonthName = (yearMonth?: string): string => {
+    if (!yearMonth) return "";
     const [year, month] = yearMonth.split("-");
+    if (!year || !month) return "";
     const date = new Date(parseInt(year), parseInt(month) - 1, 1);
     return date.toLocaleDateString("en-US", { month: "short" });
   };
@@ -170,7 +175,7 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
                 onChange={(e) => setDateRange((prev) => ({ ...prev, end: e.target.value }))}
               />
             </div>
-            <Button onClick={() => {}}>Clear Filters</Button>
+            <Button onClick={() => setDateRange({ start: "", end: "" })}>Clear Filters</Button>
           </div>
         </CardContent>
       </Card>
@@ -290,10 +295,10 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
             {sortedMonthlyConsumption.length > 0 ? (
               <div className="space-y-4">
                 {sortedMonthlyConsumption.map(([month, data]) => (
-                  <div key={month} className="relative">
+                  <div key={month ?? "unknown"} className="relative">
                     <div className="flex items-center mb-1">
                       <span className="w-24 text-sm font-medium">{formatMonthName(month)}</span>
-                      <div className="flex-grow h-4 bg-gray-100 rounded-full overflow-hidden ml-2">
+                      <div className="flex-grow h-4 bg-green-500 rounded-full overflow-hidden ml-2">
                         <div
                           className="h-full bg-green-500 rounded-full"
                           style={{ width: `${(data.litres / (stats.totalLitres * 0.5)) * 100}%` }}

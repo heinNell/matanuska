@@ -237,14 +237,11 @@ export function parseTyreSize(sizeStr: string): TyreSize {
   const regex = /(\d+)\/(\d+)R(\d+\.?\d*)/;
   const match = sizeStr.match(regex);
   if (match) {
-    // Using non-null assertions since the regex guarantees these groups exist
-    const widthStr = match[1]!;
-    const aspectStr = match[2]!;
-    const rimStr = match[3]!;
     return {
-      width: parseInt(widthStr, 10),
-      aspectRatio: parseInt(aspectStr, 10),
-      rimDiameter: parseFloat(rimStr),
+      // Corrected non-null assertions on the accessors
+      width: parseInt(match[1]!, 10),
+      aspectRatio: parseInt(match[2]!, 10),
+      rimDiameter: parseFloat(match[3]!),
       displayString: sizeStr,
     };
   }
@@ -254,4 +251,3 @@ export function parseTyreSize(sizeStr: string): TyreSize {
     rimDiameter: 0,
     displayString: sizeStr,
   };
-}
