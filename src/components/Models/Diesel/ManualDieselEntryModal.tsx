@@ -5,14 +5,8 @@ import Modal from "../../../components/ui/Modal";
 import { useAppContext } from "../../../context/AppContext";
 import FleetSelector from "../../common/FleetSelector";
 import { Input, Select, TextArea } from "../../ui/FormElements";
-
-// ─── Types ───────────────────────────────────────────────────────
 import { DieselConsumptionRecord, DRIVERS, FUEL_STATIONS } from "../../../types";
-
-// ─── Icons ───────────────────────────────────────────────────────
 import { AlertTriangle, Building, Calculator, Clock, Fuel, Link, Save, X } from "lucide-react";
-
-// ─── Utilities ───────────────────────────────────────────────────
 import { formatDate } from "../../../utils/helpers";
 
 interface ManualDieselEntryModalProps {
@@ -237,7 +231,7 @@ const ManualDieselEntryModal: React.FC<ManualDieselEntryModalProps> = ({ isOpen,
       const recordData: DieselConsumptionRecord = {
         id: newId,
         fleetNumber: formData.fleetNumber,
-        date: formData.date,
+        date: formatDate(formData.date || new Date()),
         kmReading: formData.isReeferUnit ? 0 : kmReading,
         litresFilled,
         costPerLitre,

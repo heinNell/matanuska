@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Wifi, WifiOff, AlertTriangle, RefreshCw, WifiLow } from 'lucide-react';
-import { 
-  onConnectionStatusChanged, 
-  getConnectionStatus, 
-  ConnectionStatus,
+import {
+  onConnectionStatusChanged,
+  getConnectionStatus,
   attemptReconnect
 } from '../../utils/firebaseConnectionHandler';
+import type { ConnectionStatus } from '../../types/connection';
 import useNetworkStatus from '../../hooks/useNetworkStatus';
 
 interface ConnectionStatusIndicatorProps {
@@ -28,7 +28,7 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
       setStatus(newStatus);
       setError(newError || null);
     });
-    
+
     return unsubscribe;
   }, []);
 
@@ -37,7 +37,7 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
     try {
       // Check network connectivity first
       await networkStatus.checkConnection();
-      
+
       if (networkStatus.isOnline) {
         await attemptReconnect();
       }
@@ -49,11 +49,11 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
   // Render different indicators based on status and network quality
   const renderIndicator = () => {
     // If network is being checked or reconnecting
-    if (networkStatus.isChecking || isReconnecting) {
+  if (networkStatus.isChecking || isReconnecting || status === 'reconnecting') {
       return (
         <div className="flex items-center text-blue-600">
           <RefreshCw className="w-4 h-4 animate-spin" />
-          {showText && <span className="ml-2 text-sm">Checking connection...</span>}
+      {showText && <span className="ml-2 text-sm">Checking connection...</span>}
         </div>
       );
     }
@@ -64,8 +64,8 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
         <div className="flex items-center text-amber-600">
           <WifiLow className="w-4 h-4" />
           {showText && <span className="ml-2 text-sm">Limited Connectivity</span>}
-          <button 
-            onClick={handleReconnect} 
+          <button
+            onClick={handleReconnect}
             className="ml-2 p-1 rounded hover:bg-gray-100"
             disabled={isReconnecting}
             title="Try to reconnect"
@@ -82,8 +82,8 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
         <div className="flex items-center text-amber-600">
           <WifiOff className="w-4 h-4" />
           {showText && <span className="ml-2 text-sm">Offline Mode</span>}
-          <button 
-            onClick={handleReconnect} 
+          <button
+            onClick={handleReconnect}
             className="ml-2 p-1 rounded hover:bg-gray-100"
             disabled={isReconnecting}
             title="Try to reconnect"
@@ -103,21 +103,21 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
             {showText && (
               <span className="ml-2 text-sm">
                 Connected
-                {networkStatus.quality === 'poor' && 
+                {networkStatus.quality === 'poor' &&
                   <span className="text-xs ml-1">(Slow)</span>
                 }
               </span>
             )}
           </div>
         );
-      
+
       case 'disconnected':
         return (
           <div className="flex items-center text-amber-600">
             <WifiOff className="w-4 h-4" />
             {showText && <span className="ml-2 text-sm">Offline Mode</span>}
-            <button 
-              onClick={handleReconnect} 
+            <button
+              onClick={handleReconnect}
               className="ml-2 p-1 rounded hover:bg-gray-100"
               disabled={isReconnecting}
               title="Try to reconnect"
@@ -126,7 +126,7 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
             </button>
           </div>
         );
-      
+
       case 'connecting':
         return (
           <div className="flex items-center text-blue-600">
@@ -134,7 +134,7 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
             {showText && <span className="ml-2 text-sm">Connecting...</span>}
           </div>
         );
-      
+
       case 'error':
         return (
           <div className="flex items-center text-red-600">
@@ -145,8 +145,8 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
                 {error && <span className="hidden md:inline"> - {error.message}</span>}
               </span>
             )}
-            <button 
-              onClick={handleReconnect} 
+            <button
+              onClick={handleReconnect}
               className="ml-2 p-1 rounded hover:bg-gray-100"
               disabled={isReconnecting}
               title="Try to reconnect"
@@ -155,7 +155,7 @@ const ConnectionStatusIndicator: React.FC<ConnectionStatusIndicatorProps> = ({
             </button>
           </div>
         );
-      
+
       default:
         return null;
     }

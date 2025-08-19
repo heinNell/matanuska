@@ -1,6 +1,6 @@
 import { AlertTriangle, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import type { ConnectionStatus } from "../../utils/firebaseConnectionHandler";
+import type { ConnectionStatus } from "../../types/connection";
 import {
   attemptReconnect,
   getConnectionStatus,
@@ -90,7 +90,7 @@ const FirestoreConnectionError: React.FC<FirestoreConnectionErrorProps> = ({
       text: "text-green-800",
       icon: "text-green-500",
     };
-  } else if (connectionState === "connecting") {
+  } else if (connectionState === "connecting" || connectionState === "reconnecting") {
     colorScheme = {
       bg: "bg-yellow-50",
       border: "border-yellow-400",
@@ -115,7 +115,7 @@ const FirestoreConnectionError: React.FC<FirestoreConnectionErrorProps> = ({
   } else if (connectionState === "connected") {
     title = "Connected to Firestore";
     message = "Your connection to the database is active.";
-  } else if (connectionState === "connecting") {
+  } else if (connectionState === "connecting" || connectionState === "reconnecting") {
     title = "Connecting to Firestore";
     message = "Attempting to establish a connection...";
   } else if (connectionState === "disconnected") {
@@ -125,11 +125,11 @@ const FirestoreConnectionError: React.FC<FirestoreConnectionErrorProps> = ({
 
   // Icon selection based on state
   const IconComponent =
-    connectionState === "connected"
+  connectionState === "connected"
       ? Wifi
       : connectionState === "disconnected"
         ? WifiOff
-        : connectionState === "connecting"
+    : connectionState === "connecting" || connectionState === "reconnecting"
           ? RefreshCw
           : AlertTriangle;
 
@@ -138,7 +138,7 @@ const FirestoreConnectionError: React.FC<FirestoreConnectionErrorProps> = ({
       <div className="flex">
         <div className="flex-shrink-0">
           <IconComponent
-            className={`h-5 w-5 ${colorScheme.icon} ${connectionState === "connecting" ? "animate-spin" : ""}`}
+            className={`h-5 w-5 ${colorScheme.icon} ${connectionState === "connecting" || connectionState === "reconnecting" ? "animate-spin" : ""}`}
           />
         </div>
         <div className="ml-3 flex-grow">

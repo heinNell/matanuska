@@ -257,30 +257,42 @@ export const TyreManagementSystem: React.FC = () => {
 
     const tyreToAdd: Tyre = {
       tyreId: `TYR-${Date.now()}`,
-      serialNumber: newTyre.serialNumber!,
-      dotCode: newTyre.dotCode || "",
-      manufacturingDate: newTyre.manufacturingDate || new Date().toISOString().split("T")[0],
-      brand: newTyre.brand!,
-      model: newTyre.model || "",
-      pattern: newTyre.pattern || "",
-      size: newTyre.size!,
-      loadIndex: newTyre.loadIndex || 152,
-      speedRating: newTyre.speedRating || "L",
-      type: newTyre.type!,
-      purchaseDetails: newTyre.purchaseDetails!,
-      installation: newTyre.installation || {
+      serialNumber: newTyre.serialNumber ?? "",
+      dotCode: newTyre.dotCode ?? "",
+      manufacturingDate: newTyre.manufacturingDate ?? new Date().toISOString().split("T")[0],
+      brand: newTyre.brand ?? "",
+      model: newTyre.model ?? "",
+      pattern: newTyre.pattern ?? "",
+      size: newTyre.size ?? { width: 315, aspectRatio: 80, rimDiameter: 22.5 },
+      loadIndex: newTyre.loadIndex ?? 152,
+      speedRating: newTyre.speedRating ?? "L",
+      type: newTyre.type ?? "drive",
+      purchaseDetails:
+        newTyre.purchaseDetails ?? {
+          date: new Date().toISOString().split("T")[0],
+          cost: 0,
+          supplier: "",
+          warranty: "2 years",
+        },
+      installation: newTyre.installation ?? {
         vehicleId: "",
         position: "",
         mileageAtInstallation: 0,
         installationDate: "",
       },
-      condition: newTyre.condition!,
-      status: newTyre.status!,
-      mountStatus: newTyre.mountStatus!,
-      kmRun: newTyre.kmRun || 0,
-      kmRunLimit: newTyre.kmRunLimit || 100000,
+      condition:
+        newTyre.condition ?? {
+          treadDepth: 20,
+          pressure: 110,
+          status: "good",
+          lastInspection: new Date().toISOString().split("T")[0],
+        },
+      status: newTyre.status ?? "new",
+      mountStatus: newTyre.mountStatus ?? "in_store",
+      kmRun: newTyre.kmRun ?? 0,
+      kmRunLimit: newTyre.kmRunLimit ?? 100000,
       inspectionHistory: [],
-      notes: newTyre.notes || "",
+      notes: newTyre.notes ?? "",
     };
 
     setTyres((prev) => [...prev, tyreToAdd]);

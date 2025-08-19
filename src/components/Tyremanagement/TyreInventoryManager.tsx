@@ -449,16 +449,19 @@ const TyreInventoryManager: React.FC = () => {
   const parseCSV = (text: string) => {
     try {
       const lines = text.split("\n").filter((line) => line.trim() !== "");
-      const headers = lines[0].split(",");
+      if (lines.length === 0) return [];
+
+      const headerLine = lines[0] ?? "";
+      const headers = headerLine.split(",");
 
       const data = lines.slice(1).map((line) => {
         const values = line.split(",");
         const entry: Record<string, string> = {};
 
         headers.forEach((header, index) => {
-          if (index < values.length) {
-            entry[header.trim()] = values[index].trim();
-          }
+          const key = (header ?? "").trim();
+          const value = (values[index] ?? "").trim();
+          if (key) entry[key] = value;
         });
 
         return entry;

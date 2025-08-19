@@ -74,9 +74,10 @@ const PredictiveModels: React.FC = () => {
 
         setModels(fetchedModels);
 
-        // If models exist, select the first one by default
+        // If models exist, select the first one by default and fetch its data
         if (fetchedModels.length > 0) {
           setSelectedModel(fetchedModels[0]);
+          // Safe to access fetchedModels[0] here since we checked length
           await fetchPredictions(fetchedModels[0].id);
           await fetchInsights(fetchedModels[0].id);
         }

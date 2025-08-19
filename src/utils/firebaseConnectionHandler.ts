@@ -15,8 +15,6 @@ export const firestore = getFirestore(firebaseApp);
 
 import type { ConnectionStatus } from "../types/connection";
 
-export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
-
 let connectionStatus: ConnectionStatus = "connecting";
 let connectionError: Error | null = null;
 let connectionListeners: ((status: ConnectionStatus, error?: Error | null) => void)[] = [];

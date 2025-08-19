@@ -237,7 +237,11 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) =>
   const parseCSV = (text: string): Trip[] => {
     const lines = text.split("\n").filter((line) => line.trim() !== "");
     if (lines.length < 2) return [];
-    const headers = lines[0].split(",").map((h) => h.trim());
+
+    const firstLine = lines[0];
+    if (!firstLine) return [];
+
+    const headers = firstLine.split(",").map((h) => h.trim());
     return lines.slice(1).map((line, i) => {
       const values = line.split(",").map((v) => v.trim());
       const tripData: any = {};

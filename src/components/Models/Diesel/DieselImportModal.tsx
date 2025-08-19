@@ -48,7 +48,6 @@ const MOCK_APP_CONTEXT = {
   }
 };
 
-
 interface DieselImportModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -71,7 +70,6 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
   const handleDownloadTemplate = () => downloadTemplate();
 
   // Full import handler implemented below (renamed from handleUpload)
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
@@ -84,8 +82,6 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
         setPreviewData([]);
       } else {
         setError(null);
-
-        // Generate preview
         try {
           const text = await selectedFile.text();
           const data = parseCSV(text);
@@ -101,7 +97,7 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
   };
 
   const parseCSV = (text: string) => {
-    const lines = (text || "").split("\n").filter((l) => l !== undefined);
+    const lines = (text || "").split("\n").filter((l) => l !== undefined && l.trim() !== "");
     if (lines.length === 0 || !lines[0]) return [] as CsvRow[];
     const headers = (lines[0] || "")
       .split(",")
@@ -171,10 +167,11 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
         // Currency normalization to union
         const currency = (row.currency?.toUpperCase() === "USD" ? "USD" : "ZAR") as "USD" | "ZAR";
 
-        // Fix: Use a safe fallback for row.date, and handle potential undefined
-        const dateStr: string = (row.date?.trim() || "").length > 0
-          ? row.date as string
-          : new Date().toISOString().split("T")[0];
+        // Fix: Use a safe fallback for row.date, and handle potential undefined (THIS IS THE FIX!)
+        const dateStr: string =
+          typeof row.date === "string" && row.date.trim().length > 0
+            ? row.date.trim()
+            : new Date().toISOString().split("T")[0];
 
         const record: DieselConsumptionRecord = {
           id: `diesel-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
