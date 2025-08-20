@@ -44,8 +44,8 @@ const WialonDashboard: FC = () => {
                 <div id="panel-details">
                     <div className="route-details"><b>Last Position:</b></div>
                     <ul className="timeline">
-                                                <li><b>Speed:</b> {selectedUnitDetail.position?.speed || 0} km/h</li>
-                        <li><b>Status:</b> {selectedUnitDetail.status}</li>
+                                                <li><b>Speed:</b> {selectedUnitDetail.properties?.speed || selectedUnitDetail.raw?.speed || 0} km/h</li>
+                                                <li><b>Status:</b> {selectedUnitDetail.properties?.status || selectedUnitDetail.raw?.status || 'Unknown'}</li>
                     </ul>
                 </div>
             </div>

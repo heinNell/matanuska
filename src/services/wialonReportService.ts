@@ -1,82 +1,92 @@
 // src/services/wialonReportService.ts
-export interface ReportDataParams {
-  itemId: number;          // Resource ID
-  col: number[];           // Template IDs
-  flags: number;           // 0x0, 0x1, 0x2, 0x4 etc.
-}
-
-export interface ReportDataTable {
-  n: string;
-  l: string;
-  c?: string;
-  cl?: string;
-  cp?: string;
-  s?: string;
-  sl?: string;
-  filter_order?: string;
-  p?: string;
-  sch?: Record<string, number>;
-  f?: number;
-}
-
-export interface ReportData {
-  id: number;
-  n: string;
-  ct: string;
-  c?: string;
-  p?: string;
-  tbl?: ReportDataTable[];
-}
+import type { Session } from "../types/wialon-types";
 
 export interface ReportTable {
   id: number;
-  l: string; // label/name of the report template
-  // Add other properties as needed
+  n: string;  // name
+  l: string;  // label
+  t: number;  // type
+  c: number;  // columns
+  r: number;  // rows
 }
 
-/**
- * Fetch report data safely
- */
-export async function getReportData(session: any, params: ReportDataParams): Promise<ReportData[]> {
-  if (!session) throw new Error("Wialon session is not initialized");
-
-  return new Promise((resolve, reject) => {
-    session.getReportData(
-      params.itemId,
-      params.col,
-      params.flags,
-      (code: number, data: any) => {
-        if (code) return reject(new Error(`get_report_data failed with code ${code}`));
-        resolve(data as ReportData[]);
-      }
-    );
-  });
+export interface ReportParams {
+  itemId: number;
+  col: number[];
+  flags?: number;
 }
 
-/**
- * Poll the report status until done
- */
-export async function waitForReport(session: any, interval = 2000): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const check = () => {
-      session.getReportStatus((code: number) => {
-        if (code === 4) return resolve(); // Done
-        if ([8, 16].includes(code)) return reject(new Error(`Report failed with code ${code}`));
-        setTimeout(check, interval);
-      });
-    };
-    check();
-  });
-}
-
-/**
- * Retrieve final report results
- */
-export async function applyReportResult(session: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    session.applyReportResult((code: number, data: any) => {
-      if (code) return reject(new Error(`apply_report_result failed with code ${code}`));
-      resolve(data);
+export async function getReportTables(session: Session): Promise<ReportTable[]> {
+  if (!session?.sid) throw new Error("No active session");
+  
+  try {
+    const response = await fetch("https://hst-api.wialon.com/wialon/ajax.html", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `sid=${session.sid}&svc=report/get_report_tables`
     });
-  });
+
+    const data = await response.json();
+    if (!data?.items) throw new Error("Invalid response format");
+
+    return data.items;
+  } catch (err) {
+    console.error("Failed to fetch report tables:", err);
+    throw new Error("Failed to fetch report tables");
+  }
+}
+
+export async function getReportData(session: Session, params: ReportParams): Promise<any> {
+  if (!session?.sid) throw new Error("No active session");
+
+  try {
+    const response = await fetch("https://hst-api.wialon.com/wialon/ajax.html", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `sid=${session.sid}&svc=report/get_report_data&params=${JSON.stringify(params)}`
+    });
+
+    return await response.json();
+  } catch (err) {
+    console.error("Failed to fetch report data:", err);
+    throw new Error("Failed to fetch report data");
+  }
+}
+
+export async function waitForReport(session: Session): Promise<void> {
+  if (!session?.sid) throw new Error("No active session");
+
+  try {
+    const response = await fetch("https://hst-api.wialon.com/wialon/ajax.html", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `sid=${session.sid}&svc=report/wait_report`
+    });
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+  } catch (err) {
+    console.error("Failed to wait for report:", err);
+    throw new Error("Failed to wait for report");
+  }
+}
+
+export async function applyReportResult(session: Session): Promise<any[]> {
+  if (!session?.sid) throw new Error("No active session");
+
+  try {
+    const response = await fetch("https://hst-api.wialon.com/wialon/ajax.html", {
+      method: "POST", 
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `sid=${session.sid}&svc=report/apply_report_result`
+    });
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+    
+    return data;
+  } catch (err) {
+    console.error("Failed to apply report result:", err);
+    throw new Error("Failed to apply report result");
+  }
 }

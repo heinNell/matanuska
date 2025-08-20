@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useWialonResources } from "../hooks/useWialonResources";
-import useWialonGeofences from "../hooks/useWialonGeofences";
 import type { WialonResource } from "../types/wialon-types";
-import { getReportData, waitForReport, applyReportResult } from "../services/wialonReportService";
+import { getReportData, getReportTables, waitForReport, applyReportResult } from "../services/wialonReportService";
 import type { ReportTable } from "../services/wialonReportService";
 
 interface ReportRunnerProps {
@@ -13,7 +12,6 @@ interface ReportRunnerProps {
 const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
   const resources: WialonResource[] = useWialonResources(session, loggedIn);
   const [selectedResId, setSelectedResId] = useState<number | null>(null);
-  const { geofences, isLoading, error } = useWialonGeofences(resources, selectedResId);
 
   // --- Report templates ---
   const [templates, setTemplates] = useState<ReportTable[]>([]);

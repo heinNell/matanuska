@@ -6,7 +6,6 @@ import { JobCardTask, TaskHistoryEntry } from "../../types";
 import { formatDateTime } from "../../utils/helpers";
 
 interface QAReviewPanelProps {
-  jobCardId: string;
   tasks: JobCardTask[];
   taskHistory: TaskHistoryEntry[];
   onVerifyTask: (taskId: string) => Promise<void>;
@@ -16,7 +15,6 @@ interface QAReviewPanelProps {
 }
 
 const QAReviewPanel: React.FC<QAReviewPanelProps> = ({
-  jobCardId,
   tasks,
   taskHistory,
   onVerifyTask,

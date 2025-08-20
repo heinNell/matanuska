@@ -65,7 +65,7 @@ const initWialonApi = (url: string): Promise<boolean> => {
  * @returns {Promise<void>} A promise that resolves on success or rejects on failure.
  */
 const loginToWialon = ({ token, baseUrl }: { token: string, baseUrl: string }): Promise<void> => {
-  console.log(`Mock: Attempting to login with token...`);
+  console.log(`Mock: Attempting to login with token to ${baseUrl}...`);
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // Simulate successful login for a specific token

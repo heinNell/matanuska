@@ -1,8 +1,8 @@
 // src/hooks/useWialonUnitSensors.ts
 import { useState, useEffect, useCallback } from "react";
 import wialonService from "../services/wialonService";
-import type { BaseSensorResult, SensorMap, SensorIds } from "../types/wialon-sensors";
 import { createUnitDetail, isValidUnit } from "../utils/wialonUnitUtils";
+import type { UnitDetail } from "../types/wialon";
 
 export interface UnitSensorData {
   unit: UnitDetail | null;

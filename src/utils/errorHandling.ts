@@ -105,9 +105,6 @@ export const createAppError = (
   // Default message is from the original error
   const message = options.message || error.message;
 
-  // Create a unique ID for deduplication
-  const errorId = `${category}:${message}:${JSON.stringify(options.context || {})}`;
-
   return {
     originalError: error,
     message,
@@ -322,6 +319,9 @@ export default {
   registerErrorHandler,
   safeExecute,
   getStackTrace,
+  ErrorCategory,
+  ErrorSeverity,
+};
   ErrorCategory,
   ErrorSeverity,
 };
