@@ -7,6 +7,7 @@ interface WialonConnectionStatus {
   serverTime?: Date;
   errorMessage?: string;
   tokenExpiry?: Date;
+  token?: string;
 }
 
 /**
@@ -44,6 +45,7 @@ export function useWialonConnection() {
           connected: true,
           user: userData?.getName?.(),
           serverTime: new Date((sess.getServerTime?.() || Date.now() / 1000) * 1000),
+          token,
         });
         setLoading(false);
         return;
@@ -81,6 +83,7 @@ export function useWialonConnection() {
             user: userData?.getName?.(),
             serverTime: new Date((sess.getServerTime?.() || Date.now() / 1000) * 1000),
             tokenExpiry,
+            token,
           });
         }
         setLoading(false);

@@ -66,6 +66,7 @@ const WialonDashboard: FC = () => {
                                     key={unit.id}
                                     unit={unit}
                                     isSelected={selectedUnitId === unit.id}
+                                    onUnitClick={handleUnitClick}
                                 />
                             ))}
                         </div>

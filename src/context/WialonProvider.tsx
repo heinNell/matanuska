@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import wialonService from "../services/wialonService";
 import { getEnvVar } from "../utils/envUtils";
-import type { 
-  WialonUnit as WialonUnitType, 
+import type {
+  WialonUnit as WialonUnitType,
   WialonSession as WialonSessionType,
   DiagnosticResult,
-  WialonError 
+  WialonError
 } from "../types/wialon-types";
 import type {
   WialonUnit as ServiceWialonUnit,
@@ -31,7 +31,7 @@ const transformUnit = (serviceUnit: ServiceWialonUnit): WialonUnitType => ({
   getId: serviceUnit.getId
 });
 
-const transformUnits = (serviceUnits: ServiceWialonUnit[]): WialonUnitType[] => 
+const transformUnits = (serviceUnits: ServiceWialonUnit[]): WialonUnitType[] =>
   serviceUnits.map(transformUnit);
 
 // ---- Context types (unchanged API) ----

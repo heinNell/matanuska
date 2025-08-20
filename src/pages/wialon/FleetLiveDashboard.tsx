@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useWialonSensor } from "@/hooks/useWialonSensor";
+import { useWialonUnitSensors } from "@/hooks/useWialonSensor";
 import { useWialonEvents } from "@/hooks/useWialonEvents";
 import { FuelParameterUpdater } from "@/components/FuelParameterUpdater";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
@@ -8,7 +8,8 @@ import { useWialonContext } from "@/context/WialonContext";
 export const FleetLiveDashboard: React.FC = () => {
     const { units } = useWialonContext();
     const [selectedUnit, setSelectedUnit] = useState<number>(units?.[0]?.id ?? 0);
-    const fuelSensorValue = useWialonSensor(selectedUnit, 1);
+    const { sensorValues } = useWialonUnitSensors(selectedUnit);
+    const fuelSensorValue = sensorValues?.[1]?.value;
     const now = Math.floor(Date.now() / 1000);
     const events = useWialonEvents(selectedUnit, "sensors", now - 86400, now);
     const { prefs, savePrefs } = useUserPreferences("CURRENT_USER_ID");

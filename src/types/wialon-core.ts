@@ -21,29 +21,30 @@ export interface WialonUnit {
   getMessages(from: number, to: number, flags: number, callback: any): void;
 }
 
-// ...existing interfaces moved from useWialonUnits.ts...
+/** Type definition for Wialon SDK */
+export interface WialonSDK {
+  core: {
+    Session: {
+      getInstance(): any;
+    };
+    Errors: {
+      getErrorText(code: number): string;
+    };
+  };
+  item: {
+    Item: { dataFlag: any; };
+    Unit: { dataFlag: any; };
+    Resource: { dataFlag: any; };
+  };
+  util: {
+    Number: {
+      or(a: number, b: number): number;
+    };
+  };
+}
 
 declare global {
   interface Window {
-    wialon: {
-      core: {
-        Session: {
-          getInstance(): any;
-        };
-        Errors: {
-          getErrorText(code: number): string;
-        };
-      };
-      item: {
-        Item: { dataFlag: any; };
-        Unit: { dataFlag: any; };
-        Resource: { dataFlag: any; };
-      };
-      util: {
-        Number: {
-          or(a: number, b: number): number;
-        };
-      };
-    };
+    wialon: any;
   }
 }
