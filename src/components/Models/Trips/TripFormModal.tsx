@@ -4,22 +4,31 @@ import { TripForm } from "../../../components/forms/trips/TripForm";
 import { Trip } from "../../../types";
 import { useAppContext } from "../../../context/AppContext";
 import { AlertTriangle } from "lucide-react";
-import type { BaseSensorResult } from "../../../types/wialon-sensors";
+
+// Define sensor result interface locally since it's not exported from wialon-sensors
+interface SensorValue {
+  value?: number;
+}
+
+interface SensorResult {
+  fuel?: SensorValue;
+  speed?: SensorValue;
+  engineHours?: SensorValue;
+  ignition?: SensorValue;
+}
 
 interface TripFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   editingTrip?: Trip;
-  sensorData?: BaseSensorResult;
-  unitId?: number;
+  sensorData?: SensorResult;
 }
 
 const TripFormModal: React.FC<TripFormModalProps> = ({
   isOpen,
   onClose,
   editingTrip,
-  sensorData,
-  unitId
+  sensorData
 }) => {
   const { addTrip, updateTrip, isLoading } = useAppContext();
   const [error, setError] = useState<string | null>(null);
