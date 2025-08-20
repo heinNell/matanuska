@@ -40,11 +40,11 @@ const WialonDashboard: FC = () => {
         return (
             <div id="info-panel">
                 <div id="panel-unit-name">{selectedUnitDetail.name}</div>
-                <div id="panel-unit-meta">UID: {selectedUnitDetail.uid}</div>
+                                <div id="panel-unit-meta">ID: {selectedUnitDetail.id}</div>
                 <div id="panel-details">
                     <div className="route-details"><b>Last Position:</b></div>
                     <ul className="timeline">
-                        <li><b>Speed:</b> {selectedUnitDetail.speed} km/h</li>
+                                                <li><b>Speed:</b> {selectedUnitDetail.position?.speed || 0} km/h</li>
                         <li><b>Status:</b> {selectedUnitDetail.status}</li>
                     </ul>
                 </div>

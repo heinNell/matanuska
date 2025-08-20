@@ -1,23 +1,15 @@
-import type { UnitDetail } from './wialon-types';
+// src/types/wialon-types.ts
+import type { Position } from "./wialon-position";
 
-export interface BaseSensorResult {
-  loading: boolean;
-  error: string | null;
-  unit: UnitDetail | null;
+/**
+ * Shared UnitDetail shape for the app.
+ * Keep this in one place so all hooks/components/sensor code can import it.
+ */
+export interface UnitDetail {
+  id: number | string;
+  name: string;
+  iconUrl?: string | null;
+  position?: Position | null;
+  properties?: Record<string, any> | null;
+  raw?: Record<string, any> | null;
 }
-
-export interface SensorMap {
-  fuel?: number;
-  speed?: number;
-  engineHours?: number;
-  ignition?: boolean;
-}
-
-export interface SensorIds {
-  fuel?: number;
-  speed?: number;
-  engineHours?: number;
-  ignition?: number;
-}
-
-export type SensorCallback = (value: number | boolean) => void;
