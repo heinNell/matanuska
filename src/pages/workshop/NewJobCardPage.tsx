@@ -57,7 +57,6 @@ const NewJobCardPage: React.FC = () => {
 
   // Modals state
   const [isDefectModalOpen, setIsDefectModalOpen] = useState(false);
-  const [isPOModalOpen, setIsPOModalOpen] = useState(false);
   const [currentDefects, setCurrentDefects] = useState<DefectItem[]>([]);
   const [currentPO, setCurrentPO] = useState<PurchaseOrder | null>(null);
 
@@ -86,36 +85,42 @@ const NewJobCardPage: React.FC = () => {
     }));
   };
 
-  // Defects -> tasks
+  // Defects -> tasks (open/close handled locally where needed)
   const openDefectModal = (defects: DefectItem[], _inspectionId: string) => {
     setCurrentDefects(defects);
     setIsDefectModalOpen(true);
   };
 
   const handleDefectImport = (newDefectItems: DefectItem[]) => {
-    const newTasks: JobCardTask[] = newDefectItems.map((item) => ({
+    // Convert defects to tasks
+    const tasks = newDefectItems.map((defect): JobCardTask => ({
       id: uuidv4(),
-      title: `${item.type.charAt(0).toUpperCase() + item.type.slice(1)}: ${item.name}`,
-      description: undefined,
-      category: item.type === "repair" ? "Repair" : "Replace",
-      estimatedHours: 1,
-      status: "pending",
+      title: defect.name,
+      description: `Auto-generated from defect inspection`,
+      category: defect.type === 'replace' ? 'Parts Replacement' : 'Repair',
+      estimatedHours: defect.type === 'replace' ? 2 : 1,
+      status: 'pending',
+      assignedTo: userName,
       isCritical: false,
-      parts: [],
     }));
-    setJobCardData((prev) => ({ ...prev, tasks: [...prev.tasks, ...newTasks] }));
+
+    setJobCardData((prev) => ({
+      ...prev,
+      tasks: [...prev.tasks, ...tasks]
+    }));
+
     setIsDefectModalOpen(false);
+    setCurrentDefects([]);
   };
 
   // PO modal
   const openPOModal = (po: PurchaseOrder) => {
     setCurrentPO(po);
-    setIsPOModalOpen(true);
   };
 
   const handlePOSave = (po: PurchaseOrder) => {
     console.log("Saving Purchase Order:", po);
-    setIsPOModalOpen(false);
+    setCurrentPO(null);
   };
 
   // Save/Cancel
@@ -198,7 +203,27 @@ const NewJobCardPage: React.FC = () => {
 
           <TabsContent value="parts">
             <div className="space-y-4">
-              <Button onClick={() => openPOModal(createSamplePO())}>Create Purchase Order</Button>
+              <div className="flex space-x-2">
+                <Button onClick={() => openPOModal(createSamplePO())}>Create Purchase Order</Button>
+                <Button
+                  onClick={() => openDefectModal([
+                    { type: 'repair', name: 'Brake Inspection' },
+                    { type: 'replace', name: 'Oil Filter' }
+                  ], 'INSP-123')}
+                  variant="outline"
+                >
+                  Import Defects
+                </Button>
+                <Button
+                  onClick={() => handleDefectImport([
+                    { type: 'repair', name: 'Tire Pressure Check' },
+                    { type: 'replace', name: 'Air Filter' }
+                  ])}
+                  variant="outline"
+                >
+                  Add Sample Tasks
+                </Button>
+              </div>
               <Card>
                 <CardContent>
                   <h3 className="font-medium text-lg mb-2">Parts Used</h3>
@@ -258,7 +283,7 @@ const NewJobCardPage: React.FC = () => {
       {currentPO && (
         <PurchaseOrderModal
           po={currentPO}
-          onClose={() => setIsPOModalOpen(false)}
+          onClose={() => setCurrentPO(null)}
           onSave={handlePOSave}
           onDownloadPDF={() => console.log("Downloading PDF...")}
         />

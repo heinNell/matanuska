@@ -1,19 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from '../../ui/Modal';
 import { TripForm } from "../../../components/forms/trips/TripForm";
 import { Trip } from "../../../types";
 import { useAppContext } from "../../../context/AppContext";
 import { AlertTriangle } from "lucide-react";
+import type { BaseSensorResult } from "../../../types/wialon-sensors";
 
 interface TripFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   editingTrip?: Trip;
+  sensorData?: BaseSensorResult;
+  unitId?: number;
 }
 
-const TripFormModal: React.FC<TripFormModalProps> = ({ isOpen, onClose, editingTrip }) => {
+const TripFormModal: React.FC<TripFormModalProps> = ({
+  isOpen,
+  onClose,
+  editingTrip,
+  sensorData,
+  unitId
+}) => {
   const { addTrip, updateTrip, isLoading } = useAppContext();
   const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    fuelLevel: sensorData?.fuel?.value ?? 0,
+    speed: sensorData?.speed?.value ?? 0,
+    engineHours: sensorData?.engineHours?.value ?? 0,
+    ignition: sensorData?.ignition?.value ?? 0
+  });
+
+  useEffect(() => {
+    if (sensorData) {
+      setFormData(prev => ({
+        ...prev,
+        fuelLevel: sensorData.fuel?.value ?? prev.fuelLevel,
+        speed: sensorData.speed?.value ?? prev.speed,
+        engineHours: sensorData.engineHours?.value ?? prev.engineHours,
+        ignition: sensorData.ignition?.value ?? prev.ignition
+      }));
+    }
+  }, [sensorData]);
 
   const handleSubmit = async (
     tripData: Omit<Trip, "id" | "costs" | "status" | "additionalCosts">
@@ -57,6 +84,45 @@ const TripFormModal: React.FC<TripFormModalProps> = ({ isOpen, onClose, editingT
         onCancel={onClose}
         isSubmitting={isLoading?.addTrip || isLoading?.[`updateTrip-${editingTrip?.id}`]}
       />
+      {/* Add sensor data fields to form */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label>Fuel Level</label>
+          <input
+            type="number"
+            value={formData.fuelLevel}
+            readOnly
+            className="bg-gray-100"
+          />
+        </div>
+        <div>
+          <label>Speed</label>
+          <input
+            type="number"
+            value={formData.speed}
+            readOnly
+            className="bg-gray-100"
+          />
+        </div>
+        <div>
+          <label>Engine Hours</label>
+          <input
+            type="number"
+            value={formData.engineHours}
+            readOnly
+            className="bg-gray-100"
+          />
+        </div>
+        <div>
+          <label>Ignition</label>
+          <input
+            type="number"
+            value={formData.ignition}
+            readOnly
+            className="bg-gray-100"
+          />
+        </div>
+      </div>
     </Modal>
   );
 };

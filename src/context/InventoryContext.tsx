@@ -398,7 +398,10 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({ children }
   const getVendorSlug = React.useCallback(
     (vendorId: string) => {
       const v = vendors.find((ven) => ven.id === vendorId);
-      return v ? storeIdFromName(v.name) : undefined;
+      if (!v) return undefined;
+      // Prefer common name fields; fall back safely
+      const displayName = (v as any).name ?? (v as any).vendorName ?? "";
+      return displayName ? storeIdFromName(displayName) : undefined;
     },
     [vendors]
   );
@@ -445,11 +448,16 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({ children }
       // Process each vendor
       for (const vendor of sageVendors) {
         // Check if vendor exists in Firestore
-        const existingVendorIndex = vendors.findIndex((v) => v.sageId === vendor.sageId);
-
+        const existingVendorIndex = vendors.findIndex((v) => (v as any)?.sageId === (vendor as any)?.sageId);
         if (existingVendorIndex >= 0) {
-          // Update existing vendor
-          await updateVendor(vendors[existingVendorIndex].id, vendor);
+          const existing = vendors[existingVendorIndex];
+          if (existing) {
+            // Update existing vendor
+            await updateVendor(existing.id, vendor);
+          } else {
+            // Fallback: if lookup failed unexpectedly, add instead
+            await addVendor(vendor);
+          }
         } else {
           // Add new vendor
           await addVendor(vendor);
@@ -459,11 +467,16 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({ children }
       // Process each inventory item
       for (const item of sageInventory) {
         // Check if item exists in Firestore
-        const existingItemIndex = inventoryItems.findIndex((i) => i.sageId === item.sageId);
-
+        const existingItemIndex = inventoryItems.findIndex((i) => (i as any)?.sageId === (item as any)?.sageId);
         if (existingItemIndex >= 0) {
-          // Update existing item
-          await updateInventoryItem(inventoryItems[existingItemIndex].id, item);
+          const existing = inventoryItems[existingItemIndex];
+          if (existing) {
+            // Update existing item
+            await updateInventoryItem(existing.id, item);
+          } else {
+            // Fallback: add if unexpected undefined
+            await addInventoryItem(item);
+          }
         } else {
           // Add new item
           await addInventoryItem(item);
@@ -473,11 +486,16 @@ export const InventoryProvider: React.FC<InventoryProviderProps> = ({ children }
       // Process each purchase order
       for (const po of sagePOs) {
         // Check if PO exists in Firestore
-        const existingPOIndex = purchaseOrders.findIndex((p) => p.sageId === po.sageId);
-
+        const existingPOIndex = purchaseOrders.findIndex((p) => (p as any)?.sageId === (po as any)?.sageId);
         if (existingPOIndex >= 0) {
-          // Update existing PO
-          await updatePurchaseOrder(purchaseOrders[existingPOIndex].id, po);
+          const existing = purchaseOrders[existingPOIndex];
+          if (existing) {
+            // Update existing PO
+            await updatePurchaseOrder(existing.id, po);
+          } else {
+            // Fallback: add if unexpected undefined
+            await addPurchaseOrder(po);
+          }
         } else {
           // Add new PO
           await addPurchaseOrder(po);

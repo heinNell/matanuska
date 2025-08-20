@@ -1,3 +1,4 @@
+import React, { useMemo, useState } from "react";
 import {
   AlertCircle,
   ArrowDownToLine,
@@ -9,17 +10,15 @@ import {
   Trash2,
 } from "lucide-react";
 import Papa from "papaparse";
-import React, { useMemo, useState } from "react";
 import { StockItem, useWorkshop } from "../../context/WorkshopContext";
 
-// Replace the empty interface with a type alias for clarity
 type StockInventoryPageProps = object;
-
-type StockItemInput = Omit<StockItem, "id">;
+type StockItemFormData = Omit<StockItem, "id"> & {
+  lastRestocked: string; // explicitly ensure string type
+};
 
 const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
-  const { stockItems, vendors, addStockItem, updateStockItem, deleteStockItem, isLoading } =
-    useWorkshop();
+  const { stockItems, vendors, addStockItem, updateStockItem, deleteStockItem } = useWorkshop();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -27,8 +26,8 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
   const [showImportModal, setShowImportModal] = useState(false);
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
 
-  // Form state
-  const [formData, setFormData] = useState<StockItemInput>({
+  // Ensure lastRestocked is always a string
+  const [formData, setFormData] = useState<StockItemFormData>({
     itemCode: "",
     itemName: "",
     category: "",
@@ -41,10 +40,9 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     vendor: "",
     vendorId: "",
     location: "",
-    lastRestocked: new Date().toISOString().split("T")[0],
+    lastRestocked: new Date().toISOString().split("T")[0] as string, // yyyy-mm-dd
   });
 
-  // CSV import state
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importResults, setImportResults] = useState<{
     success: number;
@@ -52,22 +50,25 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     errors: string[];
   } | null>(null);
 
-  // Get unique categories for filter
-  const categories = ["All", ...new Set(stockItems.map((item) => item.category))];
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(stockItems.map((item) => item.category)))],
+    [stockItems]
+  );
 
-  // Filter items based on search and category
-  const filteredItems = stockItems.filter((item) => {
-    const matchesSearch =
-      item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.itemCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredItems = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    return stockItems.filter((item) => {
+      const matchesSearch =
+        !term ||
+        item.itemName.toLowerCase().includes(term) ||
+        item.itemCode.toLowerCase().includes(term) ||
+        item.description.toLowerCase().includes(term);
 
-    const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
+      const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [stockItems, searchTerm, selectedCategory]);
 
-    return matchesSearch && matchesCategory;
-  });
-
-  // Derived metrics - MOVED TO THE CORRECT LOCATION
   const totalInventoryValue: number = useMemo(() => {
     return stockItems.reduce((sum: number, item: StockItem) => {
       const unitCost = Number(item.cost) || 0;
@@ -80,45 +81,36 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     return stockItems.filter((item: StockItem) => item.quantity <= item.reorderLevel);
   }, [stockItems]);
 
-  // Handle form input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    const field = name as keyof StockItemInput;
+    const field = name as keyof StockItemFormData;
 
     setFormData((prev) => {
-      const next: StockItemInput = { ...prev };
-
+      const next: StockItemFormData = { ...prev };
       if (field === "quantity" || field === "reorderLevel" || field === "cost") {
-        // Numeric fields
         (next as any)[field] = parseFloat(value) || 0;
       } else if (field === "vendor") {
-        // Map vendor name to vendorId
         const selectedVendor = vendors.find((v) => v.vendorName === value);
         next.vendor = value;
         next.vendorId = selectedVendor?.id || "";
       } else {
         (next as any)[field] = value;
       }
-
       return next;
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       if (editingItem) {
         await updateStockItem(editingItem.id, formData);
       } else {
         await addStockItem(formData);
       }
-
-      // Reset form and state
-  setFormData({
+      setFormData({
         itemCode: "",
         itemName: "",
         category: "",
@@ -131,8 +123,8 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
         vendor: "",
         vendorId: "",
         location: "",
-        lastRestocked: new Date().toISOString().split("T")[0],
-  });
+        lastRestocked: new Date().toISOString().split("T")[0] as string,
+      });
       setEditingItem(null);
       setShowAddForm(false);
     } catch (error) {
@@ -141,10 +133,9 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     }
   };
 
-  // Setup form for editing
   const handleEdit = (item: StockItem) => {
     setEditingItem(item);
-  setFormData({
+    setFormData({
       itemCode: item.itemCode,
       itemName: item.itemName,
       category: item.category,
@@ -157,12 +148,12 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
       vendor: item.vendor,
       vendorId: item.vendorId,
       location: item.location,
-      lastRestocked: item.lastRestocked,
-  });
+      // guarantee string for lastRestocked
+      lastRestocked: item.lastRestocked ?? new Date().toISOString().split("T")[0],
+    });
     setShowAddForm(true);
   };
 
-  // Handle delete
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
@@ -174,7 +165,6 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     }
   };
 
-  // Export stock items to CSV
   const handleExportCSV = () => {
     const csvData = stockItems.map((item) => ({
       itemCode: item.itemCode,
@@ -189,7 +179,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
       vendor: item.vendor,
       vendorId: item.vendorId,
       location: item.location,
-      lastRestocked: item.lastRestocked,
+      lastRestocked: item.lastRestocked, // already a string by type
     }));
 
     const csv = Papa.unparse(csvData);
@@ -197,14 +187,16 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `stock_inventory_${new Date().toISOString().split("T")[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `stock_inventory_${new Date().toISOString().split("T")[0]}.csv`
+    );
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  // Handle file selection for import
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -212,38 +204,32 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     }
   };
 
-  // Handle CSV import
   const handleImportCSV = () => {
     if (!importFile) return;
-
     Papa.parse(importFile, {
       header: true,
       complete: async (results) => {
         const records = results.data as Partial<StockItem>[];
-
-        const importResults = {
+        const result = {
           success: 0,
           failed: 0,
           errors: [] as string[],
         };
-
         for (const record of records) {
           try {
-            // Validate required fields
             if (!record.itemCode || !record.itemName || !record.category) {
-              throw new Error(`Missing required fields for item ${record.itemCode || "unknown"}`);
+              throw new Error(
+                `Missing required fields for item ${record.itemCode || "unknown"}`
+              );
             }
-
-            // Find vendor ID if only name is provided
             if (record.vendor && !record.vendorId) {
               const vendor = vendors.find((v) => v.vendorName === record.vendor);
               if (vendor) {
                 record.vendorId = vendor.id;
               }
             }
-
-            // Prepare complete record
-            const stockItem: StockItemInput = {
+            // Ensure lastRestocked is a string
+            const stockItem: StockItemFormData = {
               itemCode: record.itemCode || "",
               itemName: record.itemName || "",
               category: record.category || "",
@@ -258,27 +244,20 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
               location: record.location || "",
               lastRestocked: (record.lastRestocked ?? new Date().toISOString().split("T")[0]) as string,
             };
-
-            // Check for existing item to update instead of adding duplicate
-            const existingItem = stockItems.find((item) => item.itemCode === stockItem.itemCode);
-
+            const existingItem = stockItems.find((i) => i.itemCode === stockItem.itemCode);
             if (existingItem) {
               await updateStockItem(existingItem.id, stockItem);
             } else {
               await addStockItem(stockItem);
             }
-
-            importResults.success++;
+            result.success++;
           } catch (error) {
             console.error("Error importing stock item:", error);
-            importResults.failed++;
-            importResults.errors.push(
-              `${record.itemCode || "unknown"}: ${(error as Error).message}`
-            );
+            result.failed++;
+            result.errors.push(`${record.itemCode || "unknown"}: ${(error as Error).message}`);
           }
         }
-
-        setImportResults(importResults);
+        setImportResults(result);
       },
       error: (error) => {
         console.error("Error parsing CSV:", error);
@@ -287,7 +266,6 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     });
   };
 
-  // CSV template for download
   const downloadTemplate = () => {
     const templateData = [
       {
@@ -306,7 +284,6 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
         lastRestocked: new Date().toISOString().split("T")[0],
       },
     ];
-
     const csv = Papa.unparse(templateData);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -320,477 +297,373 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold flex items-center">
-          <Package className="mr-2" /> Stock Inventory Management
-        </h1>
-        <div className="flex space-x-2">
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Package className="text-blue-600" />
+          <h1 className="text-xl font-semibold">Stock Inventory</h1>
+        </div>
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+            onClick={() => setShowAddForm(true)}
           >
-            <PlusCircle size={18} className="mr-2" /> {editingItem ? "Edit Item" : "Add New Item"}
+            <PlusCircle size={16} />
+            Add Item
           </button>
           <button
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-md border hover:bg-gray-50"
             onClick={() => setShowImportModal(true)}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center"
           >
-            <ArrowUpFromLine size={18} className="mr-2" /> Import CSV
+            <ArrowDownToLine size={16} />
+            Import CSV
           </button>
           <button
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-md border hover:bg-gray-50"
             onClick={handleExportCSV}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center"
           >
-            <ArrowDownToLine size={18} className="mr-2" /> Export CSV
+            <ArrowUpFromLine size={16} />
+            Export CSV
+          </button>
+          <button
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-md border hover:bg-gray-50"
+            onClick={downloadTemplate}
+          >
+            <ArrowDownToLine size={16} />
+            Template
           </button>
         </div>
       </div>
 
-      {/* Filters and Search */}
-      <div className="flex flex-wrap items-center mb-6 gap-4">
-        <div className="relative flex-grow max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="text-gray-400" size={18} />
-          </div>
+      {/* Search & Filter */}
+      <div className="flex flex-col md:flex-row md:items-center gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
-            type="text"
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Search items..."
+            className="w-full pl-7 pr-3 py-2 border rounded-md"
+            placeholder="Search by name, code, description..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+        <select
+          className="px-3 py-2 border rounded-md w-full md:w-56"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="border rounded-md p-4">
+          <p className="text-sm text-gray-500">Total Items</p>
+          <p className="text-xl font-semibold">{stockItems.length}</p>
         </div>
-        <div className="text-sm text-gray-500">
-          {filteredItems.length} items • Total value: **${totalInventoryValue.toFixed(2)}**
+        <div className="border rounded-md p-4">
+          <p className="text-sm text-gray-500">Inventory Value</p>
+          <p className="text-xl font-semibold">
+            ${totalInventoryValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+          </p>
+        </div>
+        <div className="border rounded-md p-4">
+          <p className="text-sm text-gray-500">Low Stock</p>
+          <p className="text-xl font-semibold">{lowStockItems.length}</p>
         </div>
       </div>
 
-      {/* Add/Edit Form */}
-      {showAddForm && (
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6 border border-gray-200">
-          <h2 className="text-xl font-semibold mb-4">
-            {editingItem ? "Edit Stock Item" : "Add New Stock Item"}
-          </h2>
-          <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Item Code */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Item Code *</label>
-                <input
-                  type="text"
-                  name="itemCode"
-                  value={formData.itemCode}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Item Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Item Name *</label>
-                <input
-                  type="text"
-                  name="itemName"
-                  value={formData.itemName}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-                <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Sub-Category */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sub-Category</label>
-                <input
-                  type="text"
-                  name="subCategory"
-                  value={formData.subCategory}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Vendor */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
-                <select
-                  name="vendor"
-                  value={formData.vendor}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select a vendor</option>
-                  {vendors.map((vendor) => (
-                    <option key={vendor.id} value={vendor.vendorName}>
-                      {vendor.vendorName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Quantity */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleInputChange}
-                  required
-                  min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Unit */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Unit *</label>
-                <input
-                  type="text"
-                  name="unit"
-                  value={formData.unit}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Cost */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cost ($) *</label>
-                <input
-                  type="number"
-                  name="cost"
-                  value={formData.cost}
-                  onChange={handleInputChange}
-                  required
-                  min="0"
-                  step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Reorder Level */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Reorder Level *
-                </label>
-                <input
-                  type="number"
-                  name="reorderLevel"
-                  value={formData.reorderLevel}
-                  onChange={handleInputChange}
-                  required
-                  min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Storage Location
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Last Restocked Date */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Restocked
-                </label>
-                <input
-                  type="date"
-                  name="lastRestocked"
-                  value={formData.lastRestocked}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            {/* Description */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Submit buttons */}
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddForm(false);
-                  setEditingItem(null);
-                  setFormData({
-                    itemCode: "",
-                    itemName: "",
-                    category: "",
-                    subCategory: "",
-                    description: "",
-                    unit: "",
-                    quantity: 0,
-                    reorderLevel: 0,
-                    cost: 0,
-                    vendor: "",
-                    vendorId: "",
-                    location: "",
-                    lastRestocked: new Date().toISOString().split("T")[0],
-                  });
-                }}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                {editingItem ? "Update Item" : "Add Item"}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* CSV Import Modal */}
-      {showImportModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">Import Stock Items from CSV</h2>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">CSV File</label>
-              <input
-                type="file"
-                accept=".csv"
-                onChange={handleFileChange}
-                className="w-full border border-gray-300 rounded px-3 py-2"
-              />
-            </div>
-
-            {importResults && (
-              <div className="mb-4 p-3 bg-gray-50 rounded border">
-                <h3 className="font-medium text-gray-800">Import Results:</h3>
-                <p className="text-green-600">
-                  ✓ {importResults.success} items imported successfully
-                </p>
-                <p className="text-red-600">✗ {importResults.failed} items failed</p>
-
-                {importResults.errors.length > 0 && (
-                  <div className="mt-2">
-                    <p className="font-medium text-gray-800">Errors:</p>
-                    <ul className="text-sm text-red-600 list-disc list-inside">
-                      {importResults.errors.slice(0, 5).map((error, index) => (
-                        <li key={index}>{error}</li>
-                      ))}
-                      {importResults.errors.length > 5 && (
-                        <li>...and {importResults.errors.length - 5} more errors</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="flex flex-col space-y-3">
-              <button
-                onClick={downloadTemplate}
-                className="text-blue-600 hover:text-blue-800 text-sm flex items-center justify-center"
-              >
-                <ArrowDownToLine size={16} className="mr-1" /> Download CSV Template
-              </button>
-
-              <div className="flex justify-end space-x-3 pt-3 border-t">
-                <button
-                  onClick={() => {
-                    setShowImportModal(false);
-                    setImportFile(null);
-                    setImportResults(null);
-                  }}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Close
-                </button>
-                <button
-                  onClick={handleImportCSV}
-                  disabled={!importFile}
-                  className={`px-4 py-2 rounded-md text-white focus:outline-none ${
-                    importFile ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300 cursor-not-allowed"
-                  }`}
-                >
-                  Import
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Items Table */}
-      <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Item Code
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Quantity
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Reorder Level
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Cost
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Vendor
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+      {/* Table */}
+      <div className="overflow-x-auto border rounded-md">
+        <table className="min-w-[960px] w-full">
+          <thead>
+            <tr className="bg-gray-50 text-left text-sm">
+              <th className="px-3 py-2">Code</th>
+              <th className="px-3 py-2">Name</th>
+              <th className="px-3 py-2">Category</th>
+              <th className="px-3 py-2">Unit</th>
+              <th className="px-3 py-2">Qty</th>
+              <th className="px-3 py-2">Reorder</th>
+              <th className="px-3 py-2">Cost</th>
+              <th className="px-3 py-2">Vendor</th>
+              <th className="px-3 py-2">Location</th>
+              <th className="px-3 py-2">Last Restocked</th>
+              <th className="px-3 py-2">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {isLoading.stockItems ? (
-              <tr>
-                <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
-                  Loading stock items...
-                </td>
-              </tr>
-            ) : filteredItems.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
-                  No stock items found
-                </td>
-              </tr>
-            ) : (
-              filteredItems.map((item: StockItem) => (
-                <tr key={item.id} className={item.quantity <= item.reorderLevel ? "bg-red-50" : ""}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {item.itemCode}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.itemName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.category}
-                    {item.subCategory && (
-                      <span className="text-xs text-gray-400"> / {item.subCategory}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        item.quantity <= item.reorderLevel
-                          ? "bg-red-100 text-red-800"
-                          : "bg-green-100 text-green-800"
-                      }`}
-                    >
-                      {item.quantity} {item.unit}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.reorderLevel}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${item.cost.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.vendor || "-"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <tbody className="text-sm">
+            {filteredItems.map((item) => (
+              <tr key={item.id} className="border-t">
+                <td className="px-3 py-2">{item.itemCode}</td>
+                <td className="px-3 py-2">{item.itemName}</td>
+                <td className="px-3 py-2">{item.category}</td>
+                <td className="px-3 py-2">{item.unit}</td>
+                <td className="px-3 py-2">{item.quantity}</td>
+                <td className="px-3 py-2">{item.reorderLevel}</td>
+                <td className="px-3 py-2">{item.cost}</td>
+                <td className="px-3 py-2">{item.vendor}</td>
+                <td className="px-3 py-2">{item.location}</td>
+                <td className="px-3 py-2">{item.lastRestocked}</td>
+                <td className="px-3 py-2">
+                  <div className="flex items-center gap-2">
                     <button
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border hover:bg-gray-50"
                       onClick={() => handleEdit(item)}
-                      className="text-blue-600 hover:text-blue-900 mr-3"
                     >
-                      <Edit size={16} />
+                      <Edit size={14} />
+                      Edit
                     </button>
                     <button
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded border hover:bg-gray-50 text-red-600"
                       onClick={() => handleDelete(item.id)}
-                      className="text-red-600 hover:text-red-900"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
+                      Delete
                     </button>
-                  </td>
-                </tr>
-              ))
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {filteredItems.length === 0 && (
+              <tr>
+                <td className="px-3 py-6 text-center text-gray-500" colSpan={11}>
+                  No items found.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Low Stock Warning */}
-      {lowStockItems.length > 0 && (
-        <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <AlertCircle className="h-5 w-5 text-red-400" />
+      {/* Add/Edit Form */}
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-md shadow-xl w-full max-w-3xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">
+                {editingItem ? "Edit Stock Item" : "Add Stock Item"}
+              </h2>
+              <button className="text-gray-500 hover:text-gray-700" onClick={() => setShowAddForm(false)}>
+                ✕
+              </button>
             </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">
-                Low Stock Alert ({lowStockItems.length} items)
-              </h3>
-              <div className="mt-2 text-sm text-red-700">
-                <ul className="list-disc pl-5 space-y-1">
-                  {lowStockItems.slice(0, 5).map((item: StockItem) => (
-                    <li key={item.id}>
-                      {item.itemName} - {item.quantity} {item.unit} remaining (Reorder level:{" "}
-                      {item.reorderLevel})
-                    </li>
-                  ))}
-                  {lowStockItems.length > 5 && (
-                    <li>... and {lowStockItems.length - 5} more items</li>
-                  )}
-                </ul>
+
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-gray-600">Item Code</label>
+                <input
+                  name="itemCode"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.itemCode}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Item Name</label>
+                <input
+                  name="itemName"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.itemName}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Category</label>
+                <input
+                  name="category"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Sub-Category</label>
+                <input
+                  name="subCategory"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.subCategory}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="text-sm text-gray-600">Description</label>
+                <textarea
+                  name="description"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Unit</label>
+                <input
+                  name="unit"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.unit}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Quantity</label>
+                <input
+                  name="quantity"
+                  type="number"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.quantity}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Reorder Level</label>
+                <input
+                  name="reorderLevel"
+                  type="number"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.reorderLevel}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Cost</label>
+                <input
+                  name="cost"
+                  type="number"
+                  step="0.01"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.cost}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Vendor</label>
+                <select
+                  name="vendor"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.vendor}
+                  onChange={handleInputChange}
+                >
+                  <option value="">—</option>
+                  {vendors.map((v) => (
+                    <option key={v.id} value={v.vendorName}>
+                      {v.vendorName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Location</label>
+                <input
+                  name="location"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Last Restocked</label>
+                <input
+                  name="lastRestocked"
+                  type="date"
+                  className="w-full px-3 py-2 border rounded"
+                  value={formData.lastRestocked}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  className="px-3 py-2 rounded border"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setEditingItem(null);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  {editingItem ? "Update" : "Save"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-md shadow-xl w-full max-w-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Import Stock from CSV</h2>
+              <button
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowImportModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <input type="file" accept=".csv" onChange={handleFileChange} />
+              <div className="flex items-center gap-3">
+                <button
+                  className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                  disabled={!importFile}
+                  onClick={handleImportCSV}
+                >
+                  Import
+                </button>
+                <button
+                  className="px-3 py-2 rounded border"
+                  onClick={() => setShowImportModal(false)}
+                >
+                  Close
+                </button>
+              </div>
+
+              {importResults && (
+                <div className="border rounded p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle className="text-gray-500" size={16} />
+                    <span className="font-medium">Import Results</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-sm mb-2">
+                    <div>Success: <strong className="text-green-600">{importResults.success}</strong></div>
+                    <div>Failed: <strong className="text-red-600">{importResults.failed}</strong></div>
+                    <div>Total: <strong>{importResults.success + importResults.failed}</strong></div>
+                  </div>
+                  {importResults.errors.length > 0 && (
+                    <ul className="list-disc pl-5 text-sm text-red-600 space-y-1 max-h-40 overflow-auto">
+                      {importResults.errors.map((e, i) => (
+                        <li key={i}>{e}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -40,7 +40,7 @@ const AutomaticProbeVerificationModal: React.FC<AutomaticProbeVerificationModalP
   const [isFetchingSensorData, setIsFetchingSensorData] = useState(false);
   const [sensorData, setSensorData] = useState<VehicleSensorData | null>(null);
   const [sensorDataError, setSensorDataError] = useState<string | null>(null);
-  const [useSensorData, setUseSensorData] = useState(true);
+  // Removed: const [useSensorData, setUseSensorData] = useState(true);
   const [manualOverride, setManualOverride] = useState(false);
 
   // Find the diesel record
@@ -51,13 +51,14 @@ const AutomaticProbeVerificationModal: React.FC<AutomaticProbeVerificationModalP
     if (isOpen && record) {
       fetchSensorData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, record]);
 
   // Reset form when modal opens with new record
   useEffect(() => {
     if (record) {
       // If we have sensor data and it's recent, use it as the default
-      if (sensorData && isSensorDataRecent(sensorData) && useSensorData && !manualOverride) {
+      if (sensorData && isSensorDataRecent(sensorData) && !manualOverride) {
         const totalFuelLevel = getTotalFuelLevel(sensorData);
         setProbeReading(totalFuelLevel.toString());
 
@@ -65,11 +66,11 @@ const AutomaticProbeVerificationModal: React.FC<AutomaticProbeVerificationModalP
         const sensorDataNote = `Probe reading automatically populated from real-time sensor data.
 Sensor data timestamp: ${sensorData.lastUpdated.toLocaleString()}
 Fuel tanks: ${sensorData.fuelTanks
-          .map(
-            (tank: FuelTankData) =>
-              `${tank.tankName}: ${tank.currentLevel.toFixed(1)}L (${tank.percentageFull.toFixed(1)}%)`
-          )
-          .join(", ")}`;
+            .map(
+              (tank: FuelTankData) =>
+                `${tank.tankName}: ${tank.currentLevel.toFixed(1)}L (${tank.percentageFull.toFixed(1)}%)`
+            )
+            .join(", ")}`;
 
         setVerificationNotes(sensorDataNote);
       } else {
@@ -85,11 +86,13 @@ Fuel tanks: ${sensorData.fuelTanks
       // Calculate discrepancy if probe reading exists
       updateDiscrepancy();
     }
-  }, [record, sensorData, useSensorData, manualOverride]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [record, sensorData, manualOverride]);
 
   // Update discrepancy when probe reading changes
   useEffect(() => {
     updateDiscrepancy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [probeReading]);
 
   if (!record) return null;
@@ -209,7 +212,7 @@ Fuel tanks: ${sensorData.fuelTanks
 
   // Toggle between sensor data and manual entry
   const toggleManualOverride = () => {
-    setManualOverride(!manualOverride);
+    setManualOverride((prev) => !prev);
 
     if (!manualOverride) {
       // Switching to manual mode
@@ -228,11 +231,11 @@ Fuel tanks: ${sensorData.fuelTanks
         setVerificationNotes(`Probe reading automatically populated from real-time sensor data.
 Sensor data timestamp: ${sensorData.lastUpdated.toLocaleString()}
 Fuel tanks: ${sensorData.fuelTanks
-          .map(
-            (tank: FuelTankData) =>
-              `${tank.tankName}: ${tank.currentLevel.toFixed(1)}L (${tank.percentageFull.toFixed(1)}%)`
-          )
-          .join(", ")}`);
+            .map(
+              (tank: FuelTankData) =>
+                `${tank.tankName}: ${tank.currentLevel.toFixed(1)}L (${tank.percentageFull.toFixed(1)}%)`
+            )
+            .join(", ")}`);
       }
     }
   };

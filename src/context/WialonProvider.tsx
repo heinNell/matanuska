@@ -1,10 +1,38 @@
-// src/context/WialonProvider.tsx
-
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getWialonUnits } from "../api/wialon"; // keep your helper
+import wialonService from "../services/wialonService";
 import { getEnvVar } from "../utils/envUtils";
-import type { DiagnosticResult } from "../utils/wialonDiagnostics";
-import { initWialonSession, logoutWialon } from "../utils/wialonInit";
+import type { 
+  WialonUnit as WialonUnitType, 
+  WialonSession as WialonSessionType,
+  DiagnosticResult,
+  WialonError 
+} from "../types/wialon-types";
+import type {
+  WialonUnit as ServiceWialonUnit,
+  WialonSession as ServiceWialonSession
+} from "../services/wialonService";
+
+// Helper functions to transform service types to expected types
+const transformSession = (serviceSession: ServiceWialonSession): WialonSessionType => ({
+  id: serviceSession.sid,
+  user: {
+    id: 0, // Service doesn't provide user ID, using default
+    name: serviceSession.user
+  }
+});
+
+const transformUnit = (serviceUnit: ServiceWialonUnit): WialonUnitType => ({
+  id: serviceUnit.id,
+  name: serviceUnit.nm,
+  // Copy any additional properties, but avoid overwriting id
+  iconUrl: serviceUnit.iconUrl,
+  addListener: serviceUnit.addListener,
+  removeListenerById: serviceUnit.removeListenerById,
+  getId: serviceUnit.getId
+});
+
+const transformUnits = (serviceUnits: ServiceWialonUnit[]): WialonUnitType[] => 
+  serviceUnits.map(transformUnit);
 
 // ---- Context types (unchanged API) ----
 interface WialonContextType {
@@ -43,10 +71,10 @@ export const WialonContext = createContext<WialonContextType>({
 
 export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<WialonSessionType | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [initialized, setInitialized] = useState(false);
-  const [units, setUnits] = useState<any[]>([]);
+  const [units, setUnits] = useState<WialonUnitType[]>([]);
   const [error, setError] = useState<Error | null>(null);
   const [diagnosticResults, setDiagnosticResults] = useState<DiagnosticResult[]>([]);
   const [isDiagnosticRunning, setIsDiagnosticRunning] = useState(false);
@@ -74,28 +102,28 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
           setInitialized(false);
           return;
         }
-        // Use improved initWialonSession (handles SDK, session, login, and diagnostics)
-        const sess = await initWialonSession({ apiUrl: apiHost, token });
+        // Use correct login method
+        const sess = await wialonService.login(token);
         if (!mounted) return;
-        setSession(sess);
+        setSession(transformSession(sess));
         setLoggedIn(true);
         setInitialized(true);
 
         // Fetch units after successful login
         try {
-          const list = await getWialonUnits();
-          if (mounted) setUnits(list);
+          const list = await wialonService.getUnits();
+          if (mounted) setUnits(transformUnits(list));
         } catch (e) {
           console.error("Error fetching Wialon units after login:", e);
         }
       } catch (e: any) {
         if (!mounted) return;
-        // Improved error reporting for Wialon codes
-        const errorMsg = (e && e.message && e.message.includes("code 5"))
+        const wialonError = e as WialonError;
+        const errorMsg = wialonError.code === 5
           ? `Wialon login failed (code 5): Authentication failed.
-            • Check your token: it may be expired, revoked, or invalid.
-            • See: https://sdk.wialon.com/wiki/en/sidebar/remoteapi/errors`
-          : e instanceof Error ? e.message : String(e);
+             • Check your token: it may be expired, revoked, or invalid.
+             • See: https://sdk.wialon.com/wiki/en/sidebar/remoteapi/errors`
+          : wialonError.message || String(e);
 
         setError(new Error(errorMsg));
         setLoggedIn(false);
@@ -115,9 +143,10 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
   // -------- Actions --------
   const refreshUnits = async () => {
     try {
-      const list = await getWialonUnits();
-      setUnits(list);
-      return list;
+      const list = await wialonService.getUnits();
+      const transformedList = transformUnits(list);
+      setUnits(transformedList);
+      return transformedList;
     } catch (e) {
       console.error("Error refreshing Wialon units:", e);
       setError(e instanceof Error ? e : new Error(String(e)));
@@ -139,7 +168,7 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
-    logoutWialon();
+    wialonService.logout();
     setLoggedIn(false);
     setInitialized(false);
     setUnits([]);
@@ -151,15 +180,39 @@ export const WialonProvider = ({ children }: { children: React.ReactNode }) => {
 
   const runDiagnostics = async () => {
     setIsDiagnosticRunning(true);
+    const results: DiagnosticResult[] = [];
+
     try {
-      const { runWialonDiagnostics } = await import("../utils/wialonDiagnostics");
-      const results = await runWialonDiagnostics();
+      // Check SDK
+      results.push({
+        name: 'SDK Load',
+        status: window.wialon ? 'ok' : 'fail',
+        timestamp: Date.now()
+      });
+
+      // Check session
+      results.push({
+        name: 'Session',
+        status: session ? 'ok' : 'fail',
+        message: session ? `User: ${session.user.name}` : 'No active session',
+        timestamp: Date.now()
+      });
+
+      // Check units access
+      const unitCount = units.length;
+      results.push({
+        name: 'Units Access',
+        status: unitCount > 0 ? 'ok' : 'warn',
+        message: `Found ${unitCount} units`,
+        timestamp: Date.now()
+      });
+
       setDiagnosticResults(results);
       return results;
     } catch (e) {
-      console.error("Failed to run Wialon diagnostics:", e);
-      setError(e instanceof Error ? e : new Error("Unknown diagnostic error"));
-      return [];
+      console.error('Diagnostics failed:', e);
+      setError(e instanceof Error ? e : new Error('Diagnostics failed'));
+      return results;
     } finally {
       setIsDiagnosticRunning(false);
     }

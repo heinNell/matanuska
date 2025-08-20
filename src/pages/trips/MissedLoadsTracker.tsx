@@ -60,7 +60,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
   const [resolvingLoad, setResolvingLoad] = useState<MissedLoad | null>(null);
   const [formData, setFormData] = useState({
     customerName: "",
-    loadRequestDate: new Date().toISOString().split("T")[0],
+    loadRequestDate: new Date().toISOString().slice(0, 10),
     requestedPickupDate: "",
     requestedDeliveryDate: "",
     route: "",
@@ -139,7 +139,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
 
     const missedLoadData: Omit<MissedLoad, "id"> = {
       customerName: formData.customerName.trim(),
-      loadRequestDate: formData.loadRequestDate || new Date().toISOString().split('T')[0],
+      loadRequestDate: formData.loadRequestDate || new Date().toISOString().slice(0, 10),
       requestedPickupDate: formData.requestedPickupDate,
       requestedDeliveryDate: formData.requestedDeliveryDate,
       route: formData.route.trim(),
@@ -248,7 +248,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
     setEditingLoad(null);
     setFormData({
       customerName: "",
-      loadRequestDate: new Date().toISOString().split("T")[0],
+      loadRequestDate: new Date().toISOString().slice(0, 10),
       requestedPickupDate: "",
       requestedDeliveryDate: "",
       route: "",

@@ -266,7 +266,9 @@ const ClientManagementPage: React.FC = () => {
                           {client.phone} • {client.email}
                         </p>
                         <p>
-                          {client.address.street}, {client.address.city}, {client.address.state}
+                          {(client.address?.street ?? "").toString()}
+                          {client.address?.city ? `, ${client.address.city}` : ""}
+                          {client.address?.state ? `, ${client.address.state}` : ""}
                         </p>
                       </div>
                       <div className="flex mt-2 gap-2">
@@ -294,8 +296,8 @@ const ClientManagementPage: React.FC = () => {
                       )}
                       {client.contacts?.length ? (
                         <div className="mt-2">
-                          <div className="font-medium">{client.contacts[0].name}</div>
-                          <div className="text-gray-500">{client.contacts[0].position}</div>
+                          <div className="font-medium">{client.contacts?.[0]?.name ?? ""}</div>
+                          <div className="text-gray-500">{client.contacts?.[0]?.position ?? ""}</div>
                         </div>
                       ) : null}
                     </div>

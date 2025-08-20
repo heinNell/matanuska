@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 interface WialonIntegrationProps {
   /** The Wialon token to use for authentication */
-  token?: string;
+  token: string;
   /** Button label text */
   buttonLabel?: string;
   /** Whether to open in a new tab or use an iframe */
@@ -22,16 +22,31 @@ interface WialonIntegrationProps {
  * It can either display a button to open Wialon in a new tab or embed
  * it directly in an iframe.
  */
-// Use direct Wialon link with token
-const WIALON_SESSION_TOKEN = 'c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053';
-const WIALON_LOGIN_URL = 'https://hosting.wialon.com/?token=c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053&lang=en';
+const DEFAULT_LANGUAGE = 'en';
+
+function buildWialonLoginUrl({
+  token,
+  language,
+  additionalParams = {}
+}: {
+  token: string;
+  language?: string;
+  additionalParams?: Record<string, string>;
+}) {
+  const params = new URLSearchParams({
+    token,
+    lang: language || DEFAULT_LANGUAGE,
+    ...additionalParams
+  });
+  return `https://hosting.wialon.com/?${params.toString()}`;
+}
 
 const WialonIntegration: React.FC<WialonIntegrationProps> = ({
-  token = WIALON_SESSION_TOKEN,
+  token,
   buttonLabel = 'Open Wialon Dashboard',
   displayMode = 'button',
   height = '600px',
-  language = 'en',
+  language = DEFAULT_LANGUAGE,
   additionalParams = {}
 }) => {
   const [wialonUrl, setWialonUrl] = useState<string>('');
@@ -39,16 +54,19 @@ const WialonIntegration: React.FC<WialonIntegrationProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Use the direct URL provided instead of constructing one
-    setWialonUrl(WIALON_LOGIN_URL);
+    // Build URL dynamically from props
+    const url = buildWialonLoginUrl({ token, language, additionalParams });
+    setWialonUrl(url);
 
     // Check if iframe is supported (only if we're in iframe mode)
     if (displayMode === 'iframe') {
-      checkIframeSupport(WIALON_LOGIN_URL);
+      checkIframeSupport(url);
     } else {
       setIsLoading(false);
     }
-  }, [displayMode]);
+    // Only re-run if any of these dependencies change
+    // eslint-disable-next-line
+  }, [displayMode, token, language, JSON.stringify(additionalParams)]);
 
   const checkIframeSupport = async (url: string) => {
     try {
@@ -58,8 +76,8 @@ const WialonIntegration: React.FC<WialonIntegrationProps> = ({
 
       // If DENY or SAMEORIGIN is present, iframe embedding is not allowed
       const supported = !frameOptions ||
-                        !(frameOptions.includes('DENY') ||
-                          frameOptions.includes('SAMEORIGIN'));
+        !(frameOptions.includes('DENY') ||
+          frameOptions.includes('SAMEORIGIN'));
 
       setIframeSupported(supported);
     } catch (error) {
@@ -78,16 +96,16 @@ const WialonIntegration: React.FC<WialonIntegrationProps> = ({
     return <div className="p-4 text-center">Loading Wialon integration...</div>;
   }
 
-  // Token check removed as we're using direct URL
-
   if (displayMode === 'iframe') {
     if (iframeSupported === false) {
       return (
         <div className="p-4 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-lg">
           <h3 className="font-medium">Iframe Embedding Not Supported</h3>
-          <p className="mt-1">Wialon has X-Frame-Options that prevent embedding in an iframe. Please use the button mode instead.</p>
+          <p className="mt-1">
+            Wialon has X-Frame-Options that prevent embedding in an iframe. Please use the button mode instead.
+          </p>
           <button
-            onClick={handleOpenWialon} // Changed onClick to handleOpenWialon
+            onClick={handleOpenWialon}
             className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
             {buttonLabel}
@@ -114,7 +132,7 @@ const WialonIntegration: React.FC<WialonIntegrationProps> = ({
   return (
     <div className="wialon-button-container">
       <button
-        onClick={handleOpenWialon} // Changed onClick to handleOpenWialon
+        onClick={handleOpenWialon}
         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors"
       >
         {buttonLabel}

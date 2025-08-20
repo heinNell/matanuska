@@ -163,7 +163,7 @@ const ActionLog: React.FC = () => {
   const handleSubmit = () => {
     if (!validateForm()) return;
 
-    const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().slice(0, 10);
 
     const actionItemData: Omit<ActionItem, "id" | "createdAt" | "updatedAt" | "createdBy"> = {
       title: formData.title.trim(),
@@ -175,8 +175,8 @@ const ActionLog: React.FC = () => {
       attachments: [],
     };
 
-    // Add action item
-    const newId = addActionItem(actionItemData);
+  // Add action item
+  addActionItem(actionItemData);
 
     // Reset form and close modal
     resetForm();

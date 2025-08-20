@@ -5,6 +5,8 @@ export interface WialonPosition {
   z?: number; // Altitude (optional)
   t?: number; // Timestamp (optional)
   s?: number; // Speed (optional)
+  c?: number; // Course (optional)
+  sc?: number; // Status code (optional)
 }
 
 /** Unit (vehicle or asset) from Wialon */
@@ -14,6 +16,9 @@ export interface WialonUnit {
   getPosition: () => WialonPosition | undefined;
   getIconUrl: (size?: number) => string;
   getUniqueId: () => string | number;
+  addListener(event: string, callback: (event: any) => void): number;
+  removeListenerById(id: number): void;
+  getMessages(from: number, to: number, flags: number, callback: any): void;
 }
 
 /** Lightweight DTO returned by REST adapter (not SDK object) */
@@ -51,6 +56,8 @@ export interface WialonGeofence {
 export type WialonResource = {
   id: number;
   name: string;
+  getZones(): any[];
+  execReport(template: any, unitId: number, flags: number, interval: any, callback: any): void;
 };
 
 /** Wialon Session methods from JS SDK */
@@ -87,4 +94,35 @@ export interface UnitDetail {
   speed: number;
   status: 'onroad' | 'pause' | 'offline';
   lastMessageTime: number | null;
+}
+
+declare global {
+  interface Window {
+    wialon: {
+      core: {
+        Session: {
+          getInstance(): any;
+        };
+        Errors: {
+          getErrorText(code: number): string;
+        };
+      };
+      item: {
+        Item: {
+          dataFlag: any;
+        };
+        Unit: {
+          dataFlag: any;
+        };
+        Resource: {
+          dataFlag: any;
+        };
+      };
+      util: {
+        Number: {
+          or(a: number, b: number): number;
+        };
+      };
+    };
+  }
 }

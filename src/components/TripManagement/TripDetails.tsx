@@ -56,7 +56,7 @@ const TripDetails: React.FC<TripDetailsProps> = ({ trip, onBack }) => {
   // Enhanced handleAddCost with file support
   const handleAddCost = (costData: Omit<CostEntry, "id" | "attachments">, files?: FileList) => {
     try {
-      const costId = addCostEntry(costData, files);
+      addCostEntry(costData, files);
       setShowCostForm(false);
 
       // Show success message with cost details
@@ -167,7 +167,7 @@ const TripDetails: React.FC<TripDetailsProps> = ({ trip, onBack }) => {
         updateTrip({
           ...trip,
           status: "completed",
-          completedAt: new Date().toISOString().split("T")[0],
+          completedAt: new Date().toISOString().slice(0, 10),
           completedBy: "Current User", // In a real app, this would be the logged-in user
         });
 

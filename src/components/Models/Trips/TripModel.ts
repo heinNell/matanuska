@@ -5,9 +5,9 @@ import { Trip } from '../../../types';
 export type { Trip };
 
 // Import Firebase functions related to trips
-import { 
-  addTripToFirebase, 
-  updateTripInFirebase, 
+import {
+  addTripToFirebase,
+  updateTripInFirebase,
   deleteTripFromFirebase
 } from '../../../firebase';
 
@@ -21,17 +21,21 @@ export {
 // Additional helper methods for the domain
 export class TripService {
   // Calculate estimated trip duration
-  static calculateEstimatedDuration(origin: string, destination: string, avgSpeed: number = 70): number {
-    // This is a placeholder. In a real implementation, this would use a distance matrix API
-    // For now, we'll just return a random duration between 2 and 8 hours
-    return Math.floor(Math.random() * 6) + 2;
+  static calculateEstimatedDuration(_origin: string, _destination: string, avgSpeed: number = 70): number {
+    // Placeholder: assume a nominal 300 km trip and estimate time by avgSpeed,
+    // with a small random jitter; clamp result between 2 and 8 hours.
+    const nominalDistanceKm = 300;
+    const baseHours = nominalDistanceKm / Math.max(1, avgSpeed);
+    const jitter = (Math.random() - 0.5); // +/- 0.5 hours
+    const estimate = Math.round(baseHours + jitter);
+    return Math.min(8, Math.max(2, estimate));
   }
-  
+
   // Format trip duration from minutes to hours and minutes
   static formatDuration(durationMinutes: number): string {
     const hours = Math.floor(durationMinutes / 60);
     const minutes = durationMinutes % 60;
-    
+
     if (hours === 0) {
       return `${minutes} minutes`;
     } else if (minutes === 0) {
@@ -40,13 +44,13 @@ export class TripService {
       return `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minute${minutes > 1 ? 's' : ''}`;
     }
   }
-  
+
   // Calculate estimated fuel consumption
   static calculateEstimatedFuelConsumption(distance: number, avgConsumption: number = 30): number {
     // avgConsumption in liters per 100km
     return (distance / 100) * avgConsumption;
   }
-  
+
   // Generate a new trip number
   static generateTripNumber(): string {
     const year = new Date().getFullYear();

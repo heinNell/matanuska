@@ -11,33 +11,27 @@
  * @param fallback - Default value if the variable is not found
  * @returns The environment variable value or fallback
  */
-export const getEnvVar = (key: string, fallback: string = ''): string => {
-  // Check if running in browser with global ENV_VARS object
-  if (typeof window !== 'undefined' && 'ENV_VARS' in window) {
-    return (window as any).ENV_VARS[key] || fallback;
-  }
-
-  // For Vite's import.meta.env context (modern ES modules)
+export function getEnvVar(key: string, fallback = ''): string {
   try {
-    if (import.meta?.env) {
-      return import.meta.env[key] || fallback;
+    // Prefer variables initialized on the window by initBrowserEnv
+    if (typeof window !== 'undefined' && (window as any).ENV_VARS) {
+      const winVal = (window as any).ENV_VARS[key];
+      if (typeof winVal === 'string' && winVal.trim() !== '') return winVal.trim();
     }
-  } catch {
-    // Silently fail if import.meta is not available
-  }
 
-  // For Node.js process.env context
-  try {
-    if (typeof process !== 'undefined' && process.env) {
-      return process.env[key] || fallback;
-    }
-  } catch {
-    // Silently fail if process is not available
-  }
+  const metaEnvVal = (import.meta as any)?.env?.[key] as unknown;
+  if (typeof metaEnvVal === 'string' && metaEnvVal.trim() !== '') return metaEnvVal.trim();
 
-  // Return fallback if no environment system is available
-  return fallback;
-};
+    const procEnv = (typeof process !== 'undefined' && process.env)
+      ? (process.env as any)[key]
+      : undefined;
+    if (typeof procEnv === 'string' && procEnv.trim() !== '') return procEnv.trim();
+
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 /**
  * Initialize environment variables in the browser
@@ -45,7 +39,7 @@ export const getEnvVar = (key: string, fallback: string = ''): string => {
  *
  * @param vars - Object containing environment variables
  */
-export const initBrowserEnv = (vars: Record<string, string>) => {
+export const initBrowserEnv = (vars: Record<string, string>): void => {
   if (typeof window !== 'undefined') {
     (window as any).ENV_VARS = vars;
   }

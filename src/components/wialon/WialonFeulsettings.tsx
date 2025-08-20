@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 // Use a placeholder for the API host and a dummy session ID for the example.
 // Replace these with your actual values.
@@ -63,7 +63,7 @@ interface RegisterFuelFillingParams {
 // --- Custom Hook for a generic API Call ---
 // This hook encapsulates the logic for making API requests and managing state.
 // It handles loading, success, and error states for any given service call.
-const useApi = <T, P>(service: string) => {
+const useApi  = <T, P>(service: string) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -246,3 +246,5 @@ const App: React.FC = () => {
     </div>
   );
 };
+
+export default App;

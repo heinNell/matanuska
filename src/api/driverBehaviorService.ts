@@ -77,6 +77,15 @@ export class DriverBehaviorService {
     this.syncStatus = status;
   }
 
+  // Expose read-only status for consumers (and ensure fields are read)
+  public getLastSynced(): Date | null {
+    return this.lastSynced;
+  }
+
+  public getSyncStatus(): SyncStatus {
+    return this.syncStatus;
+  }
+
   /* ---------- auth gate (replace with your auth check) ---------- */
   private isAuthenticated(): boolean {
     try {

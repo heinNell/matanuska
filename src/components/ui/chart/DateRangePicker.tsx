@@ -3,10 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { addMonths, format, subMonths } from "date-fns";
 
 // Using native select instead of custom components
-const SelectItem = ({ children, value }: { children: React.ReactNode; value: string }) => (
-  <option value={value}>{children}</option>
-);
-const SelectValue = ({ placeholder }: { placeholder: string }) => placeholder;
 
 interface DateRangePickerProps {
   startDate: Date;

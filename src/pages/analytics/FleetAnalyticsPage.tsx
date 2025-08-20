@@ -6,11 +6,9 @@ import {
   PieChart,
   TrendingUp,
   Target,
-  Layers,
   DollarSign,
   FileBarChart
 } from 'lucide-react';
-
 /**
  * Fleet Analytics Management Page
  * Container for all analytics and reporting functionality

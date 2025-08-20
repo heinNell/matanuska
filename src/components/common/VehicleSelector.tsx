@@ -28,7 +28,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
   disabled = false,
   error
 }) => {
-  const { fleetOptions } = useFleetList({ 
+  const { fleetOptions } = useFleetList({
     onlyActive: activeOnly,
     filterType,
     includeDetails: showDetails
@@ -37,10 +37,10 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
   // Helper to render vehicle details if needed
   const renderVehicleDetails = () => {
     if (!showDetails || !value) return null;
-    
+
     const vehicle = fleetOptions.find((f: FleetOption) => f.value === value);
     if (!vehicle) return null;
-    
+
     return (
       <div className="mt-1 text-xs text-gray-500">
         <p>Registration: {vehicle.registration}</p>
@@ -48,8 +48,8 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
         {vehicle.details && (
           <>
             <p>Make: {vehicle.details.manufacturer} {vehicle.details.model}</p>
-            {vehicle.details.mileage && (
-              <p>Odometer: {vehicle.details.mileage.toLocaleString()} km</p>
+            {typeof vehicle.details.km === 'number' && (
+              <p>Odometer: {vehicle.details.km.toLocaleString()} km</p>
             )}
           </>
         )}
@@ -62,7 +62,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
       <label className="block text-sm font-medium text-gray-700 mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
-      
+
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -77,9 +77,9 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
           </option>
         ))}
       </select>
-      
+
       {renderVehicleDetails()}
-      
+
       {error && (
         <p className="mt-1 text-sm text-red-600">{error}</p>
       )}

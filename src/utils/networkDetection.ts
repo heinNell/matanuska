@@ -1,6 +1,6 @@
 /**
  * Network Detection and Recovery Utility
- * 
+ *
  * This utility provides enhanced network state detection beyond the basic
  * browser 'online' and 'offline' events. It performs active checks against
  * actual endpoints to determine if connectivity is working properly.
@@ -45,9 +45,9 @@ export const checkNetworkConnectivity = async (forceCheck = false): Promise<Netw
   if (checkInProgress && !forceCheck) {
     return currentState;
   }
-  
+
   checkInProgress = true;
-  
+
   // Update status to checking during the check
   updateState({
     ...currentState,
@@ -72,23 +72,23 @@ export const checkNetworkConnectivity = async (forceCheck = false): Promise<Netw
     // Test Firebase reachability
     const firebaseEndpoint = PING_ENDPOINTS.firebase;
     const googleEndpoint = PING_ENDPOINTS.google;
-    
+
     const startTime = Date.now();
-    
+
     const [firebaseResponse, googleResponse] = await Promise.allSettled([
       pingEndpoint(firebaseEndpoint, 5000),
       pingEndpoint(googleEndpoint, 5000)
     ]);
-    
+
     const endTime = Date.now();
     const latency = endTime - startTime;
-    
+
     const isFirebaseReachable = firebaseResponse.status === 'fulfilled' && firebaseResponse.value;
     const isInternetReachable = googleResponse.status === 'fulfilled' && googleResponse.value;
-    
+
     let status: NetworkStatus = 'offline';
     let quality: ConnectionQuality = 'bad';
-    
+
     if (isFirebaseReachable && isInternetReachable) {
       status = 'online';
       quality = latency < 300 ? 'good' : latency < 1000 ? 'poor' : 'bad';
@@ -96,7 +96,7 @@ export const checkNetworkConnectivity = async (forceCheck = false): Promise<Netw
       status = 'limited';
       quality = 'poor';
     }
-    
+
     updateState({
       status,
       quality,
@@ -107,7 +107,7 @@ export const checkNetworkConnectivity = async (forceCheck = false): Promise<Netw
     });
   } catch (error) {
     console.error('Error checking network connectivity:', error);
-    
+
     updateState({
       ...currentState,
       status: 'offline',
@@ -117,7 +117,7 @@ export const checkNetworkConnectivity = async (forceCheck = false): Promise<Netw
       lastChecked: new Date()
     });
   }
-  
+
   checkInProgress = false;
   return currentState;
 };
@@ -129,14 +129,14 @@ const pingEndpoint = async (url: string, timeout: number = 5000): Promise<boolea
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
-    
-    const response = await fetch(url, {
+
+    await fetch(url, {
       method: 'HEAD',
       mode: 'no-cors',
       cache: 'no-cache',
       signal: controller.signal
     });
-    
+
     clearTimeout(timeoutId);
     return true;
   } catch (error) {
@@ -158,12 +158,12 @@ const updateState = (newState: NetworkState): void => {
 export const startNetworkMonitoring = (checkIntervalMs: number = 30000): void => {
   // Perform initial check
   checkNetworkConnectivity();
-  
+
   // Set up event listeners
   window.addEventListener('online', () => {
     checkNetworkConnectivity();
   });
-  
+
   window.addEventListener('offline', () => {
     updateState({
       ...currentState,
@@ -174,7 +174,7 @@ export const startNetworkMonitoring = (checkIntervalMs: number = 30000): void =>
       lastChecked: new Date()
     });
   });
-  
+
   // Set up periodic checking
   if (periodicCheckTimer === null) {
     periodicCheckTimer = window.setInterval(() => {
@@ -200,10 +200,10 @@ export const subscribeToNetworkChanges = (
   callback: (state: NetworkState) => void
 ): () => void => {
   listeners.push(callback);
-  
+
   // Call immediately with current state
   callback(currentState);
-  
+
   // Return unsubscribe function
   return () => {
     listeners = listeners.filter(listener => listener !== callback);

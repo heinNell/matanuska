@@ -40,7 +40,7 @@ const CreateLoadConfirmationPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().slice(0, 10);
 
   const generateLoadConfirmationNumber = () => {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
@@ -85,20 +85,23 @@ const CreateLoadConfirmationPage: React.FC = () => {
 
     // Check if the field is part of the authorizedBy object
     if (name.startsWith("authorizedBy.")) {
-      const field = name.split(".")[1];
-      setFormData({
-        ...formData,
-        authorizedBy: {
-          ...formData.authorizedBy,
-          [field]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+      const [, fieldRaw] = name.split(".");
+      if (fieldRaw === "name" || fieldRaw === "position" || fieldRaw === "date") {
+        setFormData((prev) => ({
+          ...prev,
+          authorizedBy: {
+            ...prev.authorizedBy,
+            [fieldRaw]: value,
+          },
+        }));
+      }
+      return;
     }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

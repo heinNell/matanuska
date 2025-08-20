@@ -16,18 +16,18 @@ export function useFleetList(options?: {
   filterType?: 'Truck' | 'Trailer' | 'Reefer' | string[];
   includeDetails?: boolean;
 }) {
-  const fleetOptions = useMemo(() => {
+  const fleetOptions = useMemo<FleetOption[]>(() => {
     let vehicles = [...FLEET_VEHICLES];
-    
+
     // Filter by status if onlyActive is true
     if (options?.onlyActive) {
       vehicles = vehicles.filter(v => v.status === 'active');
     }
-    
+
     // Filter by type
     if (options?.filterType) {
       if (Array.isArray(options.filterType)) {
-        vehicles = vehicles.filter(v => options.filterType!.includes(v.category));
+        vehicles = vehicles.filter(v => v.category && options.filterType!.includes(v.category));
       } else {
         // Map string types to our vehicle categories
         const categoryMap: Record<string, string> = {
@@ -39,16 +39,25 @@ export function useFleetList(options?: {
         vehicles = vehicles.filter(v => v.category === category);
       }
     }
-    
+
     // Map to dropdown options
-    return vehicles.map(vehicle => ({
-      value: vehicle.fleetNo,
-      label: `${vehicle.fleetNo} - ${vehicle.manufacturer} ${vehicle.model}`,
-      registration: vehicle.registrationNo,
-      type: vehicle.category,
-      status: vehicle.status,
-      ...(options?.includeDetails ? { details: vehicle } : {})
-    }));
+    return vehicles.map(vehicle => {
+      const value = (vehicle.fleetNo ?? vehicle.registrationNo ?? vehicle.id) as string;
+      const manufacturer = vehicle.manufacturer ?? '';
+      const model = vehicle.model ?? '';
+      const label = `${value} - ${manufacturer} ${model}`.trim();
+
+      return {
+        value,
+        label,
+        registration: vehicle.registrationNo,
+        type: (vehicle.category ?? '') as string,
+        status: vehicle.status,
+        ...(options?.includeDetails
+          ? { details: { ...vehicle, km: vehicle.km ?? (vehicle as any).mileage } as Vehicle }
+          : {})
+      } as FleetOption;
+    });
   }, [options?.onlyActive, options?.filterType, options?.includeDetails]);
 
   // Return all fleet options and helper methods

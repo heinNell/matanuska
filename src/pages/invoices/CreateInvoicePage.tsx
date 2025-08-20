@@ -33,17 +33,17 @@ const CreateInvoicePage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  
+
   const today = new Date().toISOString().slice(0, 10);
   const thirtyDaysLater = new Date();
   thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30);
   const thirtyDaysLaterStr = thirtyDaysLater.toISOString().slice(0, 10);
-  
+
   const generateInvoiceNumber = () => {
     const randomNum = Math.floor(10000 + Math.random() * 90000);
     return `INV-${randomNum}`;
   };
-  
+
   const [formData, setFormData] = useState<InvoiceFormData>({
     invoiceNumber: generateInvoiceNumber(),
     invoiceDate: today,
@@ -61,7 +61,7 @@ const CreateInvoicePage: React.FC = () => {
     accountNumber: '123456789',
     branchCode: '051001',
   });
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -69,25 +69,38 @@ const CreateInvoicePage: React.FC = () => {
       [name]: value,
     });
   };
-  
+
   const handleItemChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     const items = [...formData.items];
-    items[index] = {
-      ...items[index],
-      [name]: name === 'description' ? value : parseFloat(value) || 0,
+
+    // Guard index access and provide a default shape
+    const current: InvoiceItem = items[index] ?? {
+      description: '',
+      quantity: 0,
+      unitPrice: 0,
+      total: 0,
     };
-    
+
+    // Compute updated item based on the field being edited
+    const updatedItem: InvoiceItem = {
+      ...current,
+      description: name === 'description' ? value : current.description,
+      quantity: name === 'quantity' ? (parseFloat(value) || 0) : current.quantity,
+      unitPrice: name === 'unitPrice' ? (parseFloat(value) || 0) : current.unitPrice,
+      total: 0, // recalc below
+    };
+
     // Recalculate total for this item
-    if (name === 'quantity' || name === 'unitPrice') {
-      items[index].total = items[index].quantity * items[index].unitPrice;
-    }
-    
+    updatedItem.total = updatedItem.quantity * updatedItem.unitPrice;
+
+    items[index] = updatedItem;
+
     // Update all calculated fields
-    const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+    const subtotal = items.reduce((sum, it) => sum + (it?.total ?? 0), 0);
     const vat = subtotal * 0.15; // 15% VAT
     const total = subtotal + vat;
-    
+
     setFormData({
       ...formData,
       items,
@@ -96,23 +109,23 @@ const CreateInvoicePage: React.FC = () => {
       total,
     });
   };
-  
+
   const addItem = () => {
     setFormData({
       ...formData,
       items: [...formData.items, { description: '', quantity: 1, unitPrice: 0, total: 0 }],
     });
   };
-  
+
   const removeItem = (index: number) => {
     if (formData.items.length > 1) {
       const items = formData.items.filter((_, i) => i !== index);
-      
+
       // Recalculate totals
       const subtotal = items.reduce((sum, item) => sum + item.total, 0);
       const vat = subtotal * 0.15;
       const total = subtotal + vat;
-      
+
       setFormData({
         ...formData,
         items,
@@ -122,12 +135,12 @@ const CreateInvoicePage: React.FC = () => {
       });
     }
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    
+
     try {
       const db = getFirestore();
       const invoiceData = {
@@ -135,7 +148,7 @@ const CreateInvoicePage: React.FC = () => {
         createdAt: new Date().toISOString(),
         status: 'draft',
       };
-      
+
       await addDoc(collection(db, 'invoices'), invoiceData);
       setSuccess(true);
       setTimeout(() => {
@@ -148,14 +161,14 @@ const CreateInvoicePage: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Create New Invoice</h1>
         <Button onClick={() => navigate('/invoices')}>Back to Invoices</Button>
       </div>
-      
+
       {error && (
         <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
           <div className="flex">
@@ -170,7 +183,7 @@ const CreateInvoicePage: React.FC = () => {
           </div>
         </div>
       )}
-      
+
       {success && (
         <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4">
           <div className="flex">
@@ -185,7 +198,7 @@ const CreateInvoicePage: React.FC = () => {
           </div>
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader className="bg-gray-50">
@@ -204,7 +217,7 @@ const CreateInvoicePage: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="invoiceDate" className="block text-sm font-medium text-gray-700">Invoice Date</label>
               <input
@@ -217,7 +230,7 @@ const CreateInvoicePage: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">Due Date</label>
               <input
@@ -230,7 +243,7 @@ const CreateInvoicePage: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="customerCode" className="block text-sm font-medium text-gray-700">Customer Code</label>
               <input
@@ -244,7 +257,7 @@ const CreateInvoicePage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="bg-gray-50">
             <h2 className="text-lg font-medium">Client Information</h2>
@@ -262,7 +275,7 @@ const CreateInvoicePage: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="clientCompany" className="block text-sm font-medium text-gray-700">Client Company</label>
               <input
@@ -275,7 +288,7 @@ const CreateInvoicePage: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div className="md:col-span-2">
               <label htmlFor="clientAddress" className="block text-sm font-medium text-gray-700">Client Address</label>
               <textarea
@@ -290,7 +303,7 @@ const CreateInvoicePage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="bg-gray-50">
             <div className="flex justify-between items-center">
@@ -379,7 +392,7 @@ const CreateInvoicePage: React.FC = () => {
                 </tbody>
               </table>
             </div>
-            
+
             <div className="mt-6 border-t border-gray-200 pt-4">
               <div className="flex justify-end">
                 <div className="w-1/2 space-y-2">
@@ -415,7 +428,7 @@ const CreateInvoicePage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="bg-gray-50">
             <h2 className="text-lg font-medium">Payment Details</h2>
@@ -433,7 +446,7 @@ const CreateInvoicePage: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="accountName" className="block text-sm font-medium text-gray-700">Account Name</label>
               <input
@@ -446,7 +459,7 @@ const CreateInvoicePage: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-700">Account Number</label>
               <input
@@ -459,7 +472,7 @@ const CreateInvoicePage: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="branchCode" className="block text-sm font-medium text-gray-700">Branch Code</label>
               <input
@@ -474,7 +487,7 @@ const CreateInvoicePage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <div className="flex justify-end">
           <Button onClick={() => navigate('/invoices')} type="button" className="mr-2 bg-gray-600 hover:bg-gray-700">
             Cancel

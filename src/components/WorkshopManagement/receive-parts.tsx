@@ -24,7 +24,7 @@ const ReceivePartsPage: React.FC = () => {
     quantity: 0,
     unitPrice: 0,
     supplier: "",
-    receivedDate: new Date().toISOString().split("T")[0],
+  receivedDate: new Date().toISOString().slice(0, 10),
     notes: undefined, // Changed to undefined to match the interface
   });
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -77,7 +77,7 @@ const ReceivePartsPage: React.FC = () => {
         quantity: 0,
         unitPrice: 0,
         supplier: "",
-        receivedDate: new Date().toISOString().split("T")[0],
+  receivedDate: new Date().toISOString().slice(0, 10),
         notes: undefined, // Changed to undefined to match the interface
       });
     } catch (error) {
@@ -184,7 +184,7 @@ const ReceivePartsPage: React.FC = () => {
                       quantity: 0,
                       unitPrice: 0,
                       supplier: "",
-                      receivedDate: new Date().toISOString().split("T")[0],
+                      receivedDate: new Date().toISOString().slice(0, 10),
                       notes: undefined, // Correctly set notes to undefined on clear
                     });
                     setSuccessMessage(null);

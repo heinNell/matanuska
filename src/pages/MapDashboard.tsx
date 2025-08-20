@@ -3,20 +3,10 @@ import { Link } from "react-router-dom";
 import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 import { formatAddress, calculateDistance } from "../utils/mapUtils";
 import { fetchVehicleData } from "../api/vehicleApi";
+import type { Vehicle } from "../types/vehicle";
 
-// --- TYPES ---
-interface Vehicle {
-  id: string;
-  name: string;
-  location: {
-    lat: number;
-    lng: number;
-  };
-  status: "active" | "inactive" | "maintenance";
-  lastUpdate: string;
-}
-
-const DEFAULT_CENTER = { lat: 61.2181, lng: -149.9003 }; // Example: Anchorage, AK
+// --- CONSTANTS ---
+const DEFAULT_CENTER: google.maps.LatLngLiteral = { lat: 61.2181, lng: -149.9003 };
 
 const mapContainerStyle = {
   width: "100%",
@@ -27,7 +17,6 @@ const mapContainerStyle = {
 
 // --- MAIN COMPONENT ---
 const MapDashboard: React.FC = () => {
-  // State
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
@@ -35,11 +24,9 @@ const MapDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [mapError, setMapError] = useState<string | null>(null);
 
-  // Google Map state
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [activeInfoWindowId, setActiveInfoWindowId] = useState<string | null>(null);
 
-  // Refs
   const refreshTimerRef = useRef<number | null>(null);
 
   // --- VEHICLE DATA LOADING ---
@@ -47,7 +34,18 @@ const MapDashboard: React.FC = () => {
     setIsLoading(true);
     try {
       const data = await fetchVehicleData();
-      setVehicles(data);
+      const validatedData = data.map((item: any): Vehicle => ({
+        id: item.id,
+        registrationNo: item.registrationNo ?? "N/A",
+        name: item.name ?? "",
+        location: {
+          lat: Number(item.location?.lat) ?? 0,
+          lng: Number(item.location?.lng) ?? 0,
+        },
+        status: item.status ?? "inactive",
+        lastUpdate: item.lastUpdate ?? new Date().toISOString(),
+      }));
+      setVehicles(validatedData);
     } catch (error) {
       console.error("Error loading vehicle data:", error);
       setMapError("Error loading vehicle data.");
@@ -56,7 +54,6 @@ const MapDashboard: React.FC = () => {
     }
   }, []);
 
-  // Initial load and polling
   useEffect(() => {
     loadVehicleData();
     refreshTimerRef.current = window.setInterval(loadVehicleData, 60000);
@@ -74,8 +71,8 @@ const MapDashboard: React.FC = () => {
     const query = searchQuery.toLowerCase();
     setFilteredVehicles(
       vehicles.filter((vehicle) => {
-        if (vehicle.name.toLowerCase().includes(query)) return true;
-        if (selectedVehicle) {
+        if ((vehicle.name ?? "").toLowerCase().includes(query)) return true;
+        if (selectedVehicle?.location && vehicle.location) {
           const distance = calculateDistance(
             selectedVehicle.location.lat,
             selectedVehicle.location.lng,
@@ -93,32 +90,24 @@ const MapDashboard: React.FC = () => {
     );
   }, [searchQuery, vehicles, selectedVehicle]);
 
-  // --- MAP EVENT HANDLERS ---
   const handleMapLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
     setMapError(null);
   };
 
-  const handleMapError = (error: Error) => {
-    setMapError(error.message);
-    console.error("Map error:", error);
-  };
-
-  // --- UI HELPERS ---
   const getVehicleStatusColor = (status: Vehicle["status"]): string => {
     switch (status) {
       case "active":
-        return "#4CAF50"; // Green
+        return "#4CAF50";
       case "inactive":
-        return "#9E9E9E"; // Gray
+        return "#9E9E9E";
       case "maintenance":
-        return "#FFC107"; // Amber
+        return "#FFC107";
       default:
-        return "#2196F3"; // Blue
+        return "#2196F3";
     }
   };
 
-  // --- RENDER ---
   return (
     <div className="map-dashboard-container flex h-screen">
       {/* SIDEBAR */}
@@ -138,7 +127,10 @@ const MapDashboard: React.FC = () => {
           >
             {isLoading ? "Loading..." : "Refresh"}
           </button>
-          <Link to="/wialon-dashboard" className="wialon-link block text-xs text-blue-700 underline hover:text-blue-900">
+          <Link
+            to="/wialon-dashboard"
+            className="wialon-link block text-xs text-blue-700 underline hover:text-blue-900"
+          >
             Switch to Wialon Tracking
           </Link>
         </div>
@@ -159,7 +151,7 @@ const MapDashboard: React.FC = () => {
                 onClick={() => {
                   setSelectedVehicle(vehicle);
                   setActiveInfoWindowId(vehicle.id);
-                  if (map) {
+                  if (map && vehicle.location) {
                     map.panTo(vehicle.location);
                     map.setZoom(Math.max(map.getZoom() || 12, 13));
                   }
@@ -171,8 +163,10 @@ const MapDashboard: React.FC = () => {
                   title={vehicle.status}
                 />
                 <div className="vehicle-details flex-1">
-                  <h4 className="text-xs font-semibold mb-0">{vehicle.name}</h4>
-                  <p className="text-xs text-gray-500">Last updated: {new Date(vehicle.lastUpdate).toLocaleTimeString()}</p>
+                  <h4 className="text-xs font-semibold mb-0">{vehicle.name ?? "Unknown"}</h4>
+                  <p className="text-xs text-gray-500">
+                    Last updated: {new Date(vehicle.lastUpdate ?? "").toLocaleTimeString()}
+                  </p>
                 </div>
               </div>
             ))
@@ -182,7 +176,6 @@ const MapDashboard: React.FC = () => {
 
       {/* MAP AREA */}
       <div className="map-container flex-1 relative">
-        {/* Map error handling */}
         {mapError && (
           <div className="absolute inset-0 flex items-center justify-center z-10 bg-white bg-opacity-90">
             <div className="p-6 border rounded bg-red-50 text-center">
@@ -199,53 +192,56 @@ const MapDashboard: React.FC = () => {
         )}
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
-          center={selectedVehicle ? selectedVehicle.location : DEFAULT_CENTER}
+          center={selectedVehicle?.location ?? DEFAULT_CENTER}
           zoom={12}
           onLoad={handleMapLoad}
         >
-          {filteredVehicles.map((vehicle) => (
-            <Marker
-              key={vehicle.id}
-              position={vehicle.location}
-              title={vehicle.name}
-              icon={{
-                path: window.google?.maps.SymbolPath.CIRCLE,
-                scale: 8,
-                fillColor: getVehicleStatusColor(vehicle.status),
-                fillOpacity: 0.8,
-                strokeWeight: 2,
-                strokeColor: "#fff",
-              }}
-              onClick={() => {
-                setSelectedVehicle(vehicle);
-                setActiveInfoWindowId(vehicle.id);
-              }}
-              animation={window.google?.maps.Animation.DROP}
-            >
-              {activeInfoWindowId === vehicle.id && (
-                <InfoWindow
-                  position={vehicle.location}
-                  onCloseClick={() => setActiveInfoWindowId(null)}
-                >
-                  <div className="text-xs">
-                    <h3 className="font-semibold mb-1">{vehicle.name}</h3>
-                    <p>
-                      <strong>ID:</strong> {vehicle.id}
-                    </p>
-                    <p>
-                      <strong>Status:</strong> {vehicle.status}
-                    </p>
-                    <p>
-                      <strong>Last Update:</strong> {new Date(vehicle.lastUpdate).toLocaleString()}
-                    </p>
-                    <p>
-                      <strong>Location:</strong> {vehicle.location.lat.toFixed(6)}, {vehicle.location.lng.toFixed(6)}
-                    </p>
-                  </div>
-                </InfoWindow>
-              )}
-            </Marker>
-          ))}
+          {filteredVehicles.map((vehicle) => {
+            const position = vehicle.location ?? DEFAULT_CENTER;
+            return (
+              <Marker
+                key={vehicle.id}
+                position={position}
+                title={vehicle.name ?? "Unknown"}
+                icon={{
+                  path: window.google?.maps.SymbolPath.CIRCLE,
+                  scale: 8,
+                  fillColor: getVehicleStatusColor(vehicle.status),
+                  fillOpacity: 0.8,
+                  strokeWeight: 2,
+                  strokeColor: "#fff",
+                }}
+                onClick={() => {
+                  setSelectedVehicle(vehicle);
+                  setActiveInfoWindowId(vehicle.id);
+                }}
+                animation={window.google?.maps.Animation.DROP}
+              >
+                {activeInfoWindowId === vehicle.id && (
+                  <InfoWindow
+                    position={position}
+                    onCloseClick={() => setActiveInfoWindowId(null)}
+                  >
+                    <div className="text-xs">
+                      <h3 className="font-semibold mb-1">{vehicle.name ?? "Unknown"}</h3>
+                      <p>
+                        <strong>ID:</strong> {vehicle.id}
+                      </p>
+                      <p>
+                        <strong>Status:</strong> {vehicle.status}
+                      </p>
+                      <p>
+                        <strong>Last Update:</strong> {new Date(vehicle.lastUpdate ?? "").toLocaleString()}
+                      </p>
+                      <p>
+                        <strong>Location:</strong> {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
+                      </p>
+                    </div>
+                  </InfoWindow>
+                )}
+              </Marker>
+            );
+          })}
         </GoogleMap>
       </div>
     </div>

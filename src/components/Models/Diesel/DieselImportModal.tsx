@@ -171,7 +171,7 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
         const dateStr: string =
           typeof row.date === "string" && row.date.trim().length > 0
             ? row.date.trim()
-            : new Date().toISOString().split("T")[0];
+            : new Date().toISOString().slice(0, 10);
 
         const record: DieselConsumptionRecord = {
           id: `diesel-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,

@@ -21,21 +21,6 @@ interface StockItem {
   notes?: string;
 }
 
-// Add type helper
-const StockItemKeys: Record<keyof StockItem, boolean> = {
-  id: true,
-  name: true,
-  sku: true,
-  category: true,
-  quantity: true,
-  reorderLevel: true,
-  supplier: true,
-  location: true,
-  lastOrderDate: true,
-  unitCost: true,
-  notes: true,
-};
-
 interface Filter {
   category: string;
   supplier: string;
@@ -329,8 +314,8 @@ const StockManager: React.FC = () => {
         };
       }
 
-      // Save to file
-      XLSX.writeFile(wb, `inventory_stock_${new Date().toISOString().split("T")[0]}.xlsx`);
+  // Save to file
+  XLSX.writeFile(wb, `inventory_stock_${new Date().toISOString().slice(0, 10)}.xlsx`);
 
       // Show success notification
       alert("Excel file exported successfully!");
@@ -356,7 +341,35 @@ const StockManager: React.FC = () => {
           // Handle CSV import
           const text = data as string;
           const rows = text.split("\n");
+
+          // Check if rows array is empty or first row is undefined
+          if (rows.length === 0 || !rows[0]) {
+            throw new Error("Invalid CSV file: No data found");
+          }
+
           const headers = rows[0].split(",").map((h) => h.trim());
+
+          // Normalize helper for header keys
+          const norm = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+
+          // Map normalized header -> StockItem key
+          const headerKeyMap: Record<string, keyof StockItem> = {
+            // identity
+            [norm("Name")]: "name",
+            [norm("SKU")]: "sku",
+            [norm("Category")]: "category",
+            [norm("Quantity")]: "quantity",
+            [norm("Reorder Level")]: "reorderLevel",
+            [norm("Supplier")]: "supplier",
+            [norm("Location")]: "location",
+            [norm("Last Order Date")]: "lastOrderDate",
+            [norm("Unit Cost")]: "unitCost",
+            [norm("Notes")]: "notes",
+            // fallbacks for common variants
+            [norm("reorderlevel")]: "reorderLevel",
+            [norm("lastorderdate")]: "lastOrderDate",
+            [norm("unitcost")]: "unitCost",
+          };
 
           // Map CSV rows to StockItem objects
           parsedData = rows
@@ -370,23 +383,24 @@ const StockManager: React.FC = () => {
               headers.forEach((header, index) => {
                 if (index < values.length) {
                   const value = values[index];
-                  const key = header.toLowerCase().replace(" ", "") as string;
-                  
+                  const mappedKey = headerKeyMap[norm(header)];
+
                   // Handle numeric fields explicitly
-                  if (key === "quantity" || key === "reorderlevel" || key === "unitcost") {
-                    const numValue = parseFloat(value);
+                  if (!mappedKey) return; // Unknown header, skip
+
+                  if (mappedKey === "quantity" || mappedKey === "reorderLevel" || mappedKey === "unitCost") {
+                    const numValue = parseFloat(value || "0");
                     if (!isNaN(numValue)) {
-                      (item as any)[key] = numValue;
+                      (item as Partial<StockItem>)[mappedKey] = numValue as any;
                     }
-                  } else if (key === "lastorderdate") {
+                  } else if (mappedKey === "lastOrderDate") {
                     if (value) {
-                      (item as any)[key] = value;
+                      (item as Partial<StockItem>)[mappedKey] = value as any;
+                    } else {
+                      (item as Partial<StockItem>)[mappedKey] = null;
                     }
                   } else {
-                    // Handle string fields
-                    if (key in StockItemKeys) {
-                      (item as any)[key] = value;
-                    }
+                    (item as Partial<StockItem>)[mappedKey] = value as any;
                   }
                 }
               });
@@ -398,7 +412,13 @@ const StockManager: React.FC = () => {
           // Handle Excel import
           const workbook = XLSX.read(data, { type: "binary" });
           const sheetName = workbook.SheetNames[0];
+          if (!sheetName) {
+            throw new Error("Excel file contains no sheets");
+          }
           const worksheet = workbook.Sheets[sheetName];
+          if (!worksheet) {
+            throw new Error(`Could not read sheet "${sheetName}"`);
+          }
           const excelData = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet);
 
           // Map Excel rows to StockItem objects
@@ -436,11 +456,10 @@ const StockManager: React.FC = () => {
           }
 
           // Check if item with same SKU exists
-          const existingItemIndex = stockItems.findIndex((i) => i.sku === item.sku);
+          const existingItem = stockItems.find((i) => i.sku === item.sku);
 
-          if (existingItemIndex >= 0) {
+          if (existingItem) {
             // Update existing item
-            const existingItem = stockItems[existingItemIndex];
             await updateDoc(doc(db, "inventory", existingItem.id), {
               ...item,
               updatedAt: new Date().toISOString(),

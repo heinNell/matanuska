@@ -1,141 +1,296 @@
-import {
-  WialonUnit, WialonResource,
-} from "../types/wialon";
+// src/services/wialonService.ts
 
 /**
- * WialonService class for encapsulating all Wialon SDK logic.
- * This class handles session management, data fetching, and API calls.
+ * Wialon Service Layer - TypeScript Edition
+ * Centralized, type-safe, robust Wialon API integration for Matanuska
  */
-class WialonService {
-  private session: any;
-  private isReady: boolean = false;
-  private TOKEN: string;
 
-  constructor(token: string) {
-    this.TOKEN = token;
-    if (typeof window !== 'undefined' && window.wialon) {
-      this.session = window.wialon.core.Session.getInstance();
-    }
+import type { WialonDriver } from '../types/wialon-types';
+import { getEnvVar } from '../utils/envUtils';
+
+// Initialize Wialon API URL from environment
+const WIALON_API_URL = getEnvVar("VITE_WIALON_API_URL", "https://hst-api.wialon.com");
+
+export interface WialonSession {
+  sid: string;
+  user: string;
+  host: string;
+  // Extend as needed
+}
+
+export interface WialonUnit {
+  id: number;
+  nm: string;
+  // Add more properties as per your SDK (eg. pos, lastMessage, sensors)
+  [key: string]: any;
+}
+
+export interface WialonResource {
+  id: number;
+  nm: string;
+  // Extend with required resource fields
+  [key: string]: any;
+}
+
+export interface WialonPosition {
+  lat: number;
+  lon: number;
+  speed?: number;
+  time?: number;
+  [key: string]: any;
+}
+
+export interface WialonReportResult {
+  reportResource: any;
+  reportResult: {
+    msgsRendered: number;
+    stats: any[];
+    tables: Array<{
+      name: string;
+      header: string[];
+      data: any[][];
+      rows: number;
+      level: number;
+    }>;
+  };
+  getTables?: () => any[];
+  getTableRows?: (tableIndex: number, from: number, to: number, callback: (code: number, rows: any) => void) => void;
+}
+
+declare const window: any; // For SDK global
+
+/**
+ * Ensure Wialon SDK is loaded.
+ */
+function getWialon(): any {
+  if (typeof window === "undefined" || !window.wialon) {
+    throw new Error("Wialon SDK is not available in window context.");
   }
+  return window.wialon;
+}
 
-  public async initSession(): Promise<boolean> {
-    if (this.isReady) {
-      return true;
-    }
-
-    return new Promise((resolve, reject) => {
-      if (typeof window === 'undefined' || !window.wialon) {
-        return reject(new Error("Wialon SDK is not available."));
+/**
+ * Login to Wialon, returns session ID
+ */
+export async function loginWialon(token: string): Promise<WialonSession> {
+  const wialon = getWialon();
+  return new Promise((resolve, reject) => {
+    wialon.core.Session.getInstance().initSession("https://hosting.wialon.com");
+    wialon.core.Session.getInstance().loginToken(token, "", (code: number) => {
+      if (code === 0) {
+        const sid = wialon.core.Session.getInstance().getId();
+        const user = wialon.core.Session.getInstance().getCurrUser().getName();
+        const host = wialon.core.Session.getInstance().getBaseUrl();
+        resolve({ sid, user, host });
+      } else {
+        reject(new Error("Wialon login failed. Code: " + code));
       }
-
-      this.session.initSession("https://hst-api.wialon.com");
-
-      this.session.loginToken(this.TOKEN, "", (code: number) => {
-        if (code !== 0) {
-          reject(new Error(window.wialon.core.Errors.getErrorText(code)));
-        } else {
-          this.isReady = true;
-          this.loadLibraries().then(resolve).catch(reject);
-        }
-      });
     });
-  }
+  });
+}
 
-  private async loadLibraries(): Promise<boolean> {
-    const libraries = [
-      "itemIcon", "resourceDrivers", "resourceZones", "unitSensors",
-      "unitCommandDefinitions", "resourceReports", "resourceNotifications",
-      "unitEventRegistrar",
-    ];
-
-    await Promise.all(libraries.map(lib => new Promise(res => {
-      this.session.loadLibrary(lib, () => res(true));
-    })));
-    return true;
-  }
-
-  public getUnits(): WialonUnit[] {
-    return this.session.getItems('avl_unit') || [];
-  }
-
-  public getUnitById(id: number): WialonUnit | null {
-    // FIX: This returns the raw Wialon SDK object, which has methods like addListener.
-    // The previous error was caused by trying to call these methods on a plain data object.
-    return this.session.getItem(id);
-  }
-
-  public async fetchAllData(): Promise<{ units: WialonUnit[], resources: WialonResource[] }> {
-    if (!this.isReady) await this.initSession();
-
-    const unitFlags = (window.wialon.util as any).Number.or(
-      (window.wialon.item as any).Item.dataFlag.base, (window.wialon.item as any).Unit.dataFlag.lastPosition
-    );
-    const resFlags = (window.wialon.util as any).Number.or(
-      (window.wialon.item as any).Item.dataFlag.base, (window.wialon.item as any).Resource.dataFlag.reports
-    );
-
-    return new Promise((resolve, reject) => {
-      this.session.updateDataFlags(
-        [{ type: "type", data: "avl_unit", flags: unitFlags, mode: 0 },
-         { type: "type", data: "avl_resource", flags: resFlags, mode: 0 }],
+/**
+ * Fetch all units accessible in the session.
+ */
+export async function getUnits(): Promise<WialonUnit[]> {
+  const wialon = getWialon();
+  return new Promise((resolve, reject) => {
+    wialon.core.Session.getInstance().loadLibrary("unitSensors;unitCommands", () => {
+      wialon.core.Session.getInstance().updateDataFlags(
+        [
+          { type: "type", data: "avl_unit", flags: 0xFFFFFFFF, mode: 0 },
+        ],
         (code: number) => {
-          if (code !== 0) {
-            reject(new Error(window.wialon.core.Errors.getErrorText(code)));
-          } else {
-            const units = this.session.getItems('avl_unit') || [];
-            const resources = this.session.getItems('avl_resource') || [];
-            resolve({ units, resources });
-          }
+          if (code !== 0) return reject(new Error("Failed to load unit data"));
+          const units = wialon.core.Session.getInstance().getItems("avl_unit");
+          resolve((units || []) as WialonUnit[]);
         }
       );
     });
-  }
-
-  public getSessionId(): string {
-    return this.session.getId();
-  }
-
-  public addPositionListener(unitId: number, callback: (pos: any) => void): number | null {
-    const unit = this.getUnitById(unitId);
-    if (!unit) {
-      console.error(`Unit with ID ${unitId} not found.`);
-      return null;
-    }
-    // FIX: The addListener method exists on the raw Wialon SDK object, not our data model.
-    return (unit as any).addListener('changePosition', (event: any) => callback(event.getData()));
-  }
-
-  public removePositionListener(unitId: number, listenerId: number): void {
-    const unit = this.getUnitById(unitId);
-    if (unit) {
-      // FIX: Call removeListenerById on the raw Wialon SDK object.
-      (unit as any).removeListenerById(listenerId);
-    }
-  }
-
-  public async executeReport(resourceId: number, template: any, unitId: number, interval: any): Promise<any> {
-    const resource = this.session.getItem(resourceId);
-    if (!resource) {
-      throw new Error("Resource not found");
-    }
-    return new Promise((resolve, reject) => {
-      resource.execReport(template, unitId, 0, interval, (code: number, result: any) => {
-        if (code !== 0) {
-          reject(new Error(window.wialon.core.Errors.getErrorText(code)));
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  }
-
-  public async getGeofences(resourceId: number): Promise<any> {
-    const resource = this.session.getItem(resourceId);
-    if (!resource) {
-      throw new Error("Resource not found");
-    }
-    return resource.getZones();
-  }
+  });
 }
 
-export const wialonService = new WialonService("c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053");
+/**
+ * Fetch a single unit by its ID.
+ */
+export async function getUnitById(id: number): Promise<WialonUnit | null> {
+  const units = await getUnits();
+  return units.find((u) => u.id === id) || null;
+}
+
+/**
+ * Add a position listener to a unit.
+ * Returns a function to remove the listener.
+ */
+export function addPositionListener(unitId: number, callback: (pos: WialonPosition) => void): () => void {
+  const wialon = getWialon();
+  const unit = wialon.core.Session.getInstance().getItem(unitId);
+  if (!unit) throw new Error(`Unit with id ${unitId} not found.`);
+  const listenerId = unit.addListener("changePosition", () => {
+    const pos = unit.getPosition();
+    callback(pos);
+  });
+  return () => {
+    unit.removeListener("changePosition", listenerId);
+  };
+}
+
+/**
+ * Execute a Wialon report for a resource/unit/time interval.
+ * Uses proper Wialon API sequence: exec_report -> get_report_status -> apply_report_result
+ */
+export async function executeReport(
+  resourceId: number,
+  template: string,
+  unitId: number,
+  interval: { from: number; to: number }
+): Promise<WialonReportResult> {
+  const wialon = getWialon();
+  return new Promise((resolve, reject) => {
+    const resource = wialon.core.Session.getInstance().getItem(resourceId);
+    if (!resource) return reject(new Error(`Resource ${resourceId} not found`));
+
+    // Step 1: Execute report with proper parameters
+    const reportParams = {
+      reportResourceId: resourceId,
+      reportTemplateId: template,
+      reportTemplate: null,
+      reportObjectId: unitId,
+      reportObjectSecId: 0,
+      interval,
+      remoteExec: 1 // Use remote execution for proper async handling
+    };
+
+    resource.execReport(reportParams, (code: number) => {
+      if (code !== 0) return reject(new Error(`Report execution failed. Code: ${code}`));
+
+      // Step 2: Poll report status
+      const checkStatus = () => {
+        wialon.core.Remote.getInstance().remoteCall(
+          "report/get_report_status",
+          "{}",
+          (statusCode: number, data: any) => {
+            if (statusCode !== 0) return reject(new Error(`Status check failed. Code: ${statusCode}`));
+
+            if (data.status === 4) { // Done
+              // Step 3: Apply report result
+              wialon.core.Remote.getInstance().remoteCall(
+                "report/apply_report_result",
+                "{}",
+                (resultCode: number, resultData: any) => {
+                  if (resultCode !== 0) return reject(new Error(`Failed to get report result. Code: ${resultCode}`));
+                  resolve(resultData as WialonReportResult);
+                }
+              );
+            } else if ([8, 16].includes(data.status)) {
+              reject(new Error(`Report failed or invalid. Status: ${data.status}`));
+            } else {
+              // Still processing, check again
+              setTimeout(checkStatus, 1000);
+            }
+          }
+        );
+      };
+
+      checkStatus();
+    });
+  });
+}
+
+/**
+ * Fetch all resources (report templates, geofences etc)
+ */
+export async function getResources(): Promise<WialonResource[]> {
+  const wialon = getWialon();
+  return new Promise((resolve, reject) => {
+    wialon.core.Session.getInstance().updateDataFlags(
+      [
+        { type: "type", data: "avl_resource", flags: 0xFFFFFFFF, mode: 0 },
+      ],
+      (code: number) => {
+        if (code !== 0) return reject(new Error("Failed to load resource data"));
+        const resources = wialon.core.Session.getInstance().getItems("avl_resource");
+        resolve((resources || []) as WialonResource[]);
+      }
+    );
+  });
+}
+
+/**
+ * Fetch all geofences for a given resource.
+ */
+export async function getGeofences(resourceId: number): Promise<any[]> {
+  const wialon = getWialon();
+  const resource = wialon.core.Session.getInstance().getItem(resourceId);
+  if (!resource) throw new Error(`Resource ${resourceId} not found`);
+  // getZonesData returns object with geofences
+  const zones = resource.getZonesData();
+  return Object.values(zones || {});
+}
+
+/**
+ * Logout the current Wialon session
+ */
+export function logoutWialon(): void {
+  const wialon = getWialon();
+  wialon.core.Session.getInstance().logout(() => {});
+}
+
+/**
+ * Exported service
+ */
+interface WialonService {
+  login: typeof loginWialon;
+  logout: typeof logoutWialon;
+  getUnits: typeof getUnits;
+  getUnitById: typeof getUnitById;
+  addPositionListener: typeof addPositionListener;
+  executeReport: typeof executeReport;
+  getResources: typeof getResources;
+  getGeofences: typeof getGeofences;
+  getDrivers: (resourceId: number) => Promise<WialonDriver[]>;
+  executeCustomMethod: <T>(method: string, params: any) => Promise<T>;
+}
+
+const wialonService: WialonService = {
+  login: loginWialon,
+  logout: logoutWialon,
+  getUnits,
+  getUnitById,
+  addPositionListener,
+  executeReport,
+  getResources,
+  getGeofences,
+  async getDrivers(resourceId: number): Promise<WialonDriver[]> {
+    const wialon = getWialon();
+    return new Promise((resolve, reject) => {
+      const resource = wialon.core.Session.getInstance().getItem(resourceId);
+      if (!resource) return reject(new Error(`Resource ${resourceId} not found`));
+
+      // Use Wialon SDK to fetch drivers
+      resource.getDrivers((code: number, drivers: WialonDriver[]) => {
+        if (code !== 0) return reject(new Error("Failed to fetch drivers"));
+        resolve(drivers);
+      });
+    });
+  },
+
+  async executeCustomMethod<T>(method: string, params: any): Promise<T> {
+    const response = await fetch(`${WIALON_API_URL}/${method}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params),
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      throw new Error(`Wialon API error: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+};
+
+export default wialonService;

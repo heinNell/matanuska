@@ -2,7 +2,6 @@ import { Trip, CostEntry, FlaggedCost } from '../types/index';
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import { PlaceResult } from '../types/mapTypes';
 // -------------------- Utility Functions --------------------
 
 // -------------------- ID Generation --------------------

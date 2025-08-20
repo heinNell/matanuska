@@ -14,16 +14,22 @@ const SyncIndicator: React.FC<SyncIndicatorProps> = ({ className = "", showText 
 
   // Simulate sync activity when connection status changes
   useEffect(() => {
+    let timer: NodeJS.Timeout;
+
     if (connectionStatus === "reconnecting" || connectionStatus === "connecting") {
       setIsSyncing(true);
     } else if (connectionStatus === "connected") {
-      // Simulate sync completion after reconnection
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setIsSyncing(false);
         setLastSynced(new Date());
       }, 1500);
-      return () => clearTimeout(timer);
     }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [connectionStatus]);
 
   // Format time since last sync

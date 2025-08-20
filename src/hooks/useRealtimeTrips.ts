@@ -30,6 +30,9 @@ export function useRealtimeTrips(options?: {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Default no-op cleanup function
+    let unsubscribe = () => {};
+
     try {
       // Build query
       let tripsQuery = collection(db, "trips");
@@ -37,29 +40,29 @@ export function useRealtimeTrips(options?: {
 
       if (options?.onlyWebBook && options.status) {
         q = query(
-          tripsQuery, 
-          where("importSource", "==", "web_book"), 
-          where("status", "==", options.status), 
+          tripsQuery,
+          where("importSource", "==", "web_book"),
+          where("status", "==", options.status),
           orderBy("updatedAt", "desc")
         );
       } else if (options?.onlyWebBook) {
         q = query(
-          tripsQuery, 
-          where("importSource", "==", "web_book"), 
+          tripsQuery,
+          where("importSource", "==", "web_book"),
           orderBy("updatedAt", "desc")
         );
       } else if (options?.status) {
         q = query(
-          tripsQuery, 
-          where("status", "==", options.status), 
+          tripsQuery,
+          where("status", "==", options.status),
           orderBy("updatedAt", "desc")
         );
       } else {
         q = query(tripsQuery, orderBy("updatedAt", "desc"));
       }
 
-      const unsubscribe = onSnapshot(
-        q, 
+      unsubscribe = onSnapshot(
+        q,
         (snapshot: QuerySnapshot<DocumentData>) => {
           const docs: Trip[] = snapshot.docs.map((doc) => ({
             id: doc.id,
@@ -75,13 +78,14 @@ export function useRealtimeTrips(options?: {
           setLoading(false);
         }
       );
-
-      return () => unsubscribe();
     } catch (err) {
       console.error("Failed to set up real-time trips listener:", err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setLoading(false);
     }
+
+    // Always return cleanup
+    return () => unsubscribe();
   }, [options?.onlyWebBook, options?.status]);
 
   return { trips, loading, error };

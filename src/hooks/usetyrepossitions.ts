@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { collection, doc, onSnapshot, orderBy, query, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, orderBy, query, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 /** ---- Types ---- */
@@ -7,7 +7,7 @@ export type AssetType = "Horse" | "Interlink" | "Reefer" | "LMV" | "Other";
 
 export interface FleetAsset {
   fleetNo: string; // doc id
-  positions: string[]; // e.g. ["V1","V2",...,"SP"]
+  positions: string[]; // mutable array
   type: AssetType;
 }
 
@@ -18,7 +18,7 @@ export interface TyrePattern {
   brand: string;
   pattern: string;
   size: string; // e.g. "315/80R22.5"
-  position: PatternFitment; // seed uses Drive/Steer/Trailer/Multi
+  position: PatternFitment;
 }
 
 /** ---- Constants / Utilities ---- */
@@ -26,15 +26,10 @@ const FLEET_COLLECTION = "fleetAssets";
 const PATTERN_COLLECTION = "tyrePatterns";
 
 const ALLOWED_BY_TYPE: Record<AssetType, RegExp> = {
-  // Horse: V1..V10 and SP
   Horse: /^(V([1-9]|10)|SP)$/,
-  // Interlink: T1..T16 and SP1..SP2
   Interlink: /^(T([1-9]|1[0-6])|SP[12])$/,
-  // Reefer: T1..T6 and SP1..SP2
   Reefer: /^(T([1-6])|SP[12])$/,
-  // LMV: P1..P6 and SP
   LMV: /^(P([1-6])|SP)$/,
-  // Other: Q1..Q10 and SP
   Other: /^(Q([1-9]|10)|SP)$/,
 };
 
@@ -43,53 +38,74 @@ function uniq<T>(arr: T[]): T[] {
 }
 
 function normalizeBrand(value: string) {
-  // Your seed has mixed case: SUNFULL, Sunfull, WellPlus, Wellplus, TriAngle/TRAINGLE typo, etc.
-  // Keep it simple: capitalize first letter, lowercase rest.
   if (!value) return value;
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 
-/** Validate a positions array against an asset type. Returns [isValid, invalidCodes[]] */
 function validatePositions(type: AssetType, positions: string[]): [boolean, string[]] {
   const rx = ALLOWED_BY_TYPE[type];
   const invalid = positions.filter((p) => !rx.test(p));
   return [invalid.length === 0, invalid];
 }
 
-/** Optional: generate default positions for an asset type (useful if empty) */
+/** Standardized position lists by asset type */
+export const STANDARD_POSITIONS = {
+  Horse: {
+    full: ["V1","V2","V3","V4","V5","V6","V7","V8","V9","V10","SP"],
+    compact: ["V1","V2","V3","V4","SP"]
+  },
+  Interlink: {
+    standard: ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12","T13","T14","T15","T16","SP1","SP2"]
+  },
+  Reefer: {
+    standard: ["T1","T2","T3","T4","T5","T6","SP1","SP2"]
+  },
+  LMV: {
+    standard: ["P1","P2","P3","P4","P5","P6","SP"]
+  },
+  Other: {
+    standard: ["Q1","Q2","Q3","Q4","Q5","Q6","Q7","Q8","Q9","Q10","SP"]
+  }
+} as const;
+
+/** Get position configuration based on fleet number prefix */
+export function getFleetConfig(fleetNo: string): { type: AssetType; positions: string[] } {
+  const num = fleetNo.toUpperCase();
+
+  if (num.endsWith('L')) {
+    return { type: 'Horse', positions: Array.from(STANDARD_POSITIONS.Horse.compact) };
+  }
+  if (num.endsWith('H')) {
+    if (num === '4H' || num === '6H' || num === '30H') {
+      return { type: 'LMV', positions: Array.from(STANDARD_POSITIONS.LMV.standard) };
+    }
+    if (num === '29H') {
+      return { type: 'Other', positions: Array.from(STANDARD_POSITIONS.Other.standard) };
+    }
+    return { type: 'Horse', positions: Array.from(STANDARD_POSITIONS.Horse.full) };
+  }
+  if (num.endsWith('T')) {
+    return { type: 'Interlink', positions: Array.from(STANDARD_POSITIONS.Interlink.standard) };
+  }
+  if (num.endsWith('F')) {
+    return { type: 'Reefer', positions: Array.from(STANDARD_POSITIONS.Reefer.standard) };
+  }
+  if (num === 'UD') {
+    return { type: 'LMV', positions: Array.from(STANDARD_POSITIONS.LMV.standard) };
+  }
+
+  return { type: 'Horse', positions: Array.from(STANDARD_POSITIONS.Horse.full) };
+}
+
+/** Default positions helper */
 export function defaultPositionsFor(type: AssetType): string[] {
   switch (type) {
-    case "Horse":
-      return ["V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "SP"];
-    case "Interlink":
-      return [
-        "T1",
-        "T2",
-        "T3",
-        "T4",
-        "T5",
-        "T6",
-        "T7",
-        "T8",
-        "T9",
-        "T10",
-        "T11",
-        "T12",
-        "T13",
-        "T14",
-        "T15",
-        "T16",
-        "SP1",
-        "SP2",
-      ];
-    case "Reefer":
-      return ["T1", "T2", "T3", "T4", "T5", "T6", "SP1", "SP2"];
-    case "LMV":
-      return ["P1", "P2", "P3", "P4", "P5", "P6", "SP"];
-    case "Other":
-      return ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10", "SP"];
-    default:
-      return [];
+    case "Horse": return Array.from(STANDARD_POSITIONS.Horse.full);
+    case "Interlink": return Array.from(STANDARD_POSITIONS.Interlink.standard);
+    case "Reefer": return Array.from(STANDARD_POSITIONS.Reefer.standard);
+    case "LMV": return Array.from(STANDARD_POSITIONS.LMV.standard);
+    case "Other": return Array.from(STANDARD_POSITIONS.Other.standard);
+    default: return [];
   }
 }
 
@@ -99,38 +115,33 @@ export interface UseTyrePositions {
   patterns: TyrePattern[];
   loading: boolean;
   error: string | null;
-  /** Lookup helpers */
   getAsset: (fleetNo: string) => FleetAsset | undefined;
   getPositionsForAsset: (fleetNo: string) => string[];
   getPatternsByFitment: (fitment: PatternFitment) => TyrePattern[];
-  /** Mutations */
   upsertAsset: (asset: FleetAsset) => Promise<void>;
   setAssetPositions: (fleetNo: string, type: AssetType, positions: string[]) => Promise<void>;
   addPosition: (fleetNo: string, type: AssetType, pos: string) => Promise<void>;
   removePosition: (fleetNo: string, type: AssetType, pos: string) => Promise<void>;
 }
 
-/** ---- The Hook ---- */
+/** ---- Hook ---- */
 export function useTyrePositions(): UseTyrePositions {
   const [assets, setAssets] = useState<FleetAsset[]>([]);
   const [patterns, setPatterns] = useState<TyrePattern[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Subscribe to fleet assets
+  // Fleet assets subscription
   useEffect(() => {
     const q = query(collection(db, FLEET_COLLECTION), orderBy("fleetNo", "asc"));
     const unsub = onSnapshot(
       q,
       (snap) => {
-        const rows: FleetAsset[] = snap.docs.map((d) => {
-          const data = d.data() as FleetAsset;
-          return {
-            fleetNo: d.id,
-            positions: Array.isArray(data.positions) ? data.positions : [],
-            type: data.type as AssetType,
-          };
-        });
+        const rows: FleetAsset[] = snap.docs.map((d) => ({
+          fleetNo: d.id,
+          positions: Array.isArray(d.data().positions) ? d.data().positions : [],
+          type: d.data().type as AssetType,
+        }));
         setAssets(rows);
         setLoading(false);
       },
@@ -143,27 +154,24 @@ export function useTyrePositions(): UseTyrePositions {
     return () => unsub();
   }, []);
 
-  // Subscribe to tyre patterns
+  // Tyre patterns subscription
   useEffect(() => {
     const q = query(collection(db, PATTERN_COLLECTION), orderBy("brand", "asc"));
     const unsub = onSnapshot(
       q,
       (snap) => {
-        const rows: TyrePattern[] = snap.docs.map((d) => {
-          const data = d.data() as TyrePattern;
-          return {
-            id: d.id,
-            brand: normalizeBrand(data.brand),
-            pattern: data.pattern ?? "",
-            size: data.size,
-            position: data.position as PatternFitment,
-          };
-        });
+        const rows: TyrePattern[] = snap.docs.map((d) => ({
+          id: d.id,
+          brand: normalizeBrand(d.data().brand),
+          pattern: d.data().pattern ?? "",
+          size: d.data().size,
+          position: d.data().position as PatternFitment,
+        }));
         setPatterns(rows);
       },
       (e) => {
         console.error("tyrePatterns subscribe error:", e);
-        setError(e.message || "Failed to load tyrePatterns");
+        setError(e.message ?? "Failed to load tyrePatterns");
       }
     );
     return () => unsub();
@@ -187,91 +195,36 @@ export function useTyrePositions(): UseTyrePositions {
   }, [patterns]);
 
   const getAsset = useCallback((fleetNo: string) => assetMap.get(fleetNo), [assetMap]);
-
-  const getPositionsForAsset = useCallback(
-    (fleetNo: string) => getAsset(fleetNo)?.positions ?? [],
-    [getAsset]
-  );
-
-  const getPatternsByFitment = useCallback(
-    (fitment: PatternFitment) => patternsByFitment.get(fitment) ?? [],
-    [patternsByFitment]
-  );
+  const getPositionsForAsset = useCallback((fleetNo: string) => getAsset(fleetNo)?.positions ?? [], [getAsset]);
+  const getPatternsByFitment = useCallback((fitment: PatternFitment) => patternsByFitment.get(fitment) ?? [], [patternsByFitment]);
 
   /** ---- Mutations ---- */
-
-  /** Create or replace an asset document */
   const upsertAsset = useCallback(async (asset: FleetAsset) => {
-    try {
-      const [ok, invalid] = validatePositions(asset.type, asset.positions);
-      if (!ok) {
-        throw new Error(`Invalid position codes for type ${asset.type}: ${invalid.join(", ")}`);
-      }
-      const ref = doc(collection(db, FLEET_COLLECTION), asset.fleetNo);
-      await setDoc(ref, {
-        fleetNo: asset.fleetNo,
-        type: asset.type,
-        positions: uniq(asset.positions),
-      });
-    } catch (e: any) {
-      console.error("upsertAsset error:", e);
-      setError(e.message ?? "upsertAsset failed");
-      throw e;
-    }
+    const [ok, invalid] = validatePositions(asset.type, asset.positions);
+    if (!ok) throw new Error(`Invalid position codes for type ${asset.type}: ${invalid.join(", ")}`);
+    const ref = doc(collection(db, FLEET_COLLECTION), asset.fleetNo);
+    await setDoc(ref, { fleetNo: asset.fleetNo, type: asset.type, positions: uniq(asset.positions) });
   }, []);
 
-  /** Overwrite positions array on an asset with validation */
-  const setAssetPositions = useCallback(
-    async (fleetNo: string, type: AssetType, positions: string[]) => {
-      try {
-        const [ok, invalid] = validatePositions(type, positions);
-        if (!ok) throw new Error(`Invalid position codes: ${invalid.join(", ")}`);
-        const ref = doc(collection(db, FLEET_COLLECTION), fleetNo);
-        await updateDoc(ref, { positions: uniq(positions) });
-      } catch (e: any) {
-        console.error("setAssetPositions error:", e);
-        setError(e.message ?? "setAssetPositions failed");
-        throw e;
-      }
-    },
-    []
-  );
+  const setAssetPositions = useCallback(async (fleetNo: string, type: AssetType, positions: string[]) => {
+    const [ok, invalid] = validatePositions(type, positions);
+    if (!ok) throw new Error(`Invalid position codes: ${invalid.join(", ")}`);
+    const ref = doc(collection(db, FLEET_COLLECTION), fleetNo);
+    await setDoc(ref, { positions: uniq(positions) }, { merge: true });
+  }, []);
 
-  const addPosition = useCallback(
-    async (fleetNo: string, type: AssetType, pos: string) => {
-      try {
-        const [ok] = validatePositions(type, [pos]);
-        if (!ok) throw new Error(`Invalid position '${pos}' for type ${type}`);
-        const current = assetMap.get(fleetNo)?.positions ?? [];
-        if (current.includes(pos)) return; // no-op
-        await setAssetPositions(fleetNo, type, [...current, pos]);
-      } catch (e: any) {
-        console.error("addPosition error:", e);
-        setError(e.message ?? "addPosition failed");
-        throw e;
-      }
-    },
-    [assetMap, setAssetPositions]
-  );
+  const addPosition = useCallback(async (fleetNo: string, type: AssetType, pos: string) => {
+    const current = assetMap.get(fleetNo)?.positions ?? [];
+    if (!current.includes(pos)) {
+      await setAssetPositions(fleetNo, type, [...current, pos]);
+    }
+  }, [assetMap, setAssetPositions]);
 
-  const removePosition = useCallback(
-    async (fleetNo: string, type: AssetType, pos: string) => {
-      try {
-        const current = assetMap.get(fleetNo)?.positions ?? [];
-        if (!current.includes(pos)) return; // no-op
-        await setAssetPositions(
-          fleetNo,
-          type,
-          current.filter((p) => p !== pos)
-        );
-      } catch (e: any) {
-        console.error("removePosition error:", e);
-        setError(e.message ?? "removePosition failed");
-        throw e;
-      }
-    },
-    [assetMap, setAssetPositions]
-  );
+  const removePosition = useCallback(async (fleetNo: string, type: AssetType, pos: string) => {
+    const current = assetMap.get(fleetNo)?.positions ?? [];
+    if (!current.includes(pos)) return;
+    await setAssetPositions(fleetNo, type, current.filter((p) => p !== pos));
+  }, [assetMap, setAssetPositions]);
 
   return {
     assets,

@@ -11,14 +11,12 @@ import { useSearchParams } from "react-router-dom";
 const RequestPartsPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [searchParams] = useSearchParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const workOrderId = searchParams.get("workOrderId") || undefined;
   const vehicleId = searchParams.get("vehicleId") || undefined;
-  const { addPurchaseOrder } = useWorkshop(); // Assuming addPurchaseOrder exists in context
+  const { addPurchaseOrder: _addPurchaseOrder } = useWorkshop(); // Unused currently
 
   const handleSubmit = async (data: any) => {
-    setIsSubmitting(true);
 
     try {
       // Use the provided workOrderId and vehicleId
@@ -33,7 +31,7 @@ const RequestPartsPage: React.FC = () => {
       await addDoc(collection(db, "partsDemands"), partsDemand);
 
       console.log("Parts demand submitted successfully!");
-      setIsSubmitted(false);
+  setIsSubmitted(false);
       window.location.href = "/workshop/parts-ordering";
     } catch (error) {
       console.error("Error submitting parts demand:", error);
@@ -45,8 +43,8 @@ const RequestPartsPage: React.FC = () => {
     id: "",
     action: "",
     parts: [],
-    createdDate: new Date().toISOString().split("T")[0],
-    createdTime: new Date().toTimeString().split(" ")[0].slice(0, 5),
+  createdDate: new Date().toISOString().slice(0, 10),
+  createdTime: new Date().toISOString().slice(11, 16),
     demandBy: "",
     workOrderId: workOrderId,
     vehicleId: vehicleId,
@@ -85,6 +83,8 @@ const RequestPartsPage: React.FC = () => {
         </p>
 
         <DemandPartsForm
+          workOrderId={workOrderId ?? ""}
+          vehicleId={vehicleId ?? ""}
           initialData={initialData}
           onSubmit={handleSubmit}
           onCancel={() => window.history.back()}

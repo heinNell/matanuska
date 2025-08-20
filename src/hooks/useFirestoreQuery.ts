@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { collection, query, onSnapshot, QueryConstraint, DocumentData } from "firebase/firestore";
+import { collection, query, onSnapshot, QueryConstraint, DocumentData, Unsubscribe } from "firebase/firestore";
 import { firestore } from "../utils/firebaseConnectionHandler";
 import { cacheData, getCachedData } from "../utils/offlineCache";
 import { handleFirestoreError } from "../utils/firebaseConnectionHandler";
@@ -41,7 +41,7 @@ export function useFirestoreQuery<T = DocumentData>(
     return `${collectionPath}?${constraintsStr}`;
   }, [collectionPath, queryConstraints]);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (): Promise<Unsubscribe | undefined> => {
     setRevalidating(true);
     setError(null);
 
@@ -80,11 +80,12 @@ export function useFirestoreQuery<T = DocumentData>(
       setError(err instanceof Error ? err : new Error(String(err)));
       setLoading(false);
       setRevalidating(false);
+      return undefined;
     }
   }, [collectionPath, cacheKey, mergedOptions.cacheTtl, ...queryConstraints]);
 
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
+  let unsubscribe: Unsubscribe | undefined;
 
     const initialize = async () => {
       setLoading(true);

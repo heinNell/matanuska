@@ -1,22 +1,20 @@
+// src/hooks/useWialonUnitDetail.ts
 import { useState, useEffect, useCallback } from 'react';
-import { wialonService } from '../services/wialonService';
-import { UnitDetail, WialonUnit } from '../types/wialon';
+import wialonService from '../services/wialonService';
+import type { UnitDetail } from '../types/wialon-types';
+import type { BaseSensorResult } from '../types/wialon-sensors';
+import { createUnitDetail, isValidUnit } from '../utils/wialonUnitUtils';
 
-interface UseWialonUnitDetailResult {
-  unit: UnitDetail | null;
-  loading: boolean;
-  error: string | null;
-}
-
-export function useWialonUnitDetail(unitId: number | null): UseWialonUnitDetailResult {
+export function useWialonUnitDetail(unitId: number | null): BaseSensorResult {
   const [unit, setUnit] = useState<UnitDetail | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchUnitDetail = useCallback(async () => {
     if (!unitId) return;
     setLoading(true);
     setError(null);
+
     try {
       const wialonUnit: WialonUnit | null = wialonService.getUnitById(unitId);
       if (!wialonUnit) {
@@ -37,7 +35,7 @@ export function useWialonUnitDetail(unitId: number | null): UseWialonUnitDetailR
       setUnit(unitDetail);
     } catch (err) {
       console.error(err);
-      setError("Failed to fetch unit details.");
+      setError(err.message || "Failed to fetch unit details.");
     } finally {
       setLoading(false);
     }
@@ -49,4 +47,3 @@ export function useWialonUnitDetail(unitId: number | null): UseWialonUnitDetailR
 
   return { unit, loading, error };
 }
-

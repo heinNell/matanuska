@@ -1,23 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   collection,
   doc,
   onSnapshot,
-  query,
-  setDoc,
-  deleteDoc,
   addDoc,
-  updateDoc,
+  deleteDoc,
+  writeBatch,
+  QueryConstraint,
+  query,
   where,
 } from "firebase/firestore";
-import { db } from "../firebase"; // Assuming db is the Firestore instance
-import { Tyre, TyreInspection, TyreStore } from "../types/tyre";
-import { Vehicle } from "../types/vehicle";
+import { db } from "../firebase";
+import { TyreInspection, TyreStore } from "../types/tyre";
 
-// Collection name in Firestore
-const ASSIGNMENTS_COLLECTION = "tyreAssignments";
-
-type TyreModelRef = { id: string; name?: string };
+export type TyreModelRef = { id: string; name?: string };
 
 export interface TyreAssignment {
   id: string;
@@ -29,19 +25,27 @@ export interface TyreAssignment {
   model?: TyreModelRef;
 }
 
-/**
- * A custom hook to manage tyre assignments in Firestore.
- * It provides real-time data, and functions for creating, unassigning, and finding assignments.
- */
-export const useTyreAssignment = () => {
+interface UseTyreAssignmentOptions {
+  collectionName?: string;
+  filters?: { tyreId?: string; vehicleId?: string };
+}
+
+export const useTyreAssignment = ({
+  collectionName = "tyreAssignments",
+  filters,
+}: UseTyreAssignmentOptions = {}) => {
   const [assignments, setAssignments] = useState<TyreAssignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Set up a real-time listener for the assignments collection
+  // Real-time listener
   useEffect(() => {
-    const assignmentsRef = collection(db, ASSIGNMENTS_COLLECTION);
-    const q = query(assignmentsRef);
+    const assignmentsRef = collection(db, collectionName);
+    const constraints: QueryConstraint[] = [];
+    if (filters?.tyreId) constraints.push(where("tyre.id", "==", filters.tyreId));
+    if (filters?.vehicleId) constraints.push(where("vehicle.id", "==", filters.vehicleId));
+
+    const q = constraints.length > 0 ? query(assignmentsRef, ...constraints) : assignmentsRef;
 
     const unsubscribe = onSnapshot(
       q,
@@ -61,22 +65,15 @@ export const useTyreAssignment = () => {
       }
     );
 
-    // Clean up the listener on unmount
     return () => unsubscribe();
-  }, []);
+  }, [collectionName, filters?.tyreId, filters?.vehicleId]);
 
-  /**
-   * Assigns a tyre to a vehicle in the database.
-   */
+  // Assign single tyre
   const assignTyre = useCallback(
     async (
       tyre: { id: string; serialNumber: string; brand: string },
       vehicle: { id: string; fleetNo: string },
-      options?: {
-        store?: TyreStore;
-        inspection?: TyreInspection;
-        model?: TyreModelRef;
-      }
+      options?: { store?: TyreStore; inspection?: TyreInspection; model?: TyreModelRef }
     ) => {
       try {
         setLoading(true);
@@ -86,7 +83,7 @@ export const useTyreAssignment = () => {
           assignedAt: new Date().toISOString(),
           ...options,
         };
-        await addDoc(collection(db, ASSIGNMENTS_COLLECTION), newAssignmentData);
+        await addDoc(collection(db, collectionName), newAssignmentData);
       } catch (err) {
         setError("Failed to assign tyre.");
         throw err;
@@ -94,29 +91,62 @@ export const useTyreAssignment = () => {
         setLoading(false);
       }
     },
-    []
+    [collectionName]
   );
 
-  /**
-   * Unassigns a tyre by deleting the assignment document from the database.
-   */
-  const unassignTyre = useCallback(async (assignmentId: string) => {
-    try {
-      setLoading(true);
-      await deleteDoc(doc(db, ASSIGNMENTS_COLLECTION, assignmentId));
-    } catch (err) {
-      setError("Failed to unassign tyre.");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Bulk assign multiple tyres
+  const bulkAssignTyres = useCallback(
+    async (
+      tyres: { id: string; serialNumber: string; brand: string }[],
+      vehicle: { id: string; fleetNo: string },
+      options?: { store?: TyreStore; inspection?: TyreInspection; model?: TyreModelRef }
+    ) => {
+      if (!tyres.length) return;
+      try {
+        setLoading(true);
+        const batch = writeBatch(db);
+        const assignmentsRef = collection(db, collectionName);
 
-  /**
-   * Finds assignments based on various criteria using in-memory filtering.
-   */
+        tyres.forEach((tyre) => {
+          const docRef = doc(assignmentsRef);
+          batch.set(docRef, {
+            tyre,
+            vehicle,
+            assignedAt: new Date().toISOString(),
+            ...options,
+          });
+        });
+
+        await batch.commit();
+      } catch (err) {
+        setError("Failed to bulk assign tyres.");
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [collectionName]
+  );
+
+  // Unassign a tyre
+  const unassignTyre = useCallback(
+    async (assignmentId: string) => {
+      try {
+        setLoading(true);
+        await deleteDoc(doc(db, collectionName, assignmentId));
+      } catch (err) {
+        setError("Failed to unassign tyre.");
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [collectionName]
+  );
+
   const findAssignments = useCallback(
-    (criteria: { tyreId?: string; vehicleId?: string }) => {
+    (criteria?: { tyreId?: string; vehicleId?: string }) => {
+      if (!criteria) return assignments;
       return assignments.filter(
         (a) =>
           (!criteria.tyreId || a.tyre.id === criteria.tyreId) &&
@@ -126,13 +156,8 @@ export const useTyreAssignment = () => {
     [assignments]
   );
 
-  /**
-   * Gets the current assignment for a specific tyre ID.
-   */
   const getTyreAssignment = useCallback(
-    (tyreId: string) => {
-      return assignments.find((a) => a.tyre.id === tyreId) || null;
-    },
+    (tyreId: string) => assignments.find((a) => a.tyre.id === tyreId) || null,
     [assignments]
   );
 
@@ -141,6 +166,7 @@ export const useTyreAssignment = () => {
     loading,
     error,
     assignTyre,
+    bulkAssignTyres, // ✅ added
     unassignTyre,
     findAssignments,
     getTyreAssignment,

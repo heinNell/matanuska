@@ -7,9 +7,12 @@ import { useAppContext } from "../../context/AppContext";
 import { useRealtimeTrips } from "../../hooks/useRealtimeTrips";
 import { SupportedCurrency } from "../../types";
 import { formatCurrency } from "../../utils/helpers";
+import { useWialonSensor } from "../../hooks/useWialonSensor";
+import type { BaseSensorResult } from "../../types/wialon-sensors";
 
 interface ActiveTripsProps {
-  displayCurrency?: SupportedCurrency; // optional with default
+  displayCurrency?: SupportedCurrency;
+  unitId?: number; // Add unitId prop
 }
 
 // Mock active trips data with cost breakdown
@@ -76,7 +79,7 @@ const initialActiveTrips: Trip[] = [
   },
 ];
 
-const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) => {
+const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unitId }) => {
   // Narrow currency to the ones supported by formatCurrency helper (USD|ZAR)
   const currencyForDisplay: "USD" | "ZAR" =
     displayCurrency === "USD" || displayCurrency === "ZAR" ? displayCurrency : "ZAR";
@@ -111,6 +114,14 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) =>
     driver: 0,
     tolls: 0,
     other: 0,
+  });
+
+  // Add sensor data hook
+  const sensorData = useWialonSensor(unitId ?? null, {
+    fuel: 1,
+    speed: 2,
+    engineHours: 3,
+    ignition: 4,
   });
 
   // Update state when real data arrives
@@ -475,6 +486,12 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) =>
       },
       source: "internal",
       lastUpdated: new Date().toISOString(),
+      sensorData: {
+        fuelLevel: sensorData.fuel?.value ?? 0,
+        speed: sensorData.speed?.value ?? 0,
+        engineHours: sensorData.engineHours?.value ?? 0,
+        ignition: sensorData.ignition?.value ?? 0,
+      },
     };
 
     // Add the new trip to the active trips
@@ -941,7 +958,12 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) =>
       {/* Legacy AddTripModal retained for backward compatibility but not invoked */}
 
       {/* Trip Form Modal for create/edit flow */}
-      <TripFormModal isOpen={showTripForm} onClose={() => setShowTripForm(false)} />
+      <TripFormModal
+        isOpen={showTripForm}
+        onClose={() => setShowTripForm(false)}
+        sensorData={sensorData}
+        unitId={unitId}
+      />
 
       {/* Cost entry modal */}
       <TripCostEntryModal

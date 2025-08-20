@@ -38,7 +38,7 @@ export interface StockItem {
   vendor: string;
   vendorId: string;
   location: string;
-  lastRestocked: string;
+  lastRestocked: string; // required string
   qrCode?: string;
   serialNumber?: string;
   barcode?: string;
@@ -83,6 +83,30 @@ export interface PurchaseOrder {
   attachments: string[];
 }
 
+// Demand parts
+export interface DemandPart {
+  id: string;
+  sku: string;
+  description: string;
+  quantity: number;
+  workOrderId: string;
+  vehicleId: string;
+  status: "PENDING" | "ORDERED" | "RECEIVED" | "CANCELLED";
+  urgency: "LOW" | "MEDIUM" | "HIGH" | "EMERGENCY";
+  demandedBy: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  poId?: string;
+}
+
+export interface StockItemInput {
+  id: string;
+  name: string;
+  quantity: number;
+  lastRestocked?: string; // allow undefined
+}
+
 // Context interface
 interface WorkshopContextType {
   // Vendors
@@ -117,11 +141,22 @@ interface WorkshopContextType {
   getPurchaseOrdersByStatus: (status: PurchaseOrder["status"]) => PurchaseOrder[];
   getPurchaseOrdersByVendor: (vendorId: string) => PurchaseOrder[];
 
+  // Demand Parts
+  demandParts: DemandPart[];
+  addDemandPart: (part: Omit<DemandPart, "id">) => Promise<string>;
+  updateDemandPart: (id: string, part: Partial<DemandPart>) => Promise<void>;
+  deleteDemandPart: (id: string) => Promise<void>;
+  getDemandPartById: (id: string) => DemandPart | undefined;
+  getDemandPartsByWorkOrder: (workOrderId: string) => DemandPart[];
+  getDemandPartsByVehicle: (vehicleId: string) => DemandPart[];
+  getDemandPartsByStatus: (status: DemandPart["status"]) => DemandPart[];
+
   // Loading states
   isLoading: {
     vendors: boolean;
     stockItems: boolean;
     purchaseOrders: boolean;
+    demandParts: boolean;
   };
 
   // Error states
@@ -129,10 +164,10 @@ interface WorkshopContextType {
     vendors: Error | null;
     stockItems: Error | null;
     purchaseOrders: Error | null;
+    demandParts: Error | null;
   };
 }
 
-// Create the context with default values
 const WorkshopContext = createContext<WorkshopContextType>({
   vendors: [],
   addVendor: async () => "",
@@ -159,50 +194,58 @@ const WorkshopContext = createContext<WorkshopContextType>({
   getPurchaseOrdersByStatus: () => [],
   getPurchaseOrdersByVendor: () => [],
 
+  demandParts: [],
+  addDemandPart: async () => "",
+  updateDemandPart: async () => {},
+  deleteDemandPart: async () => {},
+  getDemandPartById: () => undefined,
+  getDemandPartsByWorkOrder: () => [],
+  getDemandPartsByVehicle: () => [],
+  getDemandPartsByStatus: () => [],
+
   isLoading: {
     vendors: false,
     stockItems: false,
     purchaseOrders: false,
+    demandParts: false,
   },
 
   errors: {
     vendors: null,
     stockItems: null,
     purchaseOrders: null,
+    demandParts: null,
   },
 });
 
-// Provider component
 export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // User authentication
   // const [user] = useAuthState(getAuth());
-  const user = null; // Temporary placeholder
+  const user = null; // existing behavior unchanged
 
-  // State for data
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
+  const [demandParts, setDemandParts] = useState<DemandPart[]>([]);
 
-  // Loading and error states
   const [isLoading, setIsLoading] = useState({
     vendors: true,
     stockItems: true,
     purchaseOrders: true,
+    demandParts: true,
   });
 
   const [errors, setErrors] = useState({
     vendors: null as Error | null,
     stockItems: null as Error | null,
     purchaseOrders: null as Error | null,
+    demandParts: null as Error | null,
   });
 
-  // Firestore instance
   const db = getFirestore();
 
-  // Fetch vendors from Firestore
+  // Vendors
   useEffect(() => {
     if (!user) return;
-
     setIsLoading((prev) => ({ ...prev, vendors: true }));
 
     const vendorsRef = collection(db, "vendors");
@@ -230,10 +273,9 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     return () => unsubscribe();
   }, [db, user]);
 
-  // Fetch stock items from Firestore
+  // Stock Items
   useEffect(() => {
     if (!user) return;
-
     setIsLoading((prev) => ({ ...prev, stockItems: true }));
 
     const stockItemsRef = collection(db, "stockInventory");
@@ -261,10 +303,9 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     return () => unsubscribe();
   }, [db, user]);
 
-  // Fetch purchase orders from Firestore
+  // Purchase Orders
   useEffect(() => {
     if (!user) return;
-
     setIsLoading((prev) => ({ ...prev, purchaseOrders: true }));
 
     const purchaseOrdersRef = collection(db, "purchaseOrders");
@@ -292,7 +333,37 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     return () => unsubscribe();
   }, [db, user]);
 
-  // ===== VENDOR FUNCTIONS =====
+  // Demand Parts
+  useEffect(() => {
+    if (!user) return;
+    setIsLoading((prev) => ({ ...prev, demandParts: true }));
+
+    const demandPartsRef = collection(db, "demandParts");
+    const demandPartsQuery = query(demandPartsRef);
+
+    const unsubscribe = onSnapshot(
+      demandPartsQuery,
+      (snapshot) => {
+        const demandPartsList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as DemandPart[];
+
+        setDemandParts(demandPartsList);
+        setIsLoading((prev) => ({ ...prev, demandParts: false }));
+        setErrors((prev) => ({ ...prev, demandParts: null }));
+      },
+      (error) => {
+        console.error("Error fetching demand parts:", error);
+        setErrors((prev) => ({ ...prev, demandParts: error }));
+        setIsLoading((prev) => ({ ...prev, demandParts: false }));
+      }
+    );
+
+    return () => unsubscribe();
+  }, [db, user]);
+
+  // Vendor functions
   const addVendor = async (vendor: Omit<Vendor, "id">): Promise<string> => {
     try {
       const newVendor = {
@@ -300,7 +371,6 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-
       const vendorRef = await addDoc(collection(db, "vendors"), newVendor);
       return vendorRef.id;
     } catch (error) {
@@ -331,11 +401,10 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  const getVendorById = (id: string): Vendor | undefined => {
-    return vendors.find((vendor) => vendor.id === id);
-  };
+  const getVendorById = (id: string): Vendor | undefined =>
+    vendors.find((vendor) => vendor.id === id);
 
-  // ===== STOCK ITEM FUNCTIONS =====
+  // Stock functions
   const addStockItem = async (item: Omit<StockItem, "id">): Promise<string> => {
     try {
       const newItem = {
@@ -343,7 +412,6 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-
       const itemRef = await addDoc(collection(db, "stockInventory"), newItem);
       return itemRef.id;
     } catch (error) {
@@ -374,23 +442,19 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  const getStockItemById = (id: string): StockItem | undefined => {
-    return stockItems.find((item) => item.id === id);
-  };
+  const getStockItemById = (id: string): StockItem | undefined =>
+    stockItems.find((item) => item.id === id);
 
-  const getStockItemsByCategory = (category: string): StockItem[] => {
-    return stockItems.filter((item) => item.category === category);
-  };
+  const getStockItemsByCategory = (category: string): StockItem[] =>
+    stockItems.filter((item) => item.category === category);
 
-  const getStockItemsByVendor = (vendorId: string): StockItem[] => {
-    return stockItems.filter((item) => item.vendorId === vendorId);
-  };
+  const getStockItemsByVendor = (vendorId: string): StockItem[] =>
+    stockItems.filter((item) => item.vendorId === vendorId);
 
-  const getLowStockItems = (): StockItem[] => {
-    return stockItems.filter((item) => item.quantity <= item.reorderLevel);
-  };
+  const getLowStockItems = (): StockItem[] =>
+    stockItems.filter((item) => item.quantity <= item.reorderLevel);
 
-  // ===== PURCHASE ORDER FUNCTIONS =====
+  // Purchase orders
   const addPurchaseOrder = async (po: Omit<PurchaseOrder, "id">): Promise<string> => {
     try {
       const newPO = {
@@ -398,7 +462,6 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-
       const poRef = await addDoc(collection(db, "purchaseOrders"), newPO);
       return poRef.id;
     } catch (error) {
@@ -429,17 +492,64 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  const getPurchaseOrderById = (id: string): PurchaseOrder | undefined => {
-    return purchaseOrders.find((po) => po.id === id);
+  const getPurchaseOrderById = (id: string): PurchaseOrder | undefined =>
+    purchaseOrders.find((po) => po.id === id);
+
+  const getPurchaseOrdersByStatus = (status: PurchaseOrder["status"]): PurchaseOrder[] =>
+    purchaseOrders.filter((po) => po.status === status);
+
+  const getPurchaseOrdersByVendor = (vendorId: string): PurchaseOrder[] =>
+    purchaseOrders.filter((po) => po.vendorId === vendorId);
+
+  // Demand parts
+  const addDemandPart = async (part: Omit<DemandPart, "id">): Promise<string> => {
+    try {
+      const newPart = {
+        ...part,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const partRef = await addDoc(collection(db, "demandParts"), newPart);
+      return partRef.id;
+    } catch (error) {
+      console.error("Error adding demand part:", error);
+      throw error;
+    }
   };
 
-  const getPurchaseOrdersByStatus = (status: PurchaseOrder["status"]): PurchaseOrder[] => {
-    return purchaseOrders.filter((po) => po.status === status);
+  const updateDemandPart = async (id: string, part: Partial<DemandPart>): Promise<void> => {
+    try {
+      const partRef = doc(db, "demandParts", id);
+      await updateDoc(partRef, {
+        ...part,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Error updating demand part:", error);
+      throw error;
+    }
   };
 
-  const getPurchaseOrdersByVendor = (vendorId: string): PurchaseOrder[] => {
-    return purchaseOrders.filter((po) => po.vendorId === vendorId);
+  const deleteDemandPart = async (id: string): Promise<void> => {
+    try {
+      await deleteDoc(doc(db, "demandParts", id));
+    } catch (error) {
+      console.error("Error deleting demand part:", error);
+      throw error;
+    }
   };
+
+  const getDemandPartById = (id: string): DemandPart | undefined =>
+    demandParts.find((part) => part.id === id);
+
+  const getDemandPartsByWorkOrder = (workOrderId: string): DemandPart[] =>
+    demandParts.filter((part) => part.workOrderId === workOrderId);
+
+  const getDemandPartsByVehicle = (vehicleId: string): DemandPart[] =>
+    demandParts.filter((part) => part.vehicleId === vehicleId);
+
+  const getDemandPartsByStatus = (status: DemandPart["status"]): DemandPart[] =>
+    demandParts.filter((part) => part.status === status);
 
   // Bulk import stock items from CSV
   const importStockItemsFromCSV = async (
@@ -453,20 +563,15 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     for (const record of items) {
       try {
-        // Validate required fields
         if (!record.itemCode || !record.itemName || !record.category) {
           throw new Error(`Missing required fields for item ${record.itemCode || "unknown"}`);
         }
 
-        // Find vendor ID if only name is provided
         if (record.vendor && !record.vendorId) {
           const vendor = vendors.find((v) => v.vendorName === record.vendor);
-          if (vendor) {
-            record.vendorId = vendor.id;
-          }
+          if (vendor) record.vendorId = vendor.id;
         }
 
-        // Prepare complete record
         const stockItem = {
           itemCode: record.itemCode || "",
           itemName: record.itemName || "",
@@ -480,18 +585,17 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
           vendor: record.vendor || "",
           vendorId: record.vendorId || "",
           location: record.location || "",
-          lastRestocked: record.lastRestocked || new Date().toISOString().split("T")[0], // Ensure this is always a string
+          lastRestocked: record.lastRestocked || new Date().toISOString().slice(0, 10), // ensure string
         };
 
-        // Check for existing item to update instead of adding duplicate
-        const existingItem = stockItems.find((item) => item.itemCode === stockItem.itemCode);
+        const existingItem = stockItems.find((i) => i.itemCode === stockItem.itemCode);
 
         if (existingItem) {
           await updateStockItem(existingItem.id, stockItem);
         } else {
           const itemToAdd: Omit<StockItem, "id"> = {
             ...stockItem,
-            lastRestocked: stockItem.lastRestocked || new Date().toISOString()
+            lastRestocked: stockItem.lastRestocked || new Date().toISOString(),
           };
           await addStockItem(itemToAdd);
         }
@@ -519,12 +623,10 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     for (const record of records) {
       try {
-        // Validate required fields
         if (!record.vendorId || !record.vendorName) {
           throw new Error(`Missing required fields for vendor ${record.vendorName || "unknown"}`);
         }
 
-        // Prepare complete record
         const vendor = {
           vendorId: record.vendorId,
           vendorName: record.vendorName,
@@ -535,7 +637,6 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
           city: record.city || "",
         };
 
-        // Check for existing vendor to update instead of adding duplicate
         const existingVendor = vendors.find((v) => v.vendorId === vendor.vendorId);
 
         if (existingVendor) {
@@ -556,7 +657,6 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   const value = {
-    // Vendors
     vendors,
     addVendor,
     updateVendor,
@@ -564,7 +664,6 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     getVendorById,
     importVendorsFromCSV,
 
-    // Stock Items
     stockItems,
     addStockItem,
     updateStockItem,
@@ -575,7 +674,6 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     getLowStockItems,
     importStockItemsFromCSV,
 
-    // Purchase Orders
     purchaseOrders,
     addPurchaseOrder,
     updatePurchaseOrder,
@@ -584,17 +682,22 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     getPurchaseOrdersByStatus,
     getPurchaseOrdersByVendor,
 
-    // Loading states
-    isLoading,
+    demandParts,
+    addDemandPart,
+    updateDemandPart,
+    deleteDemandPart,
+    getDemandPartById,
+    getDemandPartsByWorkOrder,
+    getDemandPartsByVehicle,
+    getDemandPartsByStatus,
 
-    // Error states
+    isLoading,
     errors,
   };
 
   return <WorkshopContext.Provider value={value}>{children}</WorkshopContext.Provider>;
 };
 
-// Custom hook to use the Workshop context
 export const useWorkshop = (): WorkshopContextType => {
   const context = useContext(WorkshopContext);
   if (context === undefined) {
@@ -602,3 +705,4 @@ export const useWorkshop = (): WorkshopContextType => {
   }
   return context;
 };
+

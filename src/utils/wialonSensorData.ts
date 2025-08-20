@@ -1,5 +1,8 @@
 // wialonSensorData.ts - Safe & typed utility for AVL unit sensor parsing
 
+// Add this at the top if not already declared globally in a .d.ts file:
+declare var wialon: any;
+
 export interface WialonSensor {
   id: number;
   n: string;
@@ -61,7 +64,6 @@ export const getMaxCapacityFromSensor = (d: string | undefined): number => {
       maxCapacity = part;
     }
   }
-
   return maxCapacity > 0 ? maxCapacity : 450;
 };
 
@@ -72,15 +74,22 @@ export const parseVehicleSensorData = (
   unit: any,
   lastMessage: any
 ): VehicleSensorData => {
-  const name = unit?.getName?.() ?? "Unknown";
-  const fleetNumber = name.split(" ")[0];
+  const name: string = unit?.getName?.() ?? "Unknown";
+  const fleetNumber: string = name.split(" ")[0] ?? "Unknown";
   const unitData = unit?.getCustomProperty?.("avl_unit");
 
-  const avlUnit: WialonAVLUnit = typeof unitData === "string"
-    ? JSON.parse(unitData)
-    : unitData ?? { general: { n: name }, sensors: [] };
+  let avlUnit: WialonAVLUnit;
+  if (typeof unitData === "string") {
+    try {
+      avlUnit = JSON.parse(unitData) as WialonAVLUnit;
+    } catch {
+      avlUnit = { general: { n: name }, sensors: [] };
+    }
+  } else {
+    avlUnit = unitData ?? { general: { n: name }, sensors: [] };
+  }
 
-  const sensors = avlUnit?.sensors ?? [];
+  const sensors: WialonSensor[] = avlUnit?.sensors ?? [];
   const fuelTanks: FuelTankData[] = [];
   let externalVoltage: number | undefined;
   let signalStrength: number | undefined;
@@ -167,21 +176,55 @@ export const getTotalFuelCapacity = (data: VehicleSensorData): number => {
  * Async function to get vehicle sensor data by fleet number
  * This would typically integrate with Wialon API or your data source
  */
-export const getVehicleSensorData = async (fleetNumber: string): Promise<VehicleSensorData | null> => {
+export const getVehicleSensorData = async (
+  fleetNumber: string
+): Promise<VehicleSensorData | null> => {
   try {
-    // This is a placeholder implementation
-    // In a real implementation, you would:
-    // 1. Query your Wialon API or data source
-    // 2. Find the unit by fleet number
-    // 3. Get the latest sensor data
-    // 4. Parse and return the data using parseVehicleSensorData
+    // Defensive: check global wialon and required API
+    if (
+      typeof wialon === "undefined" ||
+      !wialon.core?.Session?.getInstance ||
+      !wialon.item?.Item?.dataFlag ||
+      !wialon.item?.Unit?.dataFlag
+    ) {
+      throw new Error("Wialon SDK is not loaded or initialized");
+    }
 
-    // For now, return null to indicate no data found
-    // You should implement the actual API call here
-    console.warn(`getVehicleSensorData: Implementation needed for fleet ${fleetNumber}`);
-    return null;
+    const session = wialon.core.Session.getInstance();
+    if (!session) throw new Error("Wialon session not initialized");
+
+    // Defensive: getItems may not exist or may not return array
+    const units: any[] =
+      typeof session.getItems === "function"
+        ? session.getItems("avl_unit") || []
+        : [];
+
+    // Find unit by fleet number
+    const unit = units.find((u: any) =>
+      typeof u?.getName === "function"
+        ? u.getName().startsWith(fleetNumber)
+        : false
+    );
+
+    if (!unit) {
+      console.warn(`No unit found for fleet number ${fleetNumber}`);
+      return null;
+    }
+
+    // Defensive: getLastMessage may not exist
+    const lastMessage =
+      typeof unit.getLastMessage === "function"
+        ? unit.getLastMessage()
+        : null;
+    if (!lastMessage) {
+      console.warn(`No last message available for unit ${unit.getName?.() ?? "unknown"}`);
+      return null;
+    }
+
+    return parseVehicleSensorData(unit, lastMessage);
   } catch (error) {
-    console.error('Error fetching vehicle sensor data:', error);
+    console.error("Error fetching vehicle sensor data:", error);
     return null;
   }
 };
+

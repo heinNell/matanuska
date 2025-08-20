@@ -19,16 +19,27 @@ export type VehicleSeries = "H" | "L" | "T" | "F" | "OTHER";
  */
 export interface Vehicle {
   id: string;
-  registrationNo: string;
-  fleetNo: string;
-  manufacturer: string;
-  model: string;
+  name?: string;
+  location?: {
+    lat: number;
+    lng: number;
+  };
+  status: "active" | "inactive" | "maintenance";
+  lastUpdate?: string;
+  registrationNo: string; // <-- Added registrationNo property
+  // Optional extended fields used across UI and data
+  fleetNo?: string;
+  manufacturer?: string;
+  model?: string;
   chassisNo?: string;
   engineNo?: string;
-  status: VehicleStatus;
-  type: VehicleType;
-  category: VehicleCategory;
-  series: VehicleSeries;
+  type?: VehicleType | string;
+  category?: VehicleCategory | string;
+  series?: VehicleSeries | string;
+  km?: number; // prefer km over mileage
+  /**
+   * Deprecated: use km instead
+   */
   mileage?: number;
 }
 

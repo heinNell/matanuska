@@ -28,7 +28,13 @@ import { useTyreReferenceData } from "../../context/TyreReferenceDataContext";
 
 // Import all necessary Enums and Types from your tyreData.ts file
 // Ensure this path is correct relative to TyreManagementPage.tsx
-import type { Tyre, TyreType, TyreStatus, TyreMountStatus, TyreConditionStatus } from "../../types/tyre";
+import type {
+  Tyre,
+  TyreType,
+  TyreStatus,
+  TyreMountStatus,
+  TyreConditionStatus,
+} from "../../types/tyre";
 import { TyreStoreLocation } from "../../types/tyre";
 
 // Import tyre components that need to be integrated
@@ -152,7 +158,7 @@ const TyreManagementPage: React.FC = () => {
     () => ({
       serialNumber: `TY-${Math.floor(1000 + Math.random() * 9000)}`,
       dotCode: "",
-      manufacturingDate: new Date().toISOString().split("T")[0] as string,
+      manufacturingDate: new Date().toISOString().slice(0, 10) as string,
       brand: "",
       model: "",
       pattern: "",
@@ -161,7 +167,7 @@ const TyreManagementPage: React.FC = () => {
       speedRating: "",
   type: ("steer" satisfies TyreType),
       purchaseDetails: {
-        date: new Date().toISOString().split("T")[0] as string,
+        date: new Date().toISOString().slice(0, 10) as string,
         cost: 0,
         supplier: "",
         warranty: "",
@@ -169,7 +175,7 @@ const TyreManagementPage: React.FC = () => {
       },
       installation: {
         vehicleId: "",
-        position: "",
+        position: "SP",
         mileageAtInstallation: 0,
         installationDate: "",
         installedBy: "",
@@ -179,7 +185,7 @@ const TyreManagementPage: React.FC = () => {
         pressure: 0,
         temperature: 0,
   status: "good" as TyreConditionStatus,
-        lastInspectionDate: new Date().toISOString().split("T")[0] as string,
+        lastInspectionDate: new Date().toISOString().slice(0, 10) as string,
         nextInspectionDue: "", // Corrected: Ensures this required field is present
       },
   status: "new" as TyreStatus,
@@ -571,7 +577,7 @@ const TyreManagementPage: React.FC = () => {
                         quantity: 1,
                         reorderLevel: 5,
                         cost: t.purchaseDetails?.cost || 0,
-                        lastUpdated: new Date().toISOString().split("T")[0] as string,
+                        lastUpdated: new Date().toISOString().slice(0, 10) as string,
                         location: t.location || "Warehouse",
                       }))}
                       assignments={tyres
@@ -941,7 +947,7 @@ const TyreManagementPage: React.FC = () => {
             } else {
               // Create a properly typed purchase details object
               tyreData.purchaseDetails = {
-                date: new Date().toISOString().split("T")[0] as string,
+                date: new Date().toISOString().slice(0, 10) as string,
                 cost: 0,
                 supplier: "",
                 warranty: "",

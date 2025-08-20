@@ -1,11 +1,22 @@
 import React from "react";
 import { useAppContext } from "../../context/AppContext";
 import Card, { CardContent, CardHeader } from "../../components/ui/Card";
-import { FileText, Download, Settings, Filter } from "lucide-react";
+import { FileText, Download, Settings, Clock } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 
 const TaxReportExport: React.FC = () => {
   const { isLoading } = useAppContext();
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center gap-3 text-gray-600">
+          <Clock className="w-5 h-5 animate-spin" />
+          <span>Preparing tax report tools…</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">

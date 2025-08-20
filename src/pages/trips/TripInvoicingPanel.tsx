@@ -9,13 +9,14 @@ interface TripInvoicingPanelProps {
 }
 
 const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCancel }) => {
-  const [invoiceNumber, setInvoiceNumber] = useState("");
-  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split("T")[0]);
-  const [dueDate, setDueDate] = useState("");
-  const [clientReference, setClientReference] = useState("");
+  // Defensive: always initialize to string, never undefined
+  const [invoiceNumber, setInvoiceNumber] = useState<string>("");
+  const [invoiceDate, setInvoiceDate] = useState<string>(new Date().toISOString().split("T")[0] ?? "");
+  const [dueDate, setDueDate] = useState<string>("");
+  const [clientReference, setClientReference] = useState<string>("");
   const [additionalCharges, setAdditionalCharges] = useState<number>(0);
   const [discount, setDiscount] = useState<number>(0);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState<string>("");
 
   // Auto-generate invoice number if empty
   React.useEffect(() => {
@@ -28,7 +29,7 @@ const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCan
         .padStart(3, "0");
       setInvoiceNumber(`INV-${year}${month}-${random}`);
     }
-  }, []);
+  }, [invoiceNumber]);
 
   // Auto-set due date to 30 days from invoice date
   React.useEffect(() => {
@@ -36,7 +37,7 @@ const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCan
       const invoice = new Date(invoiceDate);
       const due = new Date(invoice);
       due.setDate(due.getDate() + 30);
-      setDueDate(due.toISOString().split("T")[0]);
+      setDueDate(due.toISOString().split("T")[0] ?? "");
     }
   }, [invoiceDate]);
 
@@ -74,8 +75,8 @@ const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCan
               <label className="block text-sm font-medium mb-1">Invoice Number *</label>
               <Input
                 type="text"
-                value={invoiceNumber}
-                onChange={(e) => setInvoiceNumber(e.target.value)}
+                value={invoiceNumber ?? ""} // Defensive: never undefined
+                onChange={(e) => setInvoiceNumber(e.target.value ?? "")}
                 placeholder="INV-2025XX-XXX"
                 required
               />
@@ -85,8 +86,8 @@ const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCan
               <label className="block text-sm font-medium mb-1">Client Reference</label>
               <Input
                 type="text"
-                value={clientReference}
-                onChange={(e) => setClientReference(e.target.value)}
+                value={clientReference ?? ""}
+                onChange={(e) => setClientReference(e.target.value ?? "")}
                 placeholder="Client PO number or reference"
               />
             </div>
@@ -97,8 +98,8 @@ const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCan
               <label className="block text-sm font-medium mb-1">Invoice Date *</label>
               <Input
                 type="date"
-                value={invoiceDate}
-                onChange={(e) => setInvoiceDate(e.target.value)}
+                value={invoiceDate ?? ""}
+                onChange={(e) => setInvoiceDate(e.target.value ?? "")}
                 required
               />
             </div>
@@ -107,8 +108,8 @@ const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCan
               <label className="block text-sm font-medium mb-1">Due Date *</label>
               <Input
                 type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                value={dueDate ?? ""}
+                onChange={(e) => setDueDate(e.target.value ?? "")}
                 required
               />
             </div>
@@ -145,8 +146,8 @@ const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCan
           <div>
             <label className="block text-sm font-medium mb-1">Invoice Notes</label>
             <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              value={notes ?? ""}
+              onChange={(e) => setNotes(e.target.value ?? "")}
               placeholder="Payment terms, special instructions, etc."
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
@@ -157,9 +158,9 @@ const TripInvoicingPanel: React.FC<TripInvoicingPanelProps> = ({ onSubmit, onCan
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h4 className="font-medium mb-2">Invoice Preview</h4>
             <div className="text-sm space-y-1">
-              <div>Invoice: {invoiceNumber}</div>
-              <div>Date: {invoiceDate}</div>
-              <div>Due: {dueDate}</div>
+              <div>Invoice: {invoiceNumber ?? ""}</div>
+              <div>Date: {invoiceDate ?? ""}</div>
+              <div>Due: {dueDate ?? ""}</div>
               {clientReference && <div>Reference: {clientReference}</div>}
               {additionalCharges > 0 && (
                 <div>Additional Charges: R{additionalCharges.toFixed(2)}</div>

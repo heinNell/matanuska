@@ -264,8 +264,18 @@ export const InspectionFormPDS: React.FC = () => {
             </thead>
             <tbody>
               {section.items.map((item) => {
-                // Serial number mapping is always correct from allItems
+                // Ensure index is within bounds
+                if (renderSN <= 0 || renderSN > allItems.length) {
+                  console.error(`Invalid index ${renderSN - 1} for allItems`);
+                  return null;
+                }
+
                 const thisItem = allItems[renderSN - 1];
+                if (!thisItem) {
+                  console.error(`No item found at index ${renderSN - 1}`);
+                  return null;
+                }
+
                 const itemSN = thisItem.sn;
                 const itemState = itemStatuses[itemSN];
                 renderSN++;

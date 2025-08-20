@@ -7,6 +7,17 @@ import { useAppContext } from "../../context/AppContext";
 const InvoiceApprovalFlow: React.FC = () => {
   const { isLoading } = useAppContext();
 
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center gap-3 text-gray-600">
+          <Clock className="w-5 h-5 animate-spin" />
+          <span>Loading approval flow…</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">

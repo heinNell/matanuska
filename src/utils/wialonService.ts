@@ -122,6 +122,109 @@ class WialonService {
     }
     return resource.getZones();
   }
+
+  /**
+   * Fetches the value of a sensor from a unit.
+   * Returns latest value, or "N/A" if unavailable.
+   */
+  public async getSensorValue(unitId: number, sensorId: number): Promise<number | string | null> {
+    await this.initSession();
+    const unit = this.session.getItem(unitId);
+    if (!unit) return null;
+    const sensors = unit.getSensors?.() || [];
+    const sensor = sensors.find((s: any) => String(s.id) === String(sensorId));
+    if (!sensor) return null;
+
+    // Get latest message (AVL data)
+    const msg = unit.getLastMessage?.();
+    if (!msg || !msg.p) return "N/A";
+    // Find value by sensor's parameter (assuming "p" property as sensor key)
+    const val = msg.p[sensor.p];
+    return typeof val !== "undefined" ? val : "N/A";
+  }
+
+  /**
+   * Subscribes to live updates of a sensor value for a unit.
+   * Returns an unsubscribe function.
+   */
+  public subscribeToSensor(
+    unitId: number,
+    sensorId: number,
+    callback: (val: number | string) => void
+  ): () => void {
+    let prevVal: number | string | null = null;
+    const unit = this.session.getItem(unitId);
+    if (!unit) return () => {};
+
+    const handler = () => {
+      const sensors = unit.getSensors?.() || [];
+      const sensor = sensors.find((s: any) => String(s.id) === String(sensorId));
+      if (!sensor) return;
+      const msg = unit.getLastMessage?.();
+      if (!msg || !msg.p) return;
+      const val = msg.p[sensor.p];
+      if (val !== prevVal) {
+        prevVal = val;
+        callback(typeof val !== "undefined" ? val : "N/A");
+      }
+    };
+
+    // Listen for changePosition (new AVL messages)
+    const listenerId = unit.addListener("changePosition", handler);
+
+    // Initial call
+    handler();
+
+    // Return unsubscribe function
+    return () => unit.removeListener("changePosition", listenerId);
+  }
+
+  /**
+   * Update fuel consumption parameters for a unit
+   * @param unitId - The ID of the unit to update
+   * @param idling - Fuel consumption when idling (L/h)
+   * @param urban - Fuel consumption in urban conditions (L/100km)
+   * @param suburban - Fuel consumption in suburban conditions (L/100km)
+   */
+  public async updateFuelMathParams(
+    unitId: number,
+    idling: number,
+    urban: number,
+    suburban: number
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.isReady) {
+        return reject(new Error("Wialon session is not initialized"));
+      }
+
+      // Get the unit
+      const unit = this.session.getItem(unitId);
+      if (!unit) {
+        return reject(new Error(`Unit with ID ${unitId} not found`));
+      }
+
+      // Prepare fuel math parameters
+      const fuelMathParams = {
+        idling_consumption: idling,
+        urban_consumption: urban,
+        suburban_consumption: suburban
+      };
+
+      // Update unit parameters using Wialon API
+      unit.updateItemObject(
+        "mu",
+        { fuel_math_params: fuelMathParams },
+        (code: number) => {
+          if (code !== 0) {
+            reject(new Error(window.wialon.core.Errors.getErrorText(code)));
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
+  }
 }
 
-export const wialonService = new WialonService("5dce19710a5e26ab8b7b8986cb3c49e58C291791B7F0A7AEB8AFBFCEED7DC03BC48FF5F8"); // Your Wialon token
+// You can use env var or config for token
+export const wialonService = new WialonService("5dce19710a5e26ab8b7b8986cb3c49e58C291791B7F0A7AEB8AFBFCEED7DC03BC48FF5F8");

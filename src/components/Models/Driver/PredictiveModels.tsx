@@ -76,10 +76,15 @@ const PredictiveModels: React.FC = () => {
 
         // If models exist, select the first one by default and fetch its data
         if (fetchedModels.length > 0) {
-          setSelectedModel(fetchedModels[0]);
-          // Safe to access fetchedModels[0] here since we checked length
-          await fetchPredictions(fetchedModels[0].id);
-          await fetchInsights(fetchedModels[0].id);
+          const firstModel = fetchedModels[0];
+          if (firstModel) {
+            setSelectedModel(firstModel); // <-- no undefined passed
+            await fetchPredictions(firstModel.id); // <-- safe: firstModel is defined
+            await fetchInsights(firstModel.id);    // <-- safe: firstModel is defined
+          } else {
+            // Defensive: satisfy setter contract if index access ever changed
+            setSelectedModel(null);
+          }
         }
 
         setLoading(false);
@@ -149,6 +154,9 @@ const PredictiveModels: React.FC = () => {
       setSelectedModel(model);
       await fetchPredictions(modelId);
       await fetchInsights(modelId);
+    } else {
+      // Defensively satisfy the setter contract if not found
+      setSelectedModel(null);
     }
   };
 
@@ -209,7 +217,7 @@ const PredictiveModels: React.FC = () => {
     }
 
     // Find the matching insight
-    const insight = insights.find((insight) => insight.modelId === insightId);
+    const insight = insights.find((ins) => ins.modelId === insightId);
 
     if (!insight) {
       console.error("Could not find matching insight data");
@@ -245,7 +253,7 @@ const PredictiveModels: React.FC = () => {
       }
 
       // Track the user interaction for analytics
-      trackInsightAction(insightId, "view_action_plan", selectedModel?.id);
+      trackInsightAction(insightId, "view_action_plan", selectedModel?.id || undefined);
     }
   };
 
@@ -405,6 +413,7 @@ const PredictiveModels: React.FC = () => {
                 {insights.map((insight, idx) => (
                   <div
                     key={idx}
+                    data-insight-id={insight.modelId}
                     className={`border-l-4 p-4 ${
                       insight.severity === "high"
                         ? "border-red-500 bg-red-50"
@@ -588,8 +597,8 @@ const PredictiveModels: React.FC = () => {
                   {(selectedModel.predictions || []).slice(0, 10).map((prediction, index) => {
                     const accuracy = prediction.actualValue
                       ? (1 -
-                          Math.abs(prediction.predictedValue - prediction.actualValue) /
-                            prediction.actualValue) *
+                          Math.abs(prediction.predictedValue - (prediction.actualValue as number)) /
+                            (prediction.actualValue as number)) *
                         100
                       : null;
 
@@ -605,7 +614,9 @@ const PredictiveModels: React.FC = () => {
                           {prediction.predictedValue.toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {prediction.actualValue ? prediction.actualValue.toFixed(2) : "Pending"}
+                          {prediction.actualValue !== undefined
+                            ? (prediction.actualValue as number).toFixed(2)
+                            : "Pending"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
