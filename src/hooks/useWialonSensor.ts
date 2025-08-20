@@ -1,7 +1,7 @@
 // src/hooks/useWialonUnitSensors.ts
 import { useState, useEffect, useCallback } from "react";
 import wialonService from "../services/wialonService";
-import { createUnitDetail, isValidUnit } from "../utils/wialonUnitUtils";
+import { createUnitDetail } from "../utils/wialonUnitUtils";
 import type { UnitDetail } from "../types/wialon";
 
 export interface UnitSensorData {
@@ -29,19 +29,29 @@ export function useWialonUnitSensors(
   sensorIds: { fuel?: number; speed?: number; engineHours?: number; ignition?: number }
 ): UnitSensorData {
   const [unit, setUnit] = useState<UnitDetail | null>(null);
-  const [sensors, setSensors] = useState<SensorMap>({});
+  const [sensors] = useState<SensorMap>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   /** Fetch unit detail */
-  const fetchUnitDetail = useCallback(() => {
+  const fetchUnitDetail = useCallback(async () => {
     if (!unitId) return;
 
     try {
-      const wialonUnit = wialonService.getUnitById(unitId);
-      if (!isValidUnit(wialonUnit)) throw new Error("Unit not found");
+      const wialonUnit = await wialonService.getUnitById(unitId);
+      if (!wialonUnit) throw new Error("Unit not found");
 
-      setUnit(createUnitDetail(wialonUnit));
+      // Convert service WialonUnit to types WialonUnit format
+      const convertedUnit = {
+        id: wialonUnit.id,
+        name: wialonUnit.nm || `Unit ${wialonUnit.id}`,
+        iconUrl: wialonUnit.iconUrl,
+        getId: () => wialonUnit.id,
+        getName: () => wialonUnit.nm || `Unit ${wialonUnit.id}`,
+        getPosition: () => wialonUnit.pos || null
+      };
+
+      setUnit(createUnitDetail(convertedUnit as any));
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to fetch unit details";
       console.error(err);
@@ -49,59 +59,29 @@ export function useWialonUnitSensors(
     }
   }, [unitId]);
 
-  /** Subscribe to all sensors */
+  /** Subscribe to all sensors - Mock implementation until subscribeToSensor is available */
   const subscribeToSensors = useCallback(() => {
     if (!unitId) return;
-    const subscriptions: (() => void)[] = [];
 
-    const subscribe = (sensorKey: keyof SensorMap, sensorId?: number) => {
-      if (!sensorId) return;
-      const unsubscribe = wialonService.subscribeToSensor(unitId, sensorId, (val: any) => {
-        setSensors((prev) => ({ ...prev, [sensorKey]: val }));
-      });
-      subscriptions.push(unsubscribe);
-    };
-
-    // Subscribe to each sensor type
-    subscribe("fuel", sensorIds.fuel);
-    subscribe("speed", sensorIds.speed);
-    subscribe("engineHours", sensorIds.engineHours);
-    subscribe("ignition", sensorIds.ignition);
+    // TODO: Implement actual sensor subscription when wialonService.subscribeToSensor is available
+    // For now, return empty unsubscribe function
+    console.log(`Mock: Would subscribe to sensors for unit ${unitId}`, sensorIds);
 
     return () => {
-      subscriptions.forEach((unsubscribe) => unsubscribe?.());
+      console.log(`Mock: Unsubscribing from sensors for unit ${unitId}`);
     };
   }, [unitId, sensorIds]);
 
   useEffect(() => {
     setLoading(true);
-    fetchUnitDetail();
-    const unsubscribeSensors = subscribeToSensors();
-    setLoading(false);
+    fetchUnitDetail().then(() => {
+      const unsubscribeSensors = subscribeToSensors();
+      setLoading(false);
 
-    return () => {
-      unsubscribeSensors?.();
-    };
-  }, [fetchUnitDetail, subscribeToSensors]);
-
-  return {
-    unit,
-    fuel: sensors.fuel ?? null,
-    speed: sensors.speed ?? null,
-    engineHours: sensors.engineHours ?? null,
-    ignition: sensors.ignition ?? null,
-    loading,
-    error,
-  };
-}
-    setLoading(true);
-    fetchUnitDetail();
-    const unsubscribeSensors = subscribeToSensors();
-    setLoading(false);
-
-    return () => {
-      unsubscribeSensors?.();
-    };
+      return () => {
+        unsubscribeSensors?.();
+      };
+    });
   }, [fetchUnitDetail, subscribeToSensors]);
 
   return {
