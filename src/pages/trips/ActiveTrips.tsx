@@ -8,7 +8,9 @@ import { useRealtimeTrips } from "../../hooks/useRealtimeTrips";
 import { SupportedCurrency } from "../../types";
 import { formatCurrency } from "../../utils/helpers";
 import { useWialonUnitSensors } from "../../hooks/useWialonSensor";
-import type { BaseSensorResult } from "../../types/wialon-sensors";
+import TripStatusUpdateModal from "../../components/Models/Trips/TripStatusUpdateModal";
+import AddTripModal from "../../components/Models/Trips/AddTripModal";
+import { useWebBookTrips } from "../../hooks/useWebBookTrips";
 
 interface ActiveTripsProps {
   displayCurrency?: SupportedCurrency;
@@ -98,6 +100,8 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
   const [costTripId, setCostTripId] = useState<string | null>(null);
   const [isSystemCostsOpen, setIsSystemCostsOpen] = useState(false);
   const [systemCostsTrip, setSystemCostsTrip] = useState<Trip | null>(null);
+  const [isTripStatusModalOpen, setIsTripStatusModalOpen] = useState(false);
+  const [statusUpdateTrip, setStatusUpdateTrip] = useState<Trip | null>(null);
   const { addCostEntry } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editForm, setEditForm] = useState<{
@@ -123,6 +127,9 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
     engineHours: 3,
     ignition: 4,
   });
+
+  // Add WebBook trips hook
+  const { trips: webBookTrips, loading: webBookLoading, error: webBookError } = useWebBookTrips();
 
   // Update state when real data arrives
   useEffect(() => {
@@ -206,8 +213,8 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
     fetchWebhookTrips();
   }, []);
 
-  // Combine internal and webhook trips
-  const allTrips = [...activeTrips, ...webhookTrips];
+  // Combine internal, webhook, and webBook trips
+  const allTrips = [...activeTrips, ...webhookTrips, ...(webBookTrips || [])];
 
   const handleEditClick = (trip: Trip) => {
     setEditingTrip(trip);
@@ -504,6 +511,27 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
     setSuccess("Trip created successfully");
   };
 
+  // Handle status update modal
+  const handleStatusUpdateClick = (trip: Trip) => {
+    setStatusUpdateTrip(trip);
+    setIsTripStatusModalOpen(true);
+  };
+
+  const handleStatusUpdate = (tripId: string, newStatus: string) => {
+    // Update the trip status in the appropriate array
+    setActiveTrips(prev => prev.map(trip =>
+      trip.id === tripId ? { ...trip, status: newStatus as any } : trip
+    ));
+    setWebhookTrips(prev => prev.map(trip =>
+      trip.id === tripId ? { ...trip, status: newStatus as any } : trip
+    ));
+
+    // Close modal and show success
+    setIsTripStatusModalOpen(false);
+    setStatusUpdateTrip(null);
+    setSuccess(`Trip status updated to ${newStatus}`);
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -588,6 +616,13 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
           >
             Refresh Webhook Trips
+          </button>
+
+          <button
+            onClick={() => setIsAddTripModalOpen(true)}
+            className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700"
+          >
+            + Add Trip (Modal)
           </button>
 
           <button
@@ -860,7 +895,20 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {allTrips.map((trip: Trip) => (
+              {allTrips.map((tripItem: Trip | any) => {
+                // Convert WebBookTrip to Trip-like structure if needed
+                const trip: Trip = tripItem.tripNumber ? tripItem : {
+                  ...tripItem,
+                  tripNumber: tripItem.id || `WB-${Date.now()}`,
+                  startDate: tripItem.createdAt || new Date().toISOString(),
+                  endDate: tripItem.updatedAt || new Date().toISOString(),
+                  driver: tripItem.assignedDriver || "Unassigned",
+                  vehicle: tripItem.vehicleId || "Unassigned",
+                  cost: tripItem.totalCost || 0,
+                  status: tripItem.status || "active"
+                };
+
+                return (
                 <tr key={trip.id} className={trip.source === "webhook" ? "bg-blue-50" : ""}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {trip.tripNumber}
@@ -941,6 +989,12 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
                         View
                       </button>
                       <button
+                        className="text-green-600 hover:text-green-900"
+                        onClick={() => handleStatusUpdateClick(trip)}
+                      >
+                        Update Status
+                      </button>
+                      <button
                         className="text-blue-600 hover:text-blue-900"
                         onClick={() => handleEditClick(trip)}
                       >
@@ -949,7 +1003,8 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -961,9 +1016,28 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
       <TripFormModal
         isOpen={showTripForm}
         onClose={() => setShowTripForm(false)}
-        sensorData={sensorData}
-        unitId={unitId}
+        sensorData={sensorData as any}
       />
+
+      {/* AddTripModal Implementation */}
+      <AddTripModal
+        isOpen={isAddTripModalOpen}
+        onClose={() => setIsAddTripModalOpen(false)}
+        onSubmit={handleAddTrip}
+      />
+
+      {/* TripStatusUpdateModal Implementation */}
+      {statusUpdateTrip && (
+        <TripStatusUpdateModal
+          isOpen={isTripStatusModalOpen}
+          onClose={() => {
+            setIsTripStatusModalOpen(false);
+            setStatusUpdateTrip(null);
+          }}
+          trip={statusUpdateTrip}
+          onStatusUpdate={handleStatusUpdate}
+        />
+      )}
 
       {/* Cost entry modal */}
       <TripCostEntryModal

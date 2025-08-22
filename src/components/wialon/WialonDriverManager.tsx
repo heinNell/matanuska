@@ -8,14 +8,14 @@ import type { WialonApiSession, WialonResource } from "../../types/wialon";
 export const DriverManager: React.FC = () => {
   const sdkReady = useWialonSdk();
   const { loggedIn, error, session } = useWialonSession(sdkReady);
-  const { resources } = useWialonResources(session, loggedIn) || { resources: [] };
+  const resources = useWialonResources(session, loggedIn) || [];
   const [selectedRes, setSelectedRes] = useState<number | null>(null);
   const [formError, setFormError] = useState<string | null>(null) as [string | null, React.Dispatch<React.SetStateAction<string | null>>];
 
   // Set initial resource selection if available
   useEffect(() => {
     if (resources && resources.length > 0 && !selectedRes) {
-      setSelectedRes(resources[0]?.id || null);
+      setSelectedRes(resources[0]?.id ? Number(resources[0].id) : null);
     }
   }, [resources, selectedRes]);
 

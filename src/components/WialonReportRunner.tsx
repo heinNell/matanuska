@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useWialonAuth } from "../context/WialonAuthContext";
 import { useWialonResources } from "../hooks/useWialonResources";
 
 export default function WialonReportRunner() {
   const { loginData, isLoggedIn } = useWialonAuth();
-  const resources = useWialonResources(loginData?.session, isLoggedIn);
+  const resources = useWialonResources(loginData?.sid, isLoggedIn);
 
   const [selectedResource, setSelectedResource] = useState<number | null>(null);
 

@@ -1,4 +1,3 @@
-import { WialonCoreSessionInfo } from "../hooks/useWialonSession";
 import { WialonSession } from "../types/wialon";
 
 /**
@@ -79,12 +78,6 @@ export async function getReportTables(session: WialonSession): Promise<ReportTab
 export async function applyReportResult(session: WialonSession): Promise<any> {
   const url = `${WIALON_API_URL}/report/apply_report_result?sid=${session.sid}`;
   const response = await fetch(url);
-  const data = await response.json();
-  if (data.error) {
-    throw new Error(`Wialon API Error: ${data.reason}`);
-  }
-  return data;
-}
   const data = await response.json();
   if (data.error) {
     throw new Error(`Wialon API Error: ${data.reason}`);

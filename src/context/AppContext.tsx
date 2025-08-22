@@ -430,10 +430,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       try {
         await loadGoogleMapsScript("places");
 
-        // Add additional validation for Places API specifically
-        if (window.google?.maps?.places?.PlacesService) {
+        // Check for both legacy PlacesService and new Place API
+        const hasPlacesService = window.google?.maps?.places?.PlacesService;
+        const hasNewPlaceApi = window.google?.maps?.places?.Place;
+        
+        if (hasPlacesService || hasNewPlaceApi) {
           setIsGoogleMapsLoaded(true);
           console.log("✅ Google Maps API with Places library loaded successfully.");
+          
+          if (hasNewPlaceApi) {
+            console.log("✅ New Place API is available");
+          } else {
+            console.log("⚠️ Using legacy PlacesService (deprecated)");
+          }
         } else {
           throw new Error("Places library not properly loaded");
         }

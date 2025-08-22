@@ -1,11 +1,11 @@
 /**
- * Google Maps Places API Guard Utilities
- * Prevents the "Cannot read properties of undefined (reading 'wI')" error
- * by adding comprehensive validation and error handling.
+ * Google Maps Places API Guard Utilities (Updated for New Place API)
+ * Prevents errors by adding comprehensive validation and error handling.
+ * Supports both legacy PlacesService and new Place API
  */
 
 /**
- * Check if Google Maps Places API is fully loaded and ready
+ * Check if Google Maps Places API is fully loaded and ready (legacy)
  */
 export const isPlacesApiReady = (): boolean => {
   return !!(
@@ -13,6 +13,23 @@ export const isPlacesApiReady = (): boolean => {
     window.google?.maps?.places?.Autocomplete &&
     window.google?.maps?.places?.PlacesServiceStatus
   );
+};
+
+/**
+ * Check if the new Google Maps Place API is available
+ */
+export const isNewPlaceApiReady = (): boolean => {
+  return !!(
+    window.google?.maps?.places?.Place &&
+    window.google?.maps?.places?.Autocomplete
+  );
+};
+
+/**
+ * Check if any Places API is available (legacy or new)
+ */
+export const isAnyPlacesApiReady = (): boolean => {
+  return isPlacesApiReady() || isNewPlaceApiReady();
 };
 
 /**

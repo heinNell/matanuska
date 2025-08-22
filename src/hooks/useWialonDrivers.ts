@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import wialonService from "../services/wialonService";
+import wialonService, { WialonResource as ServiceWialonResource } from "../services/wialonService";
 import type { WialonDriver } from "../types/wialon-types";
 import { WialonApiSession } from '../types/wialon';
-import { WialonResource } from '../types/wialon'; // Consolidated WialonResource type import
 
 export function useWialonDrivers(session: WialonApiSession | null) {
   const [drivers, setDrivers] = useState<WialonDriver[]>([]);
@@ -17,7 +16,7 @@ export function useWialonDrivers(session: WialonApiSession | null) {
 
     (async () => {
       try {
-        const resources: WialonResource[] = await wialonService.getResources();
+        const resources: ServiceWialonResource[] = await wialonService.getResources();
 
         // Correctly handle the case where session.resource_id is an array
         const resourceId = Array.isArray(session.resource_id)

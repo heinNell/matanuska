@@ -4,7 +4,6 @@ import { wialonService } from "../utils/wialonService";
 import type { WialonUnit } from "../types/wialon-core";
 import type { Position } from "../types/wialon-position";
 import type { WialonUnitBrief } from "../types/wialon";
-import { fetchWialonUnits } from "../api/wialon";
 
 /**
  * Public UnitInfo expected by the app
@@ -186,14 +185,7 @@ export function useWialonUnits(token?: string): UseWialonUnitsResult {
     setError(null);
 
     try {
-      // If only token is provided, use simple implementation
-      if (token && !wialonService.initSession) {
-        const items = await fetchWialonUnits(token);
-        setUnits(items);
-        return;
-      }
-
-      // Otherwise use full implementation
+      // Use wialonService implementation
       if (token && typeof wialonService.initSession === "function") {
         await wialonService.initSession();
       }
@@ -268,24 +260,6 @@ export function useWialonUnits(token?: string): UseWialonUnitsResult {
   const refreshUnits = useCallback(() => setRefreshCounter((p) => p + 1), []);
 
   return { units, loading, error, refreshUnits };
-}
-
-export default useWialonUnits;
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const items = await fetchWialonUnits(token);
-      setUnits(items);
-    } catch (e: any) {
-      setError(e.message || "Error loading units");
-    }
-    setLoading(false);
-  }, [token]);
-
-  useEffect(() => { load(); }, [load]);
-
-  return { units, loading, error, refresh: load };
 }
 
 export default useWialonUnits;

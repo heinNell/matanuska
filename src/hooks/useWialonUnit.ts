@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { wialonService } from '../utils/wialonService';
 import type { WialonUnit } from '../types/wialon-core';
-import { fetchWialonUnits } from "../api/wialon";
+
 
 export interface SensorValue {
   sensorId: number;

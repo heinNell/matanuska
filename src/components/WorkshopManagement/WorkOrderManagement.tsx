@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '../ui/Button';
 import { Link } from 'react-router-dom';
-import { WorkOrder, WorkOrderStatus, Priority } from '../../types/workshop-tyre-inventory';
+import { WorkOrder, WorkOrderStatus } from '../../types/workshop-tyre-inventory';
 
 interface WorkOrderManagementProps {
   workOrders: WorkOrder[];
@@ -133,10 +133,12 @@ const WorkOrderManagement: React.FC<WorkOrderManagementProps> = ({
         <h2 className="text-2xl font-bold">Work Orders</h2>
 
         <div className="flex items-center gap-2">
-          <Button as={Link} to="/workshop/work-orders/new" className="flex items-center gap-1">
-            <PlusCircleIcon className="h-5 w-5" />
-            New Work Order
-          </Button>
+          <Link to="/workshop/work-orders/new">
+            <Button className="flex items-center gap-1">
+              <PlusCircleIcon className="h-5 w-5" />
+              New Work Order
+            </Button>
+          </Link>
 
           <Button
             variant="outline"
@@ -329,13 +331,11 @@ const WorkOrderManagement: React.FC<WorkOrderManagementProps> = ({
 
                       {/* Action Buttons */}
                       <div className="flex flex-wrap gap-2 mt-3">
-                        <Button
-                          as={Link}
-                          to={`/workshop/work-orders/${workOrder.workOrderId}`}
-                          variant="outline"
-                        >
-                          View Details
-                        </Button>
+                        <Link to={`/workshop/work-orders/${workOrder.workOrderId}`}>
+                          <Button variant="outline">
+                            View Details
+                          </Button>
+                        </Link>
 
                         {workOrder.status !== 'completed' && workOrder.status !== 'cancelled' && (
                           <>
@@ -358,7 +358,7 @@ const WorkOrderManagement: React.FC<WorkOrderManagementProps> = ({
                             )}
 
                             <Button
-                              onClick={() => handleStatusUpdate(workOrder.workOrderId, 'on_hold')}
+                              onClick={() => handleStatusUpdate(workOrder.workOrderId, 'on_hold' as WorkOrderStatus)}
                               variant="secondary"
                             >
                               Hold

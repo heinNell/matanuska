@@ -95,11 +95,7 @@ const EnhancedMapComponent: React.FC<EnhancedMapProps> = ({
     if (mapInstance && showPlacesSearch && window.google?.maps) {
       try {
         const service = initPlacesService(mapInstance);
-        if (service) {
-          setPlacesService(service);
-        } else {
-          console.warn("Places service could not be initialized");
-        }
+        setPlacesService(service); // Store the actual service instance
       } catch (error) {
         console.error("Error initializing Places service:", error);
       }
@@ -108,16 +104,17 @@ const EnhancedMapComponent: React.FC<EnhancedMapProps> = ({
 
   // Handle search
   const handleSearch = async () => {
-    if (!placesService || !searchQuery.trim()) return;
+    if (!placesService || !searchQuery.trim() || !mapInstance) return;
 
     setIsSearching(true);
     try {
-      const results = await searchPlacesByText(placesService, searchQuery, {
+      const results = await searchPlacesByText(searchQuery, {
         locationBias: {
           lat: center.lat,
           lng: center.lng,
           radius: 10000,
         },
+        map: mapInstance, // Pass map instance
       });
       const locationResults = results.map(placeToLocation);
       setSearchResults(locationResults);

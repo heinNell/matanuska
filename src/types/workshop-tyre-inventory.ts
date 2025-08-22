@@ -368,8 +368,10 @@ export type WorkOrderStatus =
   | "initiated"
   | "in_progress"
   | "completed"
+  | "cancelled"
   | "rca_required"
-  | "overdue";
+  | "overdue"
+  | "on_hold";
 export type Priority = "low" | "medium" | "high" | "critical";
 export type TaskStatus = "pending" | "in_progress" | "completed" | "not_applicable" | "on_hold";
 export type TyreStatus = "new" | "in_service" | "spare" | "retreaded" | "scrapped";

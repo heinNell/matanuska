@@ -38,7 +38,7 @@ const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
 
     const fetchTemplates = async () => {
       try {
-        const data = await getReportTables(session, selectedResId);
+        const data = await getReportTables(session);
         setTemplates(data || []);
       } catch (err: any) {
         setTemplates([]);
@@ -58,9 +58,9 @@ const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
 
     try {
       const flags = 0x0; // full JSON, customize if needed
-      const data = await getReportData(session, {
+      await getReportData(session, {
         itemId: selectedResId,
-        tableId: selectedTemplateId, // Changed from 'col' to 'tableId' based on your service
+        tableId: selectedTemplateId,
         flags,
       });
       await waitForReport(session);

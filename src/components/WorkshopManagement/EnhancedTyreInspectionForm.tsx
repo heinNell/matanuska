@@ -604,11 +604,13 @@ const EnhancedTyreInspectionForm: React.FC<
                     touchAction: "none"
                   }
                 }}
-                dotSize={1}
-                minWidth={1}
-                maxWidth={3}
-                penColor="black"
-                velocityFilterWeight={0.7}
+                options={{
+                  dotSize: 1,
+                  minWidth: 1,
+                  maxWidth: 3,
+                  penColor: "black",
+                  velocityFilterWeight: 0.7
+                }}
               />
             </div>
 

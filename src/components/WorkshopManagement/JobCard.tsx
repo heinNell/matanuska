@@ -161,7 +161,7 @@ const JobCard: React.FC = () => {
 
   // Define type for future components data
   type FutureComponentsData = {
-    assignedParts: AssignedPart[];
+    assignedParts: any[]; // Using any[] to avoid type conflicts with mock data
     handleTaskAdd?: (task: Omit<JobCardTask, "id">) => void;
     handleTaskDelete?: (taskId: string) => void;
     handleVerifyTask?: (taskId: string) => Promise<void>;
@@ -170,13 +170,14 @@ const JobCard: React.FC = () => {
     handleRemovePart?: (assignmentId: string) => Promise<void>;
     handleUpdatePartQuantity?: (assignmentId: string, newQuantity: number) => Promise<void>;
     handleCompleteJob?: () => Promise<void>;
-    handleGenerateInvoice?: () => Promise<void>;
+    handleGenerateInvoice: () => Promise<void>; // Remove optional since it's always assigned
   };
 
   // Store components' data in a ref to avoid unused variable warnings
   // while keeping them ready for when components are implemented
   const futureComponentsData = React.useRef<FutureComponentsData>({
-    assignedParts: mockAssignedParts
+    assignedParts: mockAssignedParts,
+    handleGenerateInvoice: async () => {} // Placeholder, will be properly assigned below
   });
 
   // Handler functions for tasks
@@ -539,11 +540,14 @@ const JobCard: React.FC = () => {
           {/* Completion Panel for supervisors */}
           {userRole === 'supervisor' && (
             <CompletionPanel
-              jobCardId={jobCard.id}
               status={jobCard.status}
-              tasks={tasks}
-              onComplete={futureComponentsData.current.handleCompleteJob}
+              totalCost={jobCard.totalEstimate}
+              canComplete={tasks.every(task => task.status === 'completed')}
+              onMarkComplete={futureComponentsData.current.handleCompleteJob || (async () => {})}
               onGenerateInvoice={futureComponentsData.current.handleGenerateInvoice}
+              onUpdateLaborHours={async (hours: number) => {
+                console.log('Labor hours updated:', hours);
+              }}
             />
           )}
 
