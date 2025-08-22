@@ -393,12 +393,13 @@ const NewJobCardPage: React.FC = () => {
                     <JobCardNotes
                       notes={jobCardData.notes}
                       onAddNote={note => {
+                        // Only add valid JobCardNote objects
                         setJobCardData(prev => ({
                           ...prev,
                           notes: [
-                            ...prev.notes,
+                            ...prev.notes.filter(n => typeof n === 'object' && n !== null && 'id' in n && 'text' in n),
                             note
-                          ],
+                          ] as JobCardNote[],
                         }));
                       }}
                     />
