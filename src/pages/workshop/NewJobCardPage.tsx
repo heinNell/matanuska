@@ -1,22 +1,22 @@
-import DefectItemModal from "../../components/Models/Workshop/DefectItemModal";
-import PurchaseOrderModal, { PurchaseOrder } from "../../components/Models/Workshop/PurchaseOrderModal";
-import CompletionPanel from "../../components/WorkshopManagement/CompletionPanel";
-import InventoryPanel from "../../components/WorkshopManagement/InventoryPanel";
-import JobCardHeader from "../../components/WorkshopManagement/JobCardHeader";
-import JobCardNotes from "../../components/WorkshopManagement/JobCardNotes";
-import QAReviewPanel from "../../components/WorkshopManagement/QAReviewPanel";
-import TaskManager from "../../components/WorkshopManagement/TaskManager";
-import { Button } from "../../components/ui/Button";
-import Card, { CardContent } from "../../components/ui/Card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
-import type { JobCardTask } from "../../types";
-import type { DefectItem } from "../../utils/inspectionUtils";
+import DefectItemModal from "../../components/Models/Workshop/DefectItemModal.js";
+import PurchaseOrderModal, { PurchaseOrder } from "../../components/Models/Workshop/PurchaseOrderModal.js";
+import CompletionPanel from "../../components/WorkshopManagement/CompletionPanel.js";
+import InventoryPanel from "../../components/WorkshopManagement/InventoryPanel.js";
+import JobCardHeader from "../../components/WorkshopManagement/JobCardHeader.js";
+import JobCardNotes from "../../components/WorkshopManagement/JobCardNotes.js";
+import QAReviewPanel from "../../components/WorkshopManagement/QAReviewPanel.js";
+import TaskManager from "../../components/WorkshopManagement/TaskManager.js";
+import { Button } from "../../components/ui/Button.js";
+import Card, { CardContent } from "../../components/ui/Card.js";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs.js";
+import type { JobCardTask } from "../../types/index.js";
+import type { DefectItem } from "../../utils/inspectionUtils.js";
 import { format } from "date-fns";
 import { Save, X } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { JobCard as JobCardType, JobCardStatus, Priority, TaskEntry } from "../../types/workshop-tyre-inventory";
+import { JobCard as JobCardType, JobCardStatus, Priority, TaskEntry } from "../../types/workshop-tyre-inventory.js";
 
 // Full JobCard type implementation with real-time data
 
@@ -114,7 +114,7 @@ const createEmptyJobCard = (userName: string): JobCardDetail => {
     additionalCosts: 0,
 
     // Notes and meta
-  notes: [],
+    notes: [],
     memo: "",
     faultIds: [],
 
@@ -170,11 +170,13 @@ const NewJobCardPage: React.FC = () => {
               : [],
           };
         }
-        // If value is array, ensure all are JobCardNote
+        // If value is array, ensure all are JobCardNote by filtering out non-objects
         if (Array.isArray(value)) {
           return {
             ...prev,
-            notes: value.filter(n => typeof n === 'object' && n !== null),
+            notes: value.filter((n): n is JobCardNote => 
+              typeof n === 'object' && n !== null && 'id' in n && 'text' in n
+            ),
           };
         }
       }
@@ -246,13 +248,23 @@ const NewJobCardPage: React.FC = () => {
 
   // TaskEntry-based handlers
   const handleTaskUpdate = (taskId: string, updates: Partial<TaskEntry>) => {
-    setJobCardData((prev) => ({
-      ...prev,
-      tasks: prev.tasks.map((t) => (t.taskId === taskId ? { ...t, ...updates } : t)),
-    }));
-  };
-
-  const handleTaskAdd = (task: Omit<TaskEntry, "taskId">) => {
+                        setJobCardData(prev => ({
+                          ...prev,
+                          notes: [
+                            ...prev.notes.map(n =>
+                              typeof n === 'object' && n !== null
+                                ? n
+                                : {
+                                    id: `${prev.id}-note-legacy`,
+                                    text: String(n),
+                                    createdBy: prev.createdBy || "system",
+                                    createdAt: prev.createdAt,
+                                    type: "general"
+                                  }
+                            ),
+                            note
+                          ],
+                        }));
     const newTask: TaskEntry = { ...task, taskId: uuidv4() } as TaskEntry;
     setJobCardData((prev) => ({ ...prev, tasks: [...prev.tasks, newTask] }));
   };
@@ -393,7 +405,7 @@ const NewJobCardPage: React.FC = () => {
                         setJobCardData(prev => ({
                           ...prev,
                           notes: [
-                            ...prev.notes.filter(n => typeof n === 'object' && n !== null),
+                            ...prev.notes,
                             note
                           ],
                         }));
