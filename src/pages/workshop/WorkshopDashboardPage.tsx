@@ -73,7 +73,13 @@ const WorkshopDashboardPage: React.FC = () => {
 
         <TabsContent value="inspections" className="mt-0">
           <InspectionManagement
-            inspections={inspections}
+            inspections={
+              inspections.map((insp: any) => ({
+                ...insp,
+                performedBy: insp.performedBy ?? "",
+                inspectionDate: insp.inspectionDate ?? insp.date ?? "",
+              }))
+            }
             isLoading={isLoading.inspections}
             onRefresh={async () => {
               // In a real app, this would refresh the inspections data

@@ -21,12 +21,21 @@ import { JobCard as JobCardType, JobCardStatus, Priority, TaskEntry } from "../.
 // Full JobCard type implementation with real-time data
 
 // Allow tasks to be TaskEntry[] (preferred) but provide conversion for JobCardTask[]
-interface JobCardDetail extends Omit<JobCardType, 'tasks'> {
+interface JobCardNote {
+  id: string;
+  text: string;
+  createdBy: string;
+  createdAt: string;
+  type: "general" | "technician" | "customer" | "internal";
+}
+
+interface JobCardDetail extends Omit<JobCardType, 'tasks' | 'notes'> {
   woNumber: string; // Alias for workOrderNumber
   vehicle: string;  // Alias for vehicleId
   dueDate: string;  // Alias for scheduledDate
   assigned: string[]; // For backward compatibility
   tasks: TaskEntry[]; // Use TaskEntry as the primary type
+  notes: JobCardNote[];
 }
 
 // Conversion functions between TaskEntry and JobCardTask
@@ -105,7 +114,7 @@ const createEmptyJobCard = (userName: string): JobCardDetail => {
     additionalCosts: 0,
 
     // Notes and meta
-    notes: "",
+  notes: [],
     memo: "",
     faultIds: [],
 
@@ -144,7 +153,33 @@ const NewJobCardPage: React.FC = () => {
 
   // Field updates
   const updateJobCardField = (field: keyof JobCardDetail, value: any) => {
-    setJobCardData((prev) => ({ ...prev, [field]: value }));
+    setJobCardData((prev) => {
+      if (field === "notes") {
+        // If value is a string, convert to JobCardNote[]
+        if (typeof value === "string") {
+          return {
+            ...prev,
+            notes: value
+              ? [{
+                  id: `${prev.id}-note-1`,
+                  text: value,
+                  createdBy: prev.createdBy || "system",
+                  createdAt: prev.createdAt,
+                  type: "general"
+                }]
+              : [],
+          };
+        }
+        // If value is array, ensure all are JobCardNote
+        if (Array.isArray(value)) {
+          return {
+            ...prev,
+            notes: value.filter(n => typeof n === 'object' && n !== null),
+          };
+        }
+      }
+      return { ...prev, [field]: value };
+    });
   };
 
   // Parts handlers
@@ -353,17 +388,16 @@ const NewJobCardPage: React.FC = () => {
                   </div>
                   <div>
                     <JobCardNotes
-                      notes={Array.isArray(jobCardData.notes)
-                        ? jobCardData.notes
-                        : jobCardData.notes
-                        ? [{
-                            id: `${jobCardData.id}-note-1`,
-                            text: jobCardData.notes,
-                            createdBy: jobCardData.createdBy || "system",
-                            createdAt: jobCardData.createdAt,
-                            type: "general"
-                          }]
-                        : []}
+                      notes={jobCardData.notes}
+                      onAddNote={note => {
+                        setJobCardData(prev => ({
+                          ...prev,
+                          notes: [
+                            ...prev.notes.filter(n => typeof n === 'object' && n !== null),
+                            note
+                          ],
+                        }));
+                      }}
                     />
                   </div>
                 </div>

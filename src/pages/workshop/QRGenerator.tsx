@@ -13,9 +13,7 @@ interface Vehicle {
 }
 
 const QRGenerator = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [qrType, setQrType] = useState<string>("fleet");
   const [fleetNumber, setFleetNumber] = useState<string>("");
   const [position, setPosition] = useState<string>("");
@@ -476,13 +474,24 @@ const QRGenerator = () => {
                 <p className="font-medium text-gray-700 mb-1">URL encoded:</p>
                 <p>{qrValue}</p>
               </div>
-              <button
-                onClick={downloadQR}
-                className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
-              >
-                <ArrowDownToLine size={18} className="mr-2" />
-                Download QR Code
-              </button>
+              <div className="flex flex-col space-y-2 w-full">
+                <button
+                  onClick={downloadQR}
+                  className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 w-full"
+                >
+                  <ArrowDownToLine size={18} className="mr-2" />
+                  Download QR Code
+                </button>
+                <button
+                  onClick={() => {
+                    if (qrValue) navigate(qrValue.replace(window.location.origin, ""));
+                  }}
+                  className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 w-full"
+                  disabled={!qrValue}
+                >
+                  Go to QR URL
+                </button>
+              </div>
             </div>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-gray-400">

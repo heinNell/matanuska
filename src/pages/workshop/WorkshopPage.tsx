@@ -1,7 +1,6 @@
 import {
   AlertTriangle,
   Clipboard,
-  FileText,
   Gauge,
   Package,
   Search,
@@ -522,3 +521,4 @@ const WorkshopPage: React.FC = () => {
 };
 
 export default WorkshopPage;
+
