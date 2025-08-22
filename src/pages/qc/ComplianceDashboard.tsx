@@ -1,15 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  AlertTriangle, 
-  Calendar, 
-  CheckCircle, 
-  Clock, 
-  FileWarning, 
-  Shield, 
-  ShieldAlert, 
-  ShieldCheck, 
-  Truck 
+import {
+  AlertTriangle,
+  Calendar,
+  Clock,
+  FileWarning,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  Truck
 } from 'lucide-react';
 
 /**
@@ -64,8 +63,8 @@ const ComplianceDashboard: React.FC = () => {
           <div className="mt-4">
             <span className="text-3xl font-bold text-gray-900">{metrics.dotComplianceRate}%</span>
             <div className="w-full bg-gray-200 rounded-full h-2.5 my-2">
-              <div 
-                className="bg-green-600 h-2.5 rounded-full" 
+              <div
+                className="bg-green-600 h-2.5 rounded-full"
                 style={{ width: `${metrics.dotComplianceRate}%` }}
               ></div>
             </div>
@@ -75,7 +74,7 @@ const ComplianceDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium text-gray-800">Safety Score</h3>
@@ -84,9 +83,9 @@ const ComplianceDashboard: React.FC = () => {
           <div className="mt-4">
             <span className="text-3xl font-bold text-gray-900">{metrics.safetyScore}</span>
             <div className="w-full bg-gray-200 rounded-full h-2.5 my-2">
-              <div 
+              <div
                 className={`h-2.5 rounded-full ${
-                  metrics.safetyScore > 90 ? 'bg-green-600' : 
+                  metrics.safetyScore > 90 ? 'bg-green-600' :
                   metrics.safetyScore > 80 ? 'bg-amber-500' : 'bg-red-500'
                 }`}
                 style={{ width: `${metrics.safetyScore}%` }}
@@ -94,14 +93,14 @@ const ComplianceDashboard: React.FC = () => {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">
-                {metrics.safetyScore > 90 ? 'Excellent' : 
+                {metrics.safetyScore > 90 ? 'Excellent' :
                  metrics.safetyScore > 80 ? 'Good' : 'Needs Improvement'}
               </span>
               <Link to="/compliance/safety-inspections" className="text-blue-600 hover:underline">View Inspections</Link>
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium text-gray-800">Alerts & Actions</h3>
@@ -161,8 +160,8 @@ const ComplianceDashboard: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{incident.location}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      incident.severity === 'High' ? 'bg-red-100 text-red-800' : 
-                      incident.severity === 'Medium' ? 'bg-amber-100 text-amber-800' : 
+                      incident.severity === 'High' ? 'bg-red-100 text-red-800' :
+                      incident.severity === 'Medium' ? 'bg-amber-100 text-amber-800' :
                       'bg-green-100 text-green-800'
                     }`}>
                       {incident.severity}
@@ -170,7 +169,7 @@ const ComplianceDashboard: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      incident.status === 'Open' || incident.status === 'Under Investigation' ? 'bg-amber-100 text-amber-800' : 
+                      incident.status === 'Open' || incident.status === 'Under Investigation' ? 'bg-amber-100 text-amber-800' :
                       'bg-green-100 text-green-800'
                     }`}>
                       {incident.status}
@@ -253,7 +252,7 @@ const ComplianceDashboard: React.FC = () => {
                 <p className="text-2xl font-bold text-amber-600">{metrics.pendingInspections}</p>
               </div>
             </div>
-            
+
             <div className="border-t border-gray-100 pt-3">
               <h4 className="text-sm font-medium text-gray-800 mb-2">Non-Compliant Vehicles</h4>
               <div className="space-y-2">
@@ -280,3 +279,4 @@ const ComplianceDashboard: React.FC = () => {
 };
 
 export default ComplianceDashboard;
+

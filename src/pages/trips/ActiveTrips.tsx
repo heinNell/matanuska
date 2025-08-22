@@ -329,7 +329,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
       if (lines.length === 0) {
         throw new Error("CSV file is empty");
       }
-      
+
       const headers = lines[0]?.split(",").map((h) => h.trim()) || [];
       if (headers.length === 0) {
         throw new Error("CSV headers are missing");
@@ -340,7 +340,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
       for (let i = 1; i < lines.length; i++) {
         const currentLine = lines[i];
         if (!currentLine) continue;
-        
+
         const values = currentLine.split(",").map((v) => v.trim());
         if (values.length < headers.length) continue;
 

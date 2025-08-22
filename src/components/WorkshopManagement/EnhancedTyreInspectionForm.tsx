@@ -595,23 +595,16 @@ const EnhancedTyreInspectionForm: React.FC<
             </p>
 
             <div className="border rounded bg-gray-50">
-              <SignaturePad
-                ref={sigPadRef}
-                canvasProps={{
-                  className: "w-full h-64",
-                  style: {
-                    backgroundColor: "rgb(248, 250, 252)",
-                    touchAction: "none"
-                  }
-                }}
-                options={{
-                  dotSize: 1,
-                  minWidth: 1,
-                  maxWidth: 3,
-                  penColor: "black",
-                  velocityFilterWeight: 0.7
-                }}
-              />
+                <SignaturePad
+                  ref={sigPadRef}
+                  canvasProps={{
+                    className: "w-full h-64",
+                    style: {
+                      backgroundColor: "rgb(248, 250, 252)",
+                      touchAction: "none"
+                    }
+                  }}
+                />
             </div>
 
             <div className="flex justify-between gap-2 mt-4">

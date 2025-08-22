@@ -15,7 +15,7 @@ import {
   WorkOrder,
   WorkOrderStatus
 } from "../types/workshop-tyre-inventory";
-import type { Inspection } from "@/types/inspectionTemplates";
+import type { inspectionTemplates } from "../types/inspectionTemplates";
 
 
 

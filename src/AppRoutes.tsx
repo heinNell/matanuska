@@ -139,7 +139,7 @@ const CARReportDetails = lazy(() => import("./components/Adminmangement/CARRepor
 const ActionItemDetails = lazy(() => import("./components/Adminmangement/ActionItemDetails"));
 // Lazy-loaded Wialon components with named exports
 const WialonDriverManager = lazy(() =>
-  import("./components/wialon/WialonDriverManager").then((m) => ({ default: m.WialonDriverManager }))
+  import("./components/wialon/WialonDriverManager").then((m) => ({ default: m.DriverManager }))
 );
 
 const WialonGeofenceManager = lazy(() =>

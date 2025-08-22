@@ -19,7 +19,7 @@ import WorkshopIntegration from "../../components/WorkshopManagement/WorkshopInt
 
 // UI Components
 import { Card, CardContent } from "../../components/ui";
-import { JobCard } from '../../types/workshop';
+import { JobCard } from '../../types/workshop-tyre-inventory';
 
 const WorkshopPage: React.FC = () => {
   const { stockItems, purchaseOrders, isLoading } = useWorkshop();
@@ -103,80 +103,111 @@ const WorkshopPage: React.FC = () => {
     {
       id: "jc001",
       workOrderNumber: "WO-2025-001",
+      inspectionId: "insp-001",
       vehicleId: "21H",
-      fleetNumber: "21H",
       customerName: "Matanuska Fleet",
-      title: "Brake Inspection and Repair",
-      status: "in_progress",
       priority: "high",
-      assignedTo: "John Mechanic",
+      status: "in_progress",
       createdAt: "2025-08-15",
       createdDate: "2025-08-15",
-      dueDate: "2025-08-23",
+      scheduledDate: "2025-08-23",
+      completedDate: undefined,
+      assignedTechnician: "John Mechanic",
+      estimatedCompletion: undefined,
       workDescription: "Complete brake system inspection and necessary repairs",
       estimatedHours: 4,
-      actualHours: 0,
-      partsRequired: [],
-      laborCost: 0,
-      partsCost: 0,
-      totalCost: 0,
+      laborRate: 100,
+      partsCost: 85,
+      totalEstimate: 485,
+      tasks: [
+        {
+          id: "item-1",
+          description: "Replace brake pads",
+          taskType: "repair",
+          priority: "high",
+          estimatedHours: 2,
+          actualHours: 1,
+          status: "in_progress",
+          assignedTechnician: "John Mechanic",
+          partsRequired: [
+            {
+              itemId: "part-001",
+              itemName: "Brake Pads - Front Set",
+              quantity: 1,
+              unitPrice: 85.00
+            }
+          ],
+          notes: ""
+        }
+      ],
+      totalLaborHours: 2,
+      totalPartsValue: 85,
       notes: "",
+      faultIds: [],
       attachments: [],
-      serviceType: "repair",
-      mileage: 45000,
-      location: "Main Workshop",
-      department: "Maintenance",
-      completionDate: null,
-      completedBy: null,
-      invoiceNumber: null,
-      paymentStatus: "pending",
-      warrantyInfo: null,
-      quality: {
-        checkedBy: null,
-        checkDate: null,
-        passed: false,
-        comments: ""
-      },
-      tasks: []
+      remarks: [],
+      timeLog: [],
+      linkedPOIds: [],
+      createdBy: "admin",
+      updatedAt: "2025-08-15",
+      odometer: 45000,
+      model: "Model X",
+      tyrePositions: [],
+      memo: "",
+      additionalCosts: 0,
+      rcaRequired: false,
+      rcaCompleted: false
     },
     {
       id: "jc002",
       workOrderNumber: "WO-2025-002",
+      inspectionId: "insp-002",
       vehicleId: "22H",
-      fleetNumber: "22H",
       customerName: "Matanuska Fleet",
-      title: "Scheduled Maintenance",
-      status: "open",
       priority: "medium",
-      assignedTo: "Sarah Technician",
+  status: "created",
       createdAt: "2025-08-18",
       createdDate: "2025-08-18",
-      dueDate: "2025-08-25",
+      scheduledDate: "2025-08-25",
+      completedDate: undefined,
+      assignedTechnician: "Sarah Technician",
+      estimatedCompletion: undefined,
       workDescription: "Regular scheduled maintenance service",
       estimatedHours: 3,
-      actualHours: 0,
-      partsRequired: [],
-      laborCost: 0,
+      laborRate: 100,
       partsCost: 0,
-      totalCost: 0,
+      totalEstimate: 300,
+      tasks: [
+        {
+          id: "item-2",
+          description: "Scheduled maintenance",
+          taskType: "service",
+          priority: "medium",
+          estimatedHours: 3,
+          actualHours: 0,
+          status: "pending",
+          assignedTechnician: "Sarah Technician",
+          partsRequired: [],
+          notes: ""
+        }
+      ],
+      totalLaborHours: 3,
+      totalPartsValue: 0,
       notes: "",
+      faultIds: [],
       attachments: [],
-      serviceType: "maintenance",
-      mileage: 50000,
-      location: "Main Workshop",
-      department: "Maintenance",
-      completionDate: null,
-      completedBy: null,
-      invoiceNumber: null,
-      paymentStatus: "pending",
-      warrantyInfo: null,
-      quality: {
-        checkedBy: null,
-        checkDate: null,
-        passed: false,
-        comments: ""
-      },
-      tasks: []
+      remarks: [],
+      timeLog: [],
+      linkedPOIds: [],
+      createdBy: "admin",
+      updatedAt: "2025-08-18",
+      odometer: 50000,
+      model: "Model Y",
+      tyrePositions: [],
+      memo: "",
+      additionalCosts: 0,
+      rcaRequired: false,
+      rcaCompleted: false
     }
   ];
 
@@ -301,22 +332,7 @@ const WorkshopPage: React.FC = () => {
           {sampleJobCards.map((jobCard) => (
             <JobCardCard
               key={jobCard.id}
-              jobCard={{
-                ...jobCard,
-                // Ensure all required properties have default values if missing
-                vehicleId: jobCard.vehicleId || jobCard.fleetNumber,
-                customerName: jobCard.customerName || 'Matanuska Fleet',
-                createdDate: jobCard.createdDate || jobCard.createdAt,
-                workDescription: jobCard.workDescription || 'No description provided',
-                estimatedHours: jobCard.estimatedHours || 0,
-                partsRequired: jobCard.partsRequired || [],
-                laborCost: jobCard.laborCost || 0,
-                partsCost: jobCard.partsCost || 0,
-                totalCost: jobCard.totalCost || 0,
-                notes: jobCard.notes || '',
-                attachments: jobCard.attachments || [],
-                serviceType: jobCard.serviceType || 'maintenance'
-              }}
+              jobCard={jobCard}
             />
           ))}
         </div>
