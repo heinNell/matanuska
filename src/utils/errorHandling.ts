@@ -322,6 +322,4 @@ export default {
   ErrorCategory,
   ErrorSeverity,
 };
-  ErrorCategory,
-  ErrorSeverity,
-};
+

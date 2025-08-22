@@ -31,7 +31,9 @@ export function useWialonReport(): UseWialonReportResult {
         if (tables.length > 0) {
           const firstTable = tables[0];
           setReportData({
-            headers: firstTable?.header ?? ['Time', 'Position', 'Speed'],
+            headers: Array.isArray(firstTable?.header)
+              ? firstTable.header.join(', ')
+              : 'Time, Position, Speed',
             rows: firstTable?.data ?? []
           });
         } else {

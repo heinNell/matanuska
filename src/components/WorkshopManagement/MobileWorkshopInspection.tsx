@@ -8,7 +8,7 @@ import {
   inspectionTemplates,
   type InspectionItem,
   type InspectionTemplate,
-} from "../../data/inspectionTemplates";
+} from "../../types/inspectionTemplates.js";
 import { useToast } from "../../hooks/use-toast";
 import { useCapacitor } from "../../hooks/useCapacitor";
 import {

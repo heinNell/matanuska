@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { wialonService } from "../utils/wialonService";
 import type { WialonUnit } from "../types/wialon-core";
 import type { Position } from "../types/wialon-position";
+import type { WialonUnitBrief } from "../types/wialon";
 
 /**
  * Public UnitInfo expected by the app
@@ -22,16 +23,21 @@ interface UseWialonUnitsResult {
 }
 
 /* -------------------------
-   Defensive helpers
-   ------------------------- */
+    Defensive helpers
+    ------------------------- */
 
-type WialonUnitLike = WialonUnit | Record<string, any> | null | undefined;
+type WialonUnitLike = WialonUnit | WialonUnitBrief | Record<string, any> | null | undefined;
 
+/**
+ * Safely extracts a numeric or string ID from a Wialon unit object, handling various property names and getter methods.
+ * @param u The raw Wialon unit object.
+ * @returns The ID as a string, or undefined if not found.
+ */
 function safeGetIdRaw(u: WialonUnitLike): string | undefined {
   if (!u || typeof u !== "object") return undefined;
   const anyU = u as any;
 
-  // common fields
+  // Check common fields first
   if (anyU.id !== undefined && (typeof anyU.id === "string" || typeof anyU.id === "number")) {
     return String(anyU.id);
   }
@@ -39,7 +45,7 @@ function safeGetIdRaw(u: WialonUnitLike): string | undefined {
     return String(anyU.uid);
   }
 
-  // getter
+  // Check getter method
   if (typeof anyU.getId === "function") {
     try {
       const v = anyU.getId();
@@ -49,20 +55,27 @@ function safeGetIdRaw(u: WialonUnitLike): string | undefined {
     }
   }
 
-  // fallback: some wrappers expose 'sid' or 'objectId'
+  // Fallback to other common fields
   if (anyU.sid !== undefined) return String(anyU.sid);
   if (anyU.objectId !== undefined) return String(anyU.objectId);
 
   return undefined;
 }
 
+/**
+ * Safely extracts the name from a Wialon unit object.
+ * @param u The raw Wialon unit object.
+ * @returns The name as a string, or an empty string if not found.
+ */
 function safeGetName(u: WialonUnitLike): string {
   if (!u || typeof u !== "object") return "";
   const anyU = u as any;
 
+  // Check common fields
   if (typeof anyU.nm === "string" && anyU.nm.length) return anyU.nm;
   if (typeof anyU.name === "string" && anyU.name.length) return anyU.name;
 
+  // Check getter method
   if (typeof anyU.getName === "function") {
     try {
       const v = anyU.getName();
@@ -72,25 +85,31 @@ function safeGetName(u: WialonUnitLike): string {
     }
   }
 
-  // fallback to id-like field
+  // Fallback to a string-like ID
   const id = safeGetIdRaw(u);
   return id ?? "";
 }
 
+/**
+ * Safely extracts position data from a Wialon unit object, handling various formats.
+ * @param u The raw Wialon unit object.
+ * @returns A partial position object with lat/lng, or an empty object if not found.
+ */
 function safeGetPosition(u: WialonUnitLike): { lat?: number; lng?: number } {
   if (!u || typeof u !== "object") return {};
   const anyU = u as any;
 
-  // prefer getPosition() if available
+  // Prefer getPosition() if available
   if (typeof anyU.getPosition === "function") {
     try {
       const p = anyU.getPosition();
+      // Handle array format [lon, lat]
       if (Array.isArray(p) && p.length >= 2) {
-        // wialon often uses [lon, lat]
         const lon = Number(p[0]);
         const lat = Number(p[1]);
         if (!Number.isNaN(lat) && !Number.isNaN(lon)) return { lat, lng: lon };
       }
+      // Handle object format
       if (p && typeof p === "object") {
         const lat = Number(p.y ?? p.lat ?? p.latitude ?? p.latDeg);
         const lon = Number(p.x ?? p.lon ?? p.lng ?? p.longitude ?? p.lonDeg);
@@ -101,7 +120,7 @@ function safeGetPosition(u: WialonUnitLike): { lat?: number; lng?: number } {
     }
   }
 
-  // common fields: pos array, position object, lastPos, p
+  // Check common fields
   const posArr = anyU.pos ?? anyU.position ?? anyU.p ?? anyU.lastPos;
   if (Array.isArray(posArr) && posArr.length >= 2) {
     const lon = Number(posArr[0]);
@@ -116,7 +135,7 @@ function safeGetPosition(u: WialonUnitLike): { lat?: number; lng?: number } {
     if (!Number.isNaN(lat) && !Number.isNaN(lon)) return { lat, lng: lon };
   }
 
-  // last-resort fields
+  // Last-resort fields
   const maybeLat = Number(anyU.lat ?? anyU.latitude);
   const maybeLon = Number(anyU.lon ?? anyU.longitude ?? anyU.lng);
   if (!Number.isNaN(maybeLat) && !Number.isNaN(maybeLon)) return { lat: maybeLat, lng: maybeLon };
@@ -124,10 +143,16 @@ function safeGetPosition(u: WialonUnitLike): { lat?: number; lng?: number } {
   return {};
 }
 
+/**
+ * Safely extracts the icon URL from a Wialon unit object.
+ * @param u The raw Wialon unit object.
+ * @returns The icon URL as a string, or null if not found.
+ */
 function safeGetIconUrl(u: WialonUnitLike): string | null {
   if (!u || typeof u !== "object") return null;
   const anyU = u as any;
 
+  // Check getter method
   if (typeof anyU.getIconUrl === "function") {
     try {
       const v = anyU.getIconUrl();
@@ -137,7 +162,7 @@ function safeGetIconUrl(u: WialonUnitLike): string | null {
     }
   }
 
-  // sometimes icon url may be on a nested "icon" or "img" or "iconUrl"
+  // Check common fields
   if (typeof anyU.iconUrl === "string" && anyU.iconUrl.length) return anyU.iconUrl;
   if (anyU.icon && typeof anyU.icon.url === "string" && anyU.icon.url.length) return anyU.icon.url;
   if (typeof anyU.icon === "string" && anyU.icon.length) return anyU.icon;
@@ -146,10 +171,11 @@ function safeGetIconUrl(u: WialonUnitLike): string | null {
 }
 
 /* -------------------------
-   Hook implementation
-   ------------------------- */
+    Hook implementation
+    ------------------------- */
 
 export function useWialonUnits(token?: string): UseWialonUnitsResult {
+  // Corrected state variable declarations
   const [units, setUnits] = useState<UnitInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -162,7 +188,6 @@ export function useWialonUnits(token?: string): UseWialonUnitsResult {
     try {
       // Initialize session if token provided and the service offers initSession
       if (token) {
-        // It's safe to call initSession conditionally
         if (typeof wialonService.initSession === "function") {
           await wialonService.initSession();
         }
@@ -172,6 +197,7 @@ export function useWialonUnits(token?: string): UseWialonUnitsResult {
       const wialonUnits: WialonUnitLike[] = await wialonService.getUnits();
 
       const unitsInfo: UnitInfo[] = (wialonUnits || [])
+        // Add type annotation for parameter 'u' to fix the 'any' error
         .map((unitRaw: WialonUnitLike): UnitInfo | null => {
           // get id as string then convert to number if numeric
           const idRaw = safeGetIdRaw(unitRaw);

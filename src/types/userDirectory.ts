@@ -1,5 +1,5 @@
 // User directory and helpers for all departments
-import { User } from '../types/User';
+import { User } from './User.js';
 
 export const USER_DIRECTORY: User[] = [
   { shortcode: 'H', id: 'HeinNel', name: 'Hein Nel', role: 'Operator', status: 'Active', accessAreas: ['Fuel Management', 'Request', 'Logbook'] },

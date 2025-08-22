@@ -9,6 +9,15 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  JobCard,
+  JobCardStatus,
+  WorkOrder,
+  WorkOrderStatus
+} from "../types/workshop-tyre-inventory";
+import type { Inspection } from "@/types/inspectionTemplates";
+
+
 
 // Define types for Workshop items
 export interface Vendor {
@@ -151,12 +160,44 @@ interface WorkshopContextType {
   getDemandPartsByVehicle: (vehicleId: string) => DemandPart[];
   getDemandPartsByStatus: (status: DemandPart["status"]) => DemandPart[];
 
+  // Job Cards
+  jobCards: JobCard[];
+  addJobCard: (jobCard: Omit<JobCard, "id">) => Promise<string>;
+  updateJobCard: (id: string, jobCard: Partial<JobCard>) => Promise<void>;
+  deleteJobCard: (id: string) => Promise<void>;
+  getJobCardById: (id: string) => JobCard | undefined;
+  getJobCardsByStatus: (status: JobCardStatus) => JobCard[];
+  getJobCardsByVehicle: (vehicleId: string) => JobCard[];
+  getJobCardsByDate: (startDate: string, endDate: string) => JobCard[];
+  createJobCardFromInspection: (inspectionId: string) => Promise<string>;
+
+  // Work Orders
+  workOrders: WorkOrder[];
+  addWorkOrder: (workOrder: Omit<WorkOrder, "workOrderId">) => Promise<string>;
+  updateWorkOrder: (id: string, workOrder: Partial<WorkOrder>) => Promise<void>;
+  deleteWorkOrder: (id: string) => Promise<void>;
+  getWorkOrderById: (id: string) => WorkOrder | undefined;
+  getWorkOrdersByStatus: (status: WorkOrderStatus) => WorkOrder[];
+  getWorkOrdersByVehicle: (vehicleId: string) => WorkOrder[];
+
+  // Inspections
+  inspections: Inspection[];
+  addInspection: (inspection: Omit<Inspection, "id">) => Promise<string>;
+  updateInspection: (id: string, inspection: Partial<Inspection>) => Promise<void>;
+  deleteInspection: (id: string) => Promise<void>;
+  getInspectionById: (id: string) => Inspection | undefined;
+  getInspectionsByStatus: (status: string) => Inspection[];
+  getInspectionsByVehicle: (vehicleId: string) => Inspection[];
+
   // Loading states
   isLoading: {
     vendors: boolean;
     stockItems: boolean;
     purchaseOrders: boolean;
     demandParts: boolean;
+    jobCards: boolean;
+    workOrders: boolean;
+    inspections: boolean;
   };
 
   // Error states
@@ -165,7 +206,15 @@ interface WorkshopContextType {
     stockItems: Error | null;
     purchaseOrders: Error | null;
     demandParts: Error | null;
+    jobCards: Error | null;
+    workOrders: Error | null;
+    inspections: Error | null;
   };
+
+  // Refresh functions for real-time data
+  refreshJobCards: () => Promise<void>;
+  refreshWorkOrders: () => Promise<void>;
+  refreshInspections: () => Promise<void>;
 }
 
 const WorkshopContext = createContext<WorkshopContextType>({
@@ -203,11 +252,48 @@ const WorkshopContext = createContext<WorkshopContextType>({
   getDemandPartsByVehicle: () => [],
   getDemandPartsByStatus: () => [],
 
+  // Job Cards
+  jobCards: [],
+  addJobCard: async () => "",
+  updateJobCard: async () => {},
+  deleteJobCard: async () => {},
+  getJobCardById: () => undefined,
+  getJobCardsByStatus: () => [],
+  getJobCardsByVehicle: () => [],
+  getJobCardsByDate: () => [],
+  createJobCardFromInspection: async () => "",
+
+  // Work Orders
+  workOrders: [],
+  addWorkOrder: async () => "",
+  updateWorkOrder: async () => {},
+  deleteWorkOrder: async () => {},
+  getWorkOrderById: () => undefined,
+  getWorkOrdersByStatus: () => [],
+  getWorkOrdersByVehicle: () => [],
+
+  // Inspections
+  inspections: [],
+  addInspection: async () => "",
+  updateInspection: async () => {},
+  deleteInspection: async () => {},
+  getInspectionById: () => undefined,
+  getInspectionsByStatus: () => [],
+  getInspectionsByVehicle: () => [],
+
+  // Refresh functions
+  refreshJobCards: async () => {},
+  refreshWorkOrders: async () => {},
+  refreshInspections: async () => {},
+
   isLoading: {
     vendors: false,
     stockItems: false,
     purchaseOrders: false,
     demandParts: false,
+    jobCards: false,
+    workOrders: false,
+    inspections: false,
   },
 
   errors: {
@@ -215,6 +301,9 @@ const WorkshopContext = createContext<WorkshopContextType>({
     stockItems: null,
     purchaseOrders: null,
     demandParts: null,
+    jobCards: null,
+    workOrders: null,
+    inspections: null,
   },
 });
 
@@ -226,12 +315,18 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [demandParts, setDemandParts] = useState<DemandPart[]>([]);
+  const [jobCards, setJobCards] = useState<JobCard[]>([]);
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+  const [inspections, setInspections] = useState<Inspection[]>([]);
 
   const [isLoading, setIsLoading] = useState({
     vendors: true,
     stockItems: true,
     purchaseOrders: true,
     demandParts: true,
+    jobCards: true,
+    workOrders: true,
+    inspections: true,
   });
 
   const [errors, setErrors] = useState({
@@ -239,6 +334,9 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     stockItems: null as Error | null,
     purchaseOrders: null as Error | null,
     demandParts: null as Error | null,
+    jobCards: null as Error | null,
+    workOrders: null as Error | null,
+    inspections: null as Error | null,
   });
 
   const db = getFirestore();
@@ -357,6 +455,96 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         console.error("Error fetching demand parts:", error);
         setErrors((prev) => ({ ...prev, demandParts: error }));
         setIsLoading((prev) => ({ ...prev, demandParts: false }));
+      }
+    );
+
+    return () => unsubscribe();
+  }, [db, user]);
+
+  // Job Cards
+  useEffect(() => {
+    if (!user) return;
+    setIsLoading((prev) => ({ ...prev, jobCards: true }));
+
+    const jobCardsRef = collection(db, "jobCards");
+    const jobCardsQuery = query(jobCardsRef);
+
+    const unsubscribe = onSnapshot(
+      jobCardsQuery,
+      (snapshot) => {
+        const jobCardsList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as JobCard[];
+
+        setJobCards(jobCardsList);
+        setIsLoading((prev) => ({ ...prev, jobCards: false }));
+        setErrors((prev) => ({ ...prev, jobCards: null }));
+      },
+      (error) => {
+        console.error("Error fetching job cards:", error);
+        setErrors((prev) => ({ ...prev, jobCards: error }));
+        setIsLoading((prev) => ({ ...prev, jobCards: false }));
+      }
+    );
+
+    return () => unsubscribe();
+  }, [db, user]);
+
+  // Work Orders
+  useEffect(() => {
+    if (!user) return;
+    setIsLoading((prev) => ({ ...prev, workOrders: true }));
+
+    const workOrdersRef = collection(db, "workOrders");
+    const workOrdersQuery = query(workOrdersRef);
+
+    const unsubscribe = onSnapshot(
+      workOrdersQuery,
+      (snapshot) => {
+        const workOrdersList = snapshot.docs.map((doc) => ({
+          workOrderId: doc.id,
+          ...doc.data(),
+        })) as WorkOrder[];
+
+        setWorkOrders(workOrdersList);
+        setIsLoading((prev) => ({ ...prev, workOrders: false }));
+        setErrors((prev) => ({ ...prev, workOrders: null }));
+      },
+      (error) => {
+        console.error("Error fetching work orders:", error);
+        setErrors((prev) => ({ ...prev, workOrders: error }));
+        setIsLoading((prev) => ({ ...prev, workOrders: false }));
+      }
+    );
+
+    return () => unsubscribe();
+  }, [db, user]);
+
+  // Inspections
+  useEffect(() => {
+    if (!user) return;
+    setIsLoading((prev) => ({ ...prev, inspections: true }));
+
+    const inspectionsRef = collection(db, "inspections");
+    const inspectionsQuery = query(inspectionsRef);
+
+    const unsubscribe = onSnapshot(
+      inspectionsQuery,
+      (snapshot) => {
+        const inspectionsList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Inspection[];
+
+        setInspections(inspectionsList);
+        setIsLoading((prev) => ({ ...prev, inspections: false }));
+        setErrors((prev) => ({ ...prev, inspections: null }));
+      },
+      (error) => {
+        console.error("Error fetching inspections:", error);
+        setErrors((prev) => ({ ...prev, inspections: error }));
+        setIsLoading((prev) => ({ ...prev, inspections: false }));
       }
     );
 
@@ -551,6 +739,511 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
   const getDemandPartsByStatus = (status: DemandPart["status"]): DemandPart[] =>
     demandParts.filter((part) => part.status === status);
 
+  // Job Cards functions
+  const addJobCard = async (jobCard: Omit<JobCard, "id">): Promise<string> => {
+    try {
+      const newJobCard = {
+        ...jobCard,
+        createdAt: jobCard.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const jobCardRef = await addDoc(collection(db, "jobCards"), newJobCard);
+      return jobCardRef.id;
+    } catch (error) {
+      console.error("Error adding job card:", error);
+      throw error;
+    }
+  };
+
+  const updateJobCard = async (id: string, jobCard: Partial<JobCard>): Promise<void> => {
+    try {
+      const jobCardRef = doc(db, "jobCards", id);
+      await updateDoc(jobCardRef, {
+        ...jobCard,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Error updating job card:", error);
+      throw error;
+    }
+  };
+
+  const deleteJobCard = async (id: string): Promise<void> => {
+    try {
+      await deleteDoc(doc(db, "jobCards", id));
+    } catch (error) {
+      console.error("Error deleting job card:", error);
+      throw error;
+    }
+  };
+
+  const getJobCardById = (id: string): JobCard | undefined =>
+    jobCards.find((jobCard) => jobCard.id === id);
+
+  const getJobCardsByStatus = (status: JobCardStatus): JobCard[] =>
+    jobCards.filter((jobCard) => jobCard.status === status);
+
+  const getJobCardsByVehicle = (vehicleId: string): JobCard[] =>
+    jobCards.filter((jobCard) => jobCard.vehicleId === vehicleId);
+
+  const getJobCardsByDate = (startDate: string, endDate: string): JobCard[] => {
+    return jobCards.filter((jobCard) => {
+      const cardDate = new Date(jobCard.createdDate).getTime();
+      const start = new Date(startDate).getTime();
+      const end = new Date(endDate).getTime();
+      return cardDate >= start && cardDate <= end;
+    });
+  };
+
+  const createJobCardFromInspection = async (inspectionId: string): Promise<string> => {
+    try {
+      const inspection = inspections.find(i => i.id === inspectionId);
+
+      if (!inspection) {
+        throw new Error(`Inspection with ID ${inspectionId} not found`);
+      }
+
+      // Create a new job card from the inspection
+      const newJobCard: Omit<JobCard, "id"> = {
+        workOrderNumber: `WO-${new Date().getTime().toString().slice(-6)}`,
+        inspectionId: inspectionId,
+        vehicleId: inspection.vehicleId,
+        customerName: inspection.vehicleName?.split(' (')[0] || "Unknown",
+        priority: "medium", // Default priority
+        status: "initiated", // Initial status
+        createdDate: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        workDescription: `Job card created from ${inspection.inspectionType}`,
+        estimatedHours: 0,
+        laborRate: 0,
+        partsCost: 0,
+        totalEstimate: 0,
+        tasks: inspection.findings?.map((finding, index) => ({
+          id: `task-${index + 1}`,
+          description: finding.description,
+          taskType: "repair",
+          priority: finding.severity as "low" | "medium" | "high" | "critical",
+          estimatedHours: 1, // Default estimated hours
+          status: "pending",
+          partsRequired: [],
+          notes: finding.recommendedAction || "",
+        })) || [],
+        totalLaborHours: 0,
+        totalPartsValue: 0,
+        notes: `Created from inspection ${inspectionId}`,
+        faultIds: [],
+        attachments: [],
+        remarks: [],
+        timeLog: [],
+        linkedPOIds: [],
+        createdBy: "system",
+        updatedAt: new Date().toISOString(),
+        odometer: 0,
+        model: "",
+        tyrePositions: [],
+        memo: "",
+        additionalCosts: 0,
+        rcaRequired: false,
+        rcaCompleted: false,
+      };
+
+      return await addJobCard(newJobCard);
+    } catch (error) {
+      console.error("Error creating job card from inspection:", error);
+      throw error;
+    }
+  };
+
+  // Work Orders functions
+  const addWorkOrder = async (workOrder: Omit<WorkOrder, "workOrderId">): Promise<string> => {
+    try {
+      const newWorkOrder = {
+        ...workOrder,
+        createdAt: workOrder.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const workOrderRef = await addDoc(collection(db, "workOrders"), newWorkOrder);
+      return workOrderRef.id;
+    } catch (error) {
+      console.error("Error adding work order:", error);
+      throw error;
+    }
+  };
+
+  const updateWorkOrder = async (id: string, workOrder: Partial<WorkOrder>): Promise<void> => {
+    try {
+      const workOrderRef = doc(db, "workOrders", id);
+      await updateDoc(workOrderRef, {
+        ...workOrder,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Error updating work order:", error);
+      throw error;
+    }
+  };
+
+  const deleteWorkOrder = async (id: string): Promise<void> => {
+    try {
+      await deleteDoc(doc(db, "workOrders", id));
+    } catch (error) {
+      console.error("Error deleting work order:", error);
+      throw error;
+    }
+  };
+
+  const getWorkOrderById = (id: string): WorkOrder | undefined =>
+    workOrders.find((workOrder) => workOrder.workOrderId === id);
+
+  const getWorkOrdersByStatus = (status: WorkOrderStatus): WorkOrder[] =>
+    workOrders.filter((workOrder) => workOrder.status === status);
+
+  const getWorkOrdersByVehicle = (vehicleId: string): WorkOrder[] =>
+    workOrders.filter((workOrder) => workOrder.vehicleId === vehicleId);
+
+  // Inspection functions
+  const addInspection = async (inspection: Omit<Inspection, "id">): Promise<string> => {
+    try {
+      const newInspection = {
+        ...inspection,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const inspectionRef = await addDoc(collection(db, "inspections"), newInspection);
+      return inspectionRef.id;
+    } catch (error) {
+      console.error("Error adding inspection:", error);
+      throw error;
+    }
+  };
+
+  const updateInspection = async (id: string, inspection: Partial<Inspection>): Promise<void> => {
+    try {
+      const inspectionRef = doc(db, "inspections", id);
+      await updateDoc(inspectionRef, {
+        ...inspection,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Error updating inspection:", error);
+      throw error;
+    }
+  };
+
+  const deleteInspection = async (id: string): Promise<void> => {
+    try {
+      await deleteDoc(doc(db, "inspections", id));
+    } catch (error) {
+      console.error("Error deleting inspection:", error);
+      throw error;
+    }
+  };
+
+  const getInspectionById = (id: string): Inspection | undefined =>
+    inspections.find((inspection) => inspection.id === id);
+
+  const getInspectionsByStatus = (status: string): Inspection[] =>
+    inspections.filter((inspection) => inspection.status === status);
+
+  const getInspectionsByVehicle = (vehicleId: string): Inspection[] =>
+    inspections.filter((inspection) => inspection.vehicleId === vehicleId);
+
+  // Refresh functions to force fetch new data
+  const refreshJobCards = async (): Promise<void> => {
+    try {
+      setIsLoading((prev) => ({ ...prev, jobCards: true }));
+
+      // In a real implementation with Firestore, we might fetch data directly
+      // Since we're using onSnapshot which automatically updates the state,
+      // we'll use mock data for demonstration purposes
+
+      // This simulates refreshed job cards data
+      const mockJobCards: JobCard[] = [
+        {
+          id: 'jc-001',
+          workOrderNumber: 'WO-20250822-001',
+          vehicleId: 'VEH-001',
+          customerName: 'Acme Logistics',
+          priority: 'high',
+          status: 'in_progress',
+          createdAt: '2025-08-20T10:00:00Z',
+          createdDate: '2025-08-20T10:00:00Z',
+          scheduledDate: '2025-08-22T09:00:00Z',
+          assignedTechnician: 'John Doe',
+          workDescription: 'Routine maintenance and brake inspection',
+          estimatedHours: 4,
+          laborRate: 75,
+          partsCost: 250,
+          totalEstimate: 550,
+          tasks: [
+            {
+              id: 'task-001',
+              description: 'Oil Change',
+              taskType: 'service',
+              priority: 'medium',
+              estimatedHours: 1,
+              status: 'completed',
+              notes: 'Used synthetic oil',
+              partsRequired: []
+            },
+            {
+              id: 'task-002',
+              description: 'Brake Inspection',
+              taskType: 'inspect',
+              priority: 'high',
+              estimatedHours: 1,
+              status: 'in_progress',
+              notes: 'Front pads need replacement',
+              partsRequired: []
+            }
+          ],
+          totalLaborHours: 2,
+          totalPartsValue: 250,
+          notes: 'Customer requested completion by EOD',
+          faultIds: ['fault-001', 'fault-002'],
+          attachments: [],
+          remarks: [],
+          timeLog: [],
+          linkedPOIds: ['po-001'],
+          createdBy: 'admin',
+          updatedAt: '2025-08-21T14:30:00Z',
+          odometer: 15000,
+          model: 'Volvo FH16',
+          tyrePositions: [],
+          memo: '',
+          additionalCosts: 50,
+          rcaRequired: false,
+          rcaCompleted: false
+        },
+        {
+          id: 'jc-002',
+          workOrderNumber: 'WO-20250821-002',
+          vehicleId: 'VEH-003',
+          customerName: 'Global Transport',
+          priority: 'critical',
+          status: 'parts_pending',
+          createdAt: '2025-08-21T08:15:00Z',
+          createdDate: '2025-08-21T08:15:00Z',
+          assignedTechnician: 'Jane Smith',
+          workDescription: 'Engine warning light diagnosis and repair',
+          estimatedHours: 6,
+          laborRate: 85,
+          partsCost: 750,
+          totalEstimate: 1260,
+          tasks: [
+            {
+              id: 'task-004',
+              description: 'Diagnostic Scan',
+              taskType: 'service',
+              priority: 'high',
+              estimatedHours: 1,
+              status: 'completed',
+              notes: 'Found fault code P0401',
+              partsRequired: []
+            }
+          ],
+          totalLaborHours: 1,
+          totalPartsValue: 750,
+          notes: 'Vehicle needed urgently by customer',
+          faultIds: ['fault-003'],
+          attachments: [],
+          remarks: [],
+          timeLog: [],
+          linkedPOIds: ['po-002'],
+          createdBy: 'supervisor',
+          updatedAt: '2025-08-21T16:45:00Z',
+          odometer: 45000,
+          model: 'Mercedes Actros',
+          tyrePositions: [],
+          memo: 'Customer approval received for additional work',
+          additionalCosts: 0,
+          rcaRequired: true,
+          rcaCompleted: false
+        }
+      ];
+
+      setJobCards(mockJobCards);
+      setErrors((prev) => ({ ...prev, jobCards: null }));
+    } catch (error) {
+      console.error("Error refreshing job cards:", error);
+      setErrors((prev) => ({ ...prev, jobCards: error as Error }));
+    } finally {
+      setIsLoading((prev) => ({ ...prev, jobCards: false }));
+    }
+  };
+
+  const refreshWorkOrders = async (): Promise<void> => {
+    try {
+      setIsLoading((prev) => ({ ...prev, workOrders: true }));
+
+      // Mock data for demonstration
+      const mockWorkOrders: WorkOrder[] = [
+        {
+          workOrderId: 'wo-001',
+          vehicleId: 'VEH-001',
+          status: 'in_progress',
+          priority: 'high',
+          title: 'Scheduled Maintenance',
+          description: 'Comprehensive service including oil change, filters, and safety inspection',
+          tasks: [
+            {
+              taskId: 'task-001',
+              description: 'Oil and Filter Change',
+              status: 'completed',
+              assignedTo: 'John Doe',
+              estimatedHours: 1,
+              actualHours: 0.75,
+              notes: 'Used synthetic oil'
+            },
+            {
+              taskId: 'task-002',
+              description: 'Safety Inspection',
+              status: 'in_progress',
+              assignedTo: 'Jane Smith',
+              estimatedHours: 1,
+              notes: ''
+            }
+          ],
+          partsUsed: [
+            {
+              partId: 'part-001',
+              partNumber: 'OIL-5W30',
+              description: 'Synthetic Oil 5W30',
+              quantity: 10,
+              unitCost: 12.5,
+              totalCost: 125,
+              supplier: 'Auto Parts Inc',
+              status: 'installed'
+            }
+          ],
+          laborEntries: [
+            {
+              laborId: 'labor-001',
+              technicianId: 'tech-001',
+              technicianName: 'John Doe',
+              laborCode: 'OIL-CHG',
+              hoursWorked: 0.75,
+              hourlyRate: 75,
+              totalCost: 56.25,
+              date: '2025-08-22T10:30:00Z'
+            }
+          ],
+          attachments: [],
+          remarks: [],
+          timeLog: [],
+          linkedInspectionId: 'insp-001',
+          linkedPOIds: [],
+          createdBy: 'admin',
+          createdAt: '2025-08-21T09:00:00Z',
+          updatedAt: '2025-08-22T10:45:00Z',
+          startedAt: '2025-08-22T10:00:00Z'
+        },
+        {
+          workOrderId: 'wo-002',
+          vehicleId: 'VEH-003',
+          status: 'initiated',
+          priority: 'critical',
+          title: 'Engine Repair',
+          description: 'Investigate engine warning light and repair issue',
+          tasks: [
+            {
+              taskId: 'task-003',
+              description: 'Diagnostic Scan',
+              status: 'pending',
+              estimatedHours: 1,
+              notes: ''
+            }
+          ],
+          partsUsed: [],
+          laborEntries: [],
+          attachments: [],
+          remarks: [
+            {
+              remarkId: 'remark-001',
+              text: 'Customer reported engine running rough',
+              addedBy: 'Service Advisor',
+              addedAt: '2025-08-22T09:00:00Z',
+              type: 'customer'
+            }
+          ],
+          timeLog: [],
+          linkedPOIds: [],
+          createdBy: 'service-advisor',
+          createdAt: '2025-08-22T09:00:00Z',
+          updatedAt: '2025-08-22T09:00:00Z'
+        }
+      ];
+
+      setWorkOrders(mockWorkOrders);
+      setErrors((prev) => ({ ...prev, workOrders: null }));
+    } catch (error) {
+      console.error("Error refreshing work orders:", error);
+      setErrors((prev) => ({ ...prev, workOrders: error as Error }));
+    } finally {
+      setIsLoading((prev) => ({ ...prev, workOrders: false }));
+    }
+  };
+
+  const refreshInspections = async (): Promise<void> => {
+    try {
+      setIsLoading((prev) => ({ ...prev, inspections: true }));
+
+      // Mock data for demonstration
+      const mockInspections: Inspection[] = [
+        {
+          id: 'insp-001',
+          vehicleId: 'VEH-001',
+          vehicleName: 'Volvo FH16 (VEH-001)',
+          inspectionType: 'Pre-Trip Inspection',
+          status: 'completed',
+          performedBy: 'John Doe',
+          inspectionDate: '2025-08-21T08:00:00Z',
+          completedAt: '2025-08-21T08:30:00Z',
+          findings: [
+            {
+              id: 'find-001',
+              category: 'Tires',
+              description: 'Front right tire showing uneven wear',
+              severity: 'medium',
+              recommendedAction: 'Schedule rotation and alignment',
+              status: 'new'
+            },
+            {
+              id: 'find-002',
+              category: 'Lights',
+              description: 'Left taillight intermittently working',
+              severity: 'low',
+              recommendedAction: 'Replace bulb',
+              status: 'new'
+            }
+          ],
+          createdAt: '2025-08-21T08:00:00Z',
+          updatedAt: '2025-08-21T08:30:00Z'
+        },
+        {
+          id: 'insp-002',
+          vehicleId: 'VEH-002',
+          vehicleName: 'Scania R500 (VEH-002)',
+          inspectionType: 'Annual DOT Inspection',
+          status: 'in_progress',
+          performedBy: 'Jane Smith',
+          inspectionDate: '2025-08-22T09:00:00Z',
+          dueDate: '2025-08-22T17:00:00Z',
+          createdAt: '2025-08-22T09:00:00Z',
+          updatedAt: '2025-08-22T09:00:00Z'
+        }
+      ];
+
+      setInspections(mockInspections);
+      setErrors((prev) => ({ ...prev, inspections: null }));
+    } catch (error) {
+      console.error("Error refreshing inspections:", error);
+      setErrors((prev) => ({ ...prev, inspections: error as Error }));
+    } finally {
+      setIsLoading((prev) => ({ ...prev, inspections: false }));
+    }
+  };
+
   // Bulk import stock items from CSV
   const importStockItemsFromCSV = async (
     items: Partial<StockItem>[]
@@ -690,6 +1383,40 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
     getDemandPartsByWorkOrder,
     getDemandPartsByVehicle,
     getDemandPartsByStatus,
+
+    // Job Cards
+    jobCards,
+    addJobCard,
+    updateJobCard,
+    deleteJobCard,
+    getJobCardById,
+    getJobCardsByStatus,
+    getJobCardsByVehicle,
+    getJobCardsByDate,
+    createJobCardFromInspection,
+
+    // Work Orders
+    workOrders,
+    addWorkOrder,
+    updateWorkOrder,
+    deleteWorkOrder,
+    getWorkOrderById,
+    getWorkOrdersByStatus,
+    getWorkOrdersByVehicle,
+
+    // Inspections
+    inspections,
+    addInspection,
+    updateInspection,
+    deleteInspection,
+    getInspectionById,
+    getInspectionsByStatus,
+    getInspectionsByVehicle,
+
+    // Refresh functions
+    refreshJobCards,
+    refreshWorkOrders,
+    refreshInspections,
 
     isLoading,
     errors,

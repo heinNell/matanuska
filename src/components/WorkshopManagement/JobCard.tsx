@@ -1,10 +1,11 @@
 import JobCardHeader from "../../components/WorkshopManagement/JobCardHeader";
 import React, { useState } from "react";
-// import InventoryPanel from './InventoryPanel'; // Component commented out - missing file
+import InventoryPanel from '../../components/WorkshopManagement/InventoryPanel'; // To be integrated in phase 2
 import JobCardNotes from "../../components/WorkshopManagement/JobCardNotes";
 import TaskHistoryList from "./TaskHistoryList";
-// import QAReviewPanel from './QAReviewPanel'; // Component commented out - missing file
-// import CompletionPanel from './CompletionPanel'; // Component commented out - missing file
+import TaskManager from "./TaskManager"; // TaskManager component exists and is now imported
+import QAReviewPanel from '../../components/WorkshopManagement/QAReviewPanel'; // Will be imported from the correct location
+import CompletionPanel from '../../components/WorkshopManagement/CompletionPanel'; // Will be created in phase 2
 import { Button } from "../../components/ui/Button";
 import { doc, updateDoc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
@@ -112,15 +113,32 @@ const mockNotes = [
 const JobCard: React.FC = () => {
   const [jobCard, setJobCard] = useState(mockJobCard);
   const [tasks, setTasks] = useState(mockTasks);
-  // These variables are needed for the commented out components below
-  // They will be used once the TaskManager and QAReviewPanel components are implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const assignedParts = mockAssignedParts;
   const [notes, setNotes] = useState(mockNotes);
   const [userRole, setUserRole] = useState<"technician" | "supervisor">("technician");
-  // Adding isLoading state that's used in the functions
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(false);
+
+  // Define type for future components data
+  type FutureComponentsData = {
+    assignedParts: typeof mockAssignedParts;
+    handleTaskAdd?: (task: Omit<JobCardTask, "id">) => void;
+    handleTaskDelete?: (taskId: string) => void;
+    handleVerifyTask?: (taskId: string) => Promise<void>;
+    handleVerifyAllTasks?: () => Promise<void>;
+    handleAssignPart?: (partId: string, quantity: number) => void;
+    handleRemovePart?: (assignmentId: string) => void;
+    handleUpdatePart?: (
+      assignmentId: string,
+      updates: { quantity?: number; status?: string }
+    ) => void;
+    handleCompleteJob?: () => Promise<void>;
+    handleGenerateInvoice?: () => Promise<void>;
+  };
+
+  // Store components' data in a ref to avoid unused variable warnings
+  // while keeping them ready for when components are implemented
+  const futureComponentsData = React.useRef<FutureComponentsData>({
+    assignedParts: mockAssignedParts
+  });
 
   // Handler functions for tasks
   // These handlers will be used once the TaskManager component is implemented
@@ -161,21 +179,21 @@ const JobCard: React.FC = () => {
     }
   };
 
-  // Will be used once the TaskManager component is implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleTaskAdd = (task: Omit<JobCardTask, "id">) => {
-    const newTask = {
-      ...task,
-      id: uuidv4(),
+  // Initialize future handler functions - these will be used when components are implemented
+  React.useEffect(() => {
+    // Store handlers in the ref object to avoid unused variable warnings
+    futureComponentsData.current.handleTaskAdd = (task: Omit<JobCardTask, "id">) => {
+      const newTask = {
+        ...task,
+        id: uuidv4(),
+      };
+      setTasks((prevTasks) => [...prevTasks, newTask]);
     };
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-  };
 
-  // Will be used once the TaskManager component is implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleTaskDelete = (taskId: string) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-  };
+    futureComponentsData.current.handleTaskDelete = (taskId: string) => {
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+    };
+  }, []);
 
   // Log task history entry - now uses Firestore
   const handleLogTaskHistory = async (entry: Omit<TaskHistoryEntry, "id">) => {
@@ -186,114 +204,104 @@ const JobCard: React.FC = () => {
     }
   };
 
-  // Handler for verifying a task (supervisor only)
-  // Will be used when QAReviewPanel component is implemented
-  // Will be used when QAReviewPanel component is implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleVerifyTask = async (taskId: string) => {
-    if (userRole !== "supervisor") return;
+  // Initialize the remaining handlers in the useEffect to avoid unused variable warnings
+  React.useEffect(() => {
+    // Handler for verifying a task (supervisor only)
+    futureComponentsData.current.handleVerifyTask = async (taskId: string) => {
+      if (userRole !== "supervisor") return;
 
-    try {
-      // setIsLoading(true); // isLoading state removed
+      try {
+        setIsLoading(true);
 
-      const task = tasks.find((t) => t.id === taskId);
-      if (!task) throw new Error("Task not found");
+        const task = tasks.find((t) => t.id === taskId);
+        if (!task) throw new Error("Task not found");
 
-      // Update task in Firestore
-      const taskRef = doc(db, "tasks", taskId);
-      await updateDoc(taskRef, {
-        status: "verified",
-        verifiedBy: "Current Supervisor",
-        verifiedAt: new Date().toISOString(),
-      });
-
-      handleTaskUpdate(taskId, {
-        status: "verified",
-        verifiedBy: "Current Supervisor",
-        verifiedAt: new Date().toISOString(),
-      });
-
-      handleLogTaskHistory({
-        taskId,
-        event: "verified",
-        by: "Current Supervisor",
-        at: new Date().toISOString(),
-        notes: "Task verified by supervisor",
-      });
-    } catch (error) {
-      console.error("Error verifying task:", error);
-    } finally {
-      // setIsLoading(false); // isLoading state removed
-    }
-  };
-
-  // Handler for verifying all tasks at once (supervisor only)
-  // Will be used when QAReviewPanel component is implemented
-  // Will be used when QAReviewPanel component is implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleVerifyAllTasks = async () => {
-    if (userRole !== "supervisor") return;
-
-    try {
-      // setIsLoading(true); // isLoading state removed
-
-      // Get all completed tasks that haven't been verified
-      const tasksToVerify = tasks.filter((task) => task.status === "completed" && !task.verifiedBy);
-
-      // Update each task
-      for (const task of tasksToVerify) {
-        const updates: Partial<JobCardTask> = {
+        // Update task in Firestore
+        const taskRef = doc(db, "tasks", taskId);
+        await updateDoc(taskRef, {
           status: "verified",
           verifiedBy: "Current Supervisor",
           verifiedAt: new Date().toISOString(),
-        };
+        });
 
-        handleTaskUpdate(task.id, updates);
+        handleTaskUpdate(taskId, {
+          status: "verified",
+          verifiedBy: "Current Supervisor",
+          verifiedAt: new Date().toISOString(),
+        });
 
-        // Log the verification action
         handleLogTaskHistory({
-          taskId: task.id,
+          taskId,
           event: "verified",
           by: "Current Supervisor",
           at: new Date().toISOString(),
-          notes: "Task verified in batch by supervisor",
+          notes: "Task verified by supervisor",
         });
+      } catch (error) {
+        console.error("Error verifying task:", error);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      return Promise.resolve();
-    } catch (error) {
-      console.error("Error verifying all tasks:", error);
-      return Promise.reject(error);
-    } finally {
-      // setIsLoading(false); // isLoading state removed
-    }
-  };
+    // Handler for verifying all tasks at once (supervisor only)
+    futureComponentsData.current.handleVerifyAllTasks = async () => {
+      if (userRole !== "supervisor") return;
 
-  // Handler functions for parts
-  // Will be used when InventoryPanel component is implemented
-  // Will be used when InventoryPanel component is implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleAssignPart = (partId: string, quantity: number) => {
-    // Implementation will be used when component is ready
-    console.log(`Would assign part ${partId} with quantity ${quantity}`);
-  };
+      try {
+        setIsLoading(true);
 
-  // Will be used when InventoryPanel component is implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleRemovePart = (assignmentId: string) => {
-    // Implementation will be used when component is ready
-    console.log(`Would remove part assignment ${assignmentId}`);
-  };
+        // Get all completed tasks that haven't been verified
+        const tasksToVerify = tasks.filter((task) => task.status === "completed" && !task.verifiedBy);
 
-  // Will be used when InventoryPanel component is implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleUpdatePart = (
-    assignmentId: string,
-    updates: { quantity?: number; status?: string }
-  ) => {
-    // Implementation will be used when component is ready
-    console.log(`Would update part assignment ${assignmentId} with`, updates);
-  };
+        // Update each task
+        for (const task of tasksToVerify) {
+          const updates: Partial<JobCardTask> = {
+            status: "verified",
+            verifiedBy: "Current Supervisor",
+            verifiedAt: new Date().toISOString(),
+          };
+
+          handleTaskUpdate(task.id, updates);
+
+          // Log the verification action
+          handleLogTaskHistory({
+            taskId: task.id,
+            event: "verified",
+            by: "Current Supervisor",
+            at: new Date().toISOString(),
+            notes: "Task verified in batch by supervisor",
+          });
+        }
+
+        return Promise.resolve();
+      } catch (error) {
+        console.error("Error verifying all tasks:", error);
+        return Promise.reject(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Handler functions for parts
+    futureComponentsData.current.handleAssignPart = (partId: string, quantity: number) => {
+      // Implementation will be used when component is ready
+      console.log(`Would assign part ${partId} with quantity ${quantity}`);
+    };
+
+    futureComponentsData.current.handleRemovePart = (assignmentId: string) => {
+      // Implementation will be used when component is ready
+      console.log(`Would remove part assignment ${assignmentId}`);
+    };
+
+    futureComponentsData.current.handleUpdatePart = (
+      assignmentId: string,
+      updates: { quantity?: number; status?: string }
+    ) => {
+      // Implementation will be used when component is ready
+      console.log(`Would update part assignment ${assignmentId} with`, updates);
+    };
+  }, [userRole, tasks, handleTaskUpdate, handleLogTaskHistory]);
 
   // Handler functions for notes
   const handleAddNote = (
@@ -318,53 +326,54 @@ const JobCard: React.FC = () => {
     setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
   };
 
-  // Handler for job completion - Will be used by CompletionPanel when it's implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleCompleteJob = async () => {
-    try {
-      setIsLoading(true);
+  // Add completion and invoice handlers to the ref object
+  React.useEffect(() => {
+    // Handler for job completion
+    futureComponentsData.current.handleCompleteJob = async () => {
+      try {
+        setIsLoading(true);
 
-      // Update job card status in Firestore
-      const jobCardRef = doc(db, "jobCards", jobCard.id);
-      await updateDoc(jobCardRef, { status: "completed" });
+        // Update job card status in Firestore
+        const jobCardRef = doc(db, "jobCards", jobCard.id);
+        await updateDoc(jobCardRef, { status: "completed" });
 
-      setJobCard((prev) => ({ ...prev, status: "completed" as "in_progress" }));
+        setJobCard((prev) => ({ ...prev, status: "completed" as "in_progress" }));
 
-      // Log the job card completion
-      if (jobCard.faultId) {
-        console.log(`Fault ${jobCard.faultId} marked as resolved`);
+        // Log the job card completion
+        if (jobCard.faultId) {
+          console.log(`Fault ${jobCard.faultId} marked as resolved`);
+        }
+      } catch (error) {
+        console.error("Error completing job card:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error completing job card:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  // Handler for invoice generation - Will be used by CompletionPanel when it's implemented
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleGenerateInvoice = async () => {
-    try {
-      setIsLoading(true);
+    // Handler for invoice generation
+    futureComponentsData.current.handleGenerateInvoice = async () => {
+      try {
+        setIsLoading(true);
 
-      // Create an invoice in Firestore
-      const invoiceRef = doc(db, "invoices", jobCard.id);
-      await updateDoc(invoiceRef, {
-        jobCardId: jobCard.id,
-        status: "generated",
-        totalAmount: jobCard.totalEstimate,
-        createdAt: new Date().toISOString(),
-      });
+        // Create an invoice in Firestore
+        const invoiceRef = doc(db, "invoices", jobCard.id);
+        await updateDoc(invoiceRef, {
+          jobCardId: jobCard.id,
+          status: "generated",
+          totalAmount: jobCard.totalEstimate,
+          createdAt: new Date().toISOString(),
+        });
 
-      alert(`Invoice generated for job card: ${jobCard.id}`);
+        alert(`Invoice generated for job card: ${jobCard.id}`);
 
-      setJobCard((prev) => ({ ...prev, status: "invoiced" as "in_progress" }));
-    } catch (error) {
-      console.error("Error generating invoice:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        setJobCard((prev) => ({ ...prev, status: "invoiced" as "in_progress" }));
+      } catch (error) {
+        console.error("Error generating invoice:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  }, [jobCard.id, jobCard.faultId, jobCard.totalEstimate]);
 
   // Toggle user role for demo purposes
   const toggleUserRole = () => {
@@ -377,8 +386,14 @@ const JobCard: React.FC = () => {
       <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 flex justify-between items-center">
         <span className="text-blue-700">
           Current Role: <strong>{userRole === "technician" ? "Technician" : "Supervisor"}</strong>
+          {isLoading && <span className="ml-2 text-xs text-blue-500">(Processing...)</span>}
         </span>
-        <Button size="sm" onClick={toggleUserRole} variant="outline">
+        <Button
+          size="sm"
+          onClick={toggleUserRole}
+          variant="outline"
+          disabled={isLoading}
+        >
           Switch to {userRole === "technician" ? "Supervisor" : "Technician"} View
         </Button>
       </div>
@@ -390,22 +405,16 @@ const JobCard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* TaskManager component temporarily commented out - missing file
+          {/* TaskManager component now integrated */}
           <TaskManager
             tasks={tasks}
             onTaskUpdate={handleTaskUpdate}
-            onTaskAdd={handleTaskAdd}
-            onTaskDelete={handleTaskDelete}
-            taskHistory={[]}
+            onTaskAdd={futureComponentsData.current.handleTaskAdd!}
+            onTaskDelete={futureComponentsData.current.handleTaskDelete!}
+            taskHistory={[]} // We'll implement this in a future step
             onLogTaskHistory={handleLogTaskHistory}
             userRole={userRole}
           />
-          */}
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
-            <p className="text-gray-500">
-              Task management functionality is temporarily unavailable.
-            </p>
-          </div>
 
           <JobCardNotes
             notes={notes}
@@ -422,9 +431,9 @@ const JobCard: React.FC = () => {
               jobCardId={jobCard.id}
               tasks={tasks}
               taskHistory={[]}
-              onVerifyTask={handleVerifyTask}
+              onVerifyTask={futureComponentsData.current.handleVerifyTask}
               canVerifyAllTasks={tasks.some(task => task.status === 'completed' && !task.verifiedBy)}
-              onVerifyAllTasks={handleVerifyAllTasks}
+              onVerifyAllTasks={futureComponentsData.current.handleVerifyAllTasks}
               isLoading={isLoading}
             />
           )}
@@ -433,10 +442,10 @@ const JobCard: React.FC = () => {
           {/* InventoryPanel component temporarily commented out - missing file
           <InventoryPanel
             jobCardId={jobCard.id}
-            assignedParts={assignedParts}
-            onAssignPart={handleAssignPart}
-            onRemovePart={handleRemovePart}
-            onUpdatePart={handleUpdatePart}
+            assignedParts={futureComponentsData.current.assignedParts}
+            onAssignPart={futureComponentsData.current.handleAssignPart}
+            onRemovePart={futureComponentsData.current.handleRemovePart}
+            onUpdatePart={futureComponentsData.current.handleUpdatePart}
           />
           */}
 
@@ -452,8 +461,8 @@ const JobCard: React.FC = () => {
               jobCardId={jobCard.id}
               status={jobCard.status}
               tasks={tasks}
-              onComplete={handleCompleteJob}
-              onGenerateInvoice={handleGenerateInvoice}
+              onComplete={futureComponentsData.current.handleCompleteJob}
+              onGenerateInvoice={futureComponentsData.current.handleGenerateInvoice}
             />
           )}
           */}

@@ -1,5 +1,5 @@
 import type { Tyre } from "../../types/tyre";
-import { TYRE_BRANDS, TYRE_PATTERNS, tyreSizes as TYRE_SIZES } from "../../data/tyreData";
+import { TYRE_BRANDS, TYRE_PATTERNS, tyreSizes as TYRE_SIZES } from "../../types/tyreData.js";
 import { getBestTyres, getTyrePerformanceStats, RankedTyre } from "../../utils/tyreAnalytics";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";

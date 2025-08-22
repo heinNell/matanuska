@@ -36,11 +36,11 @@ export const preTrip: InspectionTemplate = {
   description: 'Standard inspection to be performed before starting a trip',
   vehicleType: 'truck',
   categories: [
-    'Documentation', 
-    'Exterior', 
-    'Engine Compartment', 
-    'Interior', 
-    'Brakes & Tyres', 
+    'Documentation',
+    'Exterior',
+    'Engine Compartment',
+    'Interior',
+    'Brakes & Tyres',
     'Safety Equipment'
   ],
   items: [
@@ -72,7 +72,7 @@ export const preTrip: InspectionTemplate = {
       isCritical: true,
       passFailOnly: true
     },
-    
+
     // Exterior
     {
       id: uuidv4(),
@@ -102,7 +102,7 @@ export const preTrip: InspectionTemplate = {
       isCritical: true,
       passFailOnly: true
     },
-    
+
     // Engine Compartment
     {
       id: uuidv4(),
@@ -134,7 +134,7 @@ export const preTrip: InspectionTemplate = {
       passFailOnly: false,
       valueType: 'text'
     },
-    
+
     // Interior
     {
       id: uuidv4(),
@@ -154,7 +154,7 @@ export const preTrip: InspectionTemplate = {
       isCritical: false,
       passFailOnly: true
     },
-    
+
     // Brakes & Tyres
     {
       id: uuidv4(),
@@ -191,7 +191,7 @@ export const preTrip: InspectionTemplate = {
       isCritical: true,
       passFailOnly: true
     },
-    
+
     // Safety Equipment
     {
       id: uuidv4(),
@@ -234,10 +234,10 @@ export const mechanicInspection: InspectionTemplate = {
   description: 'Comprehensive inspection to be performed by certified mechanics',
   vehicleType: 'truck',
   categories: [
-    'Engine', 
-    'Transmission', 
-    'Brake System', 
-    'Suspension', 
+    'Engine',
+    'Transmission',
+    'Brake System',
+    'Suspension',
     'Electrical System',
     'Emissions',
     'Steering',
@@ -265,7 +265,7 @@ export const mechanicInspection: InspectionTemplate = {
       passFailOnly: false,
       valueType: 'text'
     },
-    
+
     // Add more items for other categories as needed
     // This is just a starter template
   ],

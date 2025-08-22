@@ -1,27 +1,37 @@
-/** Position of a unit (vehicle) */
+// src/types/wialon.ts
+/* ------------------------------------------------------------------
+ * Shared Wialon-related typings
+ * ------------------------------------------------------------------ */
+
+/* ---------- Positions & units ------------------------------------------------ */
+
 export interface WialonPosition {
   x: number; // Longitude
   y: number; // Latitude
-  z?: number; // Altitude (optional)
-  t?: number; // Timestamp (optional)
-  s?: number; // Speed (optional)
-  c?: number; // Course (optional)
-  sc?: number; // Status code (optional)
+  z?: number; // Altitude
+  t?: number; // Timestamp (UNIX, s)
+  s?: number; // Speed
+  c?: number; // Course
+  sc?: number; // Status code
 }
 
-/** Unit (vehicle or asset) from Wialon */
+/** SDK object representing a unit (vehicle / asset) */
 export interface WialonUnit {
-  getId: () => number;
-  getName: () => string;
-  getPosition: () => WialonPosition | undefined;
-  getIconUrl: (size?: number) => string;
-  getUniqueId: () => string | number;
+  getId(): number;
+  getName(): string;
+  getPosition(): WialonPosition | undefined;
+  getIconUrl(size?: number): string;
+  getUniqueId(): string | number;
+
+  /* SDK event interface */
   addListener(event: string, callback: (event: any) => void): number;
   removeListenerById(id: number): void;
+
+  /* Messages API */
   getMessages(from: number, to: number, flags: number, callback: any): void;
 }
 
-/** Lightweight DTO returned by REST adapter (not SDK object) */
+/** Lightweight DTO sometimes returned by REST adapters */
 export interface WialonUnitBrief {
   id: number | string;
   name: string;
@@ -32,46 +42,78 @@ export interface WialonUnitBrief {
   time?: number;
 }
 
-/** Wialon Driver */
+/* ---------- Other domain objects -------------------------------------------- */
+
 export interface WialonDriver {
   id: number | string;
-  n: string; // Name
-  ds?: string; // Description
-  p?: string; // Phone
-  // Extend as needed
+  n: string; // name
+  ds?: string; // description
+  p?: string; // phone
 }
 
-/** Wialon Geofence ("zone") */
 export interface WialonGeofence {
   id: number | string;
-  n: string; // Name
-  t: number; // Type: 3 = Circle, 2 = Polygon, 1 = Polyline
-  w?: number; // Radius for circles
-  c?: number; // Color (decimal)
-  p?: any[]; // Geometry points
-  // Extend as needed
+  n: string; // name
+  t: number; // 3-circle, 2-polygon, 1-polyline
+  w?: number; // radius (for circle)
+  c?: number; // colour (decimal)
+  p?: any; // geometry
 }
 
-/** Wialon Resource */
+/** Typed wrapper around a “resource” object */
 export type WialonResource = {
   id: number;
   name: string;
-  getZones(): any[];
-  execReport(template: any, unitId: number, flags: number, interval: any, callback: any): void;
+  getZones(): any;
+  execReport(
+    template: any,
+    unitId: number,
+    flags: number,
+    interval: any,
+    callback: any
+  ): void;
 };
 
-/** Wialon Session methods from JS SDK */
+/** A new interface to correctly type the SDK User object. */
+export interface WialonUser {
+  getId(): number;
+  getName(): string;
+}
+
+/**
+ * Wialon Session methods from JS SDK.
+ * This interface has been updated to include missing methods.
+ */
 export interface WialonSession {
+  // Methods to get core session info
+  getId(): number;
+  getCurrUser(): WialonUser;
+
+  // Existing methods
   initSession(url: string): void;
   loginToken(token: string, password: string, cb: (code: number) => void): void;
   logout(cb: (code: number) => void): void;
   loadLibrary(lib: string, cb?: () => void): void;
-  updateDataFlags(flags: any[], cb: (code: number) => void): void;
-  getItems(type: string): any[];
+  updateDataFlags(flags: any, cb: (code: number) => void): void;
+  getItems(type: string): any;
   getItem(id: number | string): any;
 }
 
-// Note: Global window.wialon is declared in wialon-sdk.d.ts; avoid duplicate declaration here.
+/** Raw payload produced by a successful `/login_token` REST call */
+export interface WialonApiSession {
+  eid: number;
+  au: number;
+  auth_hash: number;
+  /** single resource id **or** array (some accounts return many) */
+  resource_id: number | number[];
+  user: {
+    id: number;
+    name: string;
+  };
+  /* add extra properties if you need them */
+}
+
+/* ---------- Helper view-models ---------------------------------------------- */
 
 export interface UnitInfo {
   id: number;
@@ -80,11 +122,10 @@ export interface UnitInfo {
 }
 
 export interface ReportTableData {
-  headers: string[];
-  rows: any[][];
+  headers: string;
+  rows: any;
 }
 
-/** Detailed unit information with computed fields */
 export interface UnitDetail {
   id: number;
   name: string;
@@ -92,37 +133,6 @@ export interface UnitDetail {
   uid?: string | number;
   position: { lat: number; lng: number } | null;
   speed: number;
-  status: 'onroad' | 'pause' | 'offline';
+  status: "onroad" | "pause" | "offline";
   lastMessageTime: number | null;
-}
-
-declare global {
-  interface Window {
-    wialon: {
-      core: {
-        Session: {
-          getInstance(): any;
-        };
-        Errors: {
-          getErrorText(code: number): string;
-        };
-      };
-      item: {
-        Item: {
-          dataFlag: any;
-        };
-        Unit: {
-          dataFlag: any;
-        };
-        Resource: {
-          dataFlag: any;
-        };
-      };
-      util: {
-        Number: {
-          or(a: number, b: number): number;
-        };
-      };
-    };
-  }
 }

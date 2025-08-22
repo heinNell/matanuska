@@ -7,7 +7,7 @@ import type {
   TyreAllocation,
   StockEntry,
   StockEntryHistory,
-} from "../types/tyre";
+} from "./tyre.js";
 
 // The full code with corrections
 // (All original interfaces and helper functions are included for completeness)

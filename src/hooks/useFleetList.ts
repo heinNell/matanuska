@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { FLEET_VEHICLES } from '../data/fleetVehicles';
+import { FLEET_VEHICLES } from '../types/fleetVehicles.js';
 import { Vehicle } from '../types/vehicle';
 
 export interface FleetOption {

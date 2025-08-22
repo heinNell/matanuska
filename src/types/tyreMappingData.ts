@@ -1,5 +1,5 @@
-import type { TyreStore, StockEntry, StockEntryHistory } from '../types/tyre';
-import { TyrePosition } from '../types/tyre';
+import type { TyreStore, StockEntry, StockEntryHistory } from './tyre.js';
+import { TyrePosition } from './tyre.js';
 
 // Raw mapping data dump from CSV
 export interface TyreMappingRow {

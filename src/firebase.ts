@@ -1365,5 +1365,58 @@ export {
   where,
 };
 
-// Export Firebase app as default
+
+// ...<unchanged imports>...
+import {
+  getDatabase,
+  ref as rtdbRefRaw,
+  onValue as rtdbOnValue,
+  off as rtdbOff,
+  type Database,
+  type DataSnapshot,
+} from "firebase/database";               // 👈  NEW
+
+// -------------- existing config/initialise code left untouched --------------
+// … (all the code you pasted above up to the end of Firestore initialisation)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REALTIME DATABASE INITIALISATION  ► exports: rtdb, dbRef, dbOn, dbOff
+// ─────────────────────────────────────────────────────────────────────────────
+export const rtdb: Database = getDatabase(firebaseApp);
+
+/**
+ * Universal ref helper
+ * - `dbRef("path")`            – uses default `rtdb`
+ * - `dbRef(customDb,"path")`   – optional explicit DB (rarely needed)
+ */
+export function dbRef(path: string): ReturnType<typeof rtdbRefRaw>;
+export function dbRef(db: Database, path: string): ReturnType<typeof rtdbRefRaw>;
+export function dbRef(p1: unknown, p2?: string) {
+  return typeof p1 === "string"
+    ? rtdbRefRaw(rtdb, p1)
+    : rtdbRefRaw(p1 as Database, p2 as string);
+}
+
+/** RTDB onValue wrapper – mirrors `firebase.database().ref().onValue`  */
+export const dbOn = (
+  refOrPath: string | ReturnType<typeof rtdbRefRaw>,
+  cb: (snap: DataSnapshot) => void
+) => {
+  const reference =
+    typeof refOrPath === "string" ? rtdbRefRaw(rtdb, refOrPath) : refOrPath;
+  return rtdbOnValue(reference, cb);
+};
+
+/** RTDB off wrapper – detaches all listeners on that ref/path */
+export const dbOff = (refOrPath: string | ReturnType<typeof rtdbRefRaw>) => {
+  const reference =
+    typeof refOrPath === "string" ? rtdbRefRaw(rtdb, refOrPath) : refOrPath;
+  return rtdbOff(reference);
+};
+
+// ---------------------------------------------------------------------------
+// Existing Firestore alias (`db`) & re-exports kept for backward compatibility
+// ---------------------------------------------------------------------------
+
+// …<rest of the original file remains exactly the same>…
 export default firebaseApp;

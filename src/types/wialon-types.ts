@@ -31,16 +31,16 @@ export interface WialonSensor {
 
 export interface Sensor {
   id: number;
-  n: string;    // Name
-  t: string;    // Type
-  d: string;    // Description
-  m: string;    // Metric
-  p: string;    // Parameter
-  f: number;    // Flags
-  c: object;    // Config
-  vt: number;   // Validation type
-  vs?: number;  // Validating sensor id
-  tbl?: { x: number; a: number; b: number }[];
+  n: string; // Name
+  t: string; // Type
+  d: string; // Description
+  m: string; // Metric
+  p: string; // Parameter
+  f: number; // Flags
+  c: object; // Config
+  vt: number; // Validation type
+  vs?: number; // Validating sensor id
+  tbl?: { x: number; a: number; b: number };
 }
 
 export interface FuelMathParams {
@@ -95,11 +95,11 @@ export interface WialonError extends Error {
 
 export interface WialonGeofence {
   id: string | number;
-  n: string;  // name
-  t: number;  // type
-  w: number;  // width
-  c: string;  // color
-  p: any[];   // points/polygon data
+  n: string; // name
+  t: number; // type
+  w: number; // width
+  c: string; // color
+  p: any; // points/polygon data
 }
 
 export interface WialonResource {

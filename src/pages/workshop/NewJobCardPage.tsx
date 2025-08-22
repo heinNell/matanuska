@@ -1,6 +1,10 @@
 import DefectItemModal from "../../components/Models/Workshop/DefectItemModal";
 import PurchaseOrderModal, { PurchaseOrder } from "../../components/Models/Workshop/PurchaseOrderModal";
+import CompletionPanel from "../../components/WorkshopManagement/CompletionPanel";
+import InventoryPanel from "../../components/WorkshopManagement/InventoryPanel";
 import JobCardHeader from "../../components/WorkshopManagement/JobCardHeader";
+import JobCardNotes from "../../components/WorkshopManagement/JobCardNotes";
+import QAReviewPanel from "../../components/WorkshopManagement/QAReviewPanel";
 import TaskManager from "../../components/WorkshopManagement/TaskManager";
 import { Button } from "../../components/ui/Button";
 import Card, { CardContent } from "../../components/ui/Card";
@@ -12,38 +16,87 @@ import { Save, X } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { JobCard as JobCardType, JobCardStatus, Priority, TaskEntry } from "../../types/workshop-tyre-inventory";
 
-// Minimal local type for page state
-interface JobCardDetail {
-  id: string;
-  woNumber: string;
-  vehicle: string;
-  model: string;
-  odometer: number;
-  status: string;
-  priority: "low" | "medium" | "high" | "critical";
-  createdAt: string;
-  dueDate: string;
-  assigned: string[];
-  memo: string;
-  tasks: JobCardTask[];
+// Full JobCard type implementation with real-time data
+interface JobCardDetail extends Omit<JobCardType, 'tasks'> {
+  woNumber: string; // Alias for workOrderNumber
+  vehicle: string;  // Alias for vehicleId
+  dueDate: string;  // Alias for scheduledDate
+  assigned: string[]; // For backward compatibility
+  tasks: JobCardTask[]; // Using JobCardTask for compatibility with TaskManager
 }
 
 const createEmptyJobCard = (userName: string): JobCardDetail => {
   const now = new Date().toISOString();
+  const workOrderNumber = `WO-${Date.now()}`;
+
   return {
+    // Basic identification
     id: uuidv4(),
-    woNumber: `WO-${Date.now()}`,
+    workOrderNumber: workOrderNumber,
+    woNumber: workOrderNumber,
+    inspectionId: undefined,
+
+    // Vehicle information
+    vehicleId: "",
     vehicle: "",
     model: "",
     odometer: 0,
-    status: "initiated",
-    priority: "low",
+    tyrePositions: [],
+
+    // Status and customer info
+    customerName: "",
+    status: "initiated" as JobCardStatus,
+    priority: "low" as Priority,
+
+    // Dates
     createdAt: now,
+    createdDate: now,
+    updatedAt: now,
     dueDate: "",
+    scheduledDate: "",
+    completedDate: "",
+    estimatedCompletion: "",
+
+    // Assignment
     assigned: [userName],
-    memo: "",
+    assignedTechnician: userName,
+    createdBy: userName,
+
+    // Tasks and work details
     tasks: [],
+    workDescription: "",
+    estimatedHours: 0,
+    laborRate: 75,
+    totalLaborHours: 0,
+
+    // Costs
+    partsCost: 0,
+    totalEstimate: 0,
+    totalPartsValue: 0,
+    additionalCosts: 0,
+
+    // Notes and meta
+    notes: "",
+    memo: "",
+    faultIds: [],
+
+    // Related items
+    attachments: [],
+    remarks: [],
+    timeLog: [],
+    linkedPOIds: [],
+
+    // RCA
+    rcaRequired: false,
+    rcaCompleted: false,
+
+    // Optional fields
+    templateId: undefined,
+    checklistProgress: {},
+    qualityCheckProgress: {},
+    safetyCheckProgress: {}
   };
 };
 
@@ -54,6 +107,8 @@ const NewJobCardPage: React.FC = () => {
   const [jobCardData, setJobCardData] = useState<JobCardDetail>(createEmptyJobCard(userName));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState("tasks");
+  const [assignedParts, setAssignedParts] = useState<any[]>([]);
+  const [isPartOperationLoading, setIsPartOperationLoading] = useState(false);
 
   // Modals state
   const [isDefectModalOpen, setIsDefectModalOpen] = useState(false);
@@ -63,6 +118,66 @@ const NewJobCardPage: React.FC = () => {
   // Field updates
   const updateJobCardField = (field: keyof JobCardDetail, value: any) => {
     setJobCardData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Parts handlers
+  const handleAssignPart = async (partId: string, quantity: number) => {
+    setIsPartOperationLoading(true);
+    try {
+      // In a real app, this would be an API call
+      const newPart = {
+        id: uuidv4(),
+        partId: partId,
+        jobCardId: jobCardData.id,
+        quantity: quantity,
+        addedAt: new Date().toISOString(),
+        addedBy: userName,
+        partData: {
+          id: partId,
+          name: `Part ${partId.substring(0, 4)}`,
+          partNumber: `P-${partId.substring(0, 6)}`,
+          price: Math.floor(Math.random() * 100) + 10,
+          quantity: quantity,
+          inStock: Math.floor(Math.random() * 50) + 5
+        }
+      };
+
+      setAssignedParts(prev => [...prev, newPart]);
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Error assigning part:", error);
+      return Promise.reject(error);
+    } finally {
+      setIsPartOperationLoading(false);
+    }
+  };
+
+  const handleRemovePart = async (assignmentId: string) => {
+    setIsPartOperationLoading(true);
+    try {
+      setAssignedParts(prev => prev.filter(p => p.id !== assignmentId));
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Error removing part:", error);
+      return Promise.reject(error);
+    } finally {
+      setIsPartOperationLoading(false);
+    }
+  };
+
+  const handleUpdatePartQuantity = async (assignmentId: string, newQuantity: number) => {
+    setIsPartOperationLoading(true);
+    try {
+      setAssignedParts(prev => prev.map(p =>
+        p.id === assignmentId ? { ...p, quantity: newQuantity } : p
+      ));
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Error updating part quantity:", error);
+      return Promise.reject(error);
+    } finally {
+      setIsPartOperationLoading(false);
+    }
   };
 
   // Task handlers
@@ -128,12 +243,30 @@ const NewJobCardPage: React.FC = () => {
     setIsSubmitting(true);
     // TODO: integrate with backend
     console.log("Saving new job card:", jobCardData);
+    console.log("Assigned parts:", assignedParts);
+
+    // In a real application, this would save both jobCardData and assignedParts to the database
+    // For example: await saveJobCardWithParts(jobCardData, assignedParts);
+
     await new Promise((r) => setTimeout(r, 500));
     setIsSubmitting(false);
     navigate("/workshop/job-cards");
   };
 
   const handleCancel = () => navigate("/workshop/job-cards");
+
+  // Calculate the total cost of parts and labor
+  const calculateTotalCost = () => {
+    // Sum the cost of all assigned parts
+    const partsCost = assignedParts.reduce((total, part) => {
+      return total + (part.quantity * part.partData.price);
+    }, 0);
+
+    // Add labor costs (using a mock value of 10 hours at $75/hour)
+    const laborCost = 10 * 75;
+
+    return partsCost + laborCost;
+  };
 
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
@@ -162,6 +295,8 @@ const NewJobCardPage: React.FC = () => {
             <TabsTrigger value="parts">Parts</TabsTrigger>
             <TabsTrigger value="labor">Labor</TabsTrigger>
             <TabsTrigger value="costs">Costs</TabsTrigger>
+            <TabsTrigger value="qa-review">QA Review</TabsTrigger>
+            <TabsTrigger value="completion">Completion</TabsTrigger>
             <TabsTrigger value="attachments">Attachments</TabsTrigger>
           </TabsList>
 
@@ -224,12 +359,15 @@ const NewJobCardPage: React.FC = () => {
                   Add Sample Tasks
                 </Button>
               </div>
-              <Card>
-                <CardContent>
-                  <h3 className="font-medium text-lg mb-2">Parts Used</h3>
-                  <p className="text-gray-500">No parts added yet.</p>
-                </CardContent>
-              </Card>
+
+              <InventoryPanel
+                jobCardId={jobCardData.id}
+                assignedParts={assignedParts}
+                onAssignPart={handleAssignPart}
+                onRemovePart={handleRemovePart}
+                onUpdatePartQuantity={handleUpdatePartQuantity}
+                isLoading={isPartOperationLoading}
+              />
             </div>
           </TabsContent>
 
@@ -251,6 +389,29 @@ const NewJobCardPage: React.FC = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="qa-review">
+            <QAReviewPanel
+              jobCardId={jobCardData.id}
+              tasks={jobCardData.tasks}
+              onVerifyTask={async (taskId) => {
+                // In a real app, this would call an API
+                handleTaskUpdate(taskId, { status: "verified" });
+                return Promise.resolve();
+              }}
+              canVerifyAllTasks={jobCardData.tasks.some(t => t.status === "completed")}
+              onVerifyAllTasks={async () => {
+                // Update all completed tasks to verified
+                jobCardData.tasks.forEach(task => {
+                  if (task.status === "completed") {
+                    handleTaskUpdate(task.id, { status: "verified" });
+                  }
+                });
+                return Promise.resolve();
+              }}
+              isLoading={isSubmitting}
+            />
+          </TabsContent>
+
           <TabsContent value="attachments">
             <Card>
               <CardContent>
@@ -258,6 +419,32 @@ const NewJobCardPage: React.FC = () => {
                 <p className="text-gray-500">No attachments uploaded yet.</p>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="completion">
+            <CompletionPanel
+              jobCardId={jobCardData.id}
+              status={jobCardData.status}
+              totalCost={calculateTotalCost()}
+              laborHours={10} // Mock value, would come from state in real app
+              laborRate={75}
+              onGenerateInvoice={async () => {
+                console.log("Generating invoice for job card:", jobCardData.id);
+                return new Promise(resolve => setTimeout(resolve, 500));
+              }}
+              onMarkComplete={async () => {
+                updateJobCardField("status", "completed" as JobCardStatus);
+                return Promise.resolve();
+              }}
+              onUpdateLaborHours={async (hours) => {
+                console.log("Updating labor hours to:", hours);
+                return Promise.resolve();
+              }}
+              canComplete={jobCardData.tasks.every(task =>
+                task.status === "completed" || task.status === "verified"
+              )}
+              isLoading={isSubmitting}
+            />
           </TabsContent>
         </Tabs>
       </div>

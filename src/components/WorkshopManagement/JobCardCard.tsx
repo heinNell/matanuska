@@ -1,20 +1,12 @@
 import { AlertTriangle, Calendar, Truck, User } from "lucide-react";
 import React from "react";
 import { formatDate } from "../../utils/helpers";
+import { JobCard, JobCardStatus } from "../../types/workshop-tyre-inventory";
 
 interface JobCardProps {
-  jobCard: {
-    id: string;
-    workOrderNumber: string;
-    fleetNumber: string;
-    title: string;
-    status: string;
-    priority: string;
-    assignedTo?: string;
-    createdAt: string;
-    dueDate?: string;
-    completedAt?: string;
-  };
+  jobCard: JobCard;
+  showActions?: boolean;
+  compact?: boolean;
 }
 
 const JobCardCard: React.FC<JobCardProps> = ({ jobCard }) => {
@@ -33,16 +25,28 @@ const JobCardCard: React.FC<JobCardProps> = ({ jobCard }) => {
     }
   };
 
-  const getStatusClass = (status: string) => {
+  const getStatusClass = (status: JobCardStatus) => {
     switch (status) {
-      case "open":
-        return "bg-yellow-100 text-yellow-800";
-      case "in_progress":
+      case "created":
         return "bg-blue-100 text-blue-800";
+      case "initiated":
+        return "bg-blue-100 text-blue-800";
+      case "assigned":
+        return "bg-purple-100 text-purple-800";
+      case "in_progress":
+        return "bg-yellow-100 text-yellow-800";
+      case "parts_pending":
+        return "bg-orange-100 text-orange-800";
       case "completed":
         return "bg-green-100 text-green-800";
-      case "closed":
-        return "bg-gray-100 text-gray-800";
+      case "invoiced":
+        return "bg-indigo-100 text-indigo-800";
+      case "rca_required":
+        return "bg-pink-100 text-pink-800";
+      case "overdue":
+        return "bg-red-100 text-red-800";
+      case "inspected":
+        return "bg-teal-100 text-teal-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -59,17 +63,17 @@ const JobCardCard: React.FC<JobCardProps> = ({ jobCard }) => {
         </span>
       </div>
 
-      <p className="text-xs text-gray-700 line-clamp-2 mb-2">{jobCard.title}</p>
+      <p className="text-xs text-gray-700 line-clamp-2 mb-2">{jobCard.workDescription}</p>
 
       <div className="flex items-center text-xs text-gray-500 mb-2">
         <Truck className="w-3 h-3 mr-1" />
-        <span>Fleet {jobCard.fleetNumber}</span>
+        <span>Vehicle {jobCard.vehicleId}</span>
       </div>
 
-      {jobCard.assignedTo && (
+      {jobCard.assignedTechnician && (
         <div className="flex items-center text-xs text-gray-500 mb-2">
           <User className="w-3 h-3 mr-1" />
-          <span>{jobCard.assignedTo}</span>
+          <span>{jobCard.assignedTechnician}</span>
         </div>
       )}
 
@@ -77,10 +81,10 @@ const JobCardCard: React.FC<JobCardProps> = ({ jobCard }) => {
         <div className="flex items-center text-xs text-gray-500">
           <Calendar className="w-3 h-3 mr-1" />
           <span>
-            {jobCard.status === "completed" && jobCard.completedAt
-              ? `Completed: ${formatDate(jobCard.completedAt)}`
-              : jobCard.dueDate
-                ? `Due: ${formatDate(jobCard.dueDate)}`
+            {jobCard.status === "completed" && jobCard.completedDate
+              ? `Completed: ${formatDate(jobCard.completedDate)}`
+              : jobCard.scheduledDate
+                ? `Due: ${formatDate(jobCard.scheduledDate)}`
                 : `Created: ${formatDate(jobCard.createdAt)}`}
           </span>
         </div>
@@ -92,10 +96,10 @@ const JobCardCard: React.FC<JobCardProps> = ({ jobCard }) => {
         </span>
       </div>
 
-      {jobCard.dueDate &&
-        new Date(jobCard.dueDate) < new Date() &&
+      {jobCard.scheduledDate &&
+        new Date(jobCard.scheduledDate) < new Date() &&
         jobCard.status !== "completed" &&
-        jobCard.status !== "closed" && (
+        jobCard.status !== "invoiced" && (
           <div className="mt-2 flex items-center text-xs text-red-600">
             <AlertTriangle className="w-3 h-3 mr-1" />
             <span>Overdue</span>

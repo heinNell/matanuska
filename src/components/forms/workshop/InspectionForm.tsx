@@ -1,7 +1,7 @@
 import { Button } from "../../../components/ui/Button";
 import { AlertTriangle, ArrowLeft, CheckCircle, Clipboard, FileText, Save } from "lucide-react";
 import React, { useState } from "react";
-import { inspectionTemplates } from "../../../data/inspectionTemplates";
+import { inspectionTemplates } from "../../../types/inspectionTemplates.js";
 import { DRIVERS } from "../../../types";
 import FleetSelector from "../../common/FleetSelector";
 import Card, { CardContent, CardHeader } from "../../ui/Card";

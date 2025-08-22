@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Input, Select, TextArea } from "../../components/ui/FormElements";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
-import { TYRE_REFERENCE_DATA } from "../../data/tyreReferenceData";
+import { TYRE_REFERENCE_DATA } from "../../types/tyreReferenceData.js";
 import React, { useState } from "react";
 import TyreInventoryFilters from "./TyreInventoryFilters";
 // Placeholder for missing module

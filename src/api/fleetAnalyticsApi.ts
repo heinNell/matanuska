@@ -6,7 +6,7 @@ import {
   monthlyROIData,
   performanceData,
   vehicleUtilizationData,
-} from "../data/fleetAnalyticsData";
+} from "../types/fleetAnalyticsData.js";
 
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

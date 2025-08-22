@@ -44,6 +44,8 @@ const navSections: NavSection[] = [
     title: "Fleet Tracking",
     items: [
       { name: "Wialon Dashboard", path: "/wialon" },
+      { name: "Wialon Drivers", path: "/wialon/drivers" },
+      { name: "Wialon Geofences", path: "/wialon/geofences" },
       { name: "Wialon Configuration", path: "/wialon/config" },
       { name: "Wialon Diagnostics", path: "/wialon/diagnostics" },
     ],
@@ -140,6 +142,16 @@ const navSections: NavSection[] = [
       { name: "Customer Retention", path: "/clients/retention" },
       { name: "Active Customers", path: "/clients/active" },
       { name: "Add New Customer", path: "/clients/add-new-customer" },
+    ],
+  },
+  {
+    title: "Workshop Management",
+    items: [
+      { name: "Workshop Dashboard", path: "/workshop" },
+      { name: "Job Cards", path: "/workshop/job-card", badge: { text: "New", color: "bg-green-500" } },
+      { name: "Service Scheduling", path: "/workshop/scheduling" },
+      { name: "Maintenance Records", path: "/workshop/maintenance" },
+      { name: "Work Orders", path: "/workshop/work-orders" },
     ],
   },
   {

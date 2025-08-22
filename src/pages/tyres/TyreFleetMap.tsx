@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/badge";
-import { mappingData, TyreMappingRow } from "../../data/tyreMappingData";
+import { mappingData, TyreMappingRow } from "../../types/tyreMappingData.js";
 
 interface VehicleView {
   registrationNo: string;

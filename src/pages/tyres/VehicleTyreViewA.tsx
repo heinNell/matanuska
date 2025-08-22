@@ -33,7 +33,7 @@ const getTyreStatusColor = (status: string) => {
 };
 
 const getVehicleTyreConfiguration = () => ({ positions: [] as any[] });
-import { FLEET_VEHICLES } from "../../data/vehicles";
+import { FLEET_VEHICLES } from "../../types/vehicles.js";
 import type { FleetTyreMapping, TyreAllocation } from "../../types/tyre";
 import { CircleDot, Eye, Wrench } from "lucide-react";
 import React, { useEffect, useState } from "react";

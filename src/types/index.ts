@@ -1452,3 +1452,11 @@ export interface DieselConsumptionRecord {
   photoEvidenceName?: string;
   // ... other properties ...
 }
+
+export type { FleetStats, Vehicle, VehicleFilters } from "../types/vehicle";
+export { FLEET_VEHICLES } from "../types/fleetVehicles";
+export { filterVehicles, getFleetStats, searchVehicles } from "../types/vehicles";
+
+// Added exports for trips, tyre, and workshop data
+export * from "../types/inspectionTemplates";
+export * from "../types/tyreData";

@@ -264,14 +264,73 @@ const wialonService: WialonService = {
   async getDrivers(resourceId: number): Promise<WialonDriver[]> {
     const wialon = getWialon();
     return new Promise((resolve, reject) => {
-      const resource = wialon.core.Session.getInstance().getItem(resourceId);
-      if (!resource) return reject(new Error(`Resource ${resourceId} not found`));
+      try {
+        // Get the resource by ID
+        const resource = wialon.core.Session.getInstance().getItem(resourceId);
 
-      // Use Wialon SDK to fetch drivers
-      resource.getDrivers((code: number, drivers: WialonDriver[]) => {
-        if (code !== 0) return reject(new Error("Failed to fetch drivers"));
-        resolve(drivers);
-      });
+        // Validate resource
+        if (!resource) {
+          return reject(new Error(`Resource ${resourceId} not found`));
+        }
+
+        // Check if getDrivers method exists on the resource
+        if (typeof resource.getDrivers !== 'function') {
+          console.error('Resource does not have getDrivers method');
+          return resolve([]);
+        }
+
+        // Use Wialon SDK to fetch drivers with proper error handling
+        resource.getDrivers((code: number, driversData: any) => {
+          try {
+            // Check for API error code
+            if (code !== 0) {
+              const errorText = wialon.core.Errors?.getErrorText ?
+                wialon.core.Errors.getErrorText(code) :
+                `Code: ${code}`;
+              return reject(new Error(`Failed to fetch drivers: ${errorText}`));
+            }
+
+            // Ensure we have an array of drivers
+            if (!driversData || !Array.isArray(driversData)) {
+              console.warn('No drivers data returned or invalid format');
+              return resolve([]);
+            }
+
+            // Map the raw driver data to our expected format
+            // This is where the vI property might be accessed
+            const drivers: WialonDriver[] = driversData.map((d: any) => {
+              // Safely extract needed properties without direct access to potentially undefined fields
+              const driver: WialonDriver = {
+                id: typeof d.id !== 'undefined' ? d.id : 0,
+                name: d.n || 'Unnamed Driver',
+                // Safely handle potentially undefined properties
+                phone: d.p || '',
+                licenseNumber: d.licenseNumber || ''
+              };
+
+              // If there are other potential properties from vI, safely add them
+              if (d.vI && typeof d.vI === 'object') {
+                // Process additional properties safely
+                Object.keys(d.vI).forEach(key => {
+                  driver[key] = d.vI[key];
+                });
+              }
+
+              return driver;
+            });
+
+            resolve(drivers);
+          } catch (err) {
+            console.error('Error processing driver data:', err);
+            // Return empty array instead of rejecting to avoid breaking the UI
+            resolve([]);
+          }
+        });
+      } catch (err) {
+        console.error('Error in getDrivers:', err);
+        // Return empty array instead of rejecting for more resilience
+        resolve([]);
+      }
     });
   },
 
