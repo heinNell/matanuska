@@ -174,7 +174,7 @@ const NewJobCardPage: React.FC = () => {
         if (Array.isArray(value)) {
           return {
             ...prev,
-            notes: value.filter((n): n is JobCardNote => 
+            notes: value.filter((n): n is JobCardNote =>
               typeof n === 'object' && n !== null && 'id' in n && 'text' in n
             ),
           };
@@ -246,25 +246,16 @@ const NewJobCardPage: React.FC = () => {
 
   // Task handlers
 
+
   // TaskEntry-based handlers
   const handleTaskUpdate = (taskId: string, updates: Partial<TaskEntry>) => {
-                        setJobCardData(prev => ({
-                          ...prev,
-                          notes: [
-                            ...prev.notes.map(n =>
-                              typeof n === 'object' && n !== null
-                                ? n
-                                : {
-                                    id: `${prev.id}-note-legacy`,
-                                    text: String(n),
-                                    createdBy: prev.createdBy || "system",
-                                    createdAt: prev.createdAt,
-                                    type: "general"
-                                  }
-                            ),
-                            note
-                          ],
-                        }));
+    setJobCardData((prev) => ({
+      ...prev,
+      tasks: prev.tasks.map((t) => (t.taskId === taskId ? { ...t, ...updates } : t)),
+    }));
+  };
+
+  const handleTaskAdd = (task: Omit<TaskEntry, "taskId">) => {
     const newTask: TaskEntry = { ...task, taskId: uuidv4() } as TaskEntry;
     setJobCardData((prev) => ({ ...prev, tasks: [...prev.tasks, newTask] }));
   };
