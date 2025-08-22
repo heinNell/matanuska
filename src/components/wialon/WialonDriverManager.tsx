@@ -3,7 +3,7 @@ import { useWialonResources } from "../../hooks/useWialonResources";
 import { useWialonSdk } from "../../hooks/useWialonSdk";
 import { useWialonSession } from "../../hooks/useWialonSession";
 import React, { useState, useEffect } from "react";
-import type { WialonApiSession, WialonResource } from "../../types/wialon";
+import type { WialonApiSession } from "../../types/wialon";
 
 export const DriverManager: React.FC = () => {
   const sdkReady = useWialonSdk();

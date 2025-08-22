@@ -326,12 +326,22 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
   const parseCSV = (text: string): Trip[] => {
     try {
       const lines = text.split("\n").filter((line) => line.trim() !== "");
-      const headers = lines[0].split(",").map((h) => h.trim());
+      if (lines.length === 0) {
+        throw new Error("CSV file is empty");
+      }
+      
+      const headers = lines[0]?.split(",").map((h) => h.trim()) || [];
+      if (headers.length === 0) {
+        throw new Error("CSV headers are missing");
+      }
 
       const trips: Trip[] = [];
 
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(",").map((v) => v.trim());
+        const currentLine = lines[i];
+        if (!currentLine) continue;
+        
+        const values = currentLine.split(",").map((v) => v.trim());
         if (values.length < headers.length) continue;
 
         const tripData: Record<string, any> = {};
@@ -493,12 +503,6 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
       },
       source: "internal",
       lastUpdated: new Date().toISOString(),
-      sensorData: {
-        fuelLevel: sensorData.fuel ?? 0,
-        speed: sensorData.speed ?? 0,
-        engineHours: sensorData.engineHours ?? 0,
-        ignition: sensorData.ignition ?? false,
-      },
     };
 
     // Add the new trip to the active trips
@@ -655,12 +659,14 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
       )}
 
       {/* Error message */}
-      {error && (
+      {(error || webBookError) && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative">
-          <span className="block sm:inline">{error}</span>
+          <span className="block sm:inline">{error || webBookError}</span>
           <span
             className="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer"
-            onClick={() => setError(null)}
+            onClick={() => {
+              setError(null);
+            }}
           >
             <svg
               className="fill-current h-6 w-6 text-red-500"
@@ -675,9 +681,13 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
         </div>
       )}
 
-      {isLoading && (
+      {(isLoading || webBookLoading) && (
         <div className="text-center py-4">
-          <p>Loading webhook trips...</p>
+          <p>
+            {isLoading && "Loading webhook trips..."}
+            {webBookLoading && !isLoading && "Loading WebBook trips..."}
+            {isLoading && webBookLoading && "Loading trips..."}
+          </p>
         </div>
       )}
 
@@ -1034,8 +1044,20 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
             setIsTripStatusModalOpen(false);
             setStatusUpdateTrip(null);
           }}
-          trip={statusUpdateTrip}
-          onStatusUpdate={handleStatusUpdate}
+          trip={{
+            id: statusUpdateTrip.id,
+            fleetNumber: statusUpdateTrip.vehicle || statusUpdateTrip.tripNumber || "Unknown",
+            driverName: statusUpdateTrip.driver || "Unknown Driver",
+            route: `${statusUpdateTrip.origin || "Unknown"} - ${statusUpdateTrip.destination || "Unknown"}`,
+            startDate: statusUpdateTrip.startDate,
+            endDate: statusUpdateTrip.endDate,
+            shippedAt: (statusUpdateTrip as any).shippedAt
+          }}
+          status="shipped"
+          onUpdateStatus={async (tripId: string, status: "shipped" | "delivered", notes: string) => {
+            console.log('Status update with notes:', notes);
+            handleStatusUpdate(tripId, status);
+          }}
         />
       )}
 

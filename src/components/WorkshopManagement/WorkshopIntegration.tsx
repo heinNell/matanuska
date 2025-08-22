@@ -116,6 +116,33 @@ const WorkshopIntegration: React.FC = () => {
       <p>
         In a production environment, you should use the specific components directly in your pages.
       </p>
+
+      {/* Display sample data for demonstration */}
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold mb-2">Sample Vendors ({sampleVendors.length})</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {sampleVendors.map((vendor) => (
+            <div key={vendor.id} className="border p-3 rounded">
+              <h4 className="font-medium">{vendor.name}</h4>
+              <p className="text-sm text-gray-600">Contact: {vendor.contactPerson}</p>
+              <p className="text-sm text-gray-600">Email: {vendor.email}</p>
+              <p className="text-sm text-gray-600">Phone: {vendor.phone}</p>
+            </div>
+          ))}
+        </div>
+
+        <h3 className="text-lg font-semibold mb-2">Sample Job Cards ({sampleJobCards.length})</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {sampleJobCards.map((jobCard) => (
+            <div key={jobCard.id} className="border p-3 rounded">
+              <h4 className="font-medium">Vehicle: {jobCard.vehicle}</h4>
+              <p className="text-sm text-gray-600">Description: {jobCard.description}</p>
+              <p className="text-sm text-gray-600">Status: {jobCard.status}</p>
+              <p className="text-sm text-gray-600">Date: {jobCard.date}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

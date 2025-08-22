@@ -170,7 +170,7 @@ const PendingInvoicesPage: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (text: string, record: PendingInvoice) => (
+      render: (_, record: PendingInvoice) => (
         <Space size="small">
           <Tooltip title="View Invoice">
             <Button

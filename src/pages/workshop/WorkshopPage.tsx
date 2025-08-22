@@ -58,7 +58,7 @@ const WorkshopPage: React.FC = () => {
     {
       title: "Job Cards",
       description: "Manage maintenance job cards",
-      icon: FileText,
+      icon: Wrench,
       link: "/workshop/job-cards",
       color: "bg-purple-100 text-purple-600",
     },
@@ -309,7 +309,6 @@ const WorkshopPage: React.FC = () => {
                 createdDate: jobCard.createdDate || jobCard.createdAt,
                 workDescription: jobCard.workDescription || 'No description provided',
                 estimatedHours: jobCard.estimatedHours || 0,
-                actualHours: jobCard.actualHours || 0,
                 partsRequired: jobCard.partsRequired || [],
                 laborCost: jobCard.laborCost || 0,
                 partsCost: jobCard.partsCost || 0,
