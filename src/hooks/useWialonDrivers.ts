@@ -1,10 +1,10 @@
-// src/hooks/useWialonDrivers.ts
 import { useEffect, useState } from "react";
-import wialonService from "../services/wialonService"; // Correct default import
+import wialonService from "../services/wialonService";
 import type { WialonDriver } from "../types/wialon-types";
-import { WialonSession } from '../types/wialon';
+import { WialonApiSession } from '../types/wialon';
+import { WialonResource } from '../types/wialon'; // Consolidated WialonResource type import
 
-export function useWialonDrivers(session: WialonSession | null) {
+export function useWialonDrivers(session: WialonApiSession | null) {
   const [drivers, setDrivers] = useState<WialonDriver[]>([]);
 
   useEffect(() => {
@@ -17,24 +17,31 @@ export function useWialonDrivers(session: WialonSession | null) {
 
     (async () => {
       try {
-        // First get available resources if no resourceId provided
-        if (!session.resourceId) {
-          const resources = await wialonService.getResources();
-          if (resources && resources.length > 0 && isMounted) {
-            // Use the first resource if resourceId is not provided
-            const resourceId = resources[0]?.id;
-            if (resourceId) {
-              const list = await wialonService.getDrivers(resourceId);
-              if (isMounted) {
-                setDrivers(Array.isArray(list) ? list : []);
-              }
+        const resources: WialonResource[] = await wialonService.getResources();
+
+        // Correctly handle the case where session.resource_id is an array
+        const resourceId = Array.isArray(session.resource_id)
+          ? session.resource_id[0] // Use the first resource ID if it's an array
+          : session.resource_id;
+
+        if (resourceId) {
+          const list = await wialonService.getDrivers(resourceId);
+          if (isMounted) {
+            setDrivers(Array.isArray(list) ? list : []);
+          }
+        } else if (resources && resources.length > 0 && isMounted) {
+          // Fallback to the first available resource if none is provided in the session
+          const firstResourceId = resources[0]?.id;
+          if (firstResourceId) {
+            const list = await wialonService.getDrivers(firstResourceId);
+            if (isMounted) {
+              setDrivers(Array.isArray(list) ? list : []);
             }
           }
         } else {
-          // If resourceId is provided, use it
-          const list = await wialonService.getDrivers(session.resourceId);
+          // No resources or resource ID found
           if (isMounted) {
-            setDrivers(Array.isArray(list) ? list : []);
+            setDrivers([]);
           }
         }
       } catch (error) {

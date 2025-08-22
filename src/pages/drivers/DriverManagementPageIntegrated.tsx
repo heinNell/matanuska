@@ -75,7 +75,7 @@ const DriverManagementPage: React.FC = () => {
   const [showDriverForm, setShowDriverForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [drivers] = useState(mockDrivers);
+  const [drivers, setDrivers] = useState(mockDrivers);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedDriver, setSelectedDriver] = useState<DriverData | null>(null);
@@ -92,25 +92,32 @@ const DriverManagementPage: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleAddDriver = async (driverData: DriverData): Promise<void> => {
     setErrorMessage(null);
 
     try {
-      // In a real app, this would be handled by the form's submit handler
-      // For the mock version, just simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+
+      if (selectedDriver) {
+        // Edit existing driver
+        setDrivers((prevDrivers) =>
+          prevDrivers.map((d) => (d.id === selectedDriver.id ? { ...d, ...driverData } : d))
+        );
+      } else {
+        // Add new driver
+        const newDriver = { ...driverData, id: String(drivers.length + 1) }; // Simple ID generation
+        setDrivers((prevDrivers) => [...prevDrivers, newDriver]);
+      }
 
       setSubmitSuccess(true);
       setShowDriverForm(false);
 
-      // Reset success message after delay
       setTimeout(() => {
         setSubmitSuccess(null);
       }, 5000);
     } catch (error) {
-      console.error("Error adding driver:", error);
-      setErrorMessage("Failed to add driver. Please try again.");
+      console.error("Error adding/editing driver:", error);
+      setErrorMessage("Failed to save driver. Please try again.");
       setSubmitSuccess(false);
     }
   };

@@ -8,7 +8,7 @@ import type { WialonApiSession, WialonResource } from "../../types/wialon";
 export const DriverManager: React.FC = () => {
   const sdkReady = useWialonSdk();
   const { loggedIn, error, session } = useWialonSession(sdkReady);
-  const resources: WialonResource[] = useWialonResources(session, loggedIn) || [];
+  const { resources } = useWialonResources(session, loggedIn) || { resources: [] };
   const [selectedRes, setSelectedRes] = useState<number | null>(null);
   const [formError, setFormError] = useState<string | null>(null) as [string | null, React.Dispatch<React.SetStateAction<string | null>>];
 

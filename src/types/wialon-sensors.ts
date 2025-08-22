@@ -13,3 +13,18 @@ export interface UnitDetail {
   properties?: Record<string, any> | null;
   raw?: Record<string, any> | null;
 }
+
+export interface SensorValue {
+  value: number | string | boolean;
+  unit?: string;
+  timestamp?: number;
+}
+
+export interface BaseSensorResult {
+  fuel?: SensorValue;
+  speed?: SensorValue;
+  engineHours?: SensorValue;
+  ignition?: SensorValue;
+  loading?: boolean;
+  error?: string | null;
+}

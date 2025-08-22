@@ -7,7 +7,7 @@ import { useAppContext } from "../../context/AppContext";
 import { useRealtimeTrips } from "../../hooks/useRealtimeTrips";
 import { SupportedCurrency } from "../../types";
 import { formatCurrency } from "../../utils/helpers";
-import { useWialonSensor } from "../../hooks/useWialonSensor";
+import { useWialonUnitSensors } from "../../hooks/useWialonSensor";
 import type { BaseSensorResult } from "../../types/wialon-sensors";
 
 interface ActiveTripsProps {
@@ -117,7 +117,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
   });
 
   // Add sensor data hook
-  const sensorData = useWialonSensor(unitId ?? null, {
+  const sensorData = useWialonUnitSensors(unitId ?? null, {
     fuel: 1,
     speed: 2,
     engineHours: 3,
@@ -487,10 +487,10 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
       source: "internal",
       lastUpdated: new Date().toISOString(),
       sensorData: {
-        fuelLevel: sensorData.fuel?.value ?? 0,
-        speed: sensorData.speed?.value ?? 0,
-        engineHours: sensorData.engineHours?.value ?? 0,
-        ignition: sensorData.ignition?.value ?? 0,
+        fuelLevel: sensorData.fuel ?? 0,
+        speed: sensorData.speed ?? 0,
+        engineHours: sensorData.engineHours ?? 0,
+        ignition: sensorData.ignition ?? false,
       },
     };
 

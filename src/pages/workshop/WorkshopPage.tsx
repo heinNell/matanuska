@@ -19,6 +19,7 @@ import WorkshopIntegration from "../../components/WorkshopManagement/WorkshopInt
 
 // UI Components
 import { Card, CardContent } from "../../components/ui";
+import { JobCard } from '../../types/workshop';
 
 const WorkshopPage: React.FC = () => {
   const { stockItems, purchaseOrders, isLoading } = useWorkshop();
@@ -96,6 +97,87 @@ const WorkshopPage: React.FC = () => {
       link: "/workshop/stock-inventory",
       color: "bg-yellow-100 text-yellow-600",
     },
+  ];
+
+  const sampleJobCards: JobCard[] = [
+    {
+      id: "jc001",
+      workOrderNumber: "WO-2025-001",
+      vehicleId: "21H",
+      fleetNumber: "21H",
+      customerName: "Matanuska Fleet",
+      title: "Brake Inspection and Repair",
+      status: "in_progress",
+      priority: "high",
+      assignedTo: "John Mechanic",
+      createdAt: "2025-08-15",
+      createdDate: "2025-08-15",
+      dueDate: "2025-08-23",
+      workDescription: "Complete brake system inspection and necessary repairs",
+      estimatedHours: 4,
+      actualHours: 0,
+      partsRequired: [],
+      laborCost: 0,
+      partsCost: 0,
+      totalCost: 0,
+      notes: "",
+      attachments: [],
+      serviceType: "repair",
+      mileage: 45000,
+      location: "Main Workshop",
+      department: "Maintenance",
+      completionDate: null,
+      completedBy: null,
+      invoiceNumber: null,
+      paymentStatus: "pending",
+      warrantyInfo: null,
+      quality: {
+        checkedBy: null,
+        checkDate: null,
+        passed: false,
+        comments: ""
+      },
+      tasks: []
+    },
+    {
+      id: "jc002",
+      workOrderNumber: "WO-2025-002",
+      vehicleId: "22H",
+      fleetNumber: "22H",
+      customerName: "Matanuska Fleet",
+      title: "Scheduled Maintenance",
+      status: "open",
+      priority: "medium",
+      assignedTo: "Sarah Technician",
+      createdAt: "2025-08-18",
+      createdDate: "2025-08-18",
+      dueDate: "2025-08-25",
+      workDescription: "Regular scheduled maintenance service",
+      estimatedHours: 3,
+      actualHours: 0,
+      partsRequired: [],
+      laborCost: 0,
+      partsCost: 0,
+      totalCost: 0,
+      notes: "",
+      attachments: [],
+      serviceType: "maintenance",
+      mileage: 50000,
+      location: "Main Workshop",
+      department: "Maintenance",
+      completionDate: null,
+      completedBy: null,
+      invoiceNumber: null,
+      paymentStatus: "pending",
+      warrantyInfo: null,
+      quality: {
+        checkedBy: null,
+        checkDate: null,
+        passed: false,
+        comments: ""
+      },
+      tasks: []
+    }
   ];
 
   return (
@@ -216,88 +298,27 @@ const WorkshopPage: React.FC = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Mock job cards for demonstration */}
-          {[
-            {
-              id: "jc001",
-              workOrderNumber: "WO-2025-001",
-              vehicleId: "21H",
-              fleetNumber: "21H",
-              customerName: "Matanuska Fleet",
-              title: "Brake Inspection and Repair",
-              status: "in_progress",
-              priority: "high",
-              assignedTo: "John Mechanic",
-              createdAt: "2025-08-15",
-              createdDate: "2025-08-15",
-              dueDate: "2025-08-23",
-              workDescription: "Complete brake system inspection and necessary repairs",
-              estimatedHours: 4,
-              actualHours: 0,
-              partsRequired: [],
-              laborCost: 0,
-              partsCost: 0,
-              totalCost: 0,
-              notes: "",
-              attachments: [],
-              serviceType: "repair",
-              mileage: 45000,
-              location: "Main Workshop",
-              department: "Maintenance",
-              completionDate: null,
-              completedBy: null,
-              invoiceNumber: null,
-              paymentStatus: "pending",
-              warrantyInfo: null,
-              quality: {
-                checkedBy: null,
-                checkDate: null,
-                passed: false,
-                comments: ""
-              },
-              tasks: []
-            },
-            {
-              id: "jc002",
-              workOrderNumber: "WO-2025-002",
-              vehicleId: "22H",
-              fleetNumber: "22H",
-              customerName: "Matanuska Fleet",
-              title: "Scheduled Maintenance",
-              status: "open",
-              priority: "medium",
-              assignedTo: "Sarah Technician",
-              createdAt: "2025-08-18",
-              createdDate: "2025-08-18",
-              dueDate: "2025-08-25",
-              workDescription: "Regular scheduled maintenance service",
-              estimatedHours: 3,
-              actualHours: 0,
-              partsRequired: [],
-              laborCost: 0,
-              partsCost: 0,
-              totalCost: 0,
-              notes: "",
-              attachments: [],
-              serviceType: "maintenance",
-              mileage: 50000,
-              location: "Main Workshop",
-              department: "Maintenance",
-              completionDate: null,
-              completedBy: null,
-              invoiceNumber: null,
-              paymentStatus: "pending",
-              warrantyInfo: null,
-              quality: {
-                checkedBy: null,
-                checkDate: null,
-                passed: false,
-                comments: ""
-              },
-              tasks: []
-            }
-          ].map((jobCard) => (
-            <JobCardCard key={jobCard.id} jobCard={jobCard} />
+          {sampleJobCards.map((jobCard) => (
+            <JobCardCard
+              key={jobCard.id}
+              jobCard={{
+                ...jobCard,
+                // Ensure all required properties have default values if missing
+                vehicleId: jobCard.vehicleId || jobCard.fleetNumber,
+                customerName: jobCard.customerName || 'Matanuska Fleet',
+                createdDate: jobCard.createdDate || jobCard.createdAt,
+                workDescription: jobCard.workDescription || 'No description provided',
+                estimatedHours: jobCard.estimatedHours || 0,
+                actualHours: jobCard.actualHours || 0,
+                partsRequired: jobCard.partsRequired || [],
+                laborCost: jobCard.laborCost || 0,
+                partsCost: jobCard.partsCost || 0,
+                totalCost: jobCard.totalCost || 0,
+                notes: jobCard.notes || '',
+                attachments: jobCard.attachments || [],
+                serviceType: jobCard.serviceType || 'maintenance'
+              }}
+            />
           ))}
         </div>
       </div>

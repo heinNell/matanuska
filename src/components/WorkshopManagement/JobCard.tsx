@@ -80,16 +80,58 @@ const mockTasks: JobCardTask[] = [
   },
 ];
 
-// Mock parts
+// Mock parts with full Part interface
 const mockAssignedParts = [
   {
     id: "a1",
-    itemId: "p1",
-    quantity: 1,
-    assignedAt: "2025-06-28T10:30:00Z",
-    assignedBy: "John Smith",
-    status: "assigned" as const,
+    partId: "p1",
+    jobCardId: "jc123",
+    quantity: 2,
+    addedAt: "2025-06-28T10:30:00Z",
+    addedBy: "John Smith - Senior Mechanic",
+    partData: {
+      id: "p1",
+      name: "Front Brake Pads",
+      partNumber: "BP-F-456",
+      price: 89.99,
+      inStock: 15,
+      code: "BP-F-456",
+      unitPrice: 89.99,
+      category: "Brakes",
+      sn: 1,
+      itemName: "Front Brake Pads",
+      totalCost: 179.98,
+      quantity: 2
+    },
+    unitCost: 89.99,
+    totalCost: 179.98,
+    status: "assigned" as const
   },
+  {
+    id: "a2",
+    partId: "p2",
+    jobCardId: "jc123",
+    quantity: 1,
+    addedAt: "2025-06-28T10:35:00Z",
+    addedBy: "John Smith - Senior Mechanic",
+    partData: {
+      id: "p2",
+      name: "Engine Oil 5W-30",
+      partNumber: "EO-5W30",
+      price: 12.99,
+      inStock: 50,
+      code: "EO-5W30",
+      unitPrice: 12.99,
+      category: "Lubricants",
+      sn: 2,
+      itemName: "Engine Oil 5W-30",
+      totalCost: 12.99,
+      quantity: 1
+    },
+    unitCost: 12.99,
+    totalCost: 12.99,
+    status: "ordered" as const
+  }
 ];
 
 // Mock notes
@@ -119,17 +161,14 @@ const JobCard: React.FC = () => {
 
   // Define type for future components data
   type FutureComponentsData = {
-    assignedParts: typeof mockAssignedParts;
+    assignedParts: AssignedPart[];
     handleTaskAdd?: (task: Omit<JobCardTask, "id">) => void;
     handleTaskDelete?: (taskId: string) => void;
     handleVerifyTask?: (taskId: string) => Promise<void>;
     handleVerifyAllTasks?: () => Promise<void>;
-    handleAssignPart?: (partId: string, quantity: number) => void;
-    handleRemovePart?: (assignmentId: string) => void;
-    handleUpdatePart?: (
-      assignmentId: string,
-      updates: { quantity?: number; status?: string }
-    ) => void;
+    handleAssignPart?: (partId: string, quantity: number) => Promise<void>;
+    handleRemovePart?: (assignmentId: string) => Promise<void>;
+    handleUpdatePartQuantity?: (assignmentId: string, newQuantity: number) => Promise<void>;
     handleCompleteJob?: () => Promise<void>;
     handleGenerateInvoice?: () => Promise<void>;
   };
@@ -284,22 +323,72 @@ const JobCard: React.FC = () => {
     };
 
     // Handler functions for parts
-    futureComponentsData.current.handleAssignPart = (partId: string, quantity: number) => {
-      // Implementation will be used when component is ready
-      console.log(`Would assign part ${partId} with quantity ${quantity}`);
+    futureComponentsData.current.handleAssignPart = async (partId: string, quantity: number) => {
+      try {
+        setIsLoading(true);
+        // Implementation will be used when component is ready
+        console.log(`Assigning part ${partId} with quantity ${quantity}`);
+
+        // In a real implementation, this would:
+        // 1. Fetch part details from inventory
+        // 2. Create assignment record in Firestore
+        // 3. Update local state
+
+        // Mock implementation for now
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // TODO: Add actual part assignment logic here
+      } catch (error) {
+        console.error('Failed to assign part:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    futureComponentsData.current.handleRemovePart = (assignmentId: string) => {
-      // Implementation will be used when component is ready
-      console.log(`Would remove part assignment ${assignmentId}`);
+    futureComponentsData.current.handleRemovePart = async (assignmentId: string) => {
+      try {
+        setIsLoading(true);
+        // Implementation will be used when component is ready
+        console.log(`Removing part assignment ${assignmentId}`);
+
+        // In a real implementation, this would:
+        // 1. Remove assignment record from Firestore
+        // 2. Update local state
+
+        // Mock implementation for now
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // TODO: Add actual part removal logic here
+      } catch (error) {
+        console.error('Failed to remove part:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    futureComponentsData.current.handleUpdatePart = (
+    futureComponentsData.current.handleUpdatePartQuantity = async (
       assignmentId: string,
-      updates: { quantity?: number; status?: string }
+      newQuantity: number
     ) => {
-      // Implementation will be used when component is ready
-      console.log(`Would update part assignment ${assignmentId} with`, updates);
+      try {
+        setIsLoading(true);
+        // Implementation will be used when component is ready
+        console.log(`Updating part assignment ${assignmentId} quantity to ${newQuantity}`);
+
+        // In a real implementation, this would:
+        // 1. Update assignment record in Firestore
+        // 2. Update local state
+        // 3. Recalculate costs
+
+        // Mock implementation for now
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // TODO: Add actual quantity update logic here
+      } catch (error) {
+        console.error('Failed to update part quantity:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
   }, [userRole, tasks, handleTaskUpdate, handleLogTaskHistory]);
 
@@ -425,7 +514,7 @@ const JobCard: React.FC = () => {
         </div>
 
         <div className="space-y-6">
-          {/* QAReviewPanel component temporarily commented out - missing file
+          {/* QA Review Panel for supervisors */}
           {userRole === 'supervisor' && (
             <QAReviewPanel
               jobCardId={jobCard.id}
@@ -437,25 +526,17 @@ const JobCard: React.FC = () => {
               isLoading={isLoading}
             />
           )}
-          */}
 
-          {/* InventoryPanel component temporarily commented out - missing file
+          {/* Inventory Panel */}
           <InventoryPanel
-            jobCardId={jobCard.id}
             assignedParts={futureComponentsData.current.assignedParts}
-            onAssignPart={futureComponentsData.current.handleAssignPart}
-            onRemovePart={futureComponentsData.current.handleRemovePart}
-            onUpdatePart={futureComponentsData.current.handleUpdatePart}
+            onAssignPart={futureComponentsData.current.handleAssignPart!}
+            onRemovePart={futureComponentsData.current.handleRemovePart!}
+            onUpdatePartQuantity={futureComponentsData.current.handleUpdatePartQuantity!}
+            isLoading={isLoading}
           />
-          */}
 
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-md mb-4">
-            <p className="text-gray-500">
-              Inventory management functionality is temporarily unavailable.
-            </p>
-          </div>
-
-          {/* CompletionPanel component temporarily commented out - missing file
+          {/* Completion Panel for supervisors */}
           {userRole === 'supervisor' && (
             <CompletionPanel
               jobCardId={jobCard.id}
@@ -465,7 +546,6 @@ const JobCard: React.FC = () => {
               onGenerateInvoice={futureComponentsData.current.handleGenerateInvoice}
             />
           )}
-          */}
 
           {/* Task History */}
           <TaskHistoryList taskId={jobCard.id} />

@@ -22,7 +22,8 @@ export const FuelParameterUpdater: React.FC<{ itemId: number }> = ({ itemId }) =
         Update
       </button>
       {error && <div className="text-red-600">{error}</div>}
-      {success && <div className="text-green-600">{success}</div>}
+      {/* Corrected: Conditionally render a success message when the success state is truthy. */}
+      {success && <div className="text-green-600">Update successful!</div>}
     </form>
   );
 };

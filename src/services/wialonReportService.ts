@@ -1,88 +1,93 @@
-/* --------------------------------------------------------------------------
- *  Wialon report-related helpers
- * -------------------------------------------------------------------------- */
-import type { WialonSession } from "../types/wialon";   // ✅ correct type import
+import { WialonCoreSessionInfo } from "../hooks/useWialonSession";
+import { WialonSession } from "../types/wialon";
 
-/* ---------- types -------------------------------------------------------- */
+/**
+ * Interface for the report table.
+ * @property {number} id - The ID of the table.
+ * @property {string} l - The name of the table.
+ */
 export interface ReportTable {
   id: number;
-  n: string;  // name
-  l: string;  // label
-  t: number;  // type
-  c: number;  // columns
-  r: number;  // rows
+  l: string;
 }
 
-export interface ReportParams {
-  itemId: number;
-  col: number[];
-  flags?: number;
-}
+// Assume WIALON_API_URL and other constants are available from an environment file
+declare const WIALON_API_URL: string;
 
-/* ---------- constants ---------------------------------------------------- */
-const API_URL = "https://hst-api.wialon.com/wialon/ajax.html";
-const HEADERS  = { "Content-Type": "application/x-www-form-urlencoded" };
+/**
+ * Wialon Report Service
+ * This service encapsulates the Wialon API calls for managing and running reports.
+ */
 
-/* ---------- helpers ------------------------------------------------------ */
-const buildBody = (sid: string, svc: string, params?: unknown) =>
-  `sid=${encodeURIComponent(sid)}&svc=${svc}${
-    params ? `&params=${encodeURIComponent(JSON.stringify(params))}` : ""
-  }`;
-
-/* ---------- API calls ---------------------------------------------------- */
-export async function getReportTables(
-  session: WialonSession
-): Promise<ReportTable[]> {
-  if (!session?.sid) throw new Error("No active Wialon session");
-
-  const res  = await fetch(API_URL, {
-    method: "POST",
-    headers: HEADERS,
-    body: buildBody(session.sid, "report/get_report_tables"),
+/**
+ * Executes a report.
+ * @param {WialonSession} session - The active Wialon session object.
+ * @param {any} params - The report parameters.
+ * @returns {Promise<any>} A promise that resolves with the report results.
+ */
+export async function getReportData(session: WialonSession, params: any): Promise<any> {
+  const url = `${WIALON_API_URL}/report/exec_report?sid=${session.sid}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
   });
-  const json = await res.json();
-
-  if (!json?.items) throw new Error("Invalid response format");
-  return json.items;
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(`Wialon API Error: ${data.reason}`);
+  }
+  return data;
 }
 
-export async function getReportData(
-  session: WialonSession,
-  params: ReportParams
-): Promise<any> {
-  if (!session?.sid) throw new Error("No active Wialon session");
-
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: HEADERS,
-    body: buildBody(session.sid, "report/get_report_data", params),
-  });
-  return res.json();
+/**
+ * Waits for a report to finish.
+ * @param {WialonSession} session - The active Wialon session object.
+ * @returns {Promise<any>} A promise that resolves when the report is complete.
+ */
+export async function waitForReport(session: WialonSession): Promise<any> {
+  const url = `${WIALON_API_URL}/report/get_result?sid=${session.sid}`;
+  // Polling logic would be more robust in a real application
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  const response = await fetch(url);
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(`Wialon API Error: ${data.reason}`);
+  }
+  return data;
 }
 
-export async function waitForReport(session: WialonSession): Promise<void> {
-  if (!session?.sid) throw new Error("No active Wialon session");
-
-  const res  = await fetch(API_URL, {
-    method: "POST",
-    headers: HEADERS,
-    body: buildBody(session.sid, "report/wait_report"),
-  });
-  const json = await res.json();
-  if (json.error) throw new Error(json.error);
+/**
+ * Gets the report tables from a session.
+ * @param {WialonSession} session - The active Wialon session object.
+ * @returns {Promise<ReportTable[]>} A promise that resolves with the report tables.
+ */
+export async function getReportTables(session: WialonSession): Promise<ReportTable[]> {
+  const url = `${WIALON_API_URL}/resource/get_report_templates?sid=${session.sid}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(`Wialon API Error: ${data.reason}`);
+  }
+  return data.reportTables as ReportTable[];
 }
 
-export async function applyReportResult(
-  session: WialonSession
-): Promise<any[]> {
-  if (!session?.sid) throw new Error("No active Wialon session");
-
-  const res  = await fetch(API_URL, {
-    method: "POST",
-    headers: HEADERS,
-    body: buildBody(session.sid, "report/apply_report_result"),
-  });
-  const json = await res.json();
-  if (json.error) throw new Error(json.error);
-  return json;
+/**
+ * Applies the report result.
+ * @param {WialonSession} session - The active Wialon session object.
+ * @returns {Promise<any>} A promise that resolves with the applied report results.
+ */
+export async function applyReportResult(session: WialonSession): Promise<any> {
+  const url = `${WIALON_API_URL}/report/apply_report_result?sid=${session.sid}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(`Wialon API Error: ${data.reason}`);
+  }
+  return data;
+}
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(`Wialon API Error: ${data.reason}`);
+  }
+  return data;
 }

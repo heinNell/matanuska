@@ -4,6 +4,7 @@ import { wialonService } from "../utils/wialonService";
 import type { WialonUnit } from "../types/wialon-core";
 import type { Position } from "../types/wialon-position";
 import type { WialonUnitBrief } from "../types/wialon";
+import { fetchWialonUnits } from "../api/wialon";
 
 /**
  * Public UnitInfo expected by the app
@@ -175,7 +176,6 @@ function safeGetIconUrl(u: WialonUnitLike): string | null {
     ------------------------- */
 
 export function useWialonUnits(token?: string): UseWialonUnitsResult {
-  // Corrected state variable declarations
   const [units, setUnits] = useState<UnitInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -186,11 +186,16 @@ export function useWialonUnits(token?: string): UseWialonUnitsResult {
     setError(null);
 
     try {
-      // Initialize session if token provided and the service offers initSession
-      if (token) {
-        if (typeof wialonService.initSession === "function") {
-          await wialonService.initSession();
-        }
+      // If only token is provided, use simple implementation
+      if (token && !wialonService.initSession) {
+        const items = await fetchWialonUnits(token);
+        setUnits(items);
+        return;
+      }
+
+      // Otherwise use full implementation
+      if (token && typeof wialonService.initSession === "function") {
+        await wialonService.initSession();
       }
 
       // getUnits might return any[] (SDK types vary)
@@ -263,6 +268,24 @@ export function useWialonUnits(token?: string): UseWialonUnitsResult {
   const refreshUnits = useCallback(() => setRefreshCounter((p) => p + 1), []);
 
   return { units, loading, error, refreshUnits };
+}
+
+export default useWialonUnits;
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const items = await fetchWialonUnits(token);
+      setUnits(items);
+    } catch (e: any) {
+      setError(e.message || "Error loading units");
+    }
+    setLoading(false);
+  }, [token]);
+
+  useEffect(() => { load(); }, [load]);
+
+  return { units, loading, error, refresh: load };
 }
 
 export default useWialonUnits;

@@ -1,13 +1,12 @@
-import UnitsTable from "../../components/ui/UnitsTable";
 import React from "react";
+import UnitsTable from "../ui/UnitsTable";
+import { useWialonUnits } from "../../hooks/useWialonUnits";
 
-// Assuming you have your Wialon token readily available.
-// It's a good practice to manage tokens securely, e.g., via environment variables.
-const WIALON_TOKEN = "c1099bc37c906fd0832d8e783b60ae0dD9D1A721B294486AC08F8AA3ACAC2D2FD45FF053";
+const token = import.meta.env.VITE_WIALON_TOKEN;
 
 export const WialonUnitList: React.FC = () => {
-    // Corrected: Pass the Wialon token to the UnitsTable component.
-    return <UnitsTable wialonToken={WIALON_TOKEN} />;
+  const { units, loading, error } = useWialonUnits(token);
+  return <UnitsTable units={units} loading={loading} error={error} />;
 };
 
 export default WialonUnitList;

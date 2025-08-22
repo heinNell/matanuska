@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useWialonUnits } from "../hooks/useWialonUnits";
-import type { WialonUnit } from "../types/wialon-types";
+import { useWialonUnits, UnitInfo } from "../hooks/useWialonUnits";
 
 interface FilterOptions {
   searchTerm: string;
@@ -18,25 +17,30 @@ const UnitsTable: React.FC = () => {
     sortOrder: "asc",
   });
 
+  // Filtering and sorting logic
   const filteredAndSortedUnits = useMemo(() => {
     if (!units || units.length === 0) return [];
 
-    let filtered = units.filter((unit: WialonUnit) => {
-      // Search filter
+    let filtered = units.filter((unit: UnitInfo) => {
+      // Search filter by name or id
       if (filters.searchTerm) {
         const searchLower = filters.searchTerm.toLowerCase();
         const matchesSearch =
-          unit.getName?.().toLowerCase().includes(searchLower) ||
-          String(unit.getId?.()).toLowerCase().includes(searchLower);
+          unit.name.toLowerCase().includes(searchLower) ||
+          String(unit.id).toLowerCase().includes(searchLower);
 
         if (!matchesSearch) return false;
       }
 
-      // Online filter
+      // Online filter (has valid position)
       if (filters.showOnlineOnly) {
-        // Assume a unit is "online" if it has a position
-        const pos = unit.getPosition?.();
-        return !!pos;
+        if (
+          !unit.position ||
+          typeof unit.position.lat !== "number" ||
+          typeof unit.position.lng !== "number"
+        ) {
+          return false;
+        }
       }
 
       return true;
@@ -48,31 +52,37 @@ const UnitsTable: React.FC = () => {
       let bValue: string | number = "";
       switch (filters.sortBy) {
         case "id":
-          aValue = String(a.getId?.() || "");
-          bValue = String(b.getId?.() || "");
+          aValue = a.id;
+          bValue = b.id;
           break;
         case "name":
-          aValue = a.getName?.() || "";
-          bValue = b.getName?.() || "";
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
           break;
         case "position":
-          const apos = a.getPosition?.();
-          const bpos = b.getPosition?.();
-          aValue = apos ? `${apos.x},${apos.y}` : "";
-          bValue = bpos ? `${bpos.x},${bpos.y}` : "";
+          aValue =
+            a.position && typeof a.position.lat === "number" && typeof a.position.lng === "number"
+              ? `${a.position.lat},${a.position.lng}`
+              : "";
+          bValue =
+            b.position && typeof b.position.lat === "number" && typeof b.position.lng === "number"
+              ? `${b.position.lat},${b.position.lng}`
+              : "";
           break;
         default:
-          aValue = a.getName?.() || "";
-          bValue = b.getName?.() || "";
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
       }
 
       if (typeof aValue === "string" && typeof bValue === "string") {
         const comparison = aValue.localeCompare(bValue);
         return filters.sortOrder === "asc" ? comparison : -comparison;
       }
-
-      if (aValue < bValue) return filters.sortOrder === "asc" ? -1 : 1;
-      if (aValue > bValue) return filters.sortOrder === "asc" ? 1 : -1;
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return filters.sortOrder === "asc"
+          ? aValue - bValue
+          : bValue - aValue;
+      }
       return 0;
     });
 
@@ -80,15 +90,15 @@ const UnitsTable: React.FC = () => {
   }, [units, filters]);
 
   // Format position for display
-  const formatPosition = (pos?: { x: number; y: number }) =>
-    pos && typeof pos.x === "number" && typeof pos.y === "number"
-      ? `${pos.x.toFixed(6)}, ${pos.y.toFixed(6)}`
+  const formatPosition = (pos?: { lat: number; lng: number }) =>
+    pos && typeof pos.lat === "number" && typeof pos.lng === "number"
+      ? `${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}`
       : "Unknown";
 
   // Google Maps link
-  const getMapLink = (pos?: { x: number; y: number }) =>
-    pos && typeof pos.x === "number" && typeof pos.y === "number"
-      ? `https://maps.google.com/maps?q=${pos.y},${pos.x}`
+  const getMapLink = (pos?: { lat: number; lng: number }) =>
+    pos && typeof pos.lat === "number" && typeof pos.lng === "number"
+      ? `https://maps.google.com/maps?q=${pos.lat},${pos.lng}`
       : null;
 
   // Handle sort change
@@ -154,11 +164,11 @@ const UnitsTable: React.FC = () => {
           </thead>
           <tbody>
             {filteredAndSortedUnits.map((unit, i) => {
-              const pos = unit.getPosition?.();
+              const pos = unit.position;
               return (
-                <tr key={unit.getId?.()} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                  <td className="py-2 px-4 font-mono">{unit.getId?.()}</td>
-                  <td className="py-2 px-4">{unit.getName?.() || "Unnamed"}</td>
+                <tr key={unit.id} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <td className="py-2 px-4 font-mono">{unit.id}</td>
+                  <td className="py-2 px-4">{unit.name || "Unnamed"}</td>
                   <td className="py-2 px-4 font-mono text-xs">{formatPosition(pos)}</td>
                   <td className="py-2 px-4">
                     {getMapLink(pos) && (

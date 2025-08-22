@@ -189,7 +189,7 @@ export const useWialon = () => {
       setUnits(Array.from(unitsMapRef.current.values()));
 
       // Listener for real-time unit updates
-      const unitUpdateListener = (id: number, item: WialonUnitSDK, flags: number) => {
+      const unitUpdateListener = (id: number, item: WialonUnitSDK) => {
         if (unitsMapRef.current.has(id) || item.tp === 'avl_unit') {
           const updatedUnit = transformWialonUnit(item);
           unitsMapRef.current.set(id, updatedUnit);

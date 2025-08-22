@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent } from "./ui/card"; // alias works inside main src tree
 import { Button }            from "./ui/button";
 import { QrCode, Camera }    from "lucide-react";
-import { useCapacitor }      from "@/hooks/useCapacitor"; // alias updated for consistency
+import { useCapacitor }      from "../hooks/useCapacitor"; // alias updated for consistency
 import { toast }             from "sonner";
 
 interface MobileQRScannerProps {

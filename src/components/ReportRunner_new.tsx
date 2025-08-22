@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useWialonResources } from "../hooks/useWialonResources";
 import type { WialonResource } from "../types/wialon-types";
-import { getReportData, getReportTables, waitForReport, applyReportResult } from "../services/wialonReportService";
-import type { ReportTable } from "../services/wialonReportService";
+import {
+  getReportData,
+  getReportTables,
+  waitForReport,
+  applyReportResult,
+  type ReportTable,
+} from "../services/wialonReportService";
 
 interface ReportRunnerProps {
   session: any;
@@ -10,33 +15,40 @@ interface ReportRunnerProps {
 }
 
 const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
+  // State for resource selection
   const resources: WialonResource[] = useWialonResources(session, loggedIn);
   const [selectedResId, setSelectedResId] = useState<number | null>(null);
 
-  // --- Report templates ---
+  // State for templates
   const [templates, setTemplates] = useState<ReportTable[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
 
-  // --- Report data ---
+  // State for report data/results
   const [reportData, setReportData] = useState<any[]>([]);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
 
-  // Fetch report templates on mount or session change
+  // Fetch report templates on mount or when session/resource changes
   useEffect(() => {
-    if (!session) return;
+    if (!session || !selectedResId) {
+      setTemplates([]);
+      setSelectedTemplateId(null);
+      return;
+    }
 
     const fetchTemplates = async () => {
       try {
-        const data = await getReportTables(session);
-        setTemplates(data);
+        const data = await getReportTables(session, selectedResId);
+        setTemplates(data || []);
       } catch (err: any) {
-        console.error("Failed to fetch report templates:", err);
+        setTemplates([]);
+        setSelectedTemplateId(null);
+        setReportError("Failed to fetch report templates: " + (err?.message || err));
       }
     };
 
     fetchTemplates();
-  }, [session]);
+  }, [session, selectedResId]);
 
   // Fetch report based on selected template
   const fetchReport = async () => {
@@ -45,14 +57,18 @@ const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
     setReportError(null);
 
     try {
-      const flags = 0x0; // full JSON
-      const data = await getReportData(session, { itemId: selectedResId, col: [selectedTemplateId], flags });
+      const flags = 0x0; // full JSON, customize if needed
+      const data = await getReportData(session, {
+        itemId: selectedResId,
+        tableId: selectedTemplateId, // Changed from 'col' to 'tableId' based on your service
+        flags,
+      });
       await waitForReport(session);
       const result = await applyReportResult(session);
-      setReportData(result);
+      setReportData(result || []);
     } catch (err: any) {
-      console.error("Failed to fetch report:", err);
-      setReportError(err.message);
+      setReportError("Failed to fetch report: " + (err?.message || err));
+      setReportData([]);
     } finally {
       setReportLoading(false);
     }
@@ -67,7 +83,10 @@ const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
         Resource:
         <select
           value={selectedResId ?? ""}
-          onChange={(e) => setSelectedResId(Number(e.target.value))}
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            setSelectedResId(isNaN(value) ? null : value);
+          }}
           className="ml-2 p-1 border border-gray-300 rounded"
         >
           <option value="">-- select resource --</option>
@@ -82,7 +101,10 @@ const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
         Report Template:
         <select
           value={selectedTemplateId ?? ""}
-          onChange={(e) => setSelectedTemplateId(Number(e.target.value))}
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            setSelectedTemplateId(isNaN(value) ? null : value);
+          }}
           className="ml-2 p-1 border border-gray-300 rounded"
         >
           <option value="">-- select template --</option>
@@ -104,8 +126,8 @@ const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
       {reportError && <p className="text-red-600 mt-2">{reportError}</p>}
 
       {/* Display Report Data */}
-      {reportData.length > 0 && (
-        <pre className="mt-4 p-2 bg-gray-100 rounded overflow-auto">
+      {reportData && reportData.length > 0 && (
+        <pre className="mt-4 p-2 bg-gray-100 rounded overflow-auto text-xs">
           {JSON.stringify(reportData, null, 2)}
         </pre>
       )}

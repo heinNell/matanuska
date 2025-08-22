@@ -97,6 +97,8 @@ export interface WialonSession {
   updateDataFlags(flags: any, cb: (code: number) => void): void;
   getItems(type: string): any;
   getItem(id: number | string): any;
+
+  sid: string;
 }
 
 /** Raw payload produced by a successful `/login_token` REST call */
