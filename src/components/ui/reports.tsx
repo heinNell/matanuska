@@ -1,3 +1,4 @@
+import React from "react";
 import { TyreReports } from "../../components/Tyremanagement/TyreReports";
 
 const ReportsPage = () => {

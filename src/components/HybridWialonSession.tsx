@@ -1,3 +1,5 @@
+
+import React from "react";
 /**
  * Hybrid Wialon Session Component
  * Demonstrates both client-side token login and server-side session creation

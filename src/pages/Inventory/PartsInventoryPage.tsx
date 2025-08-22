@@ -1,3 +1,4 @@
+import React from "react";
 import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui";
 import { Badge } from "../../components/ui/badge";
 import { parseInspectionDefects } from "../../utils/inspectionUtils";

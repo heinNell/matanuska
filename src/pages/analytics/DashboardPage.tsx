@@ -1,3 +1,4 @@
+import React from "react";
 import AnalyticsControls from "../../components/AnalyticsControls";
 import { Button } from "../../components/ui/Button";
 import { FleetAnalyticsLineChart } from "../../components/ui/chart/FleetAnalyticsLineChart";
