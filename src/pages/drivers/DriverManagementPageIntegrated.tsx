@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/Button";
 import { Filter, PlusCircle, Search, User } from "lucide-react";
 import React, { useState } from "react";
 import DriverForm from "../../components/forms/driver/DriverForm";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import Modal from "../../components/ui/Modal";
 import { DriverData } from "../../hooks/useDriverFormData";
 

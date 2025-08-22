@@ -10,7 +10,7 @@ import {
   Search,
 } from "lucide-react";
 import React, { useState } from "react";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 
 // Types
 interface Violation {

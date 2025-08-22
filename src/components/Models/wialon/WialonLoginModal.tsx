@@ -1,3 +1,5 @@
+import React from "react";
+
 import { useState } from "react";
 import { wialonTokenLogin, type WialonLoginResponse } from "../../../services/wialonAuthService";
 
@@ -19,10 +21,10 @@ export default function WialonLoginModal({ onLoginSuccess }: WialonLoginModalPro
 
     try {
       const response = await wialonTokenLogin(token.trim());
-      
+
       // Store login data
       setLoginData(response);
-      
+
       // Call success callback if provided
       if (onLoginSuccess) {
         onLoginSuccess(response);
@@ -97,7 +99,7 @@ export default function WialonLoginModal({ onLoginSuccess }: WialonLoginModalPro
           <div className="text-green-600 font-medium">
             ✅ Successfully logged in to Wialon!
           </div>
-          
+
           {/* Display user information */}
           <div className="bg-green-50 p-3 rounded border border-green-200">
             <div className="text-sm">

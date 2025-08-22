@@ -1,4 +1,4 @@
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Box, Building2, Clipboard, FileText, Fuel, Truck, User } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";

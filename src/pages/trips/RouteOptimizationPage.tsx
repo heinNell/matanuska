@@ -1,7 +1,5 @@
 import { Button } from "../../components/ui/Button";
-import Card from "../../components/ui/Card";
-import CardContent from "../../components/ui/CardContent";
-import CardHeader from "../../components/ui/CardHeader";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { AlertTriangle, BarChart, Clock, TrendingUp } from "lucide-react";
 import React from "react";
 import { useAppContext } from "../../context/AppContext";

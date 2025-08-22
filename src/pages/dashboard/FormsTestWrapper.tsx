@@ -1,4 +1,4 @@
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 

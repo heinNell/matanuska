@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/Button";
 import { collection, getFirestore, onSnapshot, orderBy, query } from "firebase/firestore";
 import { AlertCircle, ChevronLeft, ChevronRight, Filter, Search, UserPlus } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 
 interface DriverSchedule {
   id: string;

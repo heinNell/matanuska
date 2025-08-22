@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/Button";
 import { AlertTriangle, ArrowLeft, Save, Trash2, Upload } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 
 // Define interfaces for nested objects
 interface EmergencyContact {

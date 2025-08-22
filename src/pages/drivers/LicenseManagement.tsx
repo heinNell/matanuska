@@ -12,7 +12,7 @@ import {
   XCircle,
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import useOfflineQuery from "../../hooks/useOfflineQuery";
 
 // Firestore license document shape (extend as needed)

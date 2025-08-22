@@ -1,4 +1,4 @@
-// Import using the React 19 style
+import React from "react";
 import {
   CartesianGrid,
   Legend,

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import useOfflineQuery from "../../hooks/useOfflineQuery";
 
 // Driver document interface (trimmed to fields we display)

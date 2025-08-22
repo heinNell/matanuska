@@ -84,7 +84,7 @@ Card.Header = CardHeader;
 Card.Content = CardContent;
 Card.Footer = CardFooter;
 
-export default Card;
+
 
 interface CardTitleProps {
   children: React.ReactNode;

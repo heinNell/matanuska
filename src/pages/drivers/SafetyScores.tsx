@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/Button";
 import { AlertTriangle, CheckCircle, Info, Shield, TrendingDown, TrendingUp } from "lucide-react";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 
 // Add type definitions
 interface DriverSafetyData {

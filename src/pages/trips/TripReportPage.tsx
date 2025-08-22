@@ -1,5 +1,5 @@
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import SyncIndicator from "../../components/ui/SyncIndicator";
 import { BarChart, DownloadCloud, FileText, Filter } from "lucide-react";
 import React from "react";

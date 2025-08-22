@@ -1,5 +1,5 @@
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Select } from "../../components/ui/FormElements";
 import { AlertTriangle, CheckCircle, Clock, Edit, Flag, Play, Upload } from "lucide-react";
 import React, { useState } from "react";
