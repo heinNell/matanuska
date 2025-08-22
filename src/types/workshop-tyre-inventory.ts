@@ -373,7 +373,7 @@ export type WorkOrderStatus =
   | "overdue"
   | "on_hold";
 export type Priority = "low" | "medium" | "high" | "critical";
-export type TaskStatus = "pending" | "in_progress" | "completed" | "not_applicable" | "on_hold";
+export type TaskStatus = "pending" | "in_progress" | "completed" | "not_applicable" | "on_hold" | "verified";
 export type TyreStatus = "new" | "in_service" | "spare" | "retreaded" | "scrapped";
 export type TyreConditionStatus = "good" | "warning" | "critical" | "needs_replacement";
 export type TyreMountStatus = "mounted" | "unmounted" | "in_storage";

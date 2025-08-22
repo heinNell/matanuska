@@ -17,6 +17,11 @@ import {
   useParams,
 } from "react-router-dom";
 import SignaturePad from "react-signature-canvas";
+import {
+  InspectionTemplate,
+  InspectionItem,
+  inspectionTemplates
+} from "../../types/inspectionTemplates";
 import { useCapacitor } from "../../hooks/useCapacitor";
 
 /* ────────────────────────────────────────────────────────── */
@@ -42,9 +47,7 @@ const hasCatch = (
 /*                         Component                         */
 /* ────────────────────────────────────────────────────────── */
 
-const EnhancedTyreInspectionForm: React.FC<
-  TyreInspectionFormProps
-> = ({ fleetNumber, position, onComplete }) => {
+const EnhancedTyreInspectionForm: React.FC<TyreInspectionFormProps> = ({ fleetNumber, position, onComplete }) => {
   /* ---------- routing params ---------- */
   const params = useParams();
   const navigate = useNavigate();
@@ -81,6 +84,10 @@ const EnhancedTyreInspectionForm: React.FC<
   const [inspectorName, setInspectorName] =
     useState<string>("");
   const [showSig, setShowSig] = useState<boolean>(false);
+
+  // Inspection template state (must be before return)
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(inspectionTemplates[0]?.id || "");
+  const selectedTemplate: InspectionTemplate | undefined = inspectionTemplates.find(t => t.id === selectedTemplateId);
   const sigPadRef = useRef<SignaturePad>(null);
 
   const {
@@ -282,6 +289,40 @@ const EnhancedTyreInspectionForm: React.FC<
 
   return (
     <div className="p-4 bg-white rounded-lg shadow">
+      {/* Inspection Template Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">Inspection Template</label>
+        <select
+          value={selectedTemplateId}
+          onChange={e => setSelectedTemplateId(e.target.value)}
+          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+        >
+          {inspectionTemplates.map(template => (
+            <option key={template.id} value={template.id}>
+              {template.name}
+            </option>
+          ))}
+        </select>
+        {selectedTemplate && (
+          <p className="text-xs text-gray-500 mt-1">{selectedTemplate.description}</p>
+        )}
+      </div>
+
+      {/* Inspection Items */}
+      {selectedTemplate && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-2">Inspection Items</h3>
+          <ul className="space-y-2">
+            {selectedTemplate.items.map((item: InspectionItem) => (
+              <li key={item.id} className="p-2 border rounded bg-gray-50">
+                <div className="font-medium">{item.title}</div>
+                <div className="text-xs text-gray-600">{item.description}</div>
+                <div className="text-xs text-gray-500">Category: {item.category} | Required: {item.requiredRole} | Critical: {item.isCritical ? "Yes" : "No"}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <h2 className="text-2xl font-semibold mb-4">
         Tyre Inspection Form
       </h2>

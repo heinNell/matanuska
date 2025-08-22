@@ -19,13 +19,40 @@ import { v4 as uuidv4 } from "uuid";
 import { JobCard as JobCardType, JobCardStatus, Priority, TaskEntry } from "../../types/workshop-tyre-inventory";
 
 // Full JobCard type implementation with real-time data
+
+// Allow tasks to be TaskEntry[] (preferred) but provide conversion for JobCardTask[]
 interface JobCardDetail extends Omit<JobCardType, 'tasks'> {
   woNumber: string; // Alias for workOrderNumber
   vehicle: string;  // Alias for vehicleId
   dueDate: string;  // Alias for scheduledDate
   assigned: string[]; // For backward compatibility
-  tasks: JobCardTask[]; // Using JobCardTask for compatibility with TaskManager
+  tasks: TaskEntry[]; // Use TaskEntry as the primary type
 }
+
+// Conversion functions between TaskEntry and JobCardTask
+const taskEntryToJobCardTask = (task: TaskEntry): JobCardTask => ({
+  id: task.taskId,
+  title: task.description,
+  description: task.notes,
+  category: task.linkedFaultId ? "Fault" : "General",
+  estimatedHours: task.estimatedHours,
+  actualHours: task.actualHours,
+  status: (task.status as any) ?? "pending",
+  assignedTo: task.assignedTo,
+  notes: task.notes,
+  isCritical: false,
+});
+
+const jobCardTaskToTaskEntry = (task: JobCardTask): TaskEntry => ({
+  taskId: task.id,
+  description: task.title,
+  status: (task.status as any) ?? "pending",
+  assignedTo: task.assignedTo,
+  estimatedHours: task.estimatedHours,
+  actualHours: task.actualHours,
+  notes: task.notes,
+  linkedFaultId: undefined,
+});
 
 const createEmptyJobCard = (userName: string): JobCardDetail => {
   const now = new Date().toISOString();
@@ -181,22 +208,24 @@ const NewJobCardPage: React.FC = () => {
   };
 
   // Task handlers
-  const handleTaskUpdate = (taskId: string, updates: Partial<JobCardTask>) => {
+
+  // TaskEntry-based handlers
+  const handleTaskUpdate = (taskId: string, updates: Partial<TaskEntry>) => {
     setJobCardData((prev) => ({
       ...prev,
-      tasks: prev.tasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t)),
+      tasks: prev.tasks.map((t) => (t.taskId === taskId ? { ...t, ...updates } : t)),
     }));
   };
 
-  const handleTaskAdd = (task: Omit<JobCardTask, "id">) => {
-    const newTask: JobCardTask = { ...task, id: uuidv4() } as JobCardTask;
+  const handleTaskAdd = (task: Omit<TaskEntry, "taskId">) => {
+    const newTask: TaskEntry = { ...task, taskId: uuidv4() } as TaskEntry;
     setJobCardData((prev) => ({ ...prev, tasks: [...prev.tasks, newTask] }));
   };
 
   const handleTaskDelete = (taskId: string) => {
     setJobCardData((prev) => ({
       ...prev,
-      tasks: prev.tasks.filter((t) => t.id !== taskId),
+      tasks: prev.tasks.filter((t) => t.taskId !== taskId),
     }));
   };
 
@@ -207,21 +236,21 @@ const NewJobCardPage: React.FC = () => {
   };
 
   const handleDefectImport = (newDefectItems: DefectItem[]) => {
-    // Convert defects to tasks
-    const tasks = newDefectItems.map((defect): JobCardTask => ({
-      id: uuidv4(),
-      title: defect.name,
-      description: `Auto-generated from defect inspection`,
-      category: defect.type === 'replace' ? 'Parts Replacement' : 'Repair',
-      estimatedHours: defect.type === 'replace' ? 2 : 1,
-      status: 'pending',
+    // Convert defects to TaskEntry
+    const tasks = newDefectItems.map((defect): TaskEntry => ({
+      taskId: uuidv4(),
+      description: defect.name,
+      status: "pending",
       assignedTo: userName,
-      isCritical: false,
+      estimatedHours: defect.type === "replace" ? 2 : 1,
+      actualHours: undefined,
+      notes: `Auto-generated from defect inspection`,
+      linkedFaultId: undefined,
     }));
 
     setJobCardData((prev) => ({
       ...prev,
-      tasks: [...prev.tasks, ...tasks]
+      tasks: [...prev.tasks, ...tasks],
     }));
 
     setIsDefectModalOpen(false);
@@ -322,6 +351,21 @@ const NewJobCardPage: React.FC = () => {
                       rows={3}
                     />
                   </div>
+                  <div>
+                    <JobCardNotes
+                      notes={Array.isArray(jobCardData.notes)
+                        ? jobCardData.notes
+                        : jobCardData.notes
+                        ? [{
+                            id: `${jobCardData.id}-note-1`,
+                            text: jobCardData.notes,
+                            createdBy: jobCardData.createdBy || "system",
+                            createdAt: jobCardData.createdAt,
+                            type: "general"
+                          }]
+                        : []}
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -329,10 +373,17 @@ const NewJobCardPage: React.FC = () => {
 
           <TabsContent value="tasks">
             <TaskManager
-              tasks={jobCardData.tasks}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskAdd={(task) => handleTaskAdd(task)}
-              onTaskDelete={handleTaskDelete}
+              // Convert TaskEntry[] to JobCardTask[] for legacy TaskManager
+              tasks={jobCardData.tasks.map(taskEntryToJobCardTask)}
+              onTaskUpdate={(taskId, updates) => {
+                // Convert updates to TaskEntry shape
+                handleTaskUpdate(taskId, updates as Partial<TaskEntry>);
+              }}
+              onTaskAdd={(task) => {
+                // Convert JobCardTask to TaskEntry
+                handleTaskAdd(jobCardTaskToTaskEntry(task as JobCardTask));
+              }}
+              onTaskDelete={(taskId) => handleTaskDelete(taskId)}
             />
           </TabsContent>
 
@@ -361,7 +412,6 @@ const NewJobCardPage: React.FC = () => {
               </div>
 
               <InventoryPanel
-                jobCardId={jobCardData.id}
                 assignedParts={assignedParts}
                 onAssignPart={handleAssignPart}
                 onRemovePart={handleRemovePart}
@@ -392,18 +442,17 @@ const NewJobCardPage: React.FC = () => {
           <TabsContent value="qa-review">
             <QAReviewPanel
               jobCardId={jobCardData.id}
-              tasks={jobCardData.tasks}
+              // Convert TaskEntry[] to JobCardTask[] for legacy QAReviewPanel
+              tasks={jobCardData.tasks.map(taskEntryToJobCardTask)}
               onVerifyTask={async (taskId) => {
-                // In a real app, this would call an API
                 handleTaskUpdate(taskId, { status: "verified" });
                 return Promise.resolve();
               }}
-              canVerifyAllTasks={jobCardData.tasks.some(t => t.status === "completed")}
+              canVerifyAllTasks={jobCardData.tasks.map(taskEntryToJobCardTask).some(t => t.status === "completed")}
               onVerifyAllTasks={async () => {
-                // Update all completed tasks to verified
                 jobCardData.tasks.forEach(task => {
-                  if (task.status === "completed") {
-                    handleTaskUpdate(task.id, { status: "verified" });
+                  if (taskEntryToJobCardTask(task).status === "completed") {
+                    handleTaskUpdate(task.taskId, { status: "verified" });
                   }
                 });
                 return Promise.resolve();
@@ -423,7 +472,6 @@ const NewJobCardPage: React.FC = () => {
 
           <TabsContent value="completion">
             <CompletionPanel
-              jobCardId={jobCardData.id}
               status={jobCardData.status}
               totalCost={calculateTotalCost()}
               laborHours={10} // Mock value, would come from state in real app

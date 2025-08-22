@@ -15,7 +15,7 @@ import {
   WorkOrder,
   WorkOrderStatus
 } from "../types/workshop-tyre-inventory";
-import type { inspectionTemplates } from "../types/inspectionTemplates";
+import type { Inspection } from "../types/vehicle";
 
 
 
@@ -808,7 +808,7 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         workOrderNumber: `WO-${new Date().getTime().toString().slice(-6)}`,
         inspectionId: inspectionId,
         vehicleId: inspection.vehicleId,
-        customerName: inspection.vehicleName?.split(' (')[0] || "Unknown",
+  customerName: inspection.vehicleId || "Unknown",
         priority: "medium", // Default priority
         status: "initiated", // Initial status
         createdDate: new Date().toISOString(),
@@ -818,16 +818,7 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         laborRate: 0,
         partsCost: 0,
         totalEstimate: 0,
-        tasks: inspection.findings?.map((finding, index) => ({
-          id: `task-${index + 1}`,
-          description: finding.description,
-          taskType: "repair",
-          priority: finding.severity as "low" | "medium" | "high" | "critical",
-          estimatedHours: 1, // Default estimated hours
-          status: "pending",
-          partsRequired: [],
-          notes: finding.recommendedAction || "",
-        })) || [],
+  tasks: [], // No findings property in Inspection type
         totalLaborHours: 0,
         totalPartsValue: 0,
         notes: `Created from inspection ${inspectionId}`,
@@ -1193,44 +1184,28 @@ export const WorkshopProvider: React.FC<{ children: ReactNode }> = ({ children }
         {
           id: 'insp-001',
           vehicleId: 'VEH-001',
-          vehicleName: 'Volvo FH16 (VEH-001)',
-          inspectionType: 'Pre-Trip Inspection',
+          inspectorName: 'John Doe',
+          inspectionType: 'pre_trip',
           status: 'completed',
-          performedBy: 'John Doe',
-          inspectionDate: '2025-08-21T08:00:00Z',
-          completedAt: '2025-08-21T08:30:00Z',
-          findings: [
-            {
-              id: 'find-001',
-              category: 'Tires',
-              description: 'Front right tire showing uneven wear',
-              severity: 'medium',
-              recommendedAction: 'Schedule rotation and alignment',
-              status: 'new'
-            },
-            {
-              id: 'find-002',
-              category: 'Lights',
-              description: 'Left taillight intermittently working',
-              severity: 'low',
-              recommendedAction: 'Replace bulb',
-              status: 'new'
-            }
-          ],
-          createdAt: '2025-08-21T08:00:00Z',
-          updatedAt: '2025-08-21T08:30:00Z'
+          scheduledDate: '2025-08-21T08:00:00Z',
+          completedDate: '2025-08-21T08:30:00Z',
+          durationMinutes: 30,
+          defectsFound: 1,
+          criticalIssues: 0,
+          notes: 'Front right tire showing uneven wear. Left taillight intermittently working.',
         },
         {
           id: 'insp-002',
           vehicleId: 'VEH-002',
-          vehicleName: 'Scania R500 (VEH-002)',
-          inspectionType: 'Annual DOT Inspection',
+          inspectorName: 'Jane Smith',
+          inspectionType: 'annual',
           status: 'in_progress',
-          performedBy: 'Jane Smith',
-          inspectionDate: '2025-08-22T09:00:00Z',
-          dueDate: '2025-08-22T17:00:00Z',
-          createdAt: '2025-08-22T09:00:00Z',
-          updatedAt: '2025-08-22T09:00:00Z'
+          scheduledDate: '2025-08-22T09:00:00Z',
+          completedDate: undefined,
+          durationMinutes: undefined,
+          defectsFound: 0,
+          criticalIssues: 0,
+          notes: '',
         }
       ];
 
