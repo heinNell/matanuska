@@ -38,33 +38,37 @@ const ReportRunner: React.FC<ReportRunnerProps> = ({ session, loggedIn }) => {
 
     const fetchTemplates = async () => {
       try {
-        const data = await getReportTables(loginData.session);
-        setTemplates(data);
+        const data = await getReportTables(session);
+        setTemplates(data || []);
       } catch (err: any) {
-        console.error("Failed to fetch report templates:", err);
+        setTemplates([]);
+        setSelectedTemplateId(null);
+        setReportError("Failed to fetch report templates: " + (err?.message || err));
       }
-    };    fetchTemplates();
+    };
+
+    fetchTemplates();
   }, [session, selectedResId]);
 
   // Fetch report based on selected template
   const fetchReport = async () => {
-    if (!selectedResId || !selectedTemplateId || !loginData?.session) return;
+    if (!selectedResId || !selectedTemplateId || !session) return;
     setReportLoading(true);
     setReportError(null);
 
     try {
-      const flags = 0x0; // full JSON
-      await getReportData(loginData.session, { 
-        itemId: selectedResId, 
-        col: [], 
-        flags 
+      const flags = 0x0; // full JSON, customize if needed
+      await getReportData(session, {
+        itemId: selectedResId,
+        tableId: selectedTemplateId,
+        flags,
       });
-      await waitForReport(loginData.session);
-      const result = await applyReportResult(loginData.session);
-      setReportData(result);
+      await waitForReport(session);
+      const result = await applyReportResult(session);
+      setReportData(result || []);
     } catch (err: any) {
-      console.error("Failed to fetch report:", err);
-      setReportError(err.message);
+      setReportError("Failed to fetch report: " + (err?.message || err));
+      setReportData([]);
     } finally {
       setReportLoading(false);
     }
