@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import React, { useMemo } from "react";
 import { Badge } from "../../components/ui/badge";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Trip } from "../../types";
 import { Client } from "../../types/client";
 import { formatCurrency, formatDate } from "../../utils/helpers";

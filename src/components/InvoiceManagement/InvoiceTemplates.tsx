@@ -1,7 +1,7 @@
 import { Button } from "../../components/ui/Button";
 import React, { useMemo } from "react";
 import useOfflineQuery from "../../hooks/useOfflineQuery";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 
 /**
  * Component for managing invoice templates

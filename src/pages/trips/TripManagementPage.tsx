@@ -1,5 +1,5 @@
 import { Button } from "../../components/ui/Button";
-import { Card } from "../../components/ui/Card";
+import { Card, CardHeader, CardContent } from "../../components/ui/Card";
 import Modal from "../../components/ui/Modal";
 import { addDoc, collection } from "firebase/firestore";
 import { PlusCircle, Truck } from "lucide-react";
@@ -94,26 +94,26 @@ const TripManagementPage: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         <Card>
-          <Card.Header title="Trip Analytics" />
-          <Card.Content>
+          <CardHeader title="Trip Analytics" />
+          <CardContent>
             <p className="text-gray-600">
               Analyze your trips and identify optimization opportunities.
             </p>
-          </Card.Content>
+          </CardContent>
         </Card>
         <Card>
-          <Card.Header title="Trip History" />
-          <Card.Content>
+          <CardHeader title="Trip History" />
+          <CardContent>
             <p className="text-gray-600">View completed trips and their performance data.</p>
-          </Card.Content>
+          </CardContent>
         </Card>
         <Card>
-          <Card.Header title="Plan Routes" />
-          <Card.Content>
+          <CardHeader title="Plan Routes" />
+          <CardContent>
             <p className="text-gray-600">
               Plan optimal routes for future trips to save time and fuel.
             </p>
-          </Card.Content>
+          </CardContent>
         </Card>
       </div>
     </div>

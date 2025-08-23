@@ -1,7 +1,7 @@
 import { Button } from "../../components/ui/Button";
 import { AlertCircle, CheckCircle, Clock, Users } from "lucide-react";
 import React from "react";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { useAppContext } from "../../context/AppContext";
 
 const InvoiceApprovalFlow: React.FC = () => {

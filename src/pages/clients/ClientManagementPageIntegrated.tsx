@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/Button";
 import { Building, Filter, PlusCircle, Search } from "lucide-react";
 import React, { useState } from "react";
 import ClientForm from "../../components/forms/client/ClientForm";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import Modal from "../../components/ui/Modal";
 
 type ClientStatus = "active" | "inactive" | "pending" | "blacklisted";
