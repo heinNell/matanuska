@@ -1,45 +1,40 @@
+
 import { Button } from "../../components/ui/Button";
 import { format } from "date-fns";
 import { Check, Download, Plus, Trash2, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import Card, { CardContent } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 
-export interface PurchaseOrderItem {
-  id: string;
-  sku: string;
-  name: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-}
+import type { PurchaseOrder, POItem } from "../../types/inventory";
 
-export interface PurchaseOrder {
-  id: string;
-  poNumber: string;
+// Extend POItem for form usage
+type PurchaseOrderFormItem = POItem & {
+  description?: string;
+  total?: number; // for legacy compatibility, but use totalPrice
+};
+
+// Extend PurchaseOrder for form usage
+type PurchaseOrderFormState = PurchaseOrder & {
   title: string;
-  description: string;
+  description?: string;
   dueDate: string;
-  vendor: string;
   requester: string;
-  priority: "Low" | "Medium" | "High" | "Urgent";
-  status: "Draft" | "Pending" | "Approved" | "Rejected" | "Ordered" | "Received" | "Completed";
-  terms: string;
+  priority: string;
   poType: string;
-  linkedWorkorder?: string;
-  linkedVehicle?: string;
+  terms: string;
   shippingAddress: string;
-  items: PurchaseOrderItem[];
   subTotal: number;
   tax: number;
   shipping: number;
   grandTotal: number;
+  linkedWorkorder?: string;
+  linkedVehicle?: string;
+  attachments: string[];
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  attachments?: string[];
-}
+  items: PurchaseOrderFormItem[];
+};
+
+// PurchaseOrderItem is imported from types/workshop-job-card
 
 interface PurchaseOrderFormProps {
   initialData?: PurchaseOrder;
@@ -54,8 +49,8 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
   onCancel,
   onGeneratePDF,
 }) => {
-  const [data, setData] = useState<PurchaseOrder>(
-    initialData || {
+  const [data, setData] = useState<PurchaseOrderFormState>(
+    (initialData as PurchaseOrderFormState) || {
       id: `po-${Date.now()}`,
       poNumber: `PO-${Date.now().toString().slice(-6)}`,
       title: "",
@@ -64,7 +59,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
       vendor: "",
       requester: "",
       priority: "Medium",
-      status: "Draft",
+      status: "draft",
       terms: "Net 30",
       poType: "Standard",
       shippingAddress: "",
@@ -77,6 +72,10 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
       updatedAt: new Date().toISOString(),
       createdBy: "",
       attachments: [],
+      notes: "",
+      orderDate: format(new Date(), "yyyy-MM-dd"),
+      totalAmount: 0,
+      paymentStatus: "unpaid",
     }
   );
 
@@ -86,11 +85,11 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
     calculateTotals();
   }, [data.items, data.tax, data.shipping]);
 
-  const handleChange = (field: keyof PurchaseOrder, value: any) => {
+  const handleChange = (field: keyof PurchaseOrderFormState, value: any) => {
     setData((prev) => ({ ...prev, [field]: value }));
-  };
+  }
 
-  const handleItemChange = (itemId: string, field: keyof PurchaseOrderItem, value: any) => {
+  const handleItemChange = (itemId: string, field: keyof PurchaseOrderFormItem, value: any) => {
     setData((prev) => ({
       ...prev,
       items: prev.items.map((item) => (item.id === itemId ? { ...item, [field]: value } : item)),
@@ -103,7 +102,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
           if (item.id === itemId) {
             return {
               ...item,
-              total: item.quantity * item.unitPrice,
+              totalPrice: item.quantity * item.unitPrice,
             };
           }
           return item;
@@ -114,14 +113,14 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
   };
 
   const handleAddItem = () => {
-    const newItem: PurchaseOrderItem = {
+    const newItem: PurchaseOrderFormItem = {
       id: `item-${Date.now()}`,
       sku: "",
       name: "",
-      description: "",
       quantity: 1,
       unitPrice: 0,
-      total: 0,
+      totalPrice: 0,
+      description: "",
     };
     setData((prev) => ({
       ...prev,
@@ -137,7 +136,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
   };
 
   const calculateTotals = () => {
-    const subTotal = data.items.reduce((sum, item) => sum + item.total, 0);
+    const subTotal = data.items.reduce((sum: number, item: PurchaseOrderFormItem) => sum + (item.totalPrice || 0), 0);
     const tax = subTotal * (data.tax / 100);
     const grandTotal = subTotal + tax + data.shipping;
 
@@ -328,7 +327,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {data.items.map((item) => (
+                  {data.items.map((item: PurchaseOrderFormItem) => (
                     <tr key={item.id} className="border-b">
                       <td className="py-3 px-4">{item.sku || "—"}</td>
                       <td className="py-3 px-4">{item.name}</td>
@@ -386,7 +385,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             <div className="mt-6">
               <h3 className="font-medium text-lg mb-3">Attachments</h3>
               <div className="flex flex-wrap gap-4">
-                {data.attachments.map((attachment, idx) => (
+                {data.attachments.map((attachment: string, idx: number) => (
                   <div key={idx} className="border rounded-md p-2 flex flex-col items-center">
                     <div className="w-24 h-24 bg-gray-100 rounded flex items-center justify-center">
                       <img
@@ -646,7 +645,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
                 </label>
                 {data.attachments && data.attachments.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {data.attachments.map((url, idx) => (
+                    {data.attachments.map((url: string, idx: number) => (
                       <div
                         key={idx}
                         className="relative group border rounded-md overflow-hidden w-16 h-16"
@@ -721,7 +720,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
                       <input
                         type="text"
                         className="form-input rounded-md w-full border-gray-300"
-                        value={item.description}
+                        value={(item as PurchaseOrderFormItem).description}
                         onChange={(e) => handleItemChange(item.id, "description", e.target.value)}
                         placeholder="Description"
                       />
