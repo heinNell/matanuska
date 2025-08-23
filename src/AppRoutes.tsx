@@ -137,6 +137,7 @@ const TyreDashboard = lazy(() => import("./pages/tyres/TyreDashboard"));
  * ----------------------------- */
 const CARReportDetails = lazy(() => import("./components/Adminmangement/CARReportDetails"));
 const ActionItemDetails = lazy(() => import("./components/Adminmangement/ActionItemDetails"));
+
 // Lazy-loaded Wialon components with named exports
 const WialonDriverManager = lazy(() =>
   import("./components/wialon/WialonDriverManager").then((m) => ({ default: m.DriverManager }))
@@ -145,6 +146,9 @@ const WialonDriverManager = lazy(() =>
 const WialonGeofenceManager = lazy(() =>
   import("./components/wialon/WialonGeofenceManager").then((m) => ({ default: m.WialonGeofenceManager }))
 );
+
+// Wialon Dashboard page
+const WialonDashboard = lazy(() => import("./pages/wialon/WialonDashboard"));
 
 /* -----------------------------
  * 404
@@ -305,8 +309,9 @@ export const AppRoutes: React.FC = () => {
           <Route path="wialon-geofences" element={withSuspense(WialonGeofenceManager)} />
         </Route>
 
+
         {/* Wialon shortcuts (aliases) */}
-        <Route path="wialon">
+        <Route path="wialon" element={withSuspense(WialonDashboard)}>
           <Route path="drivers" element={withSuspense(WialonDriverManager)} />
           <Route path="geofences" element={withSuspense(WialonGeofenceManager)} />
         </Route>
