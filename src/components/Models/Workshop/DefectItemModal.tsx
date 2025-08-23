@@ -1,3 +1,4 @@
+import React from "react";
 import Modal from "../../../components/ui/Modal";
 import { DefectItem } from "../../../utils/inspectionUtils";
 

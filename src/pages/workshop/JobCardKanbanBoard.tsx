@@ -1,5 +1,5 @@
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import Modal from "../../components/ui/Modal";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { AlertTriangle, CheckCircle, Clock, Inbox, Plus, Settings } from "lucide-react";

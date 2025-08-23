@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent } from "../ui/Card";
+import { Card, CardContent } from "../ui/Card";
 
 // Local state shape aligned with central JobCardTask
 interface JobCardDetail {

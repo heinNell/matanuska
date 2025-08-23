@@ -1,3 +1,4 @@
+import React from "react";
 import { ArrowDownToLine, Clipboard, Package, QrCode, Truck, Wrench } from "lucide-react";
 import { QRCode } from "qrcode.react";
 import { useEffect, useState } from "react";

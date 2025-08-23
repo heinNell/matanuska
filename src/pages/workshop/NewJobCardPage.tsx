@@ -7,7 +7,7 @@ import JobCardNotes from "../../components/WorkshopManagement/JobCardNotes.js";
 import QAReviewPanel from "../../components/WorkshopManagement/QAReviewPanel.js";
 import TaskManager from "../../components/WorkshopManagement/TaskManager.js";
 import { Button } from "../../components/ui/Button.js";
-import Card, { CardContent } from "../../components/ui/Card.js";
+import { Card, CardContent } from "../../components/ui/Card.js";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs.js";
 import type { JobCardTask } from "../../types/index.js";
 import type { DefectItem } from "../../utils/inspectionUtils.js";

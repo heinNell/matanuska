@@ -7,7 +7,7 @@ import { useWebBookTrips, WebBookTrip } from "../../hooks/useWebBookTrips";
 import { Trip } from "../../types";
 import { formatDateTime } from "../../utils/helpers";
 import CompletedTripEditModal from "../Models/Trips/CompletedTripEditModal";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 import ErrorMessage from "../ui/ErrorMessage";
 import LoadingIndicator from "../ui/LoadingIndicator";
 
