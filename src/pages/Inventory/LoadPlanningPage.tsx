@@ -1,7 +1,7 @@
 import { Button } from "../../components/ui/Button";
 import { ChevronRight, Layers, Package, Plus, RefreshCw } from "lucide-react";
 import React from "react";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { useAppContext } from "../../context/AppContext";
 
 const LoadPlanningPage: React.FC = () => {

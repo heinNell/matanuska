@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { loadGoogleMapsScript, isGoogleMapsAPILoaded } from '../../utils/googleMapsLoader';
 import { checkEnvVariables, verifyGoogleMapsConfig } from '../../utils/envChecker';
-import Card, { CardContent, CardHeader } from '../ui/Card';
+import { Card, CardContent, CardHeader } from '../ui/Card';
 
 const GoogleMapsTest: React.FC = () => {
   const [mapLoaded, setMapLoaded] = useState(isGoogleMapsAPILoaded());
