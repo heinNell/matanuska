@@ -210,6 +210,7 @@ const FleetTable: React.FC = () => {
       <Card>
         <CardHeader title="Filter Fleet" />
         <CardContent>
+          <CardTitle>Filter Fleet</CardTitle>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative md:col-span-2">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -275,6 +276,7 @@ const FleetTable: React.FC = () => {
           }
         />
         <CardContent>
+          <CardTitle>Fleet Vehicles</CardTitle>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">

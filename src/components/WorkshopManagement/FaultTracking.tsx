@@ -141,6 +141,7 @@ const FaultTracking: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className={criticalFaults > 0 ? "border-l-4 border-l-red-500" : ""}>
           <CardContent className="p-4">
+            <CardTitle>Critical Faults</CardTitle>
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm text-gray-500">Critical Faults</p>
@@ -154,6 +155,7 @@ const FaultTracking: React.FC = () => {
 
         <Card>
           <CardContent className="p-4">
+            <CardTitle>Open Faults</CardTitle>
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm text-gray-500">Open Faults</p>
@@ -167,6 +169,7 @@ const FaultTracking: React.FC = () => {
 
         <Card>
           <CardContent className="p-4">
+            <CardTitle>In Progress</CardTitle>
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm text-gray-500">In Progress</p>
@@ -180,6 +183,7 @@ const FaultTracking: React.FC = () => {
 
         <Card>
           <CardContent className="p-4">
+            <CardTitle>Resolved</CardTitle>
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm text-gray-500">Resolved</p>

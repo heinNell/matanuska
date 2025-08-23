@@ -4,7 +4,6 @@ import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 import { formatAddress, calculateDistance } from "../utils/mapUtils";
 import { fetchVehicleData } from "../api/vehicleApi";
 import type { Vehicle } from "../types/vehicle";
-import { useWialon } from "@/context/WialonProvider";
 
 // --- CONSTANTS ---
 const DEFAULT_CENTER: google.maps.LatLngLiteral = { lat: 61.2181, lng: -149.9003 };

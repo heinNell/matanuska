@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import EnhancedMapComponent from "../components/Map/EnhancedMapComponent";
 import { useFleetList } from "../hooks/useFleetList";
 import { Location } from "../types/mapTypes";
+import { useWialon } from "@/context/WialonProvider";
 
 // Define GeoJSON interfaces
 interface GeoJSONPoint {
@@ -47,187 +48,31 @@ const FleetLocationMapPage: React.FC = () => {
   const [showRoutes, setShowRoutes] = useState<boolean>(false);
   const { fleetOptions } = useFleetList() as { fleetOptions: FleetOption[] };
 
-  // This would be replaced with real data from your fleet tracking system
+  // Wialon integration
+  const { loggedIn, initializing, error, units, login, token } = useWialon();
+
+  // On mount: auto-login to Wialon if not initializing/logged in
   useEffect(() => {
-    // Simulated vehicle location data - in a real app this would come from Firebase/Wialon
-    const vehicleGeoJSON: GeoJSONData = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          properties: {
-            name: "21H - ADS 4865",
-            uid: "352592576757652",
-            brand: "Scania",
-            model: "G460",
-            year: 2010,
-            fuel_type: "Diesel",
-            cargo_type: "32 Ton",
-            effective_capacity: "Unknown",
-            sensors: "LHS Tank, RHS Tank",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [31.053, -17.829],
-          },
-        },
-        {
-          type: "Feature",
-          properties: {
-            name: "28H - AFQ 1329 (Int Sim)",
-            uid: "352592576816946",
-            brand: "Shacman",
-            model: "X3000",
-            year: 2020,
-            fuel_type: "Diesel",
-            cargo_type: "32 Ton",
-            effective_capacity: "600",
-            sensors: "Small Tank, Big Tank",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [31.053, -17.829],
-          },
-        },
-        {
-          type: "Feature",
-          properties: {
-            name: "22H - AGZ 3812 (ADS 4866)",
-            uid: "864454077916934",
-            brand: "Scania",
-            model: "Unknown",
-            year: "Unknown",
-            fuel_type: "Diesel",
-            cargo_type: "32 Ton",
-            effective_capacity: "900",
-            sensors: "Unknown",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [31.053, -17.829],
-          },
-        },
-        {
-          type: "Feature",
-          properties: {
-            name: "23H - AFQ 1324 (Int Sim)",
-            uid: "352592576285704",
-            brand: "Shacman",
-            model: "X3000",
-            year: 2020,
-            fuel_type: "Diesel",
-            cargo_type: "29.5 Ton (reefer)",
-            effective_capacity: "600",
-            sensors: "Small Tank, Big Tank",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [31.053, -17.829],
-          },
-        },
-        {
-          type: "Feature",
-          properties: {
-            name: "31H - AGZ 1963 (Int sim)",
-            uid: "864454077925646",
-            brand: "Teltonika",
-            model: "FMC920",
-            year: 2020,
-            fuel_type: "Diesel",
-            cargo_type: "Unknown",
-            effective_capacity: "N/A",
-            sensors: "RHS Tank, LHS Tank",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [31.053, -17.829],
-          },
-        },
-        {
-          type: "Feature",
-          properties: {
-            name: "26H - AFQ 1327 (Int Sim)",
-            uid: "357544376232183",
-            brand: "Shacman",
-            model: "X3000",
-            year: 2020,
-            fuel_type: "Diesel",
-            cargo_type: "32 Ton",
-            effective_capacity: "600",
-            sensors: "Big Tank, Small Tank",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [31.053, -17.829],
-          },
-        },
-        {
-          type: "Feature",
-          properties: {
-            name: "24H - AFQ 1325 (Int Sim)",
-            uid: "352625693727222",
-            brand: "Shacman",
-            model: "X3000",
-            year: 2020,
-            fuel_type: "Diesel",
-            cargo_type: "32 Ton",
-            effective_capacity: "600",
-            sensors: "Big Tank, Small Tank",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [31.053, -17.829],
-          },
-        },
-        {
-          type: "Feature",
-          properties: {
-            name: "29H - AGJ 3466",
-            uid: "864454076614506",
-            vehicle_class: "empty_vehicle",
-            brand: null,
-            model: null,
-            year: null,
-            fuel_type: null,
-            sensors: "Big Tank, Small Tank",
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [31.053, -17.829],
-          },
-        },
-      ],
-    };
+    if (!initializing && !loggedIn && token) {
+      login(token);
+    }
+  }, [initializing, loggedIn, login, token]);
 
-    // Convert GeoJSON features to Location objects
-    const vehicleLocations: Location[] = vehicleGeoJSON.features
-      .filter((feature) => {
-        const coordinates = feature.geometry.coordinates;
-        return typeof coordinates[0] === 'number' && typeof coordinates[1] === 'number';
-      })
-      .map((feature) => {
-        const [lng, lat] = feature.geometry.coordinates as [number, number];
+  // When Wialon units are available, use them for the map
+  useEffect(() => {
+    if (loggedIn && units && units.length > 0) {
+      // Convert Wialon units to Location[]
+      const wialonLocations = units.map((unit: any) => ({
+        lat: unit.lat ?? 0,
+        lng: unit.lon ?? 0,
+        title: unit.name ?? unit.id,
+        info: unit.id,
+        customFields: unit,
+      }));
+      setVehicles(wialonLocations);
+    }
+  }, [loggedIn, units]);
 
-        return {
-          lat,
-          lng,
-          title: feature.properties.name,
-          info: `${feature.properties.brand || ""} ${feature.properties.model || ""}`,
-          customFields: {
-            uid: feature.properties.uid,
-            brand: feature.properties.brand || "",
-            model: feature.properties.model || "",
-            year: feature.properties.year?.toString() || "",
-            fuel_type: feature.properties.fuel_type || "",
-            ...(feature.properties.cargo_type && { cargo_type: feature.properties.cargo_type }),
-            ...(feature.properties.effective_capacity && {
-              effective_capacity: feature.properties.effective_capacity,
-            }),
-            ...(feature.properties.sensors && { sensors: feature.properties.sensors }),
-          },
-        };
-      });    setVehicles(vehicleLocations);
-  }, []);
 
   // Filter vehicles if a specific one is selected
   const displayedVehicles = selectedVehicle
@@ -238,6 +83,17 @@ const FleetLocationMapPage: React.FC = () => {
     <div className="container mx-auto px-4 py-6">
       <div className="bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-semibold mb-4">Fleet Location Map</h1>
+
+        {/* Wialon status */}
+        <div className="mb-4">
+          {initializing && <span className="text-blue-600">Initializing Wialon session...</span>}
+          {!initializing && error && (
+            <span className="text-red-600">Wialon Error: {error.message}</span>
+          )}
+          {!initializing && !error && !loggedIn && (
+            <span className="text-yellow-700">Not logged in to Wialon. <button className="ml-2 px-2 py-1 bg-blue-500 text-white rounded" onClick={() => login(token || undefined)}>Login</button></span>
+          )}
+        </div>
 
         {/* Controls */}
         <div className="mb-4 flex flex-wrap gap-4">

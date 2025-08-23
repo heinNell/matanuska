@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
 import JobCardHeader from "../../components/WorkshopManagement/JobCardHeader";
 import TaskManager from "../../components/WorkshopManagement/TaskManager";
@@ -7,7 +7,6 @@ import type { JobCardTask } from "../../types";
 import { format } from "date-fns";
 import { doc, setDoc } from "firebase/firestore"; // Firestore functions
 import { Save, X } from "lucide-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "../../components/ui/Button";

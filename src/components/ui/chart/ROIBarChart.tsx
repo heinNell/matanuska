@@ -1,4 +1,3 @@
-import React from "react";
 import { useFleetAnalytics } from "../../../context/FleetAnalyticsContext";
 import {
   Chart as ChartJS,

@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Input } from "../../components/ui";
 import { Badge } from "../../components/ui/badge";
