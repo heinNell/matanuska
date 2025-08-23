@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/Button";
 import { Copy, Edit, Plus, Search, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { useAppContext } from "../../context/AppContext";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import SyncIndicator from "../ui/SyncIndicator";
 
 interface TripTemplate {

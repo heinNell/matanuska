@@ -1,5 +1,5 @@
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { BarChart3, Calendar, Download, TrendingDown, TrendingUp, Truck } from "lucide-react";
 import React, { useState } from "react";
 import { DieselConsumptionRecord } from "../../types";

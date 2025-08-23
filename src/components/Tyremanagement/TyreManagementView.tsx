@@ -15,7 +15,7 @@ import {
   Target,
 } from "lucide-react";
 import React, { useState } from "react";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import Modal from "../ui/Modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/Tabs";
 

@@ -1,7 +1,7 @@
 import { Button } from "../../components/ui/Button";
 import { CheckCircle, Clock, FileText, Shield, User } from "lucide-react";
 import React from "react";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { JobCardTask, TaskHistoryEntry } from "../../types";
 import { formatDateTime } from "../../utils/helpers";
 

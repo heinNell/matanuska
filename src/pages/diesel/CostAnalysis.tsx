@@ -1,5 +1,5 @@
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Select } from "../../components/ui/FormElements";
 import SyncIndicator from "../../components/ui/SyncIndicator";
 import { BarChart, Download, Filter, PieChart, TrendingDown, TrendingUp } from "lucide-react";

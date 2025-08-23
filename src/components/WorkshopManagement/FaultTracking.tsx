@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { formatDate } from "../../utils/helpers";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 
 // Mock fault data
 const mockFaults = [

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '../ui/Card';
 const GoogleMapsTest: React.FC = () => {
   const [mapLoaded, setMapLoaded] = useState(isGoogleMapsAPILoaded());
   const [mapError, setMapError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     if (!mapLoaded) {
       // Check Google Maps configuration first
@@ -15,7 +15,7 @@ const GoogleMapsTest: React.FC = () => {
         setMapError(config.message);
         return;
       }
-      
+
       loadGoogleMapsScript()
         .then(() => {
           console.log('Google Maps API loaded successfully');
@@ -24,7 +24,7 @@ const GoogleMapsTest: React.FC = () => {
         .catch((error) => {
           console.error('Error loading Google Maps API:', error);
           const errorMessage = error.message || 'Failed to load Google Maps';
-          setMapError(errorMessage + 
+          setMapError(errorMessage +
             '\n\nPlease verify:\n1. API key is valid\n2. Billing is enabled\n3. Maps JavaScript API is enabled');
         });
     }
@@ -39,7 +39,7 @@ const GoogleMapsTest: React.FC = () => {
           center: { lat: -26.2041, lng: 28.0473 }, // Johannesburg
           zoom: 12,
         });
-        
+
         // Add a marker
         new window.google.maps.Marker({
           position: { lat: -26.2041, lng: 28.0473 },
@@ -52,23 +52,23 @@ const GoogleMapsTest: React.FC = () => {
 
   // Use the environment checker utility
   const [envCheck, setEnvCheck] = useState<any>(null);
-  
+
   useEffect(() => {
     const check = checkEnvVariables();
     const mapsConfig = verifyGoogleMapsConfig();
     setEnvCheck({ ...check, mapsConfig });
-    
+
     // Log raw values for debugging
     console.log('Raw env values:', {
-      apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 
-        `${import.meta.env.VITE_GOOGLE_MAPS_API_KEY.substring(0, 4)}... (${import.meta.env.VITE_GOOGLE_MAPS_API_KEY.length} chars)` : 
+      apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?
+        `${import.meta.env.VITE_GOOGLE_MAPS_API_KEY.substring(0, 4)}... (${import.meta.env.VITE_GOOGLE_MAPS_API_KEY.length} chars)` :
         'not set',
       serviceUrl: import.meta.env.VITE_MAPS_SERVICE_URL || 'not set',
       iframeUrl: import.meta.env.VITE_GOOGLE_MAPS_IFRAME_URL || 'not set',
       mode: import.meta.env.MODE
     });
   }, []);
-  
+
   // API Key info
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
   const iframeUrl = import.meta.env.VITE_GOOGLE_MAPS_IFRAME_URL || '';
@@ -87,7 +87,7 @@ const GoogleMapsTest: React.FC = () => {
             <p>Config Message: {envCheck?.mapsConfig?.message}</p>
             <p>Environment Mode: {import.meta.env.MODE}</p>
             {mapError && <p className="text-red-500">Error: {mapError}</p>}
-            
+
             <div className="mt-2 p-2 bg-gray-200 rounded overflow-auto max-h-32">
               <p className="font-bold">Environment Variables Check:</p>
               {envCheck ? (
@@ -117,13 +117,13 @@ const GoogleMapsTest: React.FC = () => {
               )}
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Dynamic Google Maps JS API */}
             <div>
               <h3 className="font-medium mb-2">Google Maps JavaScript API:</h3>
-              <div 
-                id="google-map" 
+              <div
+                id="google-map"
                 style={{ height: '300px', width: '100%' }}
                 className="border rounded-md"
               >
@@ -145,13 +145,13 @@ const GoogleMapsTest: React.FC = () => {
                 )}
               </div>
             </div>
-            
+
             {/* Google Maps Embed API */}
             <div>
               <h3 className="font-medium mb-2">Google Maps Embed API:</h3>
               <iframe
-                src={iframeUrl && !iframeUrl.includes('${') ? 
-                  iframeUrl : 
+                src={iframeUrl && !iframeUrl.includes('${') ?
+                  iframeUrl :
                   `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=-26.2041,28.0473&zoom=12`}
                 style={{ height: '300px', width: '100%' }}
                 className="border rounded-md"
