@@ -1,7 +1,7 @@
 // src/components/MobileQRScanner.tsx
 import * as React from "react";
 import { useState } from "react";
-import Card, { CardContent } from "../../../../src/components/ui/Card";
+import { Card, CardContent } from "../../../../src/components/ui/Card";
 import { Button } from "../../../../src/components/ui/Button";
 import { QrCode, Camera } from "lucide-react";
 import { useCapacitor } from "../hooks/useCapacitor";

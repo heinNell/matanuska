@@ -1,7 +1,7 @@
 import { Button } from "../../../components/ui/Button";
 import { AlertTriangle, Plus, RefreshCw, Wrench } from "lucide-react";
 import React, { useState } from "react";
-import Card, { CardContent, CardHeader } from "../../ui/Card";
+import { Card, CardContent, CardHeader } from "../../ui/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/Tabs";
 
 const MaintenanceModule: React.FC = () => {

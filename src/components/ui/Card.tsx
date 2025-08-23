@@ -5,13 +5,8 @@ interface CardProps {
   className?: string;
 }
 
-interface CardComponent extends React.FC<CardProps> {
-  Header: typeof CardHeader;
-  Content: typeof CardContent;
-  Footer: typeof CardFooter;
-}
 
-export const Card: CardComponent = ({ children, className = "" }) => {
+export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
   return (
     <div className={`bg-white rounded-lg shadow-md overflow-hidden card-hover-effect ${className}`}>
       {children}
@@ -80,9 +75,10 @@ export const CardFooter: React.FC<CardFooterProps> = ({ children, className = ""
   );
 };
 
-Card.Header = CardHeader;
-Card.Content = CardContent;
-Card.Footer = CardFooter;
+
+(Card as any).Header = CardHeader;
+(Card as any).Content = CardContent;
+(Card as any).Footer = CardFooter;
 
 
 

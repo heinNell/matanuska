@@ -3,7 +3,7 @@ import { QRCode } from "qrcode.react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 import { useFleetData, Vehicle } from "../../hooks/useFleetData";
 
 type QRCodeType = "inspection" | "jobcard" | "fleet";

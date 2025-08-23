@@ -7,7 +7,7 @@ import { formatCurrency, formatDate } from "../../utils/helpers";
 
 // ─── UI Components ───────────────────────────────────────────────
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 import { Input, Select, TextArea } from "../ui/FormElements";
 import Modal from "../ui/Modal";
 

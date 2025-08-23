@@ -28,7 +28,7 @@ import CostList from "../lists/CostList";
 import InvoiceSubmissionModal from "../Models/Invoice/InvoiceSubmissionModal";
 import SystemCostGenerator from "../SystemCostGenerator";
 import TripReport from "../TripManagement/TripReport";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 import Modal from "../ui/Modal";
 
 interface TripDetailsProps {

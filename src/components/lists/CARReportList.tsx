@@ -9,7 +9,7 @@ import { CARReport } from "../../types";
 
 // ─── UI Components ───────────────────────────────────────────────
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 import { Input, Select } from "../ui/FormElements";
 
 // ─── Custom Components ───────────────────────────────────────────────
