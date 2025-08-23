@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "../../components/ui/Button";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Input, Select } from "../../components/ui/FormElements";
 import Modal from "../../components/ui/Modal";
 import PageWrapper from "../../components/ui/PageWrapper";

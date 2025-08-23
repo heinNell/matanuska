@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import ActionItemDetails from "../../components/Adminmangement/ActionItemDetails";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Input, Select, TextArea } from "../../components/ui/FormElements";
 import Modal from "../../components/ui/Modal";
 import SyncIndicator from "../../components/ui/SyncIndicator";

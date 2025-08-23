@@ -7,7 +7,7 @@ import {
   DRIVERS,
   FLEET_NUMBERS,
 } from "../../types";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 import { Button } from "../../components/ui/Button";
 import { AlertTriangle, Clock, Edit, Eye, Plus, Save, Trash2, X } from "lucide-react";
 import { formatDate, formatDateTime } from "../../utils/helpers";

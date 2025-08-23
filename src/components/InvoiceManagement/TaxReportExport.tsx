@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppContext } from "../../context/AppContext";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { FileText, Download, Settings, Clock } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 

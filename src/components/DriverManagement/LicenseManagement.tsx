@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import useOfflineQuery from "../../hooks/useOfflineQuery";
-import Card, { CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 
 // Firestore license document shape (keep in sync with page version)
 interface DriverLicenseDoc {
