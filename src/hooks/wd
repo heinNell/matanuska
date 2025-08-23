@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { wialonService } from "../utils/wialonService";
+import wialonService from "../services/wialonService";
 import type { ReportTableData } from "../types/wialon";
 
 interface UseWialonReportResult {

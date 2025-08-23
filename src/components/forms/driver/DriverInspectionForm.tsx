@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { firestore } from "../../../firebase";
 import { useFleetData, Vehicle } from "../../../hooks/useFleetData";
-import Card, { CardContent, CardHeader } from "../../ui/Card";
+import { Card, CardContent, CardHeader } from "../../../components/ui/Card";
 
 interface InspectionItem {
   name: string;

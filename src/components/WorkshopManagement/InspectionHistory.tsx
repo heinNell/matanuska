@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from "../../components/ui/Button";
 import {
   ClipboardList,
@@ -133,6 +133,7 @@ const InspectionHistory: React.FC = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader title="Driver Inspection History">
+          <CardTitle>Driver Inspection History</CardTitle>
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
               <ClipboardList className="w-5 h-5" />

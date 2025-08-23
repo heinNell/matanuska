@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { inspectionTemplates } from "../../../types/inspectionTemplates.js";
 import { DRIVERS } from "../../../types";
 import FleetSelector from "../../common/FleetSelector";
-import Card, { CardContent, CardHeader } from "../../ui/Card";
+import { Card, CardContent, CardHeader } from "../../../components/ui/Card";
 import { Select } from "../../ui/FormElements";
 import { InspectionItemCard } from "../../ui/InspectionItemCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/Tabs";

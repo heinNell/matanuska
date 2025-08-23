@@ -1,4 +1,3 @@
-import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/Tabs";
 import JobCardHeader from "../../components/WorkshopManagement/JobCardHeader";
 import TaskManager from "../../components/WorkshopManagement/TaskManager";

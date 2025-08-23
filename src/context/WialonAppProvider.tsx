@@ -1,79 +1,118 @@
 // src/context/WialonAppProvider.tsx
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import wialonService from "@/services/wialonService"; // Corrected path!
-import type { WialonUnit, WialonSession } from "@/services/wialonService";
+import { createContext, useState, useEffect, useCallback } from "react";
+import wialonService, { WialonSession, WialonUnit } from "../services/wialonService";
 
-// Optional: add Sensor type if you have it in your types
-type Sensor = any;
-
-type WialonAppContextType = {
+// --- 1. Context type
+export interface WialonAppContextType {
   session: WialonSession | null;
+  loggedIn: boolean;
+  initializing: boolean;
   units: WialonUnit[];
-  selectedUnit: WialonUnit | null;
-  setSelectedUnit: (unit: WialonUnit | null) => void;
-  sensors: Sensor[];
-  // Expose the main service API if needed:
-  login: typeof wialonService.login;
-  logout: typeof wialonService.logout;
-  getUnits: typeof wialonService.getUnits;
-  addPositionListener: typeof wialonService.addPositionListener;
-  executeReport: typeof wialonService.executeReport;
-  getResources: typeof wialonService.getResources;
-  getGeofences: typeof wialonService.getGeofences;
-};
+  error: Error | null;
+  token: string | null;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+  refreshUnits: () => Promise<void>;
+  logout: () => void;
+}
 
-const WialonAppContext = createContext<WialonAppContextType | undefined>(undefined);
+// --- 2. Context + Default value
+export const WialonAppContext = createContext<WialonAppContextType>({
+  session: null,
+  loggedIn: false,
+  initializing: false,
+  units: [],
+  error: null,
+  token: null,
+  setToken: () => {},
+  refreshUnits: async () => {},
+  logout: () => {},
+});
 
-export const WialonAppProvider = ({ children }: { children: ReactNode }) => {
+// --- 3. Provider component with explicit children type
+export function WialonAppProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<WialonSession | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [units, setUnits] = useState<WialonUnit[]>([]);
-  const [selectedUnit, setSelectedUnit] = useState<WialonUnit | null>(null);
-  const [sensors, setSensors] = useState<Sensor[]>([]);
+  const [error, setError] = useState<Error | null>(null);
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem("wialonToken"));
 
+  // --- Side effect: auto-login when token is set
   useEffect(() => {
-    // Demo token or retrieve from ENV/config
-    const token = "your_wialon_token_here";
-    wialonService.login(token).then((sess) => {
-      setSession(sess);
-      wialonService.getUnits().then(setUnits);
-    });
+    let active = true;
+    async function init() {
+      setInitializing(true);
+      setError(null);
+
+      if (!token) {
+        setSession(null);
+        setLoggedIn(false);
+        setInitializing(false);
+        return;
+      }
+
+      try {
+        const sess = await wialonService.login(token);
+        if (!active) return;
+        setSession(sess);
+        setLoggedIn(true);
+
+        const allUnits = await wialonService.getUnits();
+        if (active) setUnits(allUnits);
+      } catch (err) {
+        if (active) {
+          setSession(null);
+          setLoggedIn(false);
+          setUnits([]);
+          setError(err instanceof Error ? err : new Error(String(err)));
+        }
+      } finally {
+        if (active) setInitializing(false);
+      }
+    }
+    init();
+    return () => { active = false; };
+  }, [token]);
+
+  // --- Refresh units
+  const refreshUnits = useCallback(async () => {
+    try {
+      const allUnits = await wialonService.getUnits();
+      setUnits(allUnits);
+    } catch (err) {
+      setUnits([]);
+      setError(err instanceof Error ? err : new Error(String(err)));
+    }
   }, []);
 
-  // When unit changes, load sensors if you add that method to your service.
-  // Example placeholder:
-  useEffect(() => {
-    if (selectedUnit && selectedUnit.id) {
-      // If you have getUnitSensors, use here
-      // wialonService.getUnitSensors(selectedUnit.id).then(setSensors);
-      setSensors([]); // Placeholder, implement as needed
-    }
-  }, [selectedUnit]);
+  // --- Logout
+  const logout = useCallback(() => {
+    wialonService.logout();
+    setSession(null);
+    setLoggedIn(false);
+    setUnits([]);
+    setError(null);
+    setToken(null);
+    localStorage.removeItem("wialonToken");
+  }, []);
+
+  // --- Context value
+  const value: WialonAppContextType = {
+    session,
+    loggedIn,
+    initializing,
+    units,
+    error,
+    token,
+    setToken,
+    refreshUnits,
+    logout,
+  };
 
   return (
-    <WialonAppContext.Provider
-      value={{
-        session,
-        units,
-        selectedUnit,
-        setSelectedUnit,
-        sensors,
-        login: wialonService.login,
-        logout: wialonService.logout,
-        getUnits: wialonService.getUnits,
-        addPositionListener: wialonService.addPositionListener,
-        executeReport: wialonService.executeReport,
-        getResources: wialonService.getResources,
-        getGeofences: wialonService.getGeofences,
-      }}
-    >
+    <WialonAppContext.Provider value={value}>
       {children}
     </WialonAppContext.Provider>
   );
-};
-
-export function useWialonApp() {
-  const ctx = useContext(WialonAppContext);
-  if (!ctx) throw new Error("useWialonApp must be used within WialonAppProvider");
-  return ctx;
 }

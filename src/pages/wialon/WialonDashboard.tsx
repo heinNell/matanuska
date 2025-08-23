@@ -1,10 +1,9 @@
-import React from "react";
 import { FC, useState, useCallback } from 'react';
 import { useWialonUnits } from '@/hooks/useWialonUnits';
-import { useWialonUnitDetail } from '@/hooks/useWialonUnitDetail';
-import WialonUnitsMapMarkers from '@/components/WialonUnitsMapMarkers';
-import RealtimeUnitTracker from '@/components/RealtimeUnitTracker';
-import { UnitInfo } from '@/types/wialon';
+import WialonUnitsMapMarkers from '@/components/WialonUnitsMapMarkers'
+import RealtimeUnitTracker from '@/components/RealtimeUnitTracker'
+import { useWialonUnitDetail } from '@/hooks/useWialonUnitDetail'
+import { UnitInfo } from '@/types/wialon'
 import { FleetLiveDashboard } from './FleetLiveDashboard';
 
 // Helper function to render a single unit item in the sidebar list

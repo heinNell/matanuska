@@ -1,5 +1,3 @@
-import React from "react";
-
 import { useState } from "react";
 import { wialonTokenLogin, type WialonLoginResponse } from "../../../services/wialonAuthService";
 

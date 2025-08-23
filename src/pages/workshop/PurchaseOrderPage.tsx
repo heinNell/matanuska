@@ -2,9 +2,8 @@ import { Card, CardContent } from "../../components/ui";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PurchaseOrderModule from "../../components/Models/Workshop/PurchaseOrderModule";
-import PurchaseOrderForm, {
-  PurchaseOrder,
-} from "../../components/WorkshopManagement/PurchaseOrderForm";
+import PurchaseOrderForm from "../../components/WorkshopManagement/PurchaseOrderForm";
+import type { PurchaseOrder } from "../../types/inventory";
 
 /**
  * Purchase Order Page for creating and managing purchase orders
@@ -18,27 +17,15 @@ const PurchaseOrderPage: React.FC = () => {
   const initialData: PurchaseOrder = {
     id: `po-${Date.now()}`,
     poNumber: `PO-${Date.now().toString().slice(-6)}`,
-    title: "",
-    description: "",
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0] as string,
     vendor: "",
-    requester: "Fleet Manager",
-    priority: "Medium",
-    status: "Draft",
-    terms: "Net 30",
-    poType: "Standard",
-    shippingAddress: "Main Workshop, 123 Transport Drive, Johannesburg",
+  orderDate: new Date().toISOString().split("T")[0] || new Date().toISOString(),
+    status: "draft",
+    totalAmount: 0,
+    paymentStatus: "unpaid",
     items: [],
-    subTotal: 0,
-    tax: 0,
-    shipping: 0,
-    grandTotal: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     createdBy: "Fleet Manager",
-    attachments: [],
   };
 
   const handleSave = async (data: PurchaseOrder) => {

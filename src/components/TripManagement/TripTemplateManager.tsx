@@ -224,7 +224,9 @@ const TripTemplateManager: React.FC = () => {
 
       {/* Template Details Preview */}
       <Card>
-        <CardHeader title="Template Usage Statistics" />
+        <CardHeader>
+          <CardTitle>Template Usage Statistics</CardTitle>
+        </CardHeader>
         <CardContent className="p-6">
           <div className="h-64 flex items-center justify-center">
             <p className="text-gray-500 italic">

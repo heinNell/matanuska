@@ -5,7 +5,7 @@ import React, { useState } from "react";
 
 // ─── UI Components ───────────────────────────────────────────────
 import { Button } from "../../../components/ui/Button";
-import { Card, CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../../../components/ui/Card";
 import Modal from "../../ui/Modal";
 
 // ─── Icons ───────────────────────────────────────────────────────
@@ -330,36 +330,43 @@ const DieselDebriefModal: React.FC<DieselDebriefModalProps> = ({ isOpen, onClose
     <Modal isOpen={isOpen} onClose={onClose} title="Diesel Efficiency Debrief" maxWidth="2xl">
       <div className="space-y-6">
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="text-center">
-              <Flag className="mx-auto h-6 w-6 text-yellow-600 mb-2" />
-              <p className="font-bold text-lg text-yellow-700">{summary.total}</p>
-              <p className="text-sm text-gray-600">Total Records</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="text-center">
-              <TrendingDown className="mx-auto h-6 w-6 text-red-600 mb-2" />
-              <p className="font-bold text-lg text-red-700">{summary.poor}</p>
-              <p className="text-sm text-gray-600">Poor Performance</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="text-center">
-              <AlertTriangle className="mx-auto h-6 w-6 text-orange-600 mb-2" />
-              <p className="font-bold text-lg text-orange-700">{summary.critical}</p>
-              <p className="text-sm text-gray-600">Critical Variance</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="text-center">
-              <Fuel className="mx-auto h-6 w-6 text-blue-600 mb-2" />
-              <p className="font-bold text-lg text-blue-700">{avgVariance}%</p>
-              <p className="text-sm text-gray-600">Avg Variance</p>
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold text-center">Debrief Summary</h3>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="text-center">
+                  <Flag className="mx-auto h-6 w-6 text-yellow-600 mb-2" />
+                  <p className="font-bold text-lg text-yellow-700">{summary.total}</p>
+                  <p className="text-sm text-gray-600">Total Records</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="text-center">
+                  <TrendingDown className="mx-auto h-6 w-6 text-red-600 mb-2" />
+                  <p className="font-bold text-lg text-red-700">{summary.poor}</p>
+                  <p className="text-sm text-gray-600">Poor Performance</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="text-center">
+                  <AlertTriangle className="mx-auto h-6 w-6 text-orange-600 mb-2" />
+                  <p className="font-bold text-lg text-orange-700">{summary.critical}</p>
+                  <p className="text-sm text-gray-600">Critical Variance</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="text-center">
+                  <Fuel className="mx-auto h-6 w-6 text-blue-600 mb-2" />
+                  <p className="font-bold text-lg text-blue-700">{avgVariance}%</p>
+                  <p className="text-sm text-gray-600">Avg Variance</p>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Records */}
         <div className="space-y-4 max-h-[50vh] overflow-y-auto">

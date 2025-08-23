@@ -13,7 +13,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { LOAD_CATEGORIES, LoadPlan, Trip } from "../../types";
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Card, CardContent, CardHeader } from '../../components/ui/Card';
 import { Input, Select, TextArea } from "../ui/FormElements";
 import LoadingIndicator from "../ui/LoadingIndicator";
 

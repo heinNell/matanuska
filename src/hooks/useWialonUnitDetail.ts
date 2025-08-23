@@ -1,6 +1,6 @@
 // src/hooks/useWialonUnitDetail.ts
 import { useState, useEffect, useCallback } from "react";
-import { wialonService } from "../utils/wialonService";
+import wialonService from "../services/wialonService";
 import type { Position } from "../types/wialon-position";
 
 /**

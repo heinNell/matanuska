@@ -1,9 +1,8 @@
-
 import { Button } from "../../components/ui/Button";
 import { format } from "date-fns";
 import { Check, Download, Plus, Trash2, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 
 import type { PurchaseOrder, POItem } from "../../types/inventory";
 
@@ -242,7 +241,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
                   </tr>
                   <tr>
                     <td className="py-2 pr-4 font-medium">Due Date:</td>
-                    <td>{format(new Date(data.dueDate), "dd-MMM-yyyy")}</td>
+                    <td>{data.dueDate ? format(new Date(data.dueDate), "dd-MMM-yyyy") : ""}</td>
                   </tr>
                   <tr>
                     <td className="py-2 pr-4 font-medium">Status:</td>
@@ -334,7 +333,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
                       <td className="py-3 px-4">{item.description || "—"}</td>
                       <td className="py-3 px-4 text-right">{item.quantity}</td>
                       <td className="py-3 px-4 text-right">${item.unitPrice.toFixed(2)}</td>
-                      <td className="py-3 px-4 text-right">${item.total.toFixed(2)}</td>
+                      <td className="py-3 px-4 text-right">${(typeof item.total === 'number' ? item.total : (typeof item.totalPrice === 'number' ? item.totalPrice : 0)).toFixed(2)}</td>
                     </tr>
                   ))}
                   {data.items.length === 0 && (
@@ -413,10 +412,10 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-500">
-                  Created on {format(new Date(data.createdAt), "dd-MMM-yyyy")}
+                  Created on {data.createdAt ? format(new Date(data.createdAt), "dd-MMM-yyyy") : ""}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Updated on {format(new Date(data.updatedAt), "dd-MMM-yyyy")}
+                  Updated on {data.updatedAt ? format(new Date(data.updatedAt), "dd-MMM-yyyy") : ""}
                 </p>
                 <p className="text-sm text-gray-500">Created by {data.createdBy || "System"}</p>
               </div>
@@ -429,8 +428,8 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
 
   return (
     <Card className="mb-6">
-      <CardContent>
-        <div className="flex justify-between items-center mb-6">
+      <CardHeader>
+        <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold">
             {initialData ? `Edit Purchase Order: ${data.poNumber}` : "Create Purchase Order"}
           </h2>
@@ -446,8 +445,9 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             </Button>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      </CardHeader>
+      <CardContent>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <h3 className="font-medium text-lg mb-3">PO Information</h3>
             <div className="space-y-4">
@@ -750,7 +750,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
                     </td>
                     <td className="py-2 px-3">
                       <div className="form-input rounded-md w-28 border-gray-300 bg-gray-50">
-                        {(item.quantity * item.unitPrice).toFixed(2)}
+                        {(item.totalPrice ?? 0).toFixed(2)}
                       </div>
                     </td>
                     <td className="py-2 px-3">
@@ -821,3 +821,4 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
 };
 
 export default PurchaseOrderForm;
+

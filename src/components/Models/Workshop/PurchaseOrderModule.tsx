@@ -2,7 +2,7 @@ import { Button } from "../../../components/ui/Button";
 import { Check, FileText, Package, Plus, RefreshCw, ShoppingCart, Store } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Card, { CardContent, CardHeader } from "../../ui/Card";
+import { Card, CardContent, CardHeader } from "../../ui/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/Tabs";
 
 interface PurchaseOrderModuleProps {

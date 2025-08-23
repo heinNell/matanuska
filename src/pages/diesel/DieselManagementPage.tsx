@@ -5,7 +5,7 @@ import EnhancedDieselDebriefModal from "../../components/Models/Diesel/EnhancedD
 import ManualDieselEntryModal from "../../components/Models/Diesel/ManualDieselEntryModal";
 import TripLinkageModal from "../../components/Models/Trips/TripLinkageModal";
 import { Button } from "../../components/ui/Button";
-import { Card, CardContent, CardHeader } from "../ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Select } from "../../components/ui/FormElements";
 import SyncIndicator from "../../components/ui/SyncIndicator";
 import {

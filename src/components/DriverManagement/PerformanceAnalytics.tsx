@@ -1,7 +1,7 @@
 import { Button } from "../../components/ui/Button";
 import { Calendar, Download, Filter } from "lucide-react";
 import React from "react";
-import Card, { CardContent, CardHeader } from "../../components/ui/Card";
+import { Card, CardContent, CardHeader } from "../ui/Card";
 
 const PerformanceAnalytics: React.FC = () => {
   // These would be replaced with actual charts in a real implementation

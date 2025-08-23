@@ -4,7 +4,7 @@ import { doc, setDoc } from "firebase/firestore"; // Import doc and setDoc
 import { Check, Download, Edit2, FileText, Printer, X } from "lucide-react";
 import React, { useState } from "react";
 import { db } from "../../../firebase"; // Import Firestore
-import Card, { CardContent } from "../../ui/Card";
+import { Card, CardContent, CardHeader } from "../../ui/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/Tabs";
 import { RCAEntry, RCAModal } from "./RCAModal";
 
@@ -363,6 +363,9 @@ export const JobCardDetailModal: React.FC<Props> = ({
           <TabsContent value="general">
             {/* General Tab */}
             <Card>
+              <CardHeader>
+                <h2 className="text-xl font-semibold">Job Card Details</h2>
+              </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>

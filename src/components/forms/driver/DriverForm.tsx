@@ -14,7 +14,7 @@ import { AlertCircle, Save, User, X } from "lucide-react";
 // Components
 import { Button } from "../../../components/ui/Button";
 import useOfflineForm from "../../../hooks/useOfflineForm";
-import Card, { CardContent, CardHeader } from "../../ui/Card";
+import { Card, CardContent, CardHeader } from "../../ui/Card";
 
 interface DriverFormProps {
   onSubmit?: (data: DriverData) => Promise<void>;
