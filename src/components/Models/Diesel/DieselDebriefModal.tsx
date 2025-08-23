@@ -5,7 +5,7 @@ import React, { useState } from "react";
 
 // ─── UI Components ───────────────────────────────────────────────
 import { Button } from "../../../components/ui/Button";
-import Card, { CardContent } from "../../ui/Card";
+import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import Modal from "../../ui/Modal";
 
 // ─── Icons ───────────────────────────────────────────────────────
