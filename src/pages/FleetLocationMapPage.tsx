@@ -27,10 +27,7 @@ interface GeoJSONFeature {
   geometry: GeoJSONPoint;
 }
 
-interface GeoJSONData {
-  type: string;
-  features: GeoJSONFeature[];
-}
+// type GeoJSONData = { ... }; // Remove or comment out if not used
 
 interface FleetOption {
   value: string;
