@@ -5,27 +5,7 @@ import { Location } from "../types/mapTypes";
 import { useWialon } from "@/context/WialonProvider";
 
 // Define GeoJSON interfaces
-interface GeoJSONPoint {
-  type: string;
-  coordinates: number[];
-}
 
-interface GeoJSONFeature {
-  type: string;
-  properties: {
-    name: string;
-    uid: string;
-    brand: string | null;
-    model: string | null;
-    year: number | string | null;
-    fuel_type: string | null;
-    cargo_type?: string;
-    effective_capacity?: string;
-    sensors?: string;
-    vehicle_class?: string;
-  };
-  geometry: GeoJSONPoint;
-}
 
 // type GeoJSONData = { ... }; // Remove or comment out if not used
 
