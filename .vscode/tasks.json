@@ -1,0 +1,223 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "Build Project",
+      "command": "pnpm",
+      "args": ["run", "build"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": ["$tsc"],
+      "detail": "Build the project using Vite"
+    },
+    {
+      "type": "shell",
+      "label": "Start Dev Server",
+      "command": "pnpm",
+      "args": ["run", "dev"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": [
+          {
+            "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Local:.*$",
+          "endsPattern": "^.*ready in.*$"
+        }
+      },
+      "detail": "Start the development server"
+    },
+    {
+      "type": "shell",
+      "label": "Preview Build",
+      "command": "pnpm",
+      "args": ["run", "preview"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "detail": "Preview the production build"
+    },
+    {
+      "type": "shell",
+      "label": "Run Tests",
+      "command": "pnpm",
+      "args": ["run", "test"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": ["$jest"],
+      "detail": "Run all tests"
+    },
+    {
+      "type": "shell",
+      "label": "Run Tests (Watch)",
+      "command": "pnpm",
+      "args": ["run", "test:watch"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "isBackground": true,
+      "problemMatcher": ["$jest"],
+      "detail": "Run tests in watch mode"
+    },
+    {
+      "type": "shell",
+      "label": "Lint",
+      "command": "pnpm",
+      "args": ["run", "lint"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": ["$eslint-stylish"],
+      "detail": "Run ESLint"
+    },
+    {
+      "type": "shell",
+      "label": "Lint Fix",
+      "command": "pnpm",
+      "args": ["run", "lint:fix"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": ["$eslint-stylish"],
+      "detail": "Run ESLint with auto-fix"
+    },
+    {
+      "type": "shell",
+      "label": "Type Check",
+      "command": "pnpm",
+      "args": ["run", "typecheck"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": ["$tsc"],
+      "detail": "Run TypeScript type checking"
+    },
+    {
+      "type": "shell",
+      "label": "Format Code",
+      "command": "pnpm",
+      "args": ["run", "format"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "detail": "Format code with Prettier"
+    },
+    {
+      "type": "shell",
+      "label": "Install Dependencies",
+      "command": "pnpm",
+      "args": ["install"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "detail": "Install project dependencies"
+    },
+    {
+      "type": "shell",
+      "label": "Capacitor Sync",
+      "command": "pnpm",
+      "args": ["run", "capacitor:sync"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "detail": "Sync Capacitor projects"
+    },
+    {
+      "type": "shell",
+      "label": "Capacitor Build Android",
+      "command": "pnpm",
+      "args": ["run", "capacitor:build:android"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "detail": "Build Android app with Capacitor"
+    }
+  ]
+}

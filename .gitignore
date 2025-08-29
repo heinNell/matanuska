@@ -40,8 +40,11 @@ schemadashboard1.tsx
 coverage/
 *.lcov
 
-# ───────── VS Code Remote Dev ──────────────
-.vscode/
+# ───────── VS Code Configuration ───────────
+# Keep shared configuration, exclude user-specific files
+.vscode/chrome-debug-profile/
+.vscode/edge-debug-profile/
+.vscode/*.log
 .history/
 *.code-workspace
 
