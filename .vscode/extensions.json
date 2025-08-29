@@ -1,0 +1,119 @@
+{
+  "recommendations": [
+    // ================================================
+    // ESSENTIAL LANGUAGE SUPPORT
+    // ================================================
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    
+    // ================================================
+    // REACT & JSX SUPPORT
+    // ================================================
+    "ms-vscode.vscode-json",
+    "formulahendry.auto-rename-tag",
+    "bradlc.vscode-tailwindcss",
+    "styled-components.vscode-styled-components",
+    
+    // ================================================
+    // DEVELOPMENT PRODUCTIVITY
+    // ================================================
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-close-tag",
+    "usernamehw.errorlens",
+    "ms-vscode.vscode-json",
+    "ms-vscode.vscode-typescript-next",
+    
+    // ================================================
+    // CODE QUALITY & FORMATTING
+    // ================================================
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "streetsidesoftware.code-spell-checker",
+    "aaron-bond.better-comments",
+    "oderwat.indent-rainbow",
+    
+    // ================================================
+    // GIT & VERSION CONTROL
+    // ================================================
+    "eamodio.gitlens",
+    "donjayamanne.githistory",
+    "mhutchie.git-graph",
+    
+    // ================================================
+    // FIREBASE & CLOUD DEVELOPMENT
+    // ================================================
+    "toba.vsfire",
+    "firebase.firebase-vscode",
+    
+    // ================================================
+    // MOBILE DEVELOPMENT (CAPACITOR)
+    // ================================================
+    "ionic.ionic",
+    "capacitor.capacitor-vscode",
+    
+    // ================================================
+    // API DEVELOPMENT & TESTING
+    // ================================================
+    "rangav.vscode-thunder-client",
+    "humao.rest-client",
+    
+    // ================================================
+    // PRODUCTIVITY & NAVIGATION
+    // ================================================
+    "alefragnani.project-manager",
+    "alefragnani.bookmarks",
+    "ms-vscode.vscode-json",
+    "bradlc.vscode-tailwindcss",
+    
+    // ================================================
+    // CODE VISUALIZATION & ANALYSIS
+    // ================================================
+    "ms-vscode.vscode-json",
+    "hediet.vscode-drawio",
+    "ms-vsliveshare.vsliveshare",
+    
+    // ================================================
+    // MARKDOWN & DOCUMENTATION
+    // ================================================
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "bierner.markdown-mermaid",
+    
+    // ================================================
+    // THEME & UI ENHANCEMENTS
+    // ================================================
+    "pkief.material-icon-theme",
+    "github.github-vscode-theme",
+    "ms-vscode.theme-tomorrowkit",
+    
+    // ================================================
+    // DEPLOYMENT & DEVOPS
+    // ================================================
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml",
+    
+    // ================================================
+    // TESTING
+    // ================================================
+    "ms-vscode.vscode-jest",
+    "vitest.explorer",
+    "firsttris.vscode-jest-runner",
+    
+    // ================================================
+    // UTILITIES
+    // ================================================
+    "ms-vscode.vscode-json",
+    "formulahendry.code-runner",
+    "gruntfuggly.todo-tree",
+    "alefragnani.project-manager"
+  ],
+  "unwantedRecommendations": [
+    // Deprecated or conflicting extensions
+    "hookyqr.beautify",
+    "ms-vscode.typescript-hero",
+    "ms-vscode.vetur",
+    "octref.vetur"
+  ]
+}
