@@ -1,5 +1,6 @@
 import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
-import React, { useEffect, useState } from "react";
+import * as React from "react";
+import { useEffect, useState } from "react";
 import { Location, RouteOptions } from "../../types/mapTypes";
 import {
   DEFAULT_MAP_CENTER,

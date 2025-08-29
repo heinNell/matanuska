@@ -20,3 +20,8 @@ out/
 .firebase/
 .cache/
 public/
+
+# Environment files
+
+.md
+.env
