@@ -1,0 +1,105 @@
+mutation CreateFuelLog @auth(level: USER) {
+  fuelLog_insert(data: {vehicleId: "550e8400-e29b-41d4-a716-446655440000", cost: 50.0, fillUpDate: "2024-01-01", odometerReadingKm: 10000, volumeLiters: 40.0})
+}
+
+query ListVehicles @auth(level: USER) {
+  vehicles {
+    id
+    licensePlate
+    make
+    model
+  }
+}
+
+query ListIncidentReports @auth(level: USER) {
+  incidentReports {
+    id
+    description
+    incidentType
+    timestamp
+  }
+}
+
+query GetUser @auth(level: USER) {
+  user(id: "550e8400-e29b-41d4-a716-446655440000") {
+    id
+    displayName
+    email
+    role
+  }
+}
+
+mutation CreateIncidentReport @auth(level: USER) {
+  incidentReport_insert(data: {reporterId: "550e8400-e29b-41d4-a716-446655440000", description: "Minor accident", incidentType: "accident", timestamp: "2024-07-14T10:00:00Z"})
+}
+
+mutation UpdateVehicleStatus @auth(level: USER) {
+  vehicle_update(key: {id: "550e8400-e29b-41d4-a716-446655440000"}, data: {status: "in_service"})
+}
+
+query TripLogBook @auth(level: USER) {
+  trips {
+    id
+    driver {
+      displayName
+      email
+    }
+    vehicle {
+      make
+      model
+      licensePlate
+    }
+    originAddress
+    destinationAddress
+    startTime
+    endTime
+    status
+    actualDistanceKm
+    scheduledDistanceKm
+    dispatchNotes
+    notes
+  }
+}
+
+query ViewLiveRoutes @auth(level: USER) {
+  trips(where: {status: {eq: "scheduled"}}) {
+    id
+    startTime
+    endTime
+    originAddress
+    destinationAddress
+    routePolyline
+    driver {
+      displayName
+    }
+    vehicle {
+      licensePlate
+      make
+      model
+    }
+  }
+}
+
+query ListFuelLogsWithDriverAndVehicle @auth(level: USER) {
+  fuelLogs {
+    id
+    cost
+    createdAt
+    fillUpDate
+    fuelCardTransactionId
+    location
+    odometerReadingKm
+    volumeLiters
+    driver {
+      id
+      displayName
+      email
+    }
+    vehicle {
+      id
+      licensePlate
+      make
+      model
+    }
+  }
+}

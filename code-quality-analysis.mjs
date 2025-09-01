@@ -2,21 +2,21 @@
 /* eslint-env node */
 /* global console, process */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Define colors for console output
 const colors = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-  white: '\x1b[37m',
-  bold: '\x1b[1m',
+  reset: "\x1b[0m",
+  red: "\x1b[31m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  magenta: "\x1b[35m",
+  cyan: "\x1b[36m",
+  white: "\x1b[37m",
+  bold: "\x1b[1m",
 };
 
 /**
@@ -27,7 +27,7 @@ const colors = {
  */
 function colorize(text, color, bold = false) {
   if (!colors[color]) return text;
-  return `${bold ? colors.bold : ''}${colors[color]}${text}${colors.reset}`;
+  return `${bold ? colors.bold : ""}${colors[color]}${text}${colors.reset}`;
 }
 
 // Get the current file's directory
@@ -35,10 +35,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Define the src directory
-const srcDir = path.join(__dirname, '..', 'src');
+const srcDir = path.join(__dirname, "..", "src");
 
 // Define the file types to scan
-const fileTypesToScan = ['.ts', '.tsx', '.js', '.jsx'];
+const fileTypesToScan = [".ts", ".tsx", ".js", ".jsx"];
 
 // Define patterns specific to Matanuska project
 const MATANUSKA_PATTERNS = {
@@ -54,9 +54,10 @@ const MATANUSKA_PATTERNS = {
     /SidebarConfig\.\w+$/,
   ],
   // Common component pattern for the Matanuska project
-  COMPONENT_PATTERN: /React\.FC|function\s+\w+\s*\([\w\s{}:]*\)|const\s+\w+\s*=\s*\([\w\s{}:]*\)\s*=>/,
+  COMPONENT_PATTERN:
+    /React\.FC|function\s+\w+\s*\([\w\s{}:]*\)|const\s+\w+\s*=\s*\([\w\s{}:]*\)\s*=>/,
   // Files that may be lazy loaded or dynamically imported
-  LAZY_LOADED_PATTERN: /React\.lazy\(|import\(|lazy\(/
+  LAZY_LOADED_PATTERN: /React\.lazy\(|import\(|lazy\(/,
 };
 
 // Store the import data
@@ -83,7 +84,7 @@ function scanFiles(dir) {
     for (const entry of entries) {
       const fullPath = path.join(directory, entry.name);
 
-      if (entry.isDirectory() && !entry.name.startsWith('node_modules')) {
+      if (entry.isDirectory() && !entry.name.startsWith("node_modules")) {
         scan(fullPath);
       } else if (entry.isFile() && fileTypesToScan.includes(path.extname(entry.name))) {
         allFiles.push(fullPath);
@@ -100,7 +101,7 @@ function scanFiles(dir) {
  * @param {string} filePath - Path to the file
  */
 function analyzeFile(filePath) {
-  const content = fs.readFileSync(filePath, 'utf8');
+  const content = fs.readFileSync(filePath, "utf8");
   const relativePath = path.relative(srcDir, filePath);
 
   // Store file info
@@ -134,7 +135,8 @@ function analyzeFile(filePath) {
   }
 
   // Extract exports
-  const exportRegex = /export\s+(?:default\s+)?(?:function|class|const|let|var|interface|type|enum)\s+(\w+)/g;
+  const exportRegex =
+    /export\s+(?:default\s+)?(?:function|class|const|let|var|interface|type|enum)\s+(\w+)/g;
   while ((match = exportRegex.exec(content)) !== null) {
     const exportName = match[1];
     const fileInfo = files.get(filePath);
@@ -157,20 +159,23 @@ function analyzeFile(filePath) {
 function extractLazyLoadedComponents() {
   for (const [filePath, fileInfo] of files.entries()) {
     // Look for React.lazy or dynamic import patterns
-    const lazyMatches = fileInfo.content.match(/const\s+(\w+)\s*=\s*(?:React\.)?lazy\s*\(\s*\(?.*?\)?\s*=>\s*import\(['"](.*?)['"]\)/g) || [];
-    
+    const lazyMatches =
+      fileInfo.content.match(
+        /const\s+(\w+)\s*=\s*(?:React\.)?lazy\s*\(\s*\(?.*?\)?\s*=>\s*import\(['"](.*?)['"]\)/g
+      ) || [];
+
     for (const match of lazyMatches) {
       // Extract the component name and path
       const componentMatch = match.match(/const\s+(\w+)\s*=/);
       if (componentMatch && componentMatch[1]) {
         lazyLoadedComponents.add(componentMatch[1]);
       }
-      
+
       // Extract the import path
       const importMatch = match.match(/import\(['"](.*?)['"]\)/);
       if (importMatch && importMatch[1]) {
         const importPath = importMatch[1];
-        
+
         // Add this to our imports map to mark the file as imported
         if (!imports.has(importPath)) {
           imports.set(importPath, []);
@@ -178,14 +183,14 @@ function extractLazyLoadedComponents() {
         imports.get(importPath).push(filePath);
       }
     }
-    
+
     // Also check for direct dynamic imports
     const dynamicImports = fileInfo.content.match(/import\(['"](.*?)['"]\)/g) || [];
     for (const match of dynamicImports) {
       const importMatch = match.match(/import\(['"](.*?)['"]\)/);
       if (importMatch && importMatch[1]) {
         const importPath = importMatch[1];
-        
+
         if (!imports.has(importPath)) {
           imports.set(importPath, []);
         }
@@ -201,19 +206,19 @@ function extractLazyLoadedComponents() {
 function checkUnusedFiles() {
   // First extract all lazy loaded components
   extractLazyLoadedComponents();
-  
+
   for (const [filePath, fileInfo] of files.entries()) {
     // Skip files imported by others
     let isUsed = false;
 
     // Check if file is imported
     for (const importPath of imports.keys()) {
-      const normalizedImportPath = importPath.startsWith('.')
+      const normalizedImportPath = importPath.startsWith(".")
         ? path.normalize(path.join(path.dirname(filePath), importPath))
         : importPath;
 
       // If this file is imported by another file, it's used
-      if (normalizedImportPath.includes(fileInfo.relativePath.replace(/\.\w+$/, ''))) {
+      if (normalizedImportPath.includes(fileInfo.relativePath.replace(/\.\w+$/, ""))) {
         isUsed = true;
         fileInfo.isImported = true;
         break;
@@ -221,14 +226,16 @@ function checkUnusedFiles() {
     }
 
     // Check for Matanuska-specific patterns - components used in sidebar config
-    if (!isUsed && fileInfo.content.includes('React.FC')) {
-      const componentName = path.basename(filePath).replace(/\.\w+$/, '');
-      
+    if (!isUsed && fileInfo.content.includes("React.FC")) {
+      const componentName = path.basename(filePath).replace(/\.\w+$/, "");
+
       // Check all files for references to this component in sidebar config
       for (const [_, otherFileInfo] of files.entries()) {
-        if (otherFileInfo.content.includes(`component: "${componentName}"`) || 
-            otherFileInfo.content.includes(`component: '${componentName}'`) ||
-            otherFileInfo.content.includes(`component: ${componentName}`)) {
+        if (
+          otherFileInfo.content.includes(`component: "${componentName}"`) ||
+          otherFileInfo.content.includes(`component: '${componentName}'`) ||
+          otherFileInfo.content.includes(`component: ${componentName}`)
+        ) {
           isUsed = true;
           break;
         }
@@ -236,14 +243,17 @@ function checkUnusedFiles() {
     }
 
     // Check if file is part of a barrel export (index.ts)
-    if (!isUsed && path.basename(path.dirname(filePath)) === path.basename(filePath, path.extname(filePath))) {
+    if (
+      !isUsed &&
+      path.basename(path.dirname(filePath)) === path.basename(filePath, path.extname(filePath))
+    ) {
       const dirPath = path.dirname(filePath);
-      const indexPath = path.join(dirPath, 'index.ts');
-      
+      const indexPath = path.join(dirPath, "index.ts");
+
       if (fs.existsSync(indexPath)) {
-        const indexContent = fs.readFileSync(indexPath, 'utf8');
+        const indexContent = fs.readFileSync(indexPath, "utf8");
         const componentName = path.basename(filePath, path.extname(filePath));
-        
+
         if (indexContent.includes(`from './${componentName}'`)) {
           isUsed = true;
         }
@@ -255,15 +265,17 @@ function checkUnusedFiles() {
       for (const exportName of fileInfo.exports) {
         // If this export is used elsewhere, the file is used
         for (const [_, otherFileInfo] of files.entries()) {
-          if (otherFileInfo.content.includes(`import { ${exportName} `) ||
-              otherFileInfo.content.includes(`import {${exportName} `) ||
-              otherFileInfo.content.includes(`import {${exportName},`) ||
-              otherFileInfo.content.includes(`import { ${exportName},`)) {
+          if (
+            otherFileInfo.content.includes(`import { ${exportName} `) ||
+            otherFileInfo.content.includes(`import {${exportName} `) ||
+            otherFileInfo.content.includes(`import {${exportName},`) ||
+            otherFileInfo.content.includes(`import { ${exportName},`)
+          ) {
             isUsed = true;
             break;
           }
         }
-        
+
         if (isUsed) break;
       }
     }
@@ -273,7 +285,7 @@ function checkUnusedFiles() {
       unusedFiles.push({
         path: fileInfo.relativePath,
         type: getFileType(filePath),
-        reason: 'Not imported or used by any other file',
+        reason: "Not imported or used by any other file",
         confidence: getUnusedConfidence(filePath),
       });
     }
@@ -311,7 +323,7 @@ function checkDependencyCycle(filePath, visited, depPath) {
   if (!fileInfo) return;
 
   for (const importPath of fileInfo.imports) {
-    if (importPath.startsWith('.')) {
+    if (importPath.startsWith(".")) {
       const resolvedPath = resolveImportPath(filePath, importPath);
       if (resolvedPath) {
         checkDependencyCycle(resolvedPath, new Set(visited), [...depPath]);
@@ -328,7 +340,7 @@ function checkDependencyCycle(filePath, visited, depPath) {
  */
 function resolveImportPath(fromPath, importPath) {
   const baseDir = path.dirname(fromPath);
-  const possibleExtensions = ['.ts', '.tsx', '.js', '.jsx', ''];
+  const possibleExtensions = [".ts", ".tsx", ".js", ".jsx", ""];
 
   for (const ext of possibleExtensions) {
     const testPath = path.join(baseDir, importPath + ext);
@@ -352,7 +364,7 @@ function resolveImportPath(fromPath, importPath) {
  * @returns {boolean} - True if the file is likely an entry point or essential
  */
 function isEntryPoint(filePath) {
-  return MATANUSKA_PATTERNS.ESSENTIAL_FILES.some(pattern => pattern.test(filePath));
+  return MATANUSKA_PATTERNS.ESSENTIAL_FILES.some((pattern) => pattern.test(filePath));
 }
 
 /**
@@ -369,17 +381,21 @@ function getUnusedConfidence(filePath) {
   if (fileInfo.exports.length === 0) {
     return 0.9;
   }
-  
+
   // Matanuska specific patterns - lower confidence for these file types
   if (/firebase|wialon|map|route|config|sidebar/.test(filePath_lower)) {
-    return 0.4;  // Low confidence - could be dynamically loaded
+    return 0.4; // Low confidence - could be dynamically loaded
   }
 
   // Lower confidence for common shared utility files
-  if (/util|helper|common|shared|hook|context|store|reducer|action|model|type|interface/.test(fileName)) {
+  if (
+    /util|helper|common|shared|hook|context|store|reducer|action|model|type|interface/.test(
+      fileName
+    )
+  ) {
     return 0.6;
   }
-  
+
   // Matanuska specific domains
   if (/trip|diesel|fuel|tyre|tire|driver|vehicle|workshop|invoice/.test(filePath_lower)) {
     // These are core domain files, so we're a bit more cautious
@@ -403,46 +419,46 @@ function getFileType(filePath) {
   const content = files.get(filePath).content;
 
   if (/\.d\.ts$/.test(fileName)) {
-    return 'type';
+    return "type";
   }
 
   if (/\.(tsx|jsx)$/.test(fileName)) {
     // Looks for Matanuska React component patterns
     if (MATANUSKA_PATTERNS.COMPONENT_PATTERN.test(content)) {
-      return 'component';
+      return "component";
     }
   }
 
   // Check for domain-specific patterns in Matanuska project
   if (/trip/i.test(fileName) || /trip/i.test(filePath)) {
-    return 'trip-component';
+    return "trip-component";
   }
-  
+
   if (/diesel|fuel/i.test(fileName) || /diesel|fuel/i.test(filePath)) {
-    return 'fuel-component';
+    return "fuel-component";
   }
-  
+
   if (/tyre|tire/i.test(fileName) || /tyre|tire/i.test(filePath)) {
-    return 'tyre-component';
+    return "tyre-component";
   }
 
   if (/driver/i.test(fileName) || /driver/i.test(filePath)) {
-    return 'driver-component';
+    return "driver-component";
   }
 
   if (/model|interface|type|enum/.test(content.toLowerCase())) {
-    return 'model';
+    return "model";
   }
 
   if (/context|provider/.test(fileName.toLowerCase())) {
-    return 'context';
+    return "context";
   }
 
   if (/hook/i.test(fileName) || /use[A-Z]/i.test(fileName)) {
-    return 'hook';
+    return "hook";
   }
 
-  return 'file';
+  return "file";
 }
 
 /**
@@ -469,27 +485,27 @@ function generateRecommendations() {
 
   if (unusedFiles.length > 0) {
     recommendations.push({
-      title: 'Remove unused files',
+      title: "Remove unused files",
       description: `Found ${unusedFiles.length} files that appear to be unused`,
       priority: 1,
-      effort: unusedFiles.length > 10 ? 'high' : 'medium',
+      effort: unusedFiles.length > 10 ? "high" : "medium",
       impact: {
         size: `Reduce bundle by ${formatBytes(calculateUnusedSize(unusedFiles))}`,
-        maintenance: 'Improve codebase clarity and maintainability'
-      }
+        maintenance: "Improve codebase clarity and maintainability",
+      },
     });
   }
 
   if (circularDependencies.length > 0) {
     recommendations.push({
-      title: 'Resolve circular dependencies',
+      title: "Resolve circular dependencies",
       description: `Found ${circularDependencies.length} circular dependency chains`,
       priority: 2,
-      effort: 'high',
+      effort: "high",
       impact: {
-        performance: 'Improve initialization performance',
-        maintenance: 'Simplify dependency graph and make code more maintainable'
-      }
+        performance: "Improve initialization performance",
+        maintenance: "Simplify dependency graph and make code more maintainable",
+      },
     });
   }
 
@@ -502,12 +518,12 @@ function generateRecommendations() {
  * @returns {string} - Formatted string (e.g., "4.2 KB")
  */
 function formatBytes(bytes) {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
 
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
 
-  return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + ' ' + sizes[i];
+  return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + sizes[i];
 }
 
 /**
@@ -517,29 +533,38 @@ function generateReport() {
   const totalFiles = files.size;
   const totalBytes = Array.from(files.values()).reduce((total, file) => total + file.size, 0);
 
-  console.log(colorize('\n========== Code Quality Analysis Report ==========\n', 'cyan', true));
+  console.log(colorize("\n========== Code Quality Analysis Report ==========\n", "cyan", true));
 
-  console.log(colorize('Files Scanned:', 'blue', true), totalFiles);
-  console.log(colorize('Total Codebase Size:', 'blue', true), formatBytes(totalBytes));
-  console.log(colorize('Issues Found:', 'yellow', true), unusedFiles.length + circularDependencies.length);
-  console.log(colorize('Unused Code Size:', 'red', true), formatBytes(calculateUnusedSize(unusedFiles)));
+  console.log(colorize("Files Scanned:", "blue", true), totalFiles);
+  console.log(colorize("Total Codebase Size:", "blue", true), formatBytes(totalBytes));
+  console.log(
+    colorize("Issues Found:", "yellow", true),
+    unusedFiles.length + circularDependencies.length
+  );
+  console.log(
+    colorize("Unused Code Size:", "red", true),
+    formatBytes(calculateUnusedSize(unusedFiles))
+  );
 
   // Print unused files
   if (unusedFiles.length > 0) {
-    console.log('\n' + colorize('Unused Files:', 'yellow', true));
+    console.log("\n" + colorize("Unused Files:", "yellow", true));
     unusedFiles
       .sort((a, b) => b.confidence - a.confidence)
-      .forEach(file => {
-        const confidenceColor = file.confidence >= 0.8 ? 'red' : (file.confidence >= 0.5 ? 'yellow' : 'blue');
-        console.log(`  ${colorize(`[${Math.round(file.confidence * 100)}%]`, confidenceColor)} ${file.path} (${file.type})`);
+      .forEach((file) => {
+        const confidenceColor =
+          file.confidence >= 0.8 ? "red" : file.confidence >= 0.5 ? "yellow" : "blue";
+        console.log(
+          `  ${colorize(`[${Math.round(file.confidence * 100)}%]`, confidenceColor)} ${file.path} (${file.type})`
+        );
       });
   }
 
   // Print circular dependencies
   if (circularDependencies.length > 0) {
-    console.log('\n' + colorize('Circular Dependencies:', 'red', true));
+    console.log("\n" + colorize("Circular Dependencies:", "red", true));
     circularDependencies.slice(0, 5).forEach((cycle, index) => {
-      console.log(`  ${index + 1}. ${cycle.map(p => path.relative(srcDir, p)).join(' → ')}`);
+      console.log(`  ${index + 1}. ${cycle.map((p) => path.relative(srcDir, p)).join(" → ")}`);
     });
 
     if (circularDependencies.length > 5) {
@@ -550,13 +575,15 @@ function generateReport() {
   // Print recommendations
   const recommendations = generateRecommendations();
   if (recommendations.length > 0) {
-    console.log('\n' + colorize('Recommendations:', 'green', true));
+    console.log("\n" + colorize("Recommendations:", "green", true));
     recommendations.forEach((rec, index) => {
-      console.log(`  ${index + 1}. ${colorize(rec.title, 'green')} (Priority: ${rec.priority}, Effort: ${rec.effort})`);
+      console.log(
+        `  ${index + 1}. ${colorize(rec.title, "green")} (Priority: ${rec.priority}, Effort: ${rec.effort})`
+      );
       console.log(`     ${rec.description}`);
       if (rec.impact) {
         Object.entries(rec.impact).forEach(([key, value]) => {
-          console.log(`     - ${colorize(key, 'blue')}: ${value}`);
+          console.log(`     - ${colorize(key, "blue")}: ${value}`);
         });
       }
     });
@@ -567,28 +594,31 @@ function generateReport() {
     filesScanned: totalFiles,
     issuesFound: unusedFiles.length + circularDependencies.length,
     deadCodeBytes: calculateUnusedSize(unusedFiles),
-    typesCoverage: '-- Not analyzed --',
-    recommendations: recommendations.map(r => r.title)
+    typesCoverage: "-- Not analyzed --",
+    recommendations: recommendations.map((r) => r.title),
   };
 
-  console.log('\n' + colorize('Summary:', 'cyan', true));
+  console.log("\n" + colorize("Summary:", "cyan", true));
   console.log(JSON.stringify(summary, null, 2));
 
-  console.log('\n' + colorize('========== End of Analysis Report ==========\n', 'cyan', true));
+  console.log("\n" + colorize("========== End of Analysis Report ==========\n", "cyan", true));
 }
 
 // Main execution
 try {
-  console.log(colorize('Starting code quality analysis for Matanuska...', 'green'));
+  console.log(colorize("Starting code quality analysis for Matanuska...", "green"));
 
   // Scan all files in the src directory
   const allFiles = scanFiles(srcDir);
-  console.log(`Found ${colorize(allFiles.length, 'green')} files to analyze`);
+  console.log(`Found ${colorize(allFiles.length, "green")} files to analyze`);
 
   // Analyze each file
-  allFiles.forEach(filePath => {
+  allFiles.forEach((filePath) => {
     try {
       analyzeFile(filePath);
+      // Use fileInfo in your analysis
+      const fileInfo = getFileInfo(filePath);
+      console.log(`Analyzing ${fileInfo.name} (${fileInfo.size} bytes)`);
     } catch (error) {
       console.error(`Error analyzing file ${filePath}:`, error.message);
     }
@@ -600,8 +630,7 @@ try {
 
   // Generate and print report
   generateReport();
-
 } catch (error) {
-  console.error(colorize('Error during analysis:', 'red'), error);
+  console.error(colorize("Error during analysis:", "red"), error);
   process.exit(1);
 }

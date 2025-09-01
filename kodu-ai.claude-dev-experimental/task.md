@@ -1,6 +1,6 @@
-# 🧠 Claude Agent Instruction – Project Task Guide for matrefactor
+# 🧠 Claude Agent Instruction – Project Task Guide for matanuska
 
-**Workspace:** @heinrichnel ➜ /workspaces/matrefactor (main)
+**Workspace:** @heinrichnel ➜ /workspaces/matanuska (main)
 
 ## 🧾 Project Summary
 
