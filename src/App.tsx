@@ -61,12 +61,13 @@ import DeploymentFallback from "./components/DeploymentFallback";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FirestoreConnectionError from "./components/ui/FirestoreConnectionError";
 import OfflineBanner from "./components/ui/OfflineBanner";
-import { normalizeError, safeStringify } from "./utils/error-utils";
+import { normalizeError, safeStringify, AppError as NormalizedError } from "./utils/error-utils";
 import {
   ErrorCategory,
   ErrorSeverity,
   handleError,
   registerErrorHandler,
+  AppError as HandlerError,
 } from "./utils/errorHandling";
 
 // Offline & Network Support
@@ -85,7 +86,7 @@ enum AppStatus {
 const App: React.FC = () => {
   const [status, setStatus] = useState<AppStatus>(AppStatus.Loading);
   const [connectionError, setConnectionError] = useState<Error | null>(null);
-  const [emitError, setEmitError] = useState<((error: any) => void) | null>(null);
+  const [emitError, setEmitError] = useState<((error: unknown) => void) | null>(null);
 
   useEffect(() => {
     let cleanup: (() => void) | undefined;
@@ -98,8 +99,8 @@ const App: React.FC = () => {
           return; // exit initializeServices early
         }
 
-        const unregisterErrorHandler = registerErrorHandler((errLike) => {
-          const err = normalizeError(errLike);
+        const unregisterErrorHandler = registerErrorHandler((errLike: HandlerError) => {
+          const err = normalizeError(errLike.originalError);
 
           // High-signal logs with grouped formatting
           console.groupCollapsed(
@@ -112,19 +113,26 @@ const App: React.FC = () => {
           console.groupEnd();
 
           // Existing severity handling
-          if ((errLike as any)?.severity === ErrorSeverity.FATAL) {
-            setConnectionError(err.original as any);
+          if (errLike.severity === ErrorSeverity.FATAL) {
+            setConnectionError(
+              err.original instanceof Error ? err.original : new Error(err.message)
+            );
             setStatus(AppStatus.Error);
           }
         });
 
         // Store the error emitter for other components to use
-        setEmitError(() => (error: any) => {
+        setEmitError(() => (error: unknown) => {
           const normalized = normalizeError(error);
-          // Manually call each registered handler
-          registerErrorHandler(() => {}); // This returns the unregister function
-          // Instead, we'll log the error and let existing system handle it
-          console.error("🚨 Manual Error Emission:", normalized);
+          // Emit error through the error handling system
+          handleError(() => Promise.reject(normalized), {
+            category: ErrorCategory.APPLICATION,
+            context: { component: "App", operation: "manualErrorEmission" },
+            severity: ErrorSeverity.ERROR,
+          }).catch(() => {
+            // Error already handled by handleError utility
+            console.error("🚨 Manual Error Emission:", normalized);
+          });
         });
 
         // Global error handlers for unhandled cases
@@ -211,7 +219,7 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary
-      onError={(error, _errorInfo) => {
+      onError={(error: Error, _errorInfo) => {
         const normalized = normalizeError(error);
         console.error("🚨 React Error Boundary triggered:", normalized);
 

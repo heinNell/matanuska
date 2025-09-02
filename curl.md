@@ -1,13 +1,13 @@
 curl -X POST 'https://hst-api.wialon.com/wialon/ajax.html' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --data-urlencode 'svc=token/login' \
-  --data-urlencode 'params={"token":"c1099bc37c906fd0832d8e783b60ae0dE00E534D76166C92501E8872C05084832853033E"}'
+  --data-urlencode 'params={"token":"c1099bc37c906fd0832d8e783b60ae0dFB204570A7D9753A37B331BA7C74FE035A292DC3"}'
 
 
 sid=$(curl -s -X POST 'https://hst-api.wialon.com/wialon/ajax.html' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --data-urlencode 'svc=token/login' \
-  --data-urlencode 'params={"token":"c1099bc37c906fd0832d8e783b60ae0dE00E534D76166C92501E8872C05084832853033E"}' | jq -r '.eid')
+  --data-urlencode 'params={"token":"c1099bc37c906fd0832d8e783b60ae0dFB204570A7D9753A37B331BA7C74FE035A292DC3"}' | jq -r '.eid')
 
 curl -X POST 'https://hst-api.wialon.com/wialon/ajax.html' \
   -H 'Content-Type: application/x-www-form-urlencoded' \

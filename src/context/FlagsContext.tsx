@@ -37,7 +37,7 @@ export const FlagsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     });
 
   // Optional realtime mode toggled by env flag
-  const enableRealtime: boolean = (import.meta as any)?.env?.VITE_FLAGS_REALTIME === 'true';
+  const enableRealtime: boolean = (import.meta.env?.VITE_FLAGS_REALTIME as string) === 'true';
 
   useEffect(() => {
     // Extract flagged costs from trips
@@ -75,12 +75,12 @@ export const FlagsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             try {
               const allFlaggedCosts: FlaggedCost[] = [];
               querySnapshot.forEach((docSnap) => {
-                const data: any = docSnap.data() || {};
+                const data = docSnap.data() as { costs?: CostEntry[]; hasFlaggedCosts?: boolean };
                 const costs: CostEntry[] = Array.isArray(data.costs) ? data.costs : [];
                 costs.forEach((c) => {
-                  if (c && (c as any).isFlagged) {
+                  if (c && 'isFlagged' in c && c.isFlagged) {
                     const fc: FlaggedCost = {
-                      ...(c as any),
+                      ...c,
                       id: c.id || `${docSnap.id}-${c.referenceNumber || Math.random().toString(36).slice(2)}`,
                       tripId: c.tripId || docSnap.id,
                       isFlagged: true,

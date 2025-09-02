@@ -26,7 +26,7 @@ interface UseWialonUnitsResult {
     Defensive helpers
     ------------------------- */
 
-type WialonUnitLike = WialonUnit | WialonUnitBrief | Record<string, any> | null | undefined;
+type WialonUnitLike = WialonUnit | WialonUnitBrief | Record<string, unknown> | null | undefined;
 
 /**
  * Safely extracts a numeric or string ID from a Wialon unit object, handling various property names and getter methods.
@@ -35,7 +35,7 @@ type WialonUnitLike = WialonUnit | WialonUnitBrief | Record<string, any> | null 
  */
 function safeGetIdRaw(u: WialonUnitLike): string | undefined {
   if (!u || typeof u !== "object") return undefined;
-  const anyU = u as any;
+  const anyU = u as Record<string, unknown>;
 
   // Check common fields first
   if (anyU.id !== undefined && (typeof anyU.id === "string" || typeof anyU.id === "number")) {
@@ -69,7 +69,8 @@ function safeGetIdRaw(u: WialonUnitLike): string | undefined {
  */
 function safeGetName(u: WialonUnitLike): string {
   if (!u || typeof u !== "object") return "";
-  const anyU = u as any;
+  // Update to use Record<string, unknown>
+  const anyU = u as Record<string, unknown>;
 
   // Check common fields
   if (typeof anyU.nm === "string" && anyU.nm.length) return anyU.nm;
@@ -97,7 +98,8 @@ function safeGetName(u: WialonUnitLike): string {
  */
 function safeGetPosition(u: WialonUnitLike): { lat?: number; lng?: number } {
   if (!u || typeof u !== "object") return {};
-  const anyU = u as any;
+  // Update to use Record<string, unknown>
+  const anyU = u as Record<string, unknown>;
 
   // Prefer getPosition() if available
   if (typeof anyU.getPosition === "function") {
@@ -128,7 +130,10 @@ function safeGetPosition(u: WialonUnitLike): { lat?: number; lng?: number } {
     if (!Number.isNaN(lat) && !Number.isNaN(lon)) return { lat, lng: lon };
   }
 
-  const posObj = (typeof posArr === "object" && !Array.isArray(posArr)) ? posArr : anyU.position ?? anyU.lastPosition ?? anyU.posObj;
+  const posObj =
+    typeof posArr === "object" && !Array.isArray(posArr)
+      ? posArr
+      : (anyU.position ?? anyU.lastPosition ?? anyU.posObj);
   if (posObj && typeof posObj === "object") {
     const lat = Number(posObj.y ?? posObj.lat ?? posObj.latitude ?? posObj.latDeg);
     const lon = Number(posObj.x ?? posObj.lon ?? posObj.lng ?? posObj.longitude ?? posObj.lonDeg);
@@ -150,7 +155,8 @@ function safeGetPosition(u: WialonUnitLike): { lat?: number; lng?: number } {
  */
 function safeGetIconUrl(u: WialonUnitLike): string | null {
   if (!u || typeof u !== "object") return null;
-  const anyU = u as any;
+  // Update to use Record<string, unknown>
+const anyU = u as Record<string, unknown>;
 
   // Check getter method
   if (typeof anyU.getIconUrl === "function") {
@@ -231,7 +237,12 @@ export function useWialonUnits(token?: string): UseWialonUnitsResult {
         .filter((u): u is UnitInfo => !!u);
 
       setUnits(unitsInfo);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
       setError(err?.message ?? "Failed to load Wialon units");
       setUnits([]);
     } finally {

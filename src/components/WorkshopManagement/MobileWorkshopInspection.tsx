@@ -42,12 +42,12 @@ interface InspectionFormData {
     longitude: number;
     address?: string;
   };
-  items: Array<{
-    id: string;
-    status: "pass" | "fail" | "na" | "pending";
-    notes?: string;
-    photos?: string[];
-  }>;
+items: {
+ id: string;
+ status: "pass" | "fail" | "na" | "pending";
+ notes?: string;
+ photos?: string[];
+ }[];
   generalNotes: string;
   defectsFound: number;
   criticalIssues: number;

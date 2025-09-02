@@ -11,35 +11,6 @@ export interface ExtendedTyre extends Tyre {
   kmRunLimit?: number;
 }
 
-// If the Tyre type is not exported from useTyres, use this interface instead:
-// Make sure this matches exactly with your useTyres Tyre interface
-// export interface Tyre {
-//   id: string;
-//   serialNumber: string;
-//   brand: string;
-//   size: string; // This should be string, not object based on the error
-//   dotCode?: string;
-//   manufacturingDate?: Date;
-//   model?: string;
-//   pattern?: string;
-//   condition?: {
-//     status: 'good' | 'fair' | 'poor' | 'critical';
-//     treadDepth: number;
-//   };
-//   status?: 'new' | 'in_service' | 'repair' | 'scrapped';
-//   installation?: {
-//     vehicleId: string;
-//     installationDate?: Date;
-//     position?: string;
-//   };
-//   kmRun?: number;
-//   kmRunLimit?: number;
-//   location?: string;
-//   notes?: string;
-//   createdAt?: Date;
-//   updatedAt?: Date;
-// }
-
 // UI Record interface for transformed data
 export interface UIRecord {
   id: string;
@@ -95,31 +66,29 @@ export const useTyrePageState = (): UseTyrePageStateReturn => {
     if (!tyres.length) return [];
 
     return tyres.map((tyre: Tyre): UIRecord => {
-      const extendedTyre = tyre as ExtendedTyre;
-
       return {
-        id: extendedTyre.id,
-        tyreNumber: extendedTyre.serialNumber || "",
-        manufacturer: extendedTyre.brand || "",
+        id: tyre.id,
+        tyreNumber: tyre.serialNumber || "",
+        manufacturer: tyre.brand || "",
         condition:
-          extendedTyre.condition?.status === "good"
+          tyre.condition?.status === "good"
             ? "Good"
-            : extendedTyre.condition?.status === "critical"
+            : tyre.condition?.status === "critical"
               ? "Poor"
               : "Fair",
         status:
-          extendedTyre.status === "in_service"
+          tyre.status === "in_service"
             ? "In-Service"
-            : extendedTyre.status === "new"
+            : tyre.status === "new"
               ? "In-Stock"
-              : extendedTyre.status === "scrapped"
+              : tyre.status === "scrapped"
                 ? "Scrap"
                 : "Repair",
-        vehicleAssignment: extendedTyre.installation?.vehicleId || "",
-        km: extendedTyre.kmRun || 0,
-        kmLimit: extendedTyre.kmRunLimit || 60000,
-        treadDepth: extendedTyre.condition?.treadDepth || 0,
-        mountStatus: extendedTyre.installation ? "Mounted" : "Not Mounted",
+        vehicleAssignment: tyre.installation?.vehicleId || "",
+        km: tyre.kmRun || 0,
+        kmLimit: (tyre as ExtendedTyre).kmRunLimit || 60000,
+        treadDepth: tyre.condition?.treadDepth || 0,
+        mountStatus: tyre.installation ? "Mounted" : "Not Mounted",
       };
     });
   };

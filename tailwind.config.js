@@ -1,24 +1,14 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}"
-  ],
+import tailwindForms from "@tailwindcss/forms";
+import tailwindTypography from "@tailwindcss/typography";
+import tailwindAspectRatio from "@tailwindcss/aspect-ratio";
+
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       fontFamily: {
-        sans: [
-          "Inter",
-          "ui-sans-serif",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Arial",
-          "sans-serif",
-        ],
+        inter: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
         primary: {
@@ -34,10 +24,23 @@ module.exports = {
           900: "#0c4a6e",
           950: "#082f49",
         },
-        secondary: "#f1f1f1",
-        warning: { DEFAULT: "#ffb703" },
-        error: { DEFAULT: "#d90429" },
-        success: { DEFAULT: "#2a9d8f" },
+ secondary: "#f1f1f1",
+ warning: { DEFAULT: "#ffb703" },
+ error: { DEFAULT: "#d90429" },
+ success: { DEFAULT: "#2a9d8f" },
+ gray: {
+50: "#f9fafb",
+100: "#f3f4f6",
+200: "#e5e7eb",
+300: "#d1d5db",
+400: "#9ca3af",
+500: "#6b7280",
+600: "#4b5563",
+700: "#374151",
+800: "#1f2937",
+900: "#111827",
+950: "#030712",
+ },
       },
       boxShadow: {
         card: "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)",
@@ -70,10 +73,6 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/aspect-ratio"),
-  ],
+  plugins: [tailwindForms, tailwindTypography, tailwindAspectRatio],
   // darkMode: 'class' // Enable this if you want dark mode
 };

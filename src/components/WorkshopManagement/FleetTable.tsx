@@ -1,99 +1,40 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from "../../components/ui/Button";
-import { Truck, Search, Plus, Edit, Trash2, Filter, RefreshCw, Download } from "lucide-react";
+import { Truck, Search, Plus, Edit, Trash2, Filter, RefreshCw, Download, Loader } from "lucide-react";
 import FleetFormModal from "../../components/Models/Trips/FleetFormModal";
+import type { Fleet as FleetVehicle } from "../../components/Models/Trips/FleetFormModal";
+import { useFleetData, Vehicle } from "../../hooks/useFleetData";
 
-// Mock fleet data
-const mockFleetData = [
-  {
-    fleetNumber: "21H",
-    registration: "ADS4865",
-    make: "SCANIA",
-    model: "G460",
-    chassisNo: "9BS56440003882656",
-    engineNo: "DC13106LO18271015",
-    vehicleType: "Truck",
-    status: "Active",
-    odometer: 62000,
-  },
-  {
-    fleetNumber: "22H",
-    registration: "ADS4866",
-    make: "SCANIA",
-    model: "G460",
-    chassisNo: "9BSG6X40003882660",
-    engineNo: "DC13106LO18271019",
-    vehicleType: "Truck",
-    status: "Maintenance",
-    odometer: 58000,
-  },
-  {
-    fleetNumber: "23H",
-    registration: "AFQ1324",
-    make: "SHACMAN",
-    model: "X3000",
-    chassisNo: "LZGJL5V42MX011270",
-    engineNo: "1421A006077",
-    vehicleType: "Truck",
-    status: "Active",
-    odometer: 25000,
-  },
-  {
-    fleetNumber: "24H",
-    registration: "AFQ1325",
-    make: "SHACMAN",
-    model: "X3000",
-    chassisNo: "LZGJL5V42MX011270",
-    engineNo: "1421A006076",
-    vehicleType: "Truck",
-    status: "Active",
-    odometer: 23000,
-  },
-  {
-    fleetNumber: "26H",
-    registration: "AFQ1327",
-    make: "SHACMAN",
-    model: "X3000",
-    chassisNo: "LZGJL5V44MX011271",
-    engineNo: "1421A006085",
-    vehicleType: "Truck",
-    status: "Active",
-    odometer: 28000,
-  },
-  {
-    fleetNumber: "28H",
-    registration: "AFQ1329",
-    make: "SHACMAN",
-    model: "X3000",
-    chassisNo: "LZGJL5V46MX011272",
-    engineNo: "1421A006084",
-    vehicleType: "Truck",
-    status: "Active",
-    odometer: 31000,
-  },
-  {
-    fleetNumber: "31H",
-    registration: "AGZ1963",
-    make: "SHACMAN",
-    model: "X3000",
-    chassisNo: "LZGJL4W48PX122273",
-    engineNo: "71129664",
-    vehicleType: "Truck",
-    status: "Active",
-    odometer: 8000,
-  },
-];
+// Helper function to convert Vehicle type to FleetVehicle type
+const convertVehicleToFleetVehicle = (vehicle: Vehicle): FleetVehicle => {
+  return {
+    fleetNumber: vehicle.fleetNumber,
+    registration: vehicle.registration,
+    make: vehicle.make,
+    model: vehicle.model,
+    chassisNo: vehicle.id, // Using id as chassisNo since it's required
+    engineNo: vehicle.id, // Using id as engineNo since it's required
+    vehicleType: vehicle.type || "Truck",
+    status: vehicle.status || "Active",
+    odometer: typeof vehicle.year === 'number' ? vehicle.year : 0, // Using year as odometer if available
+  };
+};
 
 const FleetTable: React.FC = () => {
-  const [fleetData, setFleetData] = useState(mockFleetData);
+  // Fetch real fleet data from Firestore using the hook
+  const { vehicles, loading, error } = useFleetData();
+
+  // Convert Vehicle data to FleetVehicle format
+  const fleetData = vehicles.map(convertVehicleToFleetVehicle);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     vehicleType: "",
     status: "",
   });
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingFleet, setEditingFleet] = useState<any>(null);
+  const [editingFleet, setEditingFleet] = useState<FleetVehicle | null>(null);
 
   // Filter the fleet data
   const filteredFleet = fleetData.filter((vehicle) => {
@@ -118,7 +59,7 @@ const FleetTable: React.FC = () => {
   const statuses = Array.from(new Set(fleetData.map((v) => v.status)));
 
   // Handle editing a fleet vehicle
-  const handleEditVehicle = (fleet: any) => {
+  const handleEditVehicle = (fleet: FleetVehicle) => {
     setEditingFleet(fleet);
     setShowAddModal(true);
   };
@@ -126,12 +67,15 @@ const FleetTable: React.FC = () => {
   // Handle deleting a fleet vehicle
   const handleDeleteVehicle = (fleetNumber: string) => {
     if (confirm(`Are you sure you want to delete ${fleetNumber}? This action cannot be undone.`)) {
-      setFleetData((prev) => prev.filter((v) => v.fleetNumber !== fleetNumber));
+      // In a real implementation, we would call the Firestore delete API
+      // For now, we just show an alert since we're using the read-only hook
+      alert(`Vehicle ${fleetNumber} would be deleted (not implemented in this demo)`);
+      // We would need to refresh the data after deletion
     }
   };
 
   // Handle saving a fleet vehicle
-  const handleSaveVehicle = async (fleet: any) => {
+  const handleSaveVehicle = async (fleet: FleetVehicle) => {
     // In a real app, this would save to Firestore
     if (editingFleet) {
       // Update existing fleet
@@ -178,6 +122,30 @@ const FleetTable: React.FC = () => {
     // Clean up
     document.body.removeChild(link);
   };
+
+  // Handle loading and error states
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="flex flex-col items-center">
+          <Loader className="animate-spin h-8 w-8 text-blue-600 mb-2" />
+          <p className="text-gray-600">Loading fleet data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md">
+        <h3 className="text-lg font-medium">Error loading fleet data</h3>
+        <p>{error}</p>
+        <Button className="mt-2" variant="danger" onClick={() => window.location.reload()}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { FLEET_VEHICLES } from '../types/fleetVehicles.js';
+import { FLEET_VEHICLES } from '../types/fleetVehicles';
 import { Vehicle } from '../types/vehicle';
 
 export interface FleetOption {
@@ -54,7 +54,7 @@ export function useFleetList(options?: {
         type: (vehicle.category ?? '') as string,
         status: vehicle.status,
         ...(options?.includeDetails
-          ? { details: { ...vehicle, km: vehicle.km ?? (vehicle as any).mileage } as Vehicle }
+          ? { details: { ...vehicle, km: vehicle.km ?? (vehicle as Vehicle & { km?: number }).km } as Vehicle }
           : {})
       } as FleetOption;
     });

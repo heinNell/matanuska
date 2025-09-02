@@ -207,7 +207,9 @@ const JobCardNotes: React.FC<JobCardNotesProps> = ({
             <div className="flex justify-between items-center">
               <select
                 value={noteType}
-                onChange={(e) => setNoteType(e.target.value as any)}
+                onChange={(e) =>
+                  setNoteType(e.target.value as "general" | "technician" | "customer" | "internal")
+                }
                 className="border rounded-md px-3 py-1 text-sm"
               >
                 <option value="general">General Note</option>

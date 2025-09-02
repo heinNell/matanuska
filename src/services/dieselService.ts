@@ -29,14 +29,17 @@ const DIESEL_NORMS_COLLECTION = "dieselNorms";
  */
 export const addDieselRecord = async (record: DieselConsumptionRecord): Promise<string> => {
   try {
-    const recordWithTimestamp = {
+    interface DieselRecordWithLegacyDateISO {
+      date?: Date;
+      dateISO?: string;
+    }
+
+    const recordWithTimestamp: DieselConsumptionRecord = {
       ...record,
-      // Prefer Timestamp; convert legacy dateISO if provided
       date:
-        (record as any).date ??
-        ((record as any).dateISO
-          ? Timestamp.fromDate(new Date((record as any).dateISO))
-          : undefined),
+        (record.date ?? (record as DieselRecordWithLegacyDateISO).dateISO)
+          ? Timestamp.fromDate(new Date((record as DieselRecordWithLegacyDateISO).dateISO!))
+          : undefined,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
@@ -55,10 +58,10 @@ export const addDieselRecord = async (record: DieselConsumptionRecord): Promise<
 export const getAllDieselRecords = async (): Promise<DieselConsumptionRecord[]> => {
   try {
     const snap = await getDocs(collection(firestore, DIESEL_COLLECTION));
-    const records: DieselConsumptionRecord[] = [];
-    snap.forEach((d) => {
-      records.push({ id: d.id, ...(d.data() as any) } as DieselConsumptionRecord);
-    });
+const records: DieselConsumptionRecord[] = [];
+snap.forEach((d) => {
+ records.push({ id: d.id, ...d.data() } as DieselConsumptionRecord);
+});
     return records;
   } catch (error) {
     console.error("Error getting diesel records:", error);
@@ -84,12 +87,16 @@ export const getDieselRecordsForVehicle = async (
     );
 
     const [s1, s2] = await Promise.all([getDocs(q1), getDocs(q2)]);
-    const a1 = s1.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
-    const a2 = s2.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+
+    // Type the raw document data properly
+    type RawDocumentData = { id: string } & Record<string, unknown>;
+
+    const a1: RawDocumentData[] = s1.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const a2: RawDocumentData[] = s2.docs.map((d) => ({ id: d.id, ...d.data() }));
 
     // de-dup on id
     const map = new Map<string, DieselConsumptionRecord>();
-    [...a1, ...a2].forEach((r: any) => map.set(r.id, r as DieselConsumptionRecord));
+    [...a1, ...a2].forEach((r: RawDocumentData) => map.set(r.id, r as DieselConsumptionRecord));
     return [...map.values()];
   } catch (error) {
     console.error("Error getting diesel records for vehicle:", error);
@@ -105,15 +112,12 @@ export const updateDieselRecord = async (
   updatedData: Partial<DieselConsumptionRecord>
 ): Promise<void> => {
   try {
-    const dataWithTimestamp = {
+    const dataWithTimestamp: Partial<DieselConsumptionRecord> = {
       ...updatedData,
-      // if caller passes dateISO, normalize to Timestamp
-      ...((updatedData as any)?.dateISO
-        ? { date: Timestamp.fromDate(new Date((updatedData as any).dateISO)) }
-        : {}),
+      ...(updatedData.dateISO ? { date: Timestamp.fromDate(new Date(updatedData.dateISO)) } : {}),
       updatedAt: serverTimestamp(),
     };
-    await updateDoc(doc(firestore, DIESEL_COLLECTION, id), dataWithTimestamp as any);
+    await updateDoc(doc(firestore, DIESEL_COLLECTION, id), dataWithTimestamp);
   } catch (error) {
     console.error("Error updating diesel record:", error);
     throw error;
@@ -140,7 +144,7 @@ export const getDieselRecordById = async (id: string): Promise<DieselConsumption
     const ref = doc(firestore, DIESEL_COLLECTION, id);
     const snap = await getDoc(ref);
     if (!snap.exists()) return null;
-    return { id: snap.id, ...(snap.data() as any) } as DieselConsumptionRecord;
+    return { id: snap.id, ...snap.data() } as DieselConsumptionRecord;
   } catch (error) {
     console.error("Error getting diesel record:", error);
     throw error;
@@ -168,7 +172,7 @@ export const getDieselRecordsForDateRange = async (
     );
 
     const snap = await getDocs(q);
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }) as DieselConsumptionRecord);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as DieselConsumptionRecord);
   } catch (error) {
     // If you still store string dates in some docs, you can fall back to client filtering:
     // const all = await getAllDieselRecords();
@@ -196,7 +200,7 @@ export const linkDieselToTrip = async (dieselId: string, tripId: string): Promis
 export const getAllDieselNorms = async (): Promise<DieselNorm[]> => {
   try {
     const snap = await getDocs(collection(firestore, DIESEL_NORMS_COLLECTION));
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }) as DieselNorm);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as DieselNorm);
   } catch (error) {
     console.error("Error getting diesel norms:", error);
     throw error;
@@ -212,14 +216,14 @@ export const upsertDieselNorm = async (norm: DieselNorm): Promise<string> => {
       await updateDoc(doc(firestore, DIESEL_NORMS_COLLECTION, norm.id), {
         ...norm,
         updatedAt: serverTimestamp(),
-      } as any);
+      } as DieselNorm);
       return norm.id;
     } else {
       const ref = await addDoc(collection(firestore, DIESEL_NORMS_COLLECTION), {
         ...norm,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      } as any);
+      } as DieselNorm);
       return ref.id;
     }
   } catch (error) {

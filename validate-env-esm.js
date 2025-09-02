@@ -1,7 +1,9 @@
-#!/usr/bin/env node --input-type=module
+#!/usr/bin/env node
 
 // Load environment variables from .env file
 import dotenv from "dotenv";
+import { exit } from "process";
+
 dotenv.config();
 
 // Console styling for better output

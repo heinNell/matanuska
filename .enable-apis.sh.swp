@@ -17,7 +17,7 @@ gcloud services enable \
   timezone-backend.googleapis.com \
   roads.googleapis.com \
   routes.googleapis.com \
-  --project=$PROJECT_ID
+  --project=mat1-9e6b3
 
 # Enable Firebase APIs
 gcloud services enable \

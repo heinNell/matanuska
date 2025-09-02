@@ -32,7 +32,7 @@ export function useTyres() {
   // Use Firestore to fetch tyres
   useEffect(() => {
     const tyresRef = collection(firestore, "tyres").withConverter(tyreConverter);
-    let cleanup: (() => void) | undefined;
+
     try {
       // Set up real-time listener
       const unsubscribe = onSnapshot(
@@ -53,18 +53,15 @@ export function useTyres() {
 
       // Store unsubscribe function
       unsubscribeRef.current = unsubscribe;
-      cleanup = () => {
-        if (unsubscribeRef.current) {
-          unsubscribeRef.current();
-        }
-      };
+
+      // Return the unsubscribe function for proper cleanup
+      return unsubscribe;
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch tyres"));
       setLoading(false);
-      cleanup = undefined;
+      // Return undefined for failed setup - useEffect will handle this gracefully
+      return undefined;
     }
-
-    return cleanup ?? (() => {});
   }, []);
 
   // Add a new tyre

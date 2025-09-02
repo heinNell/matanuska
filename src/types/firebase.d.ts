@@ -4,15 +4,15 @@
  */
 
 declare module "firebase" {
-  // Basic Firebase types
-  export interface FirebaseApp {}
-  export interface FirebaseAuth {}
-  export interface FirebaseFirestore {}
-  export interface FirebaseStorage {}
-  export interface FirebaseFunctions {}
-  export interface FirebaseAnalytics {}
-  export interface FirebaseDatabase {}
-  export interface FirebaseMessaging {}
-  export interface FirebasePerformance {}
-  export interface FirebaseRemoteConfig {}
+  // Basic Firebase types - using object type for service instances
+  export type FirebaseApp = object;
+  export type FirebaseAuth = object;
+  export type FirebaseFirestore = object;
+  export type FirebaseStorage = object;
+  export type FirebaseFunctions = object;
+  export type FirebaseAnalytics = object;
+  export type FirebaseDatabase = object;
+  export type FirebaseMessaging = object;
+  export type FirebasePerformance = object;
+  export type FirebaseRemoteConfig = object;
 }
