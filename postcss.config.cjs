@@ -1,8 +1,8 @@
 module.exports = {
   plugins: {
-    "postcss-nesting": {},
-    "@tailwindcss/postcss": {},
+    "postcss-import": {},
+    "tailwindcss/nesting": {},
+    tailwindcss: {},
     autoprefixer: {},
-    ...(process.env.NODE_ENV === "production" ? { cssnano: {} } : {}),
   },
 };

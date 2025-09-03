@@ -1,8 +1,20 @@
 // Serverless API Function for Vercel
-import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import { parse } from 'csv-parse/sync';
-import * as firebase from '../firebase';
+import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
+import { parse } from "csv-parse/sync";
+import * as firebase from "../firebase";
+
+// Define Firebase module interface with inventory methods
+interface FirebaseModule {
+  importInventoryItems?: (items: InventoryItem[]) => Promise<{ success: boolean; count: number }>;
+  getAllInventoryItems?: () => Promise<InventoryItem[]>;
+  getInventoryItemById?: (id: string) => Promise<InventoryItem>;
+  updateInventoryItem?: (id: string, data: Partial<InventoryItem>) => Promise<InventoryItem>;
+  deleteInventoryItem?: (id: string) => Promise<{ id: string }>;
+}
+
+// Type assertion for firebase module
+const firebaseModule = firebase as FirebaseModule;
 
 // Define custom interface for CSV parse errors
 interface CSVParseError extends Error {
@@ -63,36 +75,36 @@ interface InventoryItem {
 }
 
 // Add missing Firebase methods if they don't exist
-if (!(firebase as any).importInventoryItems) {
-  (firebase as any).importInventoryItems = async (items: InventoryItem[]) => {
+if (!firebaseModule.importInventoryItems) {
+  firebaseModule.importInventoryItems = async (items: InventoryItem[]) => {
     console.log("Importing inventory items:", items.length);
     return { success: true, count: items.length };
   };
 }
 
-if (!(firebase as any).getAllInventoryItems) {
-  (firebase as any).getAllInventoryItems = async () => {
+if (!firebaseModule.getAllInventoryItems) {
+  firebaseModule.getAllInventoryItems = async () => {
     console.log("Getting all inventory items");
     return [];
   };
 }
 
-if (!(firebase as any).getInventoryItemById) {
-  (firebase as any).getInventoryItemById = async (id: string) => {
+if (!firebaseModule.getInventoryItemById) {
+  firebaseModule.getInventoryItemById = async (id: string) => {
     console.log("Getting inventory item by ID:", id);
-    return { id };
+    return { id } as InventoryItem;
   };
 }
 
-if (!(firebase as any).updateInventoryItem) {
-  (firebase as any).updateInventoryItem = async (id: string, data: any) => {
+if (!firebaseModule.updateInventoryItem) {
+  firebaseModule.updateInventoryItem = async (id: string, data: Partial<InventoryItem>) => {
     console.log("Updating inventory item:", id);
-    return { id, ...data };
+    return { id, ...data } as InventoryItem;
   };
 }
 
-if (!(firebase as any).deleteInventoryItem) {
-  (firebase as any).deleteInventoryItem = async (id: string) => {
+if (!firebaseModule.deleteInventoryItem) {
+  firebaseModule.deleteInventoryItem = async (id: string) => {
     console.log("Deleting inventory item:", id);
     return { id };
   };
@@ -131,7 +143,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 app.post("/api/inventory/import", async (req: Request, res: Response) => {
   try {
     // Ensure importInventoryItems function exists
-    const importInventoryItems = (firebase as any).importInventoryItems;
+    const importInventoryItems = firebaseModule.importInventoryItems;
 
     // Check if there's CSV data in the request
     if (!req.body || !req.body.csvData) {
@@ -232,11 +244,12 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
         pattern = isArray
           ? (record as CSVRecordArray)[3]?.toString() || ""
           : (record as CSVRecordObject).pattern || "";
-        quantity = parseFloat(
-          isArray
-            ? (record as CSVRecordArray)[4]?.toString() || "0"
-            : ((record as CSVRecordObject).quantity?.toString() || "0")
-        ) || 0;
+        quantity =
+          parseFloat(
+            isArray
+              ? (record as CSVRecordArray)[4]?.toString() || "0"
+              : (record as CSVRecordObject).quantity?.toString() || "0"
+          ) || 0;
         status = isArray
           ? (record as CSVRecordArray)[5]?.toString() || ""
           : (record as CSVRecordObject).status || "";
@@ -258,11 +271,12 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
         registrationNumber = isArray
           ? (record as CSVRecordArray)[11]?.toString() || ""
           : (record as CSVRecordObject).registrationNumber || "";
-        price = parseFloat(
-          isArray
-            ? (record as CSVRecordArray)[12]?.toString() || "0"
-            : ((record as CSVRecordObject).price?.toString() || "0")
-        ) || 0;
+        price =
+          parseFloat(
+            isArray
+              ? (record as CSVRecordArray)[12]?.toString() || "0"
+              : (record as CSVRecordObject).price?.toString() || "0"
+          ) || 0;
         holdingBay = isArray
           ? (record as CSVRecordArray)[13]?.toString() || ""
           : (record as CSVRecordObject).holdingBay || "";
@@ -356,14 +370,14 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
 // GET all inventory items
 app.get("/api/inventory", async (_req: Request, res: Response) => {
   try {
-    if (!(firebase as any).getAllInventoryItems) {
+    if (!firebaseModule.getAllInventoryItems) {
       return res.status(500).json({
         error: "Firebase not initialized",
         message: "Database connection unavailable",
       });
     }
 
-    const items = await (firebase as any).getAllInventoryItems();
+    const items = await firebaseModule.getAllInventoryItems();
     return res.status(200).json({
       success: true,
       count: items.length,
@@ -382,7 +396,7 @@ app.get("/api/inventory", async (_req: Request, res: Response) => {
 // GET inventory item by ID
 app.get("/api/inventory/:id", async (req: Request, res: Response) => {
   try {
-    if (!(firebase as any).getInventoryItemById) {
+    if (!firebaseModule.getInventoryItemById) {
       return res.status(500).json({
         error: "Firebase not initialized",
         message: "Database connection unavailable",
@@ -390,7 +404,7 @@ app.get("/api/inventory/:id", async (req: Request, res: Response) => {
     }
 
     const { id } = req.params;
-    const item = await (firebase as any).getInventoryItemById(id);
+    const item = await firebaseModule.getInventoryItemById(id);
     return res.status(200).json({
       success: true,
       item,
@@ -408,7 +422,7 @@ app.get("/api/inventory/:id", async (req: Request, res: Response) => {
 // UPDATE inventory item
 app.put("/api/inventory/:id", async (req: Request, res: Response) => {
   try {
-    if (!(firebase as any).updateInventoryItem) {
+    if (!firebaseModule.updateInventoryItem) {
       return res.status(500).json({
         error: "Firebase not initialized",
         message: "Database connection unavailable",
@@ -416,7 +430,7 @@ app.put("/api/inventory/:id", async (req: Request, res: Response) => {
     }
 
     const { id } = req.params;
-    const result = await (firebase as any).updateInventoryItem(id, req.body);
+    const result = await firebaseModule.updateInventoryItem(id, req.body as Partial<InventoryItem>);
     return res.status(200).json({
       success: true,
       message: `Inventory item ${id} updated successfully`,
@@ -435,7 +449,7 @@ app.put("/api/inventory/:id", async (req: Request, res: Response) => {
 // DELETE inventory item
 app.delete("/api/inventory/:id", async (req: Request, res: Response) => {
   try {
-    if (!(firebase as any).deleteInventoryItem) {
+    if (!firebaseModule.deleteInventoryItem) {
       return res.status(500).json({
         error: "Firebase not initialized",
         message: "Database connection unavailable",
@@ -443,7 +457,7 @@ app.delete("/api/inventory/:id", async (req: Request, res: Response) => {
     }
 
     const { id } = req.params;
-    const result = await (firebase as any).deleteInventoryItem(id);
+    const result = await firebaseModule.deleteInventoryItem(id);
     return res.status(200).json({
       success: true,
       message: `Inventory item ${id} deleted successfully`,

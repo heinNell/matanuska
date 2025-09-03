@@ -12,12 +12,9 @@ import {
   query,
   where,
   getDocs,
-  orderBy,
-  limit,
 } from "firebase/firestore";
 import { firestore } from "../firebase";
 import { Tyre, TyreInspection } from "../types/tyre";
-import { JobCard } from "../types/workshop";
 
 // Vendor API Integration Types
 export interface VendorPriceQuote {
@@ -39,6 +36,21 @@ export interface VendorAPIResponse {
   data?: VendorPriceQuote[];
   error?: string;
   timestamp: string;
+}
+
+// Tyre specification interface for vendor API calls
+export interface TyreSpecification {
+  brand: string;
+  pattern: string;
+  size: string;
+  quantity: number;
+}
+
+// Report data interface
+export interface ReportData {
+  reportName: string;
+  generatedAt: string;
+  data: Record<string, unknown>[];
 }
 
 // Telematics Integration Types
@@ -94,7 +106,7 @@ export interface ScheduledReport {
 }
 
 class TyreIntegrationService {
-  private vendorAPIs: Map<string, string> = new Map([
+  private vendorAPIs = new Map<string, string>([
     ["FTS001", "https://api.fieldtyreservices.co.za/v1"],
     ["ITS001", "https://api.impalatruckspares.co.za/v1"],
     ["PT001", "https://api.protyre.co.za/v1"],
@@ -104,12 +116,7 @@ class TyreIntegrationService {
   /**
    * Vendor API Integration
    */
-  async getVendorPricing(tyreSpec: {
-    brand: string;
-    pattern: string;
-    size: string;
-    quantity: number;
-  }): Promise<VendorPriceQuote[]> {
+  async getVendorPricing(tyreSpec: TyreSpecification): Promise<VendorPriceQuote[]> {
     const quotes: VendorPriceQuote[] = [];
 
     for (const [vendorId, apiUrl] of this.vendorAPIs) {
@@ -133,7 +140,7 @@ class TyreIntegrationService {
   private async fetchVendorQuote(
     vendorId: string,
     apiUrl: string,
-    tyreSpec: any
+    tyreSpec: TyreSpecification
   ): Promise<VendorAPIResponse> {
     // Simulate API call - replace with actual vendor API integration
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
@@ -223,7 +230,7 @@ class TyreIntegrationService {
     try {
       // This would integrate with your existing Wialon API or telematics provider
       // For now, simulate the data
-      const mockTelematicsData: TelematiicsUpdate = {
+      const mockTelematicsData: TelematicsUpdate = {
         vehicleId,
         fleetNumber: vehicleId,
         currentMileage: Math.floor(Math.random() * 100000) + 50000,
@@ -244,7 +251,7 @@ class TyreIntegrationService {
     }
   }
 
-  private async updateTyreMileage(tyres: Tyre[], telematicsData: TelematiicsUpdate): Promise<void> {
+  private async updateTyreMileage(tyres: Tyre[], telematicsData: TelematicsUpdate): Promise<void> {
     const updatePromises = tyres.map(async (tyre) => {
       const installationMileage = tyre.installation?.mileageAtInstallation || 0;
       const currentMileage = telematicsData.currentMileage;
@@ -482,7 +489,7 @@ class TyreIntegrationService {
     });
   }
 
-  private async generateReportData(config: ScheduledReport): Promise<any> {
+  private async generateReportData(config: ScheduledReport): Promise<ReportData> {
     // This would generate actual report data based on the config
     // For now, return mock data
     return {
@@ -492,7 +499,7 @@ class TyreIntegrationService {
     };
   }
 
-  private async createReportFile(data: any, format: string): Promise<string> {
+  private async createReportFile(data: ReportData, format: string): Promise<string> {
     // This would create the actual file (PDF, Excel, CSV)
     // For now, return a mock URL
     return `https://reports.matanuska.com/tyre-reports/${Date.now()}.${format}`;
@@ -503,7 +510,7 @@ class TyreIntegrationService {
     console.log(`Sending report ${reportUrl} to:`, config.recipients);
   }
 
-  private calculateNextRun(schedule: string): Date {
+  private calculateNextRun(_schedule: string): Date {
     // Simple schedule calculation - would use a proper cron parser in production
     const now = new Date();
     return new Date(now.getTime() + 24 * 60 * 60 * 1000); // Add 1 day for now
@@ -513,25 +520,27 @@ class TyreIntegrationService {
    * Utility Methods
    */
   private getVendorName(vendorId: string): string {
-    const vendorNames: Record<string, string> = {
+    const vendorNames = {
       FTS001: "Field Tyre Services",
       ITS001: "Impala Truck Spares",
       PT001: "Protyre Mutare",
-    };
-    return vendorNames[vendorId] || "Unknown Vendor";
+    } as const;
+
+    type VendorId = keyof typeof vendorNames;
+    return vendorNames[vendorId as VendorId] || "Unknown Vendor";
   }
 
   /**
    * Integration Health Check
    */
   async checkIntegrationHealth(): Promise<{
-    vendorAPIs: { [key: string]: boolean };
+    vendorAPIs: Record<string, boolean>;
     telematics: boolean;
     jobCardGeneration: boolean;
     reportScheduling: boolean;
   }> {
     const health = {
-      vendorAPIs: {} as { [key: string]: boolean },
+      vendorAPIs: {} as Record<string, boolean>,
       telematics: false,
       jobCardGeneration: false,
       reportScheduling: false,

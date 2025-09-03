@@ -1,5 +1,5 @@
 /* ===== Google Fonts & 3rd Party Styles ===== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import "leaflet/dist/leaflet.css";
 @import "leaflet.markercluster/dist/MarkerCluster.css";
 @import "leaflet.markercluster/dist/MarkerCluster.Default.css";
@@ -12,29 +12,43 @@
 /* ===== Tailwind Utility Extensions ===== */
 @layer utilities {
   .shadow-dropdown {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 }
 
 /* ===== Base HTML Styling ===== */
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
   }
 
   body {
     @apply bg-gray-50 text-gray-900;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
   }
 
-  h1 { @apply text-3xl; }
-  h2 { @apply text-2xl; }
-  h3 { @apply text-xl; }
-  h4 { @apply text-lg; }
+  h1 {
+    @apply text-3xl;
+  }
+  h2 {
+    @apply text-2xl;
+  }
+  h3 {
+    @apply text-xl;
+  }
+  h4 {
+    @apply text-lg;
+  }
 }
 
 /* ===== Custom Components ===== */
@@ -54,8 +68,8 @@
 
   /* === Buttons === */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md font-medium transition-colors 
-           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 
+    @apply inline-flex items-center justify-center rounded-md font-medium transition-colors
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
            disabled:opacity-50 disabled:pointer-events-none;
   }
 
@@ -71,20 +85,36 @@
     @apply border border-gray-300 bg-white hover:bg-gray-50 focus-visible:ring-gray-500;
   }
 
-  .btn-sm { @apply h-8 px-3 text-sm; }
-  .btn-md { @apply h-10 px-4 py-2; }
-  .btn-lg { @apply h-12 px-6 text-lg; }
+  .btn-sm {
+    @apply h-8 px-3 text-sm;
+  }
+  .btn-md {
+    @apply h-10 px-4 py-2;
+  }
+  .btn-lg {
+    @apply h-12 px-6 text-lg;
+  }
 
   /* === Badges === */
   .badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
   }
 
-  .badge-green { @apply bg-green-100 text-green-800; }
-  .badge-red { @apply bg-red-100 text-red-800; }
-  .badge-yellow { @apply bg-yellow-100 text-yellow-800; }
-  .badge-blue { @apply bg-blue-100 text-blue-800; }
-  .badge-gray { @apply bg-gray-100 text-gray-800; }
+  .badge-green {
+    @apply bg-green-100 text-green-800;
+  }
+  .badge-red {
+    @apply bg-red-100 text-red-800;
+  }
+  .badge-yellow {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  .badge-blue {
+    @apply bg-blue-100 text-blue-800;
+  }
+  .badge-gray {
+    @apply bg-gray-100 text-gray-800;
+  }
 }
 
 /* ===== Custom Scrollbar ===== */
@@ -123,19 +153,24 @@
 }
 
 /* ===== Form Styling ===== */
-.form-group { @apply mb-4; }
+.form-group {
+  @apply mb-4;
+}
 
 .form-label {
   @apply block text-sm font-medium text-gray-700 mb-1;
 }
 
-.form-input, .form-select, .form-textarea {
-  @apply block w-full rounded-md border-gray-300 shadow-sm 
+.form-input,
+.form-select,
+.form-textarea {
+  @apply block w-full rounded-md border-gray-300 shadow-sm
          focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
 }
 
-.form-checkbox, .form-radio {
-  @apply rounded border-gray-300 text-blue-600 shadow-sm 
+.form-checkbox,
+.form-radio {
+  @apply rounded border-gray-300 text-blue-600 shadow-sm
          focus:border-blue-500 focus:ring-blue-500;
 }
 
@@ -162,7 +197,7 @@
 }
 
 .dropdown-menu {
-  @apply absolute right-0 mt-2 w-56 rounded-md bg-white shadow-dropdown 
+  @apply absolute right-0 mt-2 w-56 rounded-md bg-white shadow-dropdown
          ring-1 ring-black ring-opacity-5 focus:outline-none;
 }
 

@@ -1,13 +1,18 @@
+import { InventoryItem } from "../types/inventory";
 
-declare module 'cors' {
-  import { RequestHandler } from 'express';
+declare module "cors" {
+  import { RequestHandler } from "express";
 
   function cors(options?: cors.CorsOptions): RequestHandler;
 
   namespace cors {
     interface CorsOptions {
-      origin?: boolean | string | RegExp | (string | RegExp)[] |
-        ((origin: string, callback: (err: Error | null, allow?: boolean) => void) => void);
+      origin?:
+        | boolean
+        | string
+        | RegExp
+        | (string | RegExp)[]
+        | ((origin: string, callback: (err: Error | null, allow?: boolean) => void) => void);
       methods?: string | string[];
       allowedHeaders?: string | string[];
       exposedHeaders?: string | string[];
@@ -49,10 +54,10 @@ type CSVRecord = CSVRecordObject | CSVRecordArray;
 // Augment Firebase namespace
 declare namespace firebase {
   export interface FirebaseService {
-    importInventoryItems(items: any[]): Promise<{ success: boolean; count: number }>;
-    getAllInventoryItems(): Promise<any[]>;
-    getInventoryItemById(id: string): Promise<any>;
-    updateInventoryItem(id: string, data: any): Promise<any>;
-    deleteInventoryItem(id: string): Promise<any>;
+    importInventoryItems(items: InventoryItem[]): Promise<{ success: boolean; count: number }>;
+    getAllInventoryItems(): Promise<InventoryItem[]>;
+    getInventoryItemById(id: string): Promise<InventoryItem>;
+    updateInventoryItem(id: string, data: Partial<InventoryItem>): Promise<InventoryItem>;
+    deleteInventoryItem(id: string): Promise<{ id: string }>;
   }
 }

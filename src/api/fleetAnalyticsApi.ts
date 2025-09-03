@@ -11,10 +11,17 @@ import {
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Generic interface for analytics data items that have a date field
+interface AnalyticsDataItem {
+  date?: string | Date;
+  month?: string;
+  [key: string]: string | number | Date | undefined;
+}
+
 // Filter data by date range
-const filterByDateRange = (data: any[], startDate: Date, endDate: Date, dateField = "date") => {
+const filterByDateRange = <T extends AnalyticsDataItem>(data: T[], startDate: Date, endDate: Date, dateField = "date"): T[] => {
   return data.filter((item) => {
-    const itemDate = new Date(item[dateField]);
+    const itemDate = new Date(item[dateField] as string);
     return itemDate >= startDate && itemDate <= endDate;
   });
 };

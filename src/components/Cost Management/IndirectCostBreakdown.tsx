@@ -16,6 +16,10 @@ import {
 import { useAppContext } from "../../context/AppContext";
 import { Card, CardContent, CardHeader } from "../ui/Card";
 import SyncIndicator from "../ui/SyncIndicator";
+import Modal from "../ui/Modal";
+import CategoryForm from "./CategoryForm";
+import { db } from "../../lib/firebase";
+import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 
 interface CostCategory {
   id: string;
@@ -42,97 +46,42 @@ interface MonthlyData {
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"];
 
 const IndirectCostBreakdown: React.FC = () => {
-  const { isLoading } = useAppContext();
+  const { isLoading, currentUser } = useAppContext();
   const [costCategories, setCostCategories] = useState<CostCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<CostCategory | null>(null);
   const [timeRange, setTimeRange] = useState<"month" | "quarter" | "year">("month");
   const [historicalData, setHistoricalData] = useState<MonthlyData[]>([]);
   const [totalIndirectCost, setTotalIndirectCost] = useState(0);
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  // Mock data - in real app, this would come from Firestore
+  // Replace mock data with real Firestore calls
   useEffect(() => {
-    // Simulate API call/Firestore fetch
-    setTimeout(() => {
-      const mockCostData: CostCategory[] = [
-        {
-          id: "c1",
-          name: "Administrative",
-          amount: 12500,
-          percentage: 32,
-          trend: "up",
-          subcategories: [
-            { name: "Office Supplies", amount: 2300, percentage: 18.4 },
-            { name: "Software Subscriptions", amount: 4850, percentage: 38.8 },
-            { name: "Professional Services", amount: 3450, percentage: 27.6 },
-            { name: "Insurance", amount: 1900, percentage: 15.2 },
-          ],
-        },
-        {
-          id: "c2",
-          name: "Facilities",
-          amount: 9800,
-          percentage: 25,
-          trend: "stable",
-          subcategories: [
-            { name: "Rent", amount: 5500, percentage: 56.1 },
-            { name: "Maintenance", amount: 2100, percentage: 21.4 },
-            { name: "Security", amount: 1200, percentage: 12.2 },
-            { name: "Cleaning", amount: 1000, percentage: 10.3 },
-          ],
-        },
-        {
-          id: "c3",
-          name: "IT Infrastructure",
-          amount: 7200,
-          percentage: 18,
-          trend: "up",
-          subcategories: [
-            { name: "Hardware", amount: 2900, percentage: 40.3 },
-            { name: "Cloud Services", amount: 2600, percentage: 36.1 },
-            { name: "Support", amount: 1700, percentage: 23.6 },
-          ],
-        },
-        {
-          id: "c4",
-          name: "Utilities",
-          amount: 5400,
-          percentage: 14,
-          trend: "down",
-          subcategories: [
-            { name: "Electricity", amount: 2800, percentage: 51.9 },
-            { name: "Water", amount: 950, percentage: 17.6 },
-            { name: "Internet", amount: 1200, percentage: 22.2 },
-            { name: "Phone", amount: 450, percentage: 8.3 },
-          ],
-        },
-        {
-          id: "c5",
-          name: "Other",
-          amount: 4300,
-          percentage: 11,
-          trend: "stable",
-          subcategories: [
-            { name: "Training", amount: 1500, percentage: 34.9 },
-            { name: "Travel", amount: 1800, percentage: 41.9 },
-            { name: "Miscellaneous", amount: 1000, percentage: 23.2 },
-          ],
-        },
-      ];
+    const fetchCostCategories = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "indirectCosts"));
+        const categories = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as CostCategory[];
+        setCostCategories(categories);
+        setTotalIndirectCost(categories.reduce((sum, category) => sum + category.amount, 0));
 
-      setCostCategories(mockCostData);
-      setTotalIndirectCost(mockCostData.reduce((sum, category) => sum + category.amount, 0));
+        const mockHistoricalData: MonthlyData[] = [
+          { month: "Jan", admin: 11200, facilities: 9500, it: 6800, utilities: 5600, other: 4100 },
+          { month: "Feb", admin: 11500, facilities: 9600, it: 6900, utilities: 5500, other: 4200 },
+          { month: "Mar", admin: 11800, facilities: 9700, it: 7000, utilities: 5400, other: 4200 },
+          { month: "Apr", admin: 12000, facilities: 9700, it: 7100, utilities: 5400, other: 4300 },
+          { month: "May", admin: 12200, facilities: 9800, it: 7200, utilities: 5400, other: 4300 },
+          { month: "Jun", admin: 12500, facilities: 9800, it: 7200, utilities: 5400, other: 4300 },
+        ];
 
-      const mockHistoricalData: MonthlyData[] = [
-        { month: "Jan", admin: 11200, facilities: 9500, it: 6800, utilities: 5600, other: 4100 },
-        { month: "Feb", admin: 11500, facilities: 9600, it: 6900, utilities: 5500, other: 4200 },
-        { month: "Mar", admin: 11800, facilities: 9700, it: 7000, utilities: 5400, other: 4200 },
-        { month: "Apr", admin: 12000, facilities: 9700, it: 7100, utilities: 5400, other: 4300 },
-        { month: "May", admin: 12200, facilities: 9800, it: 7200, utilities: 5400, other: 4300 },
-        { month: "Jun", admin: 12500, facilities: 9800, it: 7200, utilities: 5400, other: 4300 },
-      ];
+        setHistoricalData(mockHistoricalData);
+      } catch (error) {
+        console.error("Error fetching cost categories:", error);
+      }
+    };
 
-      setHistoricalData(mockHistoricalData);
-    }, 1000);
+    fetchCostCategories();
   }, []);
 
   const formatCurrency = (amount: number) => {
@@ -146,6 +95,20 @@ const IndirectCostBreakdown: React.FC = () => {
 
   const handleCategoryClick = (category: CostCategory) => {
     setSelectedCategory(category);
+  };
+
+  const handleUpdateCategory = async (categoryId: string, updates: Partial<CostCategory>) => {
+    try {
+      await updateDoc(doc(db, "indirectCosts", categoryId), {
+        ...updates,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: currentUser?.email,
+      });
+      // Refresh data
+      fetchCostCategories();
+    } catch (error) {
+      console.error("Error updating category:", error);
+    }
   };
 
   const getTrendIcon = (trend: "up" | "down" | "stable") => {
@@ -420,6 +383,16 @@ const IndirectCostBreakdown: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {isEditMode && (
+        <Modal isOpen={isEditMode} onClose={() => setIsEditMode(false)} title="Edit Cost Category">
+          <CategoryForm
+            category={selectedCategory}
+            onSave={handleUpdateCategory}
+            onCancel={() => setIsEditMode(false)}
+          />
+        </Modal>
       )}
     </div>
   );

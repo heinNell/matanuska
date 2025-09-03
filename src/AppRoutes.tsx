@@ -133,6 +133,31 @@ const TyreFleetMap = lazy(() => import("./pages/tyres/TyreFleetMap"));
 const TyreDashboard = lazy(() => import("./pages/tyres/TyreDashboard"));
 
 /* -----------------------------
+ * Wialon
+ * ----------------------------- */
+const WialonConfigPage = lazy(() => import("./pages/wialon/WialonConfigPage"));
+const WialonDiagnosticsPage = lazy(() => import("./pages/admin/WialonDiagnosticsPage"));
+
+/* -----------------------------
+ * Workshop
+ * ----------------------------- */
+const WorkshopPage = lazy(() => import("./pages/workshop/WorkshopPage"));
+const WorkshopDashboardPage = lazy(() => import("./pages/workshop/WorkshopDashboardPage"));
+const WorkshopAnalytics = lazy(() => import("./pages/workshop/WorkshopAnalytics"));
+const WorkshopOperations = lazy(() => import("./pages/workshop/WorkshopOperations"));
+const JobCardManagement = lazy(() => import("./pages/workshop/JobCardManagement"));
+const JobCardKanbanBoard = lazy(() => import("./pages/workshop/JobCardKanbanBoard"));
+const NewJobCardPage = lazy(() => import("./pages/workshop/NewJobCardPage"));
+const WorkOrderManagement = lazy(() => import("./pages/workshop/WorkOrderManagement"));
+const InspectionManagement = lazy(() => import("./pages/workshop/InspectionManagement"));
+const StockInventoryPage = lazy(() => import("./pages/workshop/StockInventoryPage"));
+const PurchaseOrderPage = lazy(() => import("./pages/workshop/PurchaseOrderPage"));
+const VendorPage = lazy(() => import("./pages/workshop/VendorPage"));
+const QRScannerPage = lazy(() => import("./pages/workshop/QRScannerPage"));
+const QRGenerator = lazy(() => import("./pages/workshop/QRGenerator"));
+const ReportNewIncidentPage = lazy(() => import("./pages/workshop/ReportNewIncidentPage"));
+
+/* -----------------------------
  * Components
  * ----------------------------- */
 const CARReportDetails = lazy(() => import("./components/Adminmangement/CARReportDetails"));
@@ -144,7 +169,9 @@ const WialonDriverManager = lazy(() =>
 );
 
 const WialonGeofenceManager = lazy(() =>
-  import("./components/wialon/WialonGeofenceManager").then((m) => ({ default: m.WialonGeofenceManager }))
+  import("./components/wialon/WialonGeofenceManager").then((m) => ({
+    default: m.WialonGeofenceManager,
+  }))
 );
 
 // Wialon Dashboard page
@@ -255,6 +282,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="tyres">
           <Route index element={withSuspense(TyreManagementPage)} />
           <Route path="dashboard" element={withSuspense(TyreDashboard)} />
+          <Route path="management-page" element={withSuspense(TyreManagementPage)} />
           <Route path="management-view" element={withSuspense(TyreManagementView)} />
           <Route path="reference-manager" element={withSuspense(TyreReferenceManagerPage)} />
           <Route path="performance-dashboard" element={withSuspense(TyrePerformanceDashboard)} />
@@ -264,6 +292,27 @@ export const AppRoutes: React.FC = () => {
           <Route path="vehicle-view" element={withSuspense(VehicleTyreView)} />
           <Route path="vehicle-view-a" element={withSuspense(VehicleTyreViewA)} />
           <Route path="inventory-dashboard" element={withSuspense(TyreInventoryDashboard)} />
+        </Route>
+
+        {/* Workshop */}
+        <Route path="workshop">
+          <Route index element={withSuspense(WorkshopPage)} />
+          <Route path="dashboard" element={withSuspense(WorkshopDashboardPage)} />
+          <Route path="analytics" element={withSuspense(WorkshopAnalytics)} />
+          <Route path="operations" element={withSuspense(WorkshopOperations)} />
+          <Route path="job-card" element={withSuspense(JobCardManagement)} />
+          <Route path="job-card-kanban" element={withSuspense(JobCardKanbanBoard)} />
+          <Route path="new-job-card" element={withSuspense(NewJobCardPage)} />
+          <Route path="work-orders" element={withSuspense(WorkOrderManagement)} />
+          <Route path="scheduling" element={withSuspense(WorkOrderManagement)} />
+          <Route path="maintenance" element={withSuspense(InspectionManagement)} />
+          <Route path="inspections" element={withSuspense(InspectionManagement)} />
+          <Route path="inventory" element={withSuspense(StockInventoryPage)} />
+          <Route path="purchase-orders" element={withSuspense(PurchaseOrderPage)} />
+          <Route path="vendors" element={withSuspense(VendorPage)} />
+          <Route path="qr-scanner" element={withSuspense(QRScannerPage)} />
+          <Route path="qr-generator" element={withSuspense(QRGenerator)} />
+          <Route path="report-incident" element={withSuspense(ReportNewIncidentPage)} />
         </Route>
 
         {/* Trips */}
@@ -304,16 +353,18 @@ export const AppRoutes: React.FC = () => {
         <Route path="admin-management">
           <Route path="car-report-details" element={withSuspense(CARReportDetails)} />
           <Route path="action-item-details" element={withSuspense(ActionItemDetails)} />
-          <Route path="wialon-diagnostics" element={withSuspense(lazy(() => import("./pages/admin/WialonDiagnosticsPage")))} />
+          <Route path="wialon-diagnostics" element={withSuspense(WialonDiagnosticsPage)} />
           <Route path="wialon-drivers" element={withSuspense(WialonDriverManager)} />
           <Route path="wialon-geofences" element={withSuspense(WialonGeofenceManager)} />
         </Route>
 
-
         {/* Wialon shortcuts (aliases) */}
-        <Route path="wialon" element={withSuspense(WialonDashboard)}>
+        <Route path="wialon">
+          <Route index element={withSuspense(WialonDashboard)} />
           <Route path="drivers" element={withSuspense(WialonDriverManager)} />
           <Route path="geofences" element={withSuspense(WialonGeofenceManager)} />
+          <Route path="config" element={withSuspense(WialonConfigPage)} />
+          <Route path="diagnostics" element={withSuspense(WialonDiagnosticsPage)} />
         </Route>
 
         {/** dev all-pages explorer removed */}
@@ -325,4 +376,3 @@ export const AppRoutes: React.FC = () => {
 };
 
 export default AppRoutes;
-
