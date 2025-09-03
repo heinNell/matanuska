@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 
 // A tiny helper to keep JSX clean
-const withSuspense = (Comp: React.LazyExoticComponent<any>, props = {}) => (
+const withSuspense = (Comp: React.LazyExoticComponent<React.ComponentType<unknown>>, props = {}) => (
   <Suspense fallback={<div className="p-6">Loading…</div>}>
     <Comp {...props} />
   </Suspense>
