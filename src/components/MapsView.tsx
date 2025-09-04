@@ -3,12 +3,12 @@ import { Loader } from "@googlemaps/js-api-loader";
 import { CONFIG } from "../config";
 import type { FleetItem } from "../services/wialonService";
 
-type Props = {
+interface MapViewProps {
   vehicles: FleetItem[];
   onMarkerClick?: (v: FleetItem) => void;
-};
+}
 
-export default function MapView({ vehicles, onMarkerClick }: Props) {
+export default function MapView({ vehicles, onMarkerClick }: MapViewProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const markers = useRef<Map<number, google.maps.Marker>>(new Map());

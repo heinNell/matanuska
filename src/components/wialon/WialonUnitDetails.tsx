@@ -1,27 +1,61 @@
 import React from "react";
 import { useWialonContext } from "../../context/WialonContext";
+import { useWialonUnits } from "../../hooks/useWialonUnits";
 import { ExtendedWialonUnit } from "../../hooks/useWialon";
+import type { WialonUnitComplete } from "../../types/wialon-complete";
 
 interface WialonUnitDetailsProps {
   unit?: ExtendedWialonUnit | null; // Optional override for selected unit
+  unitId?: number; // For loading complete unit data
   className?: string;
   showHeader?: boolean;
   showActions?: boolean;
+  onClose?: () => void;
 }
 
 const WialonUnitDetails: React.FC<WialonUnitDetailsProps> = ({
   unit,
+  unitId,
   className = "",
   showHeader = true,
   showActions = true,
+  onClose,
 }) => {
   const { selectedUnit, setSelectedUnit } = useWialonContext();
+  const { getUnitDetails, loading, error } = useWialonUnits();
+  const [completeUnit, setCompleteUnit] = React.useState<WialonUnitComplete | null>(null);
   const unitToDisplay = unit || selectedUnit;
 
-  if (!unitToDisplay) {
+  // Load complete unit data if unitId provided
+  React.useEffect(() => {
+    const loadCompleteUnit = async () => {
+      if (unitId) {
+        try {
+          const unitData = await getUnitDetails(unitId);
+          setCompleteUnit(unitData);
+        } catch (err) {
+          console.error('Failed to load complete unit details:', err);
+        }
+      }
+    };
+
+    loadCompleteUnit();
+  }, [unitId, getUnitDetails]);
+
+  // Use complete unit data if available
+  const displayUnit = completeUnit || unitToDisplay;
+
+  if (!displayUnit) {
     return (
       <div className={`wialon-unit-details empty ${className}`}>
-        <p>No vehicle selected</p>
+        {loading ? (
+          <p>Loading vehicle details...</p>
+        ) : (
+          <p>No vehicle selected</p>
+        )}
+        {error && (
+          <p className="error">Error: {error.message}</p>
+        )}
       </div>
     );
   }
@@ -48,55 +82,127 @@ const WialonUnitDetails: React.FC<WialonUnitDetailsProps> = ({
     <div className={`wialon-unit-details ${className}`}>
       {showHeader && (
         <div className="wialon-unit-header">
-          <h3>{unitToDisplay.name}</h3>
-          <div className={`status-indicator ${getConnectionStatus().toLowerCase()}`}>
-            {getConnectionStatus()}
+          <h3>{displayUnit.name || displayUnit.nm || 'Unknown Vehicle'}</h3>
+          <div className="header-actions">
+            <div className={`status-indicator ${getConnectionStatus().toLowerCase()}`}>
+              {getConnectionStatus()}
+            </div>
+            {onClose && (
+              <button className="close-btn" onClick={onClose}>
+                ✕
+              </button>
+            )}
           </div>
         </div>
       )}
 
       <div className="wialon-unit-body">
-        {unitToDisplay.registration && (
+        {/* Enhanced data from complete unit */}
+        {completeUnit?.registrationNumber && (
           <div className="detail-row">
             <span className="label">Registration:</span>
-            <span className="value">{unitToDisplay.registration}</span>
+            <span className="value">{completeUnit.registrationNumber}</span>
           </div>
         )}
 
-        {unitToDisplay.type && (
+        {displayUnit.registration && !completeUnit?.registrationNumber && (
+          <div className="detail-row">
+            <span className="label">Registration:</span>
+            <span className="value">{displayUnit.registration}</span>
+          </div>
+        )}
+
+        {completeUnit?.vehicleType && (
+          <div className="detail-row">
+            <span className="label">Vehicle Type:</span>
+            <span className="value">{completeUnit.vehicleType}</span>
+          </div>
+        )}
+
+        {displayUnit.type && !completeUnit?.vehicleType && (
           <div className="detail-row">
             <span className="label">Type:</span>
-            <span className="value">{unitToDisplay.type}</span>
+            <span className="value">{displayUnit.type}</span>
           </div>
         )}
 
-        {unitToDisplay.uniqueId && (
+        {completeUnit?.fleetId && (
+          <div className="detail-row">
+            <span className="label">Fleet ID:</span>
+            <span className="value">{completeUnit.fleetId}</span>
+          </div>
+        )}
+
+        {displayUnit.uniqueId && (
           <div className="detail-row">
             <span className="label">Unit ID:</span>
-            <span className="value">{unitToDisplay.uniqueId}</span>
+            <span className="value">{displayUnit.uniqueId}</span>
           </div>
         )}
 
-        {unitToDisplay.position && (
+        {/* Enhanced status information */}
+        {completeUnit?.speed !== undefined && (
+          <div className="detail-row">
+            <span className="label">Current Speed:</span>
+            <span className="value">{completeUnit.speed} km/h</span>
+          </div>
+        )}
+
+        {completeUnit?.fuelLevel !== undefined && (
+          <div className="detail-row">
+            <span className="label">Fuel Level:</span>
+            <span className="value">{completeUnit.fuelLevel}%</span>
+          </div>
+        )}
+
+        {completeUnit?.engineHours !== undefined && (
+          <div className="detail-row">
+            <span className="label">Engine Hours:</span>
+            <span className="value">{completeUnit.engineHours}h</span>
+          </div>
+        )}
+
+        {/* Position information */}
+        {(completeUnit?.currentPosition || displayUnit.position) && (
           <>
             <div className="detail-row">
               <span className="label">Position:</span>
               <span className="value">
-                {unitToDisplay.position.latitude.toFixed(6)},{" "}
-                {unitToDisplay.position.longitude.toFixed(6)}
+                {completeUnit?.currentPosition ? (
+                  `${completeUnit.currentPosition.lat.toFixed(6)}, ${completeUnit.currentPosition.lng.toFixed(6)}`
+                ) : displayUnit.position ? (
+                  `${displayUnit.position.latitude.toFixed(6)}, ${displayUnit.position.longitude.toFixed(6)}`
+                ) : 'N/A'}
               </span>
             </div>
 
-            <div className="detail-row">
-              <span className="label">Speed:</span>
-              <span className="value">{formatSpeed(unitToDisplay.position.speed)}</span>
-            </div>
+            {!completeUnit?.speed && displayUnit.position?.speed !== undefined && (
+              <div className="detail-row">
+                <span className="label">Speed:</span>
+                <span className="value">{formatSpeed(displayUnit.position.speed)}</span>
+              </div>
+            )}
 
             <div className="detail-row">
               <span className="label">Last update:</span>
-              <span className="value">{formatTimestamp(unitToDisplay.position.timestamp)}</span>
+              <span className="value">
+                {completeUnit?.lastSeen ?
+                  completeUnit.lastSeen.toLocaleString() :
+                  formatTimestamp(displayUnit.position?.timestamp)
+                }
+              </span>
             </div>
           </>
+        )}
+
+        {/* Sensors information for complete unit */}
+        {completeUnit?.sensors && completeUnit.sensors.length > 0 && (
+          <div className="detail-section">
+            <div className="detail-row">
+              <span className="label">Sensors:</span>
+              <span className="value">{completeUnit.sensors.length} active</span>
+            </div>
+          </div>
         )}
       </div>
 
@@ -142,6 +248,31 @@ const WialonUnitDetails: React.FC<WialonUnitDetailsProps> = ({
           border-bottom: 1px solid #eee;
           padding-bottom: 12px;
           margin-bottom: 12px;
+        }
+
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .close-btn {
+          background: #6c757d;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          padding: 4px 8px;
+          cursor: pointer;
+          font-size: 14px;
+        }
+
+        .close-btn:hover {
+          background: #5a6268;
+        }
+
+        .wialon-unit-details.empty .error {
+          color: #dc3545;
+          margin-top: 10px;
         }
 
         .wialon-unit-header h3 {
