@@ -15,6 +15,7 @@ const withSuspense = (Comp: React.LazyExoticComponent<React.ComponentType<unknow
 const DashboardPage = lazy(() => import("@/pages/Dashboard"));
 const FormsIntegrationPage = lazy(() => import("./pages/FormsIntegrationPage"));
 const FleetLocationMapPage = lazy(() => import("./pages/FleetLocationMapPage"));
+const MarkdownEditorPage = lazy(() => import("./pages/MarkdownEditorPage"));
 
 /* -----------------------------
  * Analytics
@@ -208,6 +209,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="dashboard" element={withSuspense(DashboardPage)} />
         <Route path="forms-integration" element={withSuspense(FormsIntegrationPage)} />
         <Route path="fleet-location-map" element={withSuspense(FleetLocationMapPage)} />
+        <Route path="markdown-editor" element={withSuspense(MarkdownEditorPage)} />
 
         {/* Analytics */}
         <Route path="analytics">

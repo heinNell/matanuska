@@ -1,0 +1,240 @@
+a login blob (with base_url + eid session)
+
+a unit search result (12 units)
+
+a resource search result (your resource + report templates)
+
+Below is the straight-line way to use them with the fetch-native WialonService we set up.
+
+1) Attach your session (no re-login)
+
+Add the tiny helpers once (if you haven’t already):
+
+// src/services/wialon-http.ts
+export class WialonHttp {
+  // ...
+  setBaseUrl(url: string) { this.baseUrl = url.replace(/\/+$/, ""); }
+  setSessionId(sid: string) { this.sid = sid; }
+}
+
+// src/services/wialonService.ts
+export class WialonService {
+  // ...
+  bootstrapFromLoginResponse(resp: { base_url: string; eid: string }): void {
+    if (!this.isInitialized) this.initialize();
+    if (!this.http) throw new Error("HTTP client not initialized");
+    this.http.setBaseUrl(resp.base_url);
+    this.http.setSessionId(resp.eid);
+    this.token = null; // we're attaching an active session
+    console.log("Bootstrapped Wialon session via eid on", resp.base_url);
+  }
+}
+
+
+Now bootstrap from your JSON:
+
+import { wialonService } from "@/services/wialonService";
+
+const loginResp = {
+  base_url: "https://hst-api.wialon.eu",
+  eid: "51dffd4e89b2f38b26a7187c2911198d"
+};
+
+wialonService.bootstrapFromLoginResponse(loginResp);
+
+
+That’s it. All subsequent calls auto-inject the sid.
+
+2) Work with units (from your unit list)
+
+You already have unit IDs and names (e.g., 600665449 for “21H - ADS 4865”). Typical flows:
+
+// A) List (normalized array) — uses `unit/list` internally
+const units = await wialonService.getUnits();
+
+// B) Get a specific unit (pulls rich fields & last position)
+const unit = await wialonService.getUnitById(600614226); // "BVTR 25 - DEMO TO BE RETURNED"
+
+// C) Get recent history (last 1 hour)
+const to = new Date();
+const from = new Date(Date.now() - 60 * 60 * 1000);
+const points = await wialonService.getUnitHistory(600614226, from, to);
+
+
+If you need just last known position and not the whole unit, you can also call:
+
+const item = await wialonService.executeCustomMethod<any>("core/search_item", {
+  id: 600614226,
+  flags: 0x0001ffff
+});
+// item.item.pos or item.item.lmsg depending on cluster
+
+3) Run a report from your resource
+
+Your avl_resource result shows resource id 25138250 with reports:
+
+1: “Matanuska Fuel report”
+
+2: “MATANUSKA DAILY SUMMARY- ALL VALUES”
+
+3: “New report”
+
+The standard Wialon report sequence is:
+
+report/exec_report (bind: resourceId + templateId + object(s) + time)
+
+optionally report/select_result_rows (filter rows)
+
+report/get_result (fetch tables/rows)
+
+report/unload (cleanup)
+
+Here’s a ready flow (daily summary for all units today):
+
+const resourceId = 25138250;
+const templateId = 2; // DAILY SUMMARY
+
+// Pick a time range (today)
+const now = Math.floor(Date.now() / 1000);
+const startOfDay = Math.floor(new Date(new Date().toDateString()).getTime() / 1000);
+
+// 1) Execute report (ct = “avl_unit” per your template, bind no specific object to target “all” if the template is configured that way; otherwise pass an object list)
+await wialonService.executeCustomMethod("report/exec_report", {
+  reportResourceId: resourceId,
+  reportTemplateId: templateId,
+  // If template expects units bound at runtime, pass objects here:
+  // reportObjectId: 600614226,
+  // reportObjectSecId: 0,
+  // reportObjectIdList: [600665449, 600702514, ...], // optional
+  // Time interval
+  interval: {
+    from: startOfDay,
+    to: now,
+    flags: 0 // 0 = absolute
+  }
+});
+
+// 2) (Optional) Narrow to certain rows/tables; if not, you can skip straight to get_result
+// await wialonService.executeCustomMethod("report/select_result_rows", { tableIndex: 0, config: "{}" });
+
+// 3) Read the result meta + table data
+const result = await wialonService.executeCustomMethod<any>("report/get_result", {
+  tableIndex: 0, // if you know which table you want; otherwise iterate 0..tables-1
+  config: ""     // leave empty to get everything
+});
+
+// Inspect:
+// result has columns, rows, and values per Wialon schema
+console.log("Report table 0 rows:", result?.rows?.length ?? 0);
+
+// 4) Always unload to free server resources
+await wialonService.executeCustomMethod("report/unload", {});
+
+
+Want all tables? First fetch the summary, then loop:
+
+const summary = await wialonService.executeCustomMethod<any>("report/get_result", {});
+const tables = summary?.tables ?? [];
+for (let i = 0; i < tables.length; i++) {
+  const t = await wialonService.executeCustomMethod<any>("report/get_result", { tableIndex: i, config: "" });
+  // handle t.rows / t.columns
+}
+await wialonService.executeCustomMethod("report/unload", {});
+
+
+Need a download (e.g., XLSX/PDF/HTML)? Use report/export_result:
+
+const file = await wialonService.executeCustomMethod<any>("report/export_result", {
+  format: "xlsx",   // "pdf", "html", "xlsx", "csv"
+  compressed: 0,
+  locale: "en",
+  // If multiple tables, specify e.g. { tableIndex: 0 }
+});
+// file will contain a URL (sometimes relative) — fetch & save on client or via your backend proxy
+
+4) (Optional) Persist the session for the tab
+// Save after bootstrap
+sessionStorage.setItem("wialonSession", JSON.stringify({
+  base_url: loginResp.base_url,
+  eid: loginResp.eid,
+  // Add a conservative expiry if you want:
+  expiresAt: Date.now() + 50 * 60 * 1000
+}));
+
+// Restore at app start
+const raw = sessionStorage.getItem("wialonSession");
+if (raw) {
+  const s = JSON.parse(raw);
+  if (!s.expiresAt || Date.now() < s.expiresAt) {
+    wialonService.bootstrapFromLoginResponse(s);
+  } else {
+    sessionStorage.removeItem("wialonSession");
+  }
+}
+dd two setters in your HTTP client
+
+Open: src/services/wialon-http.ts
+Add these two methods inside the WialonHttp class:
+
+setBaseUrl(url: string) { this.baseUrl = url.replace(/\/+$/, ""); }
+setSessionId(sid: string) { this.sid = sid; }
+
+2) Add one helper in your service
+
+Open: src/services/wialonService.ts
+Add this method inside the WialonService class:
+
+bootstrapFromLoginResponse(resp: { base_url: string; eid: string }): void {
+  if (!this.isInitialized) this.initialize();
+  if (!this.http) throw new Error("HTTP client not initialized");
+  this.http.setBaseUrl(resp.base_url);
+  this.http.setSessionId(resp.eid);
+  this.token = null;
+  console.log("Session attached:", resp.base_url);
+}
+
+3) Use your JSON in 5 lines
+
+Where you start your app (or on a page), paste this:
+
+import { wialonService } from "@/services/wialonService";
+
+wialonService.bootstrapFromLoginResponse({
+  base_url: "https://hst-api.wialon.eu",
+  eid: "51dffd4e89b2f38b26a7187c2911198d"
+});
+
+// Example: fetch your units
+const units = await wialonService.getUnits();
+console.log("Units:", units.length);
+
+
+That’s it. You are now authenticated and can call getUnits, getUnitById, getUnitHistory, or executeCustomMethod—no extra login step.
+
+Minimal examples you can copy-paste
+Get one unit by ID
+const unit = await wialonService.getUnitById(600614226);
+console.log(unit?.nm ?? unit?.name ?? unit?.id);
+
+Get the last hour of history
+const to = new Date();
+const from = new Date(Date.now() - 60 * 60 * 1000);
+const points = await wialonService.getUnitHistory(600614226, from, to);
+console.log("Track points:", points.length);
+
+Run your “Daily Summary” report (templateId = 2) for today
+const resourceId = 25138250;
+const templateId = 2;
+const now = Math.floor(Date.now() / 1000);
+const startOfDay = Math.floor(new Date(new Date().toDateString()).getTime() / 1000);
+
+await wialonService.executeCustomMethod("report/exec_report", {
+  reportResourceId: resourceId,
+  reportTemplateId: templateId,
+  interval: { from: startOfDay, to: now, flags: 0 }
+});
+
+const result = await wialonService.executeCustomMethod<any>("report/get_result", { tableIndex: 0, config: "" });
+console.log("Rows in table 0:", result?.rows?.length ?? 0);
+
+await wialonService.executeCustomMethod("report/unload", {});

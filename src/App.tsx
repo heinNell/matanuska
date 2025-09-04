@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import AppRoutes from "./AppRoutes";
 
+// Alternative App Components for Testing/Development
+import TrackingPage from "./features/tracking/TrackingPage";
+import WialonPlayground from "./pages/WialonPlayground";
+
 // ---------- Context Providers ----------
 import { AppProvider } from "./context/AppContext";
 import { DriverBehaviorProvider } from "./context/DriverBehaviorContext";
@@ -246,4 +250,25 @@ const App: React.FC = () => {
   );
 };
 
+// ========================================
+// ALTERNATIVE APP COMPONENTS FOR TESTING
+// ========================================
+
+// Option 1: Tracking Page Only
+// Uncomment this and comment out the default export below to use TrackingPage
+/*
+export default function App() {
+  return <TrackingPage />;
+}
+*/
+
+// Option 2: Wialon Playground Only
+// Uncomment this and comment out the default export below to use WialonPlayground
+/*
+export default function App() {
+  return <WialonPlayground />;
+}
+*/
+
+// Option 3: Default Full Application (currently active)
 export default App;

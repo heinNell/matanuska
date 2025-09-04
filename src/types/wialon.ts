@@ -62,16 +62,10 @@ export interface WialonGeofence {
 
 /** Typed wrapper around a “resource” object */
 export type WialonResource = {
-  id: number;
+  id: 25138250;
   name: string;
   getZones(): any;
-  execReport(
-    template: any,
-    unitId: number,
-    flags: number,
-    interval: any,
-    callback: any
-  ): void;
+  execReport(template: any, unitId: number, flags: number, interval: any, callback: any): void;
 };
 
 /** A new interface to correctly type the SDK User object. */

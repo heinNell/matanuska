@@ -1,12 +1,4 @@
 import { WialonPosition, WialonUnit, WialonSearchItemsResult, WialonFlags } from "../types/wialon-types";
-import {
-  WialonSearchItemResult,
-  WialonMessagesLoadResult,
-  WialonMessagesResult,
-  WialonRawMessage,
-  WialonUnitWithPosition,
-  WialonCheckItemsResult
-} from "../types/wialon-complete";
 import { WialonHttp } from "./wialon-http";
 
 const DEFAULT_URL =
@@ -28,7 +20,7 @@ export interface FleetItem {
 export class WialonService {
   private http: WialonHttp | null = null;
   private isInitialized = false;
-  private pollHandle: NodeJS.Timeout | null = null;
+  private pollHandle: any = null;
   private token: string | null = null;
   private subscriptions = new Map<number, number>();
 
@@ -110,14 +102,14 @@ export class WialonService {
     return res?.items ?? [];
   }
 
-  /** List all units (vehicles) - Enhanced with proper TypeScript types */
+  /** List all units (vehicles). */
   async getUnits(): Promise<WialonUnit[]> {
     if (!this.isInitialized || !this.http || (!this.http.sessionId && !this.token)) {
       throw new Error("Wialon service not initialized or not logged in");
     }
     try {
       const res = await this.http.call<WialonSearchItemsResult<WialonUnit>>("core/search_items", {
-        spec: {  // Fixed: was 'searchSpec', should be 'spec'
+        searchSpec: {
           itemsType: "avl_unit",
           propName: "sys_name",
           propValueMask: "*",
@@ -127,30 +119,11 @@ export class WialonService {
         },
         flags: WialonFlags.UNIT_RICH,
         force: 1,
-        from: 0,  // Added missing parameters
-        to: 0
       });
-
-      // Enhanced error checking and type safety
-      if (!res || typeof res !== 'object') {
-        console.warn("[Wialon] getUnits: Invalid response format");
-        return [];
-      }
-
-      const items = res.items;
-      if (!Array.isArray(items)) {
-        console.warn("[Wialon] getUnits: Items is not an array");
-        return [];
-      }
-
-      return items.filter((item): item is WialonUnit => {
-        return item && typeof item === 'object' && 'id' in item;
-      });
-
+      return res?.items ?? [];
     } catch (error) {
       console.error("[Wialon] getUnits failed:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Failed to retrieve fleet data from Wialon: ${errorMessage}`);
+      throw new Error("Failed to retrieve fleet data from Wialon");
     }
   }
 
@@ -160,15 +133,14 @@ export class WialonService {
       throw new Error("Wialon service not initialized or not logged in");
     }
     try {
-      const res = await this.http.call<WialonSearchItemResult<WialonUnit>>("core/search_item", {
+      const res = await this.http.call<any>("core/search_item", {
         id: unitId,
         flags: WialonFlags.UNIT_RICH,
       });
-      return res?.item ?? null;
+      return (res?.item as WialonUnit) ?? null;
     } catch (error) {
       console.error(`[Wialon] getUnitById ${unitId} failed:`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Failed to retrieve vehicle data from Wialon: ${errorMessage}`);
+      throw new Error("Failed to retrieve vehicle data from Wialon");
     }
   }
 
@@ -186,7 +158,7 @@ export class WialonService {
       const timeFrom = Math.floor(from.getTime() / 1000);
       const timeTo = Math.floor(to.getTime() / 1000);
 
-      const load = await this.http.call<WialonMessagesLoadResult>("messages/load_interval", {
+      const load = await this.http.call<any>("messages/load_interval", {
         itemId: unitId,
         timeFrom,
         timeTo,
@@ -196,29 +168,29 @@ export class WialonService {
       const mid = load?.mid;
       if (!mid) return [];
 
-      const got = await this.http.call<WialonMessagesResult>("messages/get_messages", {
+      const got = await this.http.call<any>("messages/get_messages", {
         mid,
         lastTime: timeFrom,
         lastI: 0,
       });
 
-      const msgs = got?.messages ?? [] as WialonRawMessage[];
+      const msgs = (got?.messages ?? []) as any[];
       const positions: WialonPosition[] = msgs
         .map((m) => {
           const p = m?.pos || m;
           if (!p) return null;
           return {
-            t: p.t ?? m?.t ?? 0,
-            lat: (p.y ?? 0) as number,
-            lon: (p.x ?? 0) as number,
+            t: p.t ?? m?.t,
+            lat: (p.y ?? p.lat) as number,
+            lon: (p.x ?? p.lng) as number,
             sp: p.sp ?? 0,
-            cr: p.cr ?? p.c ?? 0,
+            cr: p.cr ?? 0,
           } as WialonPosition;
         })
-        .filter((pos): pos is WialonPosition => pos !== null);
+        .filter(Boolean) as WialonPosition[];
 
       try {
-        await this.http.call<unknown>("messages/unload", { mid });
+        await this.http.call<any>("messages/unload", { mid });
       } catch {
         /* ignore */
       }
@@ -226,8 +198,7 @@ export class WialonService {
       return positions;
     } catch (error) {
       console.error(`[Wialon] getUnitHistory ${unitId} failed:`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Failed to retrieve vehicle history data from Wialon: ${errorMessage}`);
+      throw new Error("Failed to retrieve vehicle history data from Wialon");
     }
   }
 
@@ -263,7 +234,7 @@ export class WialonService {
   }
 
   /** Call any Wialon service by name with params. */
-  async executeCustomMethod<T>(methodName: string, params: Record<string, unknown>): Promise<T> {
+  async executeCustomMethod<T>(methodName: string, params: any): Promise<T> {
     if (!this.isInitialized || !this.http || (!this.http.sessionId && !this.token)) {
       throw new Error("Wialon service not initialized or not logged in");
     }
@@ -271,8 +242,7 @@ export class WialonService {
       return await this.http.call<T>(methodName, params);
     } catch (error) {
       console.error(`[Wialon] executeCustomMethod ${methodName} failed:`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Failed to execute Wialon operation: ${methodName} - ${errorMessage}`);
+      throw new Error(`Failed to execute Wialon operation: ${methodName}`);
     }
   }
 
@@ -283,7 +253,7 @@ export class WialonService {
     }
 
     try {
-      const search = await this.http.call<WialonSearchItemsResult<WialonUnit>>("core/search_items", {
+      const search = await this.http.call<any>("core/search_items", {
         searchSpec: {
           itemsType: "avl_unit",
           propName: "sys_name",
@@ -296,10 +266,10 @@ export class WialonService {
         force: 1,
       });
 
-      const ids = (search?.items ?? []).map((u: WialonUnit) => (u as { id: number }).id);
+      const ids = (search?.items ?? []).map((u: any) => u.id);
       if (ids.length === 0) return [];
 
-      const checked = await this.http.call<WialonCheckItemsResult<WialonUnit>>("core/check_items", {
+      const checked = await this.http.call<any>("core/check_items", {
         ids,
         flags: 0x0001ffff,
       });
@@ -307,16 +277,14 @@ export class WialonService {
       return checked?.items ?? [];
     } catch (error) {
       console.error("[Wialon] getUnitsFull failed:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Failed to retrieve full fleet data from Wialon: ${errorMessage}`);
+      throw new Error("Failed to retrieve full fleet data from Wialon");
     }
   }
 
   classify(units: WialonUnit[]): FleetItem[] {
     const now = Date.now() / 1000;
     return (units ?? []).map((u) => {
-      const unitWithPos = u as WialonUnitWithPosition;
-      const pos = unitWithPos.pos;
+      const pos = (u as any).pos;
       let status: FleetItem["status"] = "offline";
       let position: FleetItem["position"] = null;
       let speed = 0;
@@ -331,13 +299,13 @@ export class WialonService {
 
         position = { lat: pos.y, lng: pos.x };
         speed = pos.sp ?? 0;
-        heading = pos.cr ?? pos.c;
+        heading = pos.cr;
         lastUpdate = new Date(pos.t * 1000);
       }
 
       return {
-        id: (unitWithPos as { id: number }).id,
-        name: unitWithPos.nm ?? unitWithPos.sys_name ?? String((unitWithPos as { id: number }).id),
+        id: (u as any).id,
+        name: (u as any).nm ?? (u as any).sys_name ?? String((u as any).id),
         status,
         position,
         speed,

@@ -197,6 +197,16 @@ const navSections: NavSection[] = [
       { name: "Tyre Fleet Map", path: "/tyres/fleet-map" },
     ],
   },
+  {
+    title: "Tools",
+    items: [
+      {
+        name: "Markdown Editor",
+        path: "/markdown-editor",
+        badge: { text: "New", color: "bg-blue-500" },
+      },
+    ],
+  },
 ];
 
 // NavItemComponent to handle nested navigation items

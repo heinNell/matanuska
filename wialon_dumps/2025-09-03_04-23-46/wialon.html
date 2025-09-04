@@ -1,0 +1,2260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrackMaster Pro – Fleet & Transport Operations Console</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #4361ee;
+        --secondary: #7209b7;
+        --danger: #ff4d4f;
+        --success: #10b981;
+        --warning: #ffd600;
+        --idle: #ffd600;
+        --bg: #0f172a;
+        --panel: #1e293b;
+        --card: #334155;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #475569;
+        --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        --glass: rgba(30, 41, 59, 0.8);
+      }
+
+      /* Reset only for specific elements that need it */
+      html,
+      body,
+      div,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      ul,
+      ol,
+      li,
+      button,
+      input,
+      select,
+      textarea {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: var(--text);
+        overflow: hidden;
+      }
+
+      .app-container {
+        height: 100vh;
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 0;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .sidebar-header {
+        padding: 24px;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        color: white;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      /* Navigation Tabs */
+      .nav-tabs {
+        display: flex;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nav-tab {
+        flex: 1;
+        padding: 16px 12px;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-tab.active {
+        color: var(--primary);
+        background: rgba(67, 97, 238, 0.1);
+        border-bottom: 2px solid var(--primary);
+      }
+
+      .nav-tab:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Tab Content */
+      .tab-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+      }
+
+      .tab-panel {
+        display: none;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .stat-card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+
+      .stat-number {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      /* Form Elements */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .form-input,
+      .form-select {
+        width: 100%;
+        padding: 12px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus,
+      .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(67, 97, 238, 0.3);
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      /* Item Lists */
+      .item-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .list-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .list-item:hover {
+        border-color: var(--primary);
+        background: rgba(67, 97, 238, 0.1);
+        transform: translateY(-1px);
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .item-title {
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .item-status {
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .status-active {
+        background: var(--success);
+        color: white;
+      }
+      .status-pending {
+        background: var(--warning);
+        color: black;
+      }
+      .status-delivered {
+        background: var(--success);
+        color: white;
+      }
+      .status-failed {
+        background: var(--danger);
+        color: white;
+      }
+      .status-idle {
+        background: var(--warning);
+        color: black;
+      }
+      .status-offline {
+        background: var(--danger);
+        color: white;
+      }
+
+      .item-details {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      /* Autocomplete */
+      .autocomplete-container {
+        position: relative;
+      }
+
+      .autocomplete-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+      }
+
+      .autocomplete-item {
+        padding: 12px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--border);
+        transition: all 0.2s ease;
+      }
+
+      .autocomplete-item:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      /* Map Container */
+      .map-container {
+        position: relative;
+        background: var(--bg);
+      }
+
+      .map-element {
+        width: 100%;
+        height: 100vh;
+      }
+
+      /* Floating Controls */
+      .map-controls {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .control-card {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        min-width: 250px;
+      }
+
+      /* Log Panel */
+      .log-panel {
+        background: var(--card);
+        border-radius: 8px;
+        padding: 16px;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        border: 1px solid var(--border);
+      }
+
+      .log-entry {
+        margin-bottom: 4px;
+        color: var(--text-muted);
+      }
+
+      .log-entry.success {
+        color: var(--success);
+      }
+      .log-entry.error {
+        color: var(--danger);
+      }
+      .log-entry.warning {
+        color: var(--warning);
+      }
+      .log-entry.info {
+        color: var(--primary);
+      }
+
+      /* Helper Text and Status Legend */
+      .helper-text {
+        font-size: 11px;
+        line-height: 1.4;
+        color: var(--text-muted);
+        margin-top: 6px;
+      }
+      .status-legend {
+        display: grid;
+        grid-template-columns: repeat(auto-fill,minmax(110px,1fr));
+        gap: 6px;
+        margin: 12px 0 4px;
+      }
+      .status-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 500;
+      }
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      /* Panel Headings */
+      .panel-heading {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+      .inline-badge {
+        background: var(--primary);
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 12px;
+        font-size: 10px;
+        letter-spacing: .5px;
+      }
+
+      /* Responsive */
+      @media (max-width: 1200px) {
+        .app-container {
+          grid-template-columns: 350px 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .app-container {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto 1fr;
+        }
+
+        .sidebar {
+          height: 50vh;
+        }
+
+        .map-controls {
+          top: 10px;
+          right: 10px;
+        }
+
+        .control-card {
+          min-width: 200px;
+        }
+      }
+
+      /* Custom scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--card);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">TrackMaster Pro</div>
+          <div class="subtitle">Unified Fleet, Dispatch & Route Intelligence</div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+          <button class="nav-tab active" data-tab="vehicles">Fleet</button>
+          <button class="nav-tab" data-tab="deliveries">Dispatch</button>
+          <button class="nav-tab" data-tab="routes">Route Planner</button>
+          <button class="nav-tab" data-tab="properties">Properties</button>
+          <button class="nav-tab" data-tab="transport">Transport</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+          <!-- Vehicle Tracking Panel -->
+          <div class="tab-panel active" id="vehicles-panel">
+            <div class="panel-heading">Live Operational Snapshot</div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number" id="active-vehicles">0</div>
+                <div class="stat-label">Active</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="idle-vehicles">0</div>
+                <div class="stat-label">Idle</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="offline-vehicles">0</div>
+                <div class="stat-label">Offline</div>
+              </div>
+            </div>
+            <div class="helper-text">
+              Real‑time telemetry reflecting unit heartbeat & last message recency.
+              Active &lt; 3 min • Idle &lt; 15 min • Offline ≥ 15 min.
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Connection Status <span class="inline-badge">Realtime</span></label>
+              <div
+                id="connection-status"
+                aria-live="polite"
+                style="padding: 12px; background: var(--card); border-radius: 8px; font-size: 14px;"
+              >
+                Initializing...
+              </div>
+              <div class="helper-text">
+                Wialon session handshake for continuous AVL (Automatic Vehicle Location) streaming.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Live Fleet Telemetry</label>
+              <div class="status-legend" aria-hidden="true">
+                <div class="status-legend-item">
+                  <span class="status-dot" style="background:#10b981"></span> Active
+                </div>
+                <div class="status-legend-item">
+                  <span class="status-dot" style="background:#ffd600"></span> Idle
+                </div>
+                <div class="status-legend-item">
+                  <span class="status-dot" style="background:#ff4d4f"></span> Offline
+                </div>
+                <div class="status-legend-item">
+                  <span class="status-dot" style="background:#4361ee"></span> In Transit
+                </div>
+                <div class="status-legend-item">
+                  <span class="status-dot" style="background:#10b981"></span> Delivered
+                </div>
+              </div>
+              <div class="item-list" id="vehicle-list">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 20px;
+                    color: var(--text-muted);
+                  "
+                >
+                  Loading vehicles...
+                </div>
+              </div>
+              <div class="helper-text">
+                Click a vehicle to focus map & open its operational card. Color encodes current state.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">System Log</label>
+              <div class="log-panel" id="log"></div>
+              <div class="helper-text">
+                Chronological diagnostics of session, data refresh cycles and simulated dispatch events.
+              </div>
+            </div>
+          </div>
+
+          <!-- Delivery Management Panel -->
+          <div class="tab-panel" id="deliveries-panel">
+            <div class="panel-heading">Dispatch Creation</div>
+            <div class="form-group">
+              <label class="form-label">Create New Delivery (Job Ticket)</label>
+              <div class="helper-text">
+                Register a new consignment leg. Assign a near real‑time tracked unit for ETA & routing overlay.
+              </div>
+
+              <div style="display: grid; gap: 12px">
+                <input
+                  type="text"
+                  class="form-input"
+                  id="delivery-id"
+                  placeholder="Delivery ID (e.g., DEL-2025-001)"
+                />
+
+                <div class="autocomplete-container">
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="pickup-address"
+                    placeholder="Pickup address"
+                  />
+                  <div class="autocomplete-dropdown" id="pickup-dropdown"></div>
+                </div>
+
+                <div class="autocomplete-container">
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="delivery-address"
+                    placeholder="Delivery address"
+                  />
+                  <div
+                    class="autocomplete-dropdown"
+                    id="delivery-dropdown"
+                  ></div>
+                </div>
+
+                <input
+                  type="text"
+                  class="form-input"
+                  id="customer-name"
+                  placeholder="Customer name"
+                />
+                <input
+                  type="text"
+                  class="form-input"
+                  id="customer-phone"
+                  placeholder="Customer phone"
+                />
+
+                <select class="form-select" id="assigned-vehicle">
+                  <option value="">Select delivery vehicle</option>
+                </select>
+
+                <button class="btn btn-primary" onclick="createDelivery()" title="Register dispatch job" aria-label="Create delivery dispatch">
+                  <i class="fas fa-plus"></i> Create Delivery
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Active Deliveries (Dispatch Board)</label>
+              <div class="helper-text">
+                Tap an entry to render its pickup → drop route on the operational map.
+              </div>
+              <div class="item-list" id="delivery-list"></div>
+            </div>
+          </div>
+
+          <!-- Property Listings Panel -->
+          <div class="tab-panel" id="properties-panel">
+            <div class="form-group">
+              <label class="form-label">Property Search</label>
+
+              <div style="display: grid; gap: 12px">
+                <div class="autocomplete-container">
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="property-location"
+                    placeholder="Search area (e.g., Sandton, Johannesburg)"
+                  />
+                  <div
+                    class="autocomplete-dropdown"
+                    id="property-dropdown"
+                  ></div>
+                </div>
+
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                  "
+                >
+                  <select class="form-select" id="property-type">
+                    <option value="">All Types</option>
+                    <option value="house">House</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="office">Office</option>
+                    <option value="retail">Retail</option>
+                  </select>
+
+                  <select class="form-select" id="price-range">
+                    <option value="">Any Price</option>
+                    <option value="0-500000">R0 - R500k</option>
+                    <option value="500000-1000000">R500k - R1M</option>
+                    <option value="1000000-2000000">R1M - R2M</option>
+                    <option value="2000000+">R2M+</option>
+                  </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="searchProperties()">
+                  <i class="fas fa-search"></i> Search Properties
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Property Results</label>
+              <div class="item-list" id="property-list">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 20px;
+                    color: var(--text-muted);
+                  "
+                >
+                  Enter search criteria to find properties
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transport Directory Panel -->
+          <div class="tab-panel" id="transport-panel">
+            <div class="panel-heading">Nearby Transport Discovery</div>
+            <div class="form-group">
+              <label class="form-label">Find Transport</label>
+              <div class="helper-text">
+                Simulated aggregation of public / ride‑hailing options for contextual logistics planning.
+              </div>
+
+              <div style="display: grid; gap: 12px">
+                <div class="autocomplete-container">
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="transport-location"
+                    placeholder="Current location"
+                  />
+                  <div
+                    class="autocomplete-dropdown"
+                    id="transport-dropdown"
+                  ></div>
+                </div>
+
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                  "
+                >
+                  <select class="form-select" id="transport-type">
+                    <option value="">All Types</option>
+                    <option value="bus">Bus</option>
+                    <option value="taxi">Taxi</option>
+                    <option value="uber">Ride-hailing</option>
+                    <option value="train">Train</option>
+                  </select>
+
+                  <input
+                    type="number"
+                    class="form-input"
+                    id="search-radius"
+                    placeholder="Radius (km)"
+                    min="1"
+                    max="50"
+                    value="5"
+                  />
+                </div>
+
+                <button class="btn btn-primary" onclick="findTransport()" title="Search available transport" aria-label="Search transport">
+                  <i class="fas fa-search"></i> Find Transport
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Available Transport</label>
+              <div class="helper-text">
+                Mock dataset illustrating potential multimodal integration (bus, rail, taxi, ride‑hailing).
+              </div>
+              <div class="item-list" id="transport-list">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 20px;
+                    color: var(--text-muted);
+                  "
+                >
+                  Search for transport options
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Route Planning Panel -->
+          <div class="tab-panel" id="routes-panel">
+            <div class="panel-heading">Strategic Routing</div>
+            <div class="form-group">
+              <label class="form-label">Route Planning</label>
+              <div class="helper-text">
+                Supports single or multi‑stop optimization (Google Directions API).
+                Use waypoints for milk‑run / multi‑drop patterns. Optimization mode 'Best' enables waypoint reordering.
+              </div>
+
+              <div style="display: grid; gap: 12px">
+                <div class="autocomplete-container">
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="start"
+                    placeholder="Starting location"
+                  />
+                  <div class="autocomplete-dropdown" id="start-dropdown"></div>
+                </div>
+
+                <div class="autocomplete-container">
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="end"
+                    placeholder="Destination"
+                  />
+                  <div class="autocomplete-dropdown" id="end-dropdown"></div>
+                </div>
+
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                  "
+                >
+                  <select class="form-select" id="travel-mode">
+                    <option value="DRIVING">Driving</option>
+                    <option value="WALKING">Walking</option>
+                    <option value="BICYCLING">Bicycling</option>
+                    <option value="TRANSIT">Public Transit</option>
+                  </select>
+
+                  <select class="form-select" id="route-optimization">
+                    <option value="best">Best Route</option>
+                    <option value="fastest">Fastest</option>
+                    <option value="shortest">Shortest</option>
+                  </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="calculateRoute()" title="Compute route" aria-label="Calculate route">
+                  <i class="fas fa-route"></i> Calculate Route
+                </button>
+                <button
+                  class="btn btn-success"
+                  onclick="optimizeMultipleStops()"
+                  title="Optimize sequence of intermediate stops"
+                  aria-label="Optimize multi stop route"
+                >
+                  <i class="fas fa-magic"></i> Multi-Stop Optimization
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Waypoints (Intermediate Stops)</label>
+              <div class="helper-text">
+                Insert stops between origin and destination. They will be reordered automatically when optimization = Best Route.
+              </div>
+              <div id="waypoints-container">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 10px;
+                    color: var(--text-muted);
+                    font-size: 12px;
+                  "
+                >
+                  Add waypoints for multi-stop routes
+                </div>
+              </div>
+              <button
+                class="btn btn-primary"
+                onclick="addWaypoint()"
+                style="width: 100%; margin-top: 8px"
+              >
+                <i class="fas fa-plus"></i> Add Waypoint
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Route Summary</label>
+              <div class="helper-text">
+                Aggregated metrics: total distance, duration, projected fuel proxy & ETA.
+              </div>
+              <div
+                id="route-summary"
+                style="
+                  padding: 16px;
+                  background: var(--card);
+                  border-radius: 8px;
+                  border: 1px solid var(--border);
+                "
+              >
+                <div style="text-align: center; color: var(--text-muted)">
+                  Enter start and end locations to calculate route
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Turn-by-Turn Directions</label>
+              <div class="helper-text">
+                Stepwise navigation transcript derived from computed polyline.
+              </div>
+              <div
+                id="directions-panel"
+                style="
+                  max-height: 300px;
+                  overflow-y: auto;
+                  padding: 16px;
+                  background: var(--card);
+                  border-radius: 8px;
+                  border: 1px solid var(--border);
+                  font-size: 14px;
+                  line-height: 1.5;
+                "
+              >
+                <div style="text-align: center; color: var(--text-muted)">
+                  Route directions will appear here
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map Container -->
+      <div class="map-container">
+        <div id="map" class="map-element"></div>
+
+        <!-- Floating Map Controls -->
+        <div class="map-controls">
+          <div class="control-card" id="route-info" style="display: none">
+            <h4 style="margin-bottom: 12px; color: var(--text)">
+              Route Information
+            </h4>
+            <div id="route-details"></div>
+          </div>
+
+          <div class="control-card">
+            <h4 style="margin-bottom: 12px; color: var(--text)">
+              Quick Actions
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <button
+                class="btn btn-primary"
+                onclick="centerOnFleet()"
+                style="width: 100%"
+                title="Auto-fit map bounds to all tracked units"
+                aria-label="Center on fleet"
+              >
+                <i class="fas fa-crosshairs"></i> Center on Fleet
+              </button>
+              <button
+                class="btn btn-success"
+                onclick="refreshData()"
+                style="width: 100%"
+                title="Force refresh of latest vehicle telemetry"
+                aria-label="Refresh data"
+              >
+                <i class="fas fa-sync"></i> Refresh Data
+              </button>
+            </div>
+            <div class="helper-text" style="margin-top:10px">
+              Center recalculates bounding box. Refresh triggers Wialon flag update & re-renders markers.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- External Scripts -->
+    <script src="https://api.wialon.com/jsapi/v2/wialon.js"></script>
+
+    <script>
+      // Configuration
+      // CONFIG: Demo credentials shown for prototype context only. Replace with secure env vars in production deployment.
+      const CONFIG = {
+        WIALON_TOKEN:
+          "c1099bc37c906fd0832d8e783b60ae0dFB204570A7D9753A37B331BA7C74FE035A292DC3",
+        // Wialon host used for AVL session
+        WIALON_URL: "https://hst-api.wialon.com",
+        // Google Maps (Directions + Places) API key (demo scope)
+        GOOGLE_MAPS_KEY: "AIzaSyDTHkrpqeH0nj-cpbYybjKcZYwKgDNf8z8",
+        UPDATE_INTERVAL: 30000, // Fleet telemetry poll interval (ms)
+        JOHANNESBURG: { lat: -26.2041, lng: 28.0473 },
+      };
+
+      // Global State
+      let app = {
+        map: null,
+        session: null,
+        vehicles: [],
+        deliveries: new Map(),
+        properties: [],
+        transport: [],
+        markers: {},
+        infoWindows: {},
+        directionsService: null,
+        directionsRenderer: null,
+        placesService: null,
+        activeTab: "vehicles",
+      };
+
+      // Utility Functions
+      function log(message, type = "info") {
+        const timestamp = new Date().toLocaleTimeString();
+        const entry = document.createElement("div");
+        entry.className = `log-entry ${type}`;
+        entry.innerHTML = `[${timestamp}] ${message}`;
+
+        const logContainer = document.getElementById("log");
+        logContainer.insertBefore(entry, logContainer.firstChild);
+
+        // Keep only last 100 entries
+        while (logContainer.children.length > 100) {
+          logContainer.removeChild(logContainer.lastChild);
+        }
+      }
+
+      function updateConnectionStatus(status, type = "info") {
+        const statusEl = document.getElementById("connection-status");
+        const colors = {
+          success: "var(--success)",
+          error: "var(--danger)",
+          warning: "var(--warning)",
+          info: "var(--primary)",
+        };
+        statusEl.innerHTML = `<span style="color: ${colors[type]}">${status}</span>`;
+      }
+
+      function getStatusColor(status) {
+        const colors = {
+          active: "#10b981",
+          idle: "#ffd600",
+          offline: "#ff4d4f",
+          pending: "#ffd600",
+          "in-transit": "#4361ee",
+          delivered: "#10b981",
+          failed: "#ff4d4f",
+        };
+        return colors[status] || "#6b7280";
+      }
+
+      // Initialize Application
+      function initApp() {
+        log("Initializing TrackMaster Pro...", "info");
+        initializeTabs();
+        initializeWialon();
+      }
+
+      // Initialize Tab System
+      function initializeTabs() {
+        document.querySelectorAll(".nav-tab").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            const tabName = tab.dataset.tab;
+            switchTab(tabName);
+          });
+        });
+      }
+
+      function switchTab(tabName) {
+        // Update active tab
+        document
+          .querySelectorAll(".nav-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelector(`[data-tab="${tabName}"]`)
+          .classList.add("active");
+
+        // Update active panel
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById(`${tabName}-panel`).classList.add("active");
+
+        app.activeTab = tabName;
+        log(`Switched to ${tabName} panel`, "info");
+      }
+
+      // Wialon Integration
+      function initializeWialon() {
+        log("Connecting to Wialon...", "info");
+        updateConnectionStatus("Connecting to Wialon...", "info");
+
+        if (!window.wialon) {
+          log("Wialon SDK not loaded, retrying...", "warning");
+          setTimeout(initializeWialon, 1000);
+          return;
+        }
+
+        app.session = wialon.core.Session.getInstance();
+        app.session.initSession(CONFIG.WIALON_URL);
+
+        app.session.loginToken(CONFIG.WIALON_TOKEN, "", (code) => {
+          if (code) {
+            const errorText = wialon.core.Errors.getErrorText(code);
+            log(`Wialon login failed: ${errorText}`, "error");
+            updateConnectionStatus(`Connection Failed: ${errorText}`, "error");
+            return;
+          }
+
+          log("Wialon connection successful", "success");
+          updateConnectionStatus("Connected - Real-time Active", "success");
+
+          loadVehicles();
+          startRealTimeUpdates();
+        });
+      }
+
+      // Load Vehicles from Wialon
+      function loadVehicles() {
+        app.session.loadLibrary("itemIcon");
+
+        const flags =
+          wialon.item.Item.dataFlag.base |
+          wialon.item.Unit.dataFlag.lastMessage;
+
+        app.session.updateDataFlags(
+          [
+            {
+              type: "type",
+              data: "avl_unit",
+              flags: flags,
+              mode: 0,
+            },
+          ],
+          (error) => {
+            if (error) {
+              log(
+                `Failed to load vehicles: ${wialon.core.Errors.getErrorText(error)}`,
+                "error",
+              );
+              return;
+            }
+
+            const wialonUnits = app.session.getItems("avl_unit") || [];
+            log(`Found ${wialonUnits.length} vehicles`, "info");
+
+            const now = Date.now() / 1000;
+            app.vehicles = wialonUnits.map((unit) => {
+              const pos = unit.getPosition();
+              let status = "offline";
+
+              if (pos) {
+                const minutesSinceLastMessage = (now - pos.t) / 60;
+                if (minutesSinceLastMessage < 3) status = "active";
+                else if (minutesSinceLastMessage < 15) status = "idle";
+                else status = "offline";
+              }
+
+              return {
+                id: unit.getId(),
+                name: unit.getName(),
+                status: status,
+                position: pos ? { lat: pos.y, lng: pos.x } : null,
+                lastUpdate: pos ? new Date(pos.t * 1000) : null,
+                speed: pos ? pos.s : 0,
+                wialonUnit: unit,
+              };
+            });
+
+            renderVehicles();
+            updateVehicleStats();
+            populateVehicleSelectors();
+
+            if (typeof google !== "undefined" && app.map) {
+              placeVehicleMarkers();
+            }
+          },
+        );
+      }
+
+      // Render Vehicle List
+      function renderVehicles() {
+        const container = document.getElementById("vehicle-list");
+        container.innerHTML = "";
+
+        if (app.vehicles.length === 0) {
+          container.innerHTML =
+            '<div style="text-align: center; padding: 20px; color: var(--text-muted);">No vehicles found</div>';
+          return;
+        }
+
+        app.vehicles.forEach((vehicle) => {
+          const item = document.createElement("div");
+          item.className = "list-item";
+          item.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-title">${vehicle.name}</div>
+                        <div class="item-status status-${vehicle.status}">${vehicle.status.toUpperCase()}</div>
+                    </div>
+                    <div class="item-details">
+                        ${
+                          vehicle.position
+                            ? `Location: ${vehicle.position.lat.toFixed(4)}, ${vehicle.position.lng.toFixed(4)}<br>
+                             Speed: ${vehicle.speed} km/h<br>
+                             Last Update: ${vehicle.lastUpdate.toLocaleString()}`
+                            : "No position data available"
+                        }
+                    </div>
+                `;
+
+          item.addEventListener("click", () => {
+            if (vehicle.position && app.map) {
+              app.map.panTo(vehicle.position);
+              app.map.setZoom(15);
+
+              if (app.markers[vehicle.id]) {
+                google.maps.event.trigger(app.markers[vehicle.id], "click");
+              }
+            }
+          });
+
+          container.appendChild(item);
+        });
+      }
+
+      // Update Vehicle Statistics
+      function updateVehicleStats() {
+        let active = 0,
+          idle = 0,
+          offline = 0;
+
+        app.vehicles.forEach((vehicle) => {
+          switch (vehicle.status) {
+            case "active":
+              active++;
+              break;
+            case "idle":
+              idle++;
+              break;
+            case "offline":
+              offline++;
+              break;
+          }
+        });
+
+        document.getElementById("active-vehicles").textContent = active;
+        document.getElementById("idle-vehicles").textContent = idle;
+        document.getElementById("offline-vehicles").textContent = offline;
+      }
+
+      // Populate Vehicle Selectors
+      function populateVehicleSelectors() {
+        const selector = document.getElementById("assigned-vehicle");
+        selector.innerHTML =
+          '<option value="">Select delivery vehicle</option>';
+
+        app.vehicles.forEach((vehicle) => {
+          const option = document.createElement("option");
+          option.value = vehicle.id;
+          option.textContent = `${vehicle.name} (${vehicle.status})`;
+          selector.appendChild(option);
+        });
+      }
+
+      // Initialize Google Maps
+      function initializeGoogleMaps() {
+        if (typeof google === "undefined") {
+          log("Google Maps API not loaded yet, retrying...", "warning");
+          setTimeout(initializeGoogleMaps, 1000);
+          return;
+        }
+
+        log("Initializing Google Maps...", "info");
+
+        app.map = new google.maps.Map(document.getElementById("map"), {
+          center: CONFIG.JOHANNESBURG,
+          zoom: 11,
+          styles: [
+            {
+              featureType: "all",
+              elementType: "geometry",
+              stylers: [{ color: "#1e293b" }],
+            },
+            {
+              featureType: "all",
+              elementType: "labels.text.fill",
+              stylers: [{ color: "#8ec3b9" }],
+            },
+            {
+              featureType: "all",
+              elementType: "labels.text.stroke",
+              stylers: [{ color: "#1a3646" }],
+            },
+            {
+              featureType: "water",
+              elementType: "geometry",
+              stylers: [{ color: "#0e1626" }],
+            },
+            {
+              featureType: "road",
+              elementType: "geometry",
+              stylers: [{ color: "#38414e" }],
+            },
+          ],
+        });
+
+        // Initialize services
+        app.directionsService = new google.maps.DirectionsService();
+        app.directionsRenderer = new google.maps.DirectionsRenderer({
+          polylineOptions: {
+            strokeColor: "#4361ee",
+            strokeWeight: 4,
+          },
+        });
+        app.directionsRenderer.setMap(app.map);
+        app.placesService = new google.maps.places.PlacesService(app.map);
+
+        log("Google Maps initialized successfully", "success");
+
+        // Place existing vehicle markers if any
+        if (app.vehicles.length > 0) {
+          placeVehicleMarkers();
+        }
+      }
+
+      // Place Vehicle Markers on Map
+      function placeVehicleMarkers() {
+        // Clear existing markers
+        Object.values(app.markers).forEach((marker) => marker.setMap(null));
+        Object.values(app.infoWindows).forEach((infoWindow) =>
+          infoWindow.close(),
+        );
+        app.markers = {};
+        app.infoWindows = {};
+
+        app.vehicles.forEach((vehicle) => {
+          if (!vehicle.position) return;
+
+          const marker = new google.maps.Marker({
+            position: vehicle.position,
+            map: app.map,
+            title: vehicle.name,
+            icon: {
+              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+              scale: 6,
+              fillColor: getStatusColor(vehicle.status),
+              fillOpacity: 1,
+              strokeWeight: 2,
+              strokeColor: getStatusColor(vehicle.status),
+              rotation: 0,
+            },
+            zIndex: vehicle.status === "active" ? 100 : 10,
+          });
+
+          const infoWindow = new google.maps.InfoWindow({
+            content: `
+                        <div style="padding: 8px; color: #333; font-family: 'Inter', sans-serif;">
+                            <h3 style="margin: 0 0 8px 0; color: #1e293b;">${vehicle.name}</h3>
+                            <div><strong>Status:</strong> <span style="color: ${getStatusColor(vehicle.status)}; font-weight: bold;">${vehicle.status.toUpperCase()}</span></div>
+                            <div><strong>Speed:</strong> ${vehicle.speed} km/h</div>
+                            <div><strong>Last Update:</strong> ${vehicle.lastUpdate.toLocaleString()}</div>
+                            <div style="margin-top: 8px;">
+                                <button onclick="selectVehicleForDelivery('${vehicle.id}')"
+                                        style="background: #4361ee; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                                    Assign to Delivery
+                                </button>
+                            </div>
+                        </div>
+                    `,
+
+          });
+
+          marker.addListener("click", () => {
+            Object.values(app.infoWindows).forEach((iw) => iw.close());
+            infoWindow.open(app.map, marker);
+          });
+
+          app.markers[vehicle.id] = marker;
+          app.infoWindows[vehicle.id] = infoWindow;
+        });
+
+        log(
+          `Placed ${Object.keys(app.markers).length} vehicle markers on map`,
+          "success",
+        );
+      }
+
+      // Delivery Management Functions
+      function createDelivery() {
+        const deliveryId = document.getElementById("delivery-id").value.trim();
+        const pickupAddress = document
+          .getElementById("pickup-address")
+          .value.trim();
+        const deliveryAddress = document
+          .getElementById("delivery-address")
+          .value.trim();
+        const customerName = document
+          .getElementById("customer-name")
+          .value.trim();
+        const customerPhone = document
+          .getElementById("customer-phone")
+          .value.trim();
+        const assignedVehicle =
+          document.getElementById("assigned-vehicle").value;
+
+        if (
+          !deliveryId ||
+          !pickupAddress ||
+          !deliveryAddress ||
+          !customerName
+        ) {
+          alert("Please fill in all required fields");
+          return;
+        }
+
+        if (app.deliveries.has(deliveryId)) {
+          alert("Delivery ID already exists");
+          return;
+        }
+
+        const delivery = {
+          id: deliveryId,
+          pickupAddress,
+          deliveryAddress,
+          customerName,
+          customerPhone,
+          assignedVehicle,
+          status: "pending",
+          createdAt: new Date(),
+          estimatedTime: Math.floor(Math.random() * 60) + 15,
+        };
+
+        app.deliveries.set(deliveryId, delivery);
+        renderDeliveries();
+
+        // Clear form
+        [
+          "delivery-id",
+          "pickup-address",
+          "delivery-address",
+          "customer-name",
+          "customer-phone",
+        ].forEach((id) => {
+          document.getElementById(id).value = "";
+        });
+        document.getElementById("assigned-vehicle").value = "";
+
+        log(`Created delivery: ${deliveryId}`, "success");
+
+        // Show route if both addresses are provided
+        if (pickupAddress && deliveryAddress) {
+          calculateAndDisplayRoute(pickupAddress, deliveryAddress);
+        }
+      }
+
+      function renderDeliveries() {
+        const container = document.getElementById("delivery-list");
+        container.innerHTML = "";
+
+        if (app.deliveries.size === 0) {
+          container.innerHTML =
+            '<div style="text-align: center; padding: 20px; color: var(--text-muted);">No deliveries created</div>';
+          return;
+        }
+
+        app.deliveries.forEach((delivery) => {
+          const item = document.createElement("div");
+          item.className = "list-item";
+
+          const vehicleName = delivery.assignedVehicle
+            ? app.vehicles.find((v) => v.id == delivery.assignedVehicle)
+                ?.name || "Unknown Vehicle"
+            : "Unassigned";
+
+          item.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-title">${delivery.id}</div>
+                        <div class="item-status status-${delivery.status}">${delivery.status.toUpperCase()}</div>
+                    </div>
+                    <div class="item-details">
+                        <strong>${delivery.customerName}</strong> (${delivery.customerPhone})<br>
+                        From: ${delivery.pickupAddress}<br>
+                        To: ${delivery.deliveryAddress}<br>
+                        Vehicle: ${vehicleName}<br>
+                        Created: ${delivery.createdAt.toLocaleString()}
+                    </div>
+                `;
+
+          item.addEventListener("click", () => {
+            calculateAndDisplayRoute(
+              delivery.pickupAddress,
+              delivery.deliveryAddress,
+            );
+          });
+
+          container.appendChild(item);
+        });
+      }
+
+      // Enhanced Route Calculation (integrated with existing system)
+      function calculateRoute() {
+        const start = document.getElementById("start").value.trim();
+        const end = document.getElementById("end").value.trim();
+
+        if (!start || !end) {
+          alert("Please enter both start and end locations");
+          return;
+        }
+
+        calculateAndDisplayRoute(start, end);
+      }
+
+      function calculateAndDisplayRoute(origin, destination, waypoints = []) {
+        const travelMode =
+          document.getElementById("travel-mode")?.value || "DRIVING";
+
+        const request = {
+          origin: typeof origin === "string" ? { query: origin } : origin,
+          destination:
+            typeof destination === "string"
+              ? { query: destination }
+              : destination,
+          travelMode: google.maps.TravelMode[travelMode],
+          waypoints: waypoints.map((wp) => ({ location: wp, stopover: true })),
+          optimizeWaypoints:
+            document.getElementById("route-optimization")?.value === "best",
+        };
+
+        app.directionsService
+          .route(request)
+          .then((response) => {
+            app.directionsRenderer.setDirections(response);
+            displayEnhancedRouteInfo(response);
+            log(`Route calculated: ${origin} to ${destination}`, "success");
+          })
+          .catch((error) => {
+            log(`Route calculation failed: ${error}`, "error");
+            alert("Directions request failed due to " + error);
+          });
+      }
+
+      function displayEnhancedRouteInfo(result) {
+        const route = result.routes[0];
+        let totalDistance = 0;
+        let totalDuration = 0;
+
+        route.legs.forEach((leg) => {
+          totalDistance += leg.distance.value;
+          totalDuration += leg.duration.value;
+        });
+
+        const routeSummary = document.getElementById("route-summary");
+        if (routeSummary) {
+          routeSummary.innerHTML = `
+                    <div style="display: grid; gap: 12px; font-size: 14px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <strong>Total Distance:</strong><br>
+                                <span style="color: var(--primary); font-size: 16px; font-weight: 600;">
+                                    ${(totalDistance / 1000).toFixed(1)} km
+                                </span>
+                            </div>
+                            <div>
+                                <strong>Total Duration:</strong><br>
+                                <span style="color: var(--success); font-size: 16px; font-weight: 600;">
+                                    ${Math.round(totalDuration / 60)} min
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="padding: 12px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border);">
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Route Details:</div>
+                            <div><strong>From:</strong> ${route.legs[0].start_address}</div>
+                            <div><strong>To:</strong> ${route.legs[route.legs.length - 1].end_address}</div>
+                            ${route.legs.length > 1 ? `<div><strong>Waypoints:</strong> ${route.legs.length - 1}</div>` : ""}
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 12px;">
+                            <div style="text-align: center; padding: 8px; background: var(--bg); border-radius: 4px;">
+                                <div style="color: var(--text-muted);">Est. Fuel</div>
+                                <div style="font-weight: 600;">R${((totalDistance / 1000) * 2.5).toFixed(0)}</div>
+                            </div>
+                            <div style="text-align: center; padding: 8px; background: var(--bg); border-radius: 4px;">
+                                <div style="color: var(--text-muted);">Traffic</div>
+                                <div style="font-weight: 600; color: var(--success);">Good</div>
+                            </div>
+                            <div style="text-align: center; padding: 8px; background: var(--bg); border-radius: 4px;">
+                                <div style="color: var(--text-muted);">ETA</div>
+                                <div style="font-weight: 600;">${new Date(Date.now() + totalDuration * 1000).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+
+        // Also update the floating route info card
+        const routeInfoCard = document.getElementById("route-info");
+        const routeDetails = document.getElementById("route-details");
+
+        if (routeDetails) {
+          routeDetails.innerHTML = `
+                    <div style="display: grid; gap: 8px; font-size: 14px;">
+                        <div><strong>Distance:</strong> ${(totalDistance / 1000).toFixed(1)} km</div>
+                        <div><strong>Duration:</strong> ${Math.round(totalDuration / 60)} min</div>
+                        <div><strong>Waypoints:</strong> ${route.legs.length > 1 ? route.legs.length - 1 : 0}</div>
+                        <div><strong>Est. Fuel Cost:</strong> R${((totalDistance / 1000) * 2.5).toFixed(0)}</div>
+                    </div>
+                `;
+          routeInfoCard.style.display = "block";
+        }
+      }
+
+      // Waypoint Management
+      let waypointCount = 0;
+
+      function addWaypoint() {
+        waypointCount++;
+        const container = document.getElementById("waypoints-container");
+
+        // Clear placeholder text
+        if (
+          container.children.length === 1 &&
+          container.firstElementChild.textContent.includes("Add waypoints")
+        ) {
+          container.innerHTML = "";
+        }
+
+        const waypointDiv = document.createElement("div");
+        waypointDiv.className = "waypoint-item";
+        waypointDiv.style.cssText = `
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 8px;
+                padding: 8px;
+                background: var(--card);
+                border-radius: 6px;
+                border: 1px solid var(--border);
+            `;
+
+        waypointDiv.innerHTML = `
+                <i class="fas fa-grip-vertical" style="color: var(--text-muted); cursor: grab;"></i>
+                <div class="autocomplete-container" style="flex: 1;">
+                    <input type="text" class="form-input" placeholder="Waypoint ${waypointCount}"
+                           style="margin: 0; padding: 8px; font-size: 12px;">
+                    <div class="autocomplete-dropdown"></div>
+                </div>
+                <button onclick="removeWaypoint(this)" style="
+                    background: var(--danger);
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 4px 8px;
+                    cursor: pointer;
+                    font-size: 12px;
+                ">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+        container.appendChild(waypointDiv);
+
+        // Setup autocomplete for the new waypoint
+        const input = waypointDiv.querySelector("input");
+        const dropdown = waypointDiv.querySelector(".autocomplete-dropdown");
+        setupWaypointAutocomplete(input, dropdown);
+
+        log(`Added waypoint ${waypointCount}`, "info");
+      }
+
+      function removeWaypoint(button) {
+        const waypointDiv = button.closest(".waypoint-item");
+        waypointDiv.remove();
+
+        const container = document.getElementById("waypoints-container");
+        if (container.children.length === 0) {
+          container.innerHTML = `
+                    <div style="text-align: center; padding: 10px; color: var(--text-muted); font-size: 12px;">
+                        Add waypoints for multi-stop routes
+                    </div>
+                `;
+        }
+
+        log("Removed waypoint", "info");
+      }
+
+      function setupWaypointAutocomplete(input, dropdown) {
+        let timeout;
+        input.addEventListener("input", (e) => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            const query = e.target.value.trim();
+            if (query.length < 3) {
+              dropdown.style.display = "none";
+              return;
+            }
+
+            if (app.session && wialon.util.Gis) {
+              wialon.util.Gis.searchByString(query, 0, 5, (code, locations) => {
+                if (code || !locations) {
+                  showMockSuggestions(query, dropdown);
+                } else {
+                  showSuggestions(locations, dropdown);
+                }
+              });
+            } else {
+              showMockSuggestions(query, dropdown);
+            }
+          }, 300);
+        });
+      }
+
+      function optimizeMultipleStops() {
+        const start = document.getElementById("start").value.trim();
+        const end = document.getElementById("end").value.trim();
+
+        if (!start || !end) {
+          alert("Please enter start and end locations");
+          return;
+        }
+
+        // Collect waypoints
+        const waypoints = [];
+        document.querySelectorAll(".waypoint-item input").forEach((input) => {
+          const value = input.value.trim();
+          if (value) {
+            waypoints.push(value);
+          }
+        });
+
+        if (waypoints.length === 0) {
+          alert("Please add at least one waypoint for multi-stop optimization");
+          return;
+        }
+
+        log(`Optimizing route with ${waypoints.length} waypoints...`, "info");
+        calculateAndDisplayRoute(start, end, waypoints);
+      }
+
+      // Auto-calculate route when start/end inputs change
+      function setupAutoRouting() {
+        const startInput = document.getElementById("start");
+        const endInput = document.getElementById("end");
+
+        if (startInput && endInput) {
+          const onChangeHandler = function () {
+            const start = startInput.value.trim();
+            const end = endInput.value.trim();
+
+            if (start && end && start.length > 3 && end.length > 3) {
+              // Debounce the route calculation
+              clearTimeout(window.routeTimeout);
+              window.routeTimeout = setTimeout(() => {
+                calculateRoute();
+              }, 1000);
+            }
+          };
+
+          startInput.addEventListener("input", onChangeHandler);
+          endInput.addEventListener("input", onChangeHandler);
+          startInput.addEventListener("change", onChangeHandler);
+          endInput.addEventListener("change", onChangeHandler);
+
+          log("Auto-routing enabled for start/end inputs", "info");
+        }
+      }
+
+      function displayRouteInfo(result) {
+        const route = result.routes[0];
+        const leg = route.legs[0];
+
+        const routeInfoCard = document.getElementById("route-info");
+        const routeDetails = document.getElementById("route-details");
+
+        routeDetails.innerHTML = `
+                <div style="display: grid; gap: 8px; font-size: 14px;">
+                    <div><strong>Distance:</strong> ${leg.distance.text}</div>
+                    <div><strong>Duration:</strong> ${leg.duration.text}</div>
+                    <div><strong>From:</strong> ${leg.start_address}</div>
+                    <div><strong>To:</strong> ${leg.end_address}</div>
+                </div>
+            `;
+
+        routeInfoCard.style.display = "block";
+      }
+
+      // Property Search Functions
+      function searchProperties() {
+        const location = document
+          .getElementById("property-location")
+          .value.trim();
+        const propertyType = document.getElementById("property-type").value;
+        const priceRange = document.getElementById("price-range").value;
+
+        if (!location) {
+          alert("Please enter a search location");
+          return;
+        }
+
+        log(`Searching for properties in ${location}`, "info");
+
+        // Generate mock property data
+        app.properties = generateMockProperties(
+          location,
+          propertyType,
+          priceRange,
+        );
+        renderProperties();
+        placePropertyMarkers();
+      }
+
+      function generateMockProperties(location, type, priceRange) {
+        const properties = [];
+        const types = type
+          ? [type]
+          : ["house", "apartment", "office", "retail"];
+
+        for (let i = 0; i < 15; i++) {
+          const propertyType = types[Math.floor(Math.random() * types.length)];
+          let basePrice = Math.floor(Math.random() * 2000000) + 300000;
+
+          // Apply price range filter
+          if (priceRange) {
+            const [min, max] = priceRange.includes("+")
+              ? [parseInt(priceRange.replace("+", "")), Infinity]
+              : priceRange.split("-").map((p) => parseInt(p));
+
+            if (basePrice < min || basePrice > max) continue;
+          }
+
+          properties.push({
+            id: `prop-${i}`,
+            title: `${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)} in ${location}`,
+            type: propertyType,
+            price: basePrice,
+            bedrooms: Math.floor(Math.random() * 4) + 1,
+            bathrooms: Math.floor(Math.random() * 3) + 1,
+            area: Math.floor(Math.random() * 200) + 50,
+            address: `${Math.floor(Math.random() * 999) + 1} ${location} Street`,
+            position: {
+              lat: CONFIG.JOHANNESBURG.lat + (Math.random() - 0.5) * 0.1,
+              lng: CONFIG.JOHANNESBURG.lng + (Math.random() - 0.5) * 0.1,
+            },
+          });
+        }
+
+        return properties.slice(0, 10);
+      }
+
+      function renderProperties() {
+        const container = document.getElementById("property-list");
+        container.innerHTML = "";
+
+        if (app.properties.length === 0) {
+          container.innerHTML =
+            '<div style="text-align: center; padding: 20px; color: var(--text-muted);">No properties found</div>';
+          return;
+        }
+
+        app.properties.forEach((property) => {
+          const item = document.createElement("div");
+          item.className = "list-item";
+          item.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-title">${property.title}</div>
+                        <div style="color: var(--success); font-weight: 600;">R${property.price.toLocaleString()}</div>
+                    </div>
+                    <div class="item-details">
+                        ${property.bedrooms} beds • ${property.bathrooms} baths • ${property.area}m²<br>
+                        ${property.address}<br>
+                        Type: ${property.type.charAt(0).toUpperCase() + property.type.slice(1)}
+                    </div>
+                `;
+
+          item.addEventListener("click", () => {
+            app.map.panTo(property.position);
+            app.map.setZoom(15);
+          });
+
+          container.appendChild(item);
+        });
+
+        log(`Found ${app.properties.length} properties`, "success");
+      }
+
+      function placePropertyMarkers() {
+        // Clear existing property markers
+        Object.keys(app.markers).forEach((key) => {
+          if (key.startsWith("property-")) {
+            app.markers[key].setMap(null);
+            delete app.markers[key];
+          }
+        });
+
+        app.properties.forEach((property) => {
+          const marker = new google.maps.Marker({
+            position: property.position,
+            map: app.map,
+            title: property.title,
+            icon: {
+              url:
+                "data:image/svg+xml;base64," +
+                btoa(`
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="#10b981"/>
+                            </svg>
+                        `),
+              scaledSize: new google.maps.Size(24, 24),
+            },
+          });
+
+          const infoWindow = new google.maps.InfoWindow({
+            content: `
+                        <div style="padding: 8px; color: #333; font-family: 'Inter', sans-serif;">
+                            <h3 style="margin: 0 0 8px 0; color: #1e293b;">${property.title}</h3>
+                            <div style="color: #10b981; font-weight: bold; font-size: 16px; margin-bottom: 8px;">R${property.price.toLocaleString()}</div>
+                            <div style="margin-bottom: 4px;">${property.bedrooms} beds • ${property.bathrooms} baths • ${property.area}m²</div>
+                            <div style="color: #666; font-size: 12px;">${property.address}</div>
+                        </div>
+                    `,
+          });
+
+          marker.addListener("click", () => {
+            Object.values(app.infoWindows).forEach((iw) => iw.close());
+            infoWindow.open(app.map, marker);
+          });
+
+          app.markers[`property-${property.id}`] = marker;
+        });
+      }
+
+      // Transport Directory Functions
+      function findTransport() {
+        const location = document
+          .getElementById("transport-location")
+          .value.trim();
+        const transportType = document.getElementById("transport-type").value;
+        const radius = document.getElementById("search-radius").value || 5;
+
+        if (!location) {
+          alert("Please enter a location");
+          return;
+        }
+
+        log(
+          `Searching for ${transportType || "all"} transport near ${location}`,
+          "info",
+        );
+
+        app.transport = generateMockTransport(location, transportType, radius);
+        renderTransport();
+      }
+
+      function generateMockTransport(location, type, radius) {
+        const transportOptions = [];
+        const types = type ? [type] : ["bus", "taxi", "uber", "train"];
+
+        types.forEach((transportType) => {
+          for (let i = 0; i < 3; i++) {
+            transportOptions.push({
+              id: `${transportType}-${i}`,
+              name: getTransportName(transportType, i),
+              type: transportType,
+              distance:
+                Math.floor(Math.random() * parseInt(radius) * 1000) + 100,
+              eta: Math.floor(Math.random() * 15) + 2,
+              price: getTransportPrice(transportType),
+              availability: Math.random() > 0.2 ? "Available" : "Busy",
+              location: location,
+            });
+          }
+        });
+
+        return transportOptions.sort((a, b) => a.distance - b.distance);
+      }
+
+      function getTransportName(type, index) {
+        const names = {
+          bus: [
+            `Bus Route ${65 + index}`,
+            `City Line ${index + 1}`,
+            `Express ${index + 1}`,
+          ],
+          taxi: [
+            `Metro Taxi #${1000 + index}`,
+            `City Cab ${index + 1}`,
+            `Quick Ride ${index + 1}`,
+          ],
+          uber: [`Uber Pool`, `Bolt`, `InDriver`],
+          train: [
+            `Metro Line ${index + 1}`,
+            `Gautrain ${String.fromCharCode(65 + index)}`,
+            `Regional ${index + 1}`,
+          ],
+        };
+        return names[type]?.[index] || `${type} ${index + 1}`;
+      }
+
+      function getTransportPrice(type) {
+        const basePrices = { bus: 15, taxi: 25, uber: 45, train: 35 };
+        const base = basePrices[type] || 20;
+        return base + Math.floor(Math.random() * 20);
+      }
+
+      function renderTransport() {
+        const container = document.getElementById("transport-list");
+        container.innerHTML = "";
+
+        if (app.transport.length === 0) {
+          container.innerHTML =
+            '<div style="text-align: center; padding: 20px; color: var(--text-muted);">No transport found</div>';
+          return;
+        }
+
+        app.transport.forEach((transport) => {
+          const item = document.createElement("div");
+          item.className = "list-item";
+
+          const availabilityColor =
+            transport.availability === "Available"
+              ? "var(--success)"
+              : "var(--warning)";
+
+          item.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-title">${transport.name}</div>
+                        <div class="item-status" style="background: ${getStatusColor(transport.type)}; color: white;">
+                            ${transport.type.toUpperCase()}
+                        </div>
+                    </div>
+                    <div class="item-details">
+                        Distance: ${transport.distance}m • ETA: ${transport.eta} min<br>
+                        Price: R${transport.price} • Status: <span style="color: ${availabilityColor}">${transport.availability}</span><br>
+                        Location: ${transport.location}
+                    </div>
+                `;
+
+          container.appendChild(item);
+        });
+
+        log(`Found ${app.transport.length} transport options`, "success");
+      }
+
+      // Address Autocomplete
+      function setupAutocomplete(inputId, dropdownId) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+
+        if (!input || !dropdown) return;
+
+        let timeout;
+        input.addEventListener("input", (e) => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            const query = e.target.value.trim();
+            if (query.length < 3) {
+              dropdown.style.display = "none";
+              return;
+            }
+
+            if (app.session && wialon.util.Gis) {
+              // Use Wialon geocoding
+              wialon.util.Gis.searchByString(query, 0, 5, (code, locations) => {
+                if (code || !locations) {
+                  showMockSuggestions(query, dropdown);
+                } else {
+                  showSuggestions(locations, dropdown);
+                }
+              });
+            } else {
+              showMockSuggestions(query, dropdown);
+            }
+          }, 300);
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = "none";
+          }
+        });
+      }
+
+      function showSuggestions(suggestions, dropdown) {
+        dropdown.innerHTML = "";
+        dropdown.style.display = "block";
+
+        suggestions.forEach((suggestion) => {
+          const item = document.createElement("div");
+          item.className = "autocomplete-item";
+          item.textContent = suggestion;
+          item.onclick = () => {
+            const input = dropdown.parentElement.querySelector("input");
+            input.value = suggestion;
+            dropdown.style.display = "none";
+          };
+          dropdown.appendChild(item);
+        });
+      }
+
+      function showMockSuggestions(query, dropdown) {
+        const mockAddresses = [
+          "Sandton City, Johannesburg",
+          "OR Tambo International Airport, Johannesburg",
+          "Nelson Mandela Square, Sandton",
+          "Rosebank Mall, Johannesburg",
+          "Menlyn Park Shopping Centre, Pretoria",
+          "V&A Waterfront, Cape Town",
+          "Durban ICC, Durban",
+          "Gold Reef City, Johannesburg",
+        ];
+
+        const filtered = mockAddresses
+          .filter((addr) => addr.toLowerCase().includes(query.toLowerCase()))
+          .slice(0, 5);
+
+        showSuggestions(filtered, dropdown);
+      }
+
+      // Utility Functions
+      function selectVehicleForDelivery(vehicleId) {
+        document.getElementById("assigned-vehicle").value = vehicleId;
+        switchTab("deliveries");
+        log(`Selected vehicle for delivery assignment`, "info");
+
+        // Close all info windows
+        Object.values(app.infoWindows).forEach((iw) => iw.close());
+      }
+
+      function centerOnFleet() {
+        if (app.vehicles.length === 0) return;
+
+        const bounds = new google.maps.LatLngBounds();
+        let hasValidPosition = false;
+
+        app.vehicles.forEach((vehicle) => {
+          if (vehicle.position) {
+            bounds.extend(vehicle.position);
+            hasValidPosition = true;
+          }
+        });
+
+        if (hasValidPosition) {
+          app.map.fitBounds(bounds);
+          log("Centered map on fleet vehicles", "info");
+        } else {
+          app.map.setCenter(CONFIG.JOHANNESBURG);
+          app.map.setZoom(11);
+          log(
+            "No vehicle positions available, centered on Johannesburg",
+            "warning",
+          );
+        }
+      }
+
+      function refreshData() {
+        log("Refreshing all data...", "info");
+        if (app.session) {
+          loadVehicles();
+        }
+        log("Data refresh completed", "success");
+      }
+
+      // Real-time Updates
+      function startRealTimeUpdates() {
+        // Update vehicle positions every 30 seconds
+        setInterval(() => {
+          if (app.session) {
+            loadVehicles();
+          }
+        }, CONFIG.UPDATE_INTERVAL);
+
+        // Simulate delivery status updates
+        setInterval(() => {
+          app.deliveries.forEach((delivery, id) => {
+            if (delivery.status === "pending" && Math.random() > 0.95) {
+              delivery.status = "in-transit";
+              log(`Delivery ${id} is now in transit`, "info");
+            } else if (
+              delivery.status === "in-transit" &&
+              Math.random() > 0.98
+            ) {
+              delivery.status = "delivered";
+              log(`Delivery ${id} completed`, "success");
+            }
+          });
+
+          if (app.activeTab === "deliveries") {
+            renderDeliveries();
+          }
+        }, 10000);
+
+        log("Real-time updates started", "success");
+      }
+
+      // Initialize autocomplete for all inputs
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => {
+          setupAutocomplete("pickup-address", "pickup-dropdown");
+          setupAutocomplete("delivery-address", "delivery-dropdown");
+          setupAutocomplete("property-location", "property-dropdown");
+          setupAutocomplete("transport-location", "transport-dropdown");
+          setupAutocomplete("start", "start-dropdown");
+          setupAutocomplete("end", "end-dropdown");
+
+          // Setup auto-routing after inputs are ready
+          setupAutoRouting();
+        }, 1000);
+      });
+
+      // Make functions globally accessible
+      window.createDelivery = createDelivery;
+      window.searchProperties = searchProperties;
+      window.findTransport = findTransport;
+      window.selectVehicleForDelivery = selectVehicleForDelivery;
+      window.centerOnFleet = centerOnFleet;
+      window.refreshData = refreshData;
+      window.calculateRoute = calculateRoute;
+      window.addWaypoint = addWaypoint;
+      window.removeWaypoint = removeWaypoint;
+      window.optimizeMultipleStops = optimizeMultipleStops;
+
+      // Google Maps callback
+      window.initMap = function () {
+        initializeGoogleMaps();
+      };
+
+      // Initialize app when DOM is ready
+      document.addEventListener("DOMContentLoaded", initApp);
+    </script>
+
+    <!-- Load Google Maps API -->
+    <script
+      async
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTHkrpqeH0nj-cpbYybjKcZYwKgDNf8z8&libraries=places&callback=initMap"
+    ></script>
+  </body>
+</html>

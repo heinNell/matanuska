@@ -1,118 +1,125 @@
 /**
- * Type definitions for Wialon API objects
+ * Minimal, practical Wialon types for fleet apps.
+ * Extend as needed when you consume more fields.
  */
+
+/** A single decoded track position (seconds since epoch). */
+export interface WialonPosition {
+  /** Unix timestamp (seconds) */
+  t: number;
+  /** Latitude */
+  lat: number;
+  /** Longitude */
+  lon: number;
+  /** Speed (km/h) if available */
+  sp?: number;
+  /** Course/heading (degrees) if available */
+  cr?: number;
+  /** Optional extras (altitude, satellites, etc.) */
+  [k: string]: unknown;
+}
+
+/** Core shape of a Wialon unit (vehicle). */
+export interface WialonUnit {
+  id: number;
+  /** Name; Wialon often uses `nm` */
+  nm?: string;
+  /** System name; sometimes present as `sys_name` */
+  sys_name?: string;
+  /** Last known position */
+  pos?: {
+    t?: number;
+    y?: number; // latitude
+    x?: number; // longitude
+    sp?: number;
+    cr?: number;
+    [k: string]: unknown;
+  };
+  /** Last message object (alternative to pos) */
+  lmsg?: unknown;
+  /** Arbitrary extra fields Wialon may return */
+  [k: string]: unknown;
+}
+
+/** Search result for lists like core/search_items. */
+export interface WialonSearchItemsResult<T = unknown> {
+  searchSpec: Record<string, unknown>;
+  dataFlags: number;
+  totalItemsCount: number;
+  indexFrom: number;
+  indexTo: number;
+  items: T[];
+}
+
+/** Report export response commonly returns a URL or descriptor. */
+export interface WialonReportExport {
+  /** Direct or relative URL to the exported file */
+  url?: string;
+  /** Optional additional meta */
+  [k: string]: unknown;
+}
+
+/** Useful flags to request richer unit details. */
+export const WialonFlags = {
+  /** Generous bitmask to include core fields & last position */
+  UNIT_RICH: 0x0001ffff,
+} as const;
 
 export interface WialonPosition {
+  t: number; // Unix sekondes
   lat: number;
   lon: number;
-  alt?: number;
-  speed?: number;
-  course?: number;
-  timestamp?: number;
-}
-
-/**
- * Represents a sensor configuration in the Wialon system
- */
-export interface WialonSensor {
-  /** Unique identifier of the sensor */
-  id: string;
-  /** Display name of the sensor */
-  name: string;
-  /** Type of sensor measurement */
-  type: 'temperature' | 'fuel' | 'voltage' | 'pressure' | 'counter' | 'custom' | string;
-  /** Current sensor reading. Type depends on sensor type */
-  value?: number | string | boolean;
-  /** Measurement unit (e.g., "°C", "L", "V", "bar", etc.) */
-  unit?: string;
-  /** Additional information about the sensor */
-  description?: string;
-}
-
-export interface Sensor {
-  id: number;
-  n: string; // Name
-  t: string; // Type
-  d: string; // Description
-  m: string; // Metric
-  p: string; // Parameter
-  f: number; // Flags
-  c: object; // Config
-  vt: number; // Validation type
-  vs?: number; // Validating sensor id
-  tbl?: { x: number; a: number; b: number };
-}
-
-export interface FuelMathParams {
-  idling: number;
-  urban: number;
-  suburban: number;
-}
-
-export interface Event {
-  id: string;
-  type: string;
-  value: any;
-  time: Date;
-}
-
-export interface WialonSession {
-  id: string;
-  user: {
-    id: number;
-    name: string;
-  };
+  sp?: number; // km/h
+  cr?: number; // heading (°)
+  [k: string]: unknown;
 }
 
 export interface WialonUnit {
-  id: string | number;
-  name: string;
-  iconUrl?: string;
-
-  // Wialon SDK methods
-  addListener?: (event: string, callback: Function) => number;
-  removeListenerById?: (id: number) => void;
-  getId?: () => string | number;
-  getName?: () => string;
-  getSensors?: () => Record<string, WialonSensor>;
-  getSensor?: (sensorId: string) => WialonSensor | undefined;
-  getLastMessage?: () => any;
-  calculateSensorValue?: (sensor: WialonSensor, message: any) => number;
-  getPosition?: () => { x: number; y: number; s?: number; c?: number; t?: number; sc?: number };
-}
-
-export interface DiagnosticResult {
-  name: string;
-  status: 'ok' | 'fail' | 'warn';
-  message?: string;
-  timestamp?: number;
-}
-
-export interface WialonError extends Error {
-  code?: number;
-  details?: string;
-}
-
-export interface WialonGeofence {
-  id: string | number;
-  n: string; // name
-  t: number; // type
-  w: number; // width
-  c: string; // color
-  p: any; // points/polygon data
-}
-
-export interface WialonResource {
-  id: string | number;
-  name: string;
-  rawObject: any;
-}
-
-export interface WialonDriver {
   id: number;
-  name: string;
-  phone?: string;
-  licenseNumber?: string;
-  // Add other driver-specific fields as needed
-  [key: string]: any;
+  nm?: string;
+  sys_name?: string;
+  pos?: {
+    t?: number;
+    y?: number; // lat
+    x?: number; // lon
+    sp?: number;
+    cr?: number;
+    [k: string]: unknown;
+  };
+  lmsg?: unknown;
+  [k: string]: unknown;
 }
+
+export interface WialonSearchItemsResult<T = unknown> {
+  searchSpec: Record<string, unknown>;
+  dataFlags?: number;
+  flags?: number;
+  totalItemsCount: number;
+  indexFrom: number;
+  indexTo: number;
+  items: T[];
+}
+
+export const WialonFlags = {
+  UNIT_RICH: 0x0001ffff,
+} as const;
+
+export interface WialonUnit {
+  id: number;
+  nm?: string;
+  sys_name?: string;
+  pos?: { t?: number; y?: number; x?: number; sp?: number; cr?: number };
+  [k: string]: unknown;
+}
+
+export interface WialonSearchItemsResult<T = unknown> {
+  searchSpec: Record<string, unknown>;
+  flags?: number;
+  totalItemsCount: number;
+  items: T[];
+  [k: string]: unknown;
+}
+
+export const WialonFlags = {
+  UNIT_RICH: 0x0001ffff, // base + pos + lastMessage, etc.
+} as const;
