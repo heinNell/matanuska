@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '../../ui/Card';
 import { Button } from '../../ui/Button';
-import { 
-  Scan, 
-  Edit, 
-  MapPin, 
-  Calendar, 
-  DollarSign, 
-  Gauge, 
+import {
+  Scan,
+  Edit,
+  MapPin,
+  Calendar,
+  DollarSign,
+  Gauge,
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -44,7 +44,7 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
   onViewDetails,
   compact = false
 }) => {
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
       case 'in-service':
         return 'text-green-600 bg-green-50';
@@ -59,7 +59,7 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
     }
   };
 
-  const getConditionIcon = (condition: string) => {
+  const getConditionIcon = (condition: string): JSX.Element => {
     switch (condition.toLowerCase()) {
       case 'new':
         return <CheckCircle className="h-4 w-4 text-green-500" />;
@@ -74,6 +74,10 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
     }
   };
 
+  const hasVehicleId =
+    typeof tyre.vehicleId === 'string' &&
+    tyre.vehicleId.trim().length > 0;
+
   if (compact) {
     return (
       <Card className="mb-3 shadow-sm border-l-4 border-l-blue-500">
@@ -86,7 +90,7 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
                 </span>
                 {getConditionIcon(tyre.condition)}
               </div>
-              
+
               <div className="text-sm text-gray-600 mb-2">
                 <div>{tyre.manufacturer} - {tyre.tyreSize}</div>
                 {tyre.axlePosition && (
@@ -96,12 +100,12 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
                   </div>
                 )}
               </div>
-              
+
               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(tyre.status)}`}>
                 {tyre.status}
               </span>
             </div>
-            
+
             <div className="flex space-x-1 ml-2">
               {onScan && (
                 <Button size="sm" variant="outline" onClick={onScan}>
@@ -128,13 +132,13 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
             <h3 className="font-semibold text-lg">{tyre.tyreNumber}</h3>
             {getConditionIcon(tyre.condition)}
           </div>
-          
+
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(tyre.status)}`}>
             {tyre.status}
           </span>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Basic Info */}
         <div className="grid grid-cols-2 gap-4">
@@ -144,7 +148,7 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
             </label>
             <p className="text-sm font-medium text-gray-900">{tyre.manufacturer}</p>
           </div>
-          
+
           <div>
             <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
               Size
@@ -172,12 +176,12 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
               {tyre.mountStatus}
             </span>
           </div>
-          
+
           {tyre.axlePosition && (
             <div className="flex items-center text-sm text-gray-600">
               <MapPin className="h-4 w-4 mr-1" />
               {tyre.axlePosition}
-              {tyre.vehicleId && ` • Vehicle ${tyre.vehicleId}`}
+              {hasVehicleId && ` • Vehicle ${tyre.vehicleId}`}
             </div>
           )}
         </div>
@@ -190,21 +194,21 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
               <span>R{tyre.cost.toLocaleString()}</span>
             </div>
           )}
-          
+
           {tyre.kmRun && (
             <div className="flex items-center">
               <Gauge className="h-4 w-4 mr-1 text-gray-400" />
               <span>{tyre.kmRun.toLocaleString()} km</span>
             </div>
           )}
-          
+
           {tyre.datePurchased && (
             <div className="flex items-center">
               <Calendar className="h-4 w-4 mr-1 text-gray-400" />
               <span>{new Date(tyre.datePurchased).toLocaleDateString()}</span>
             </div>
           )}
-          
+
           {tyre.lastInspection && (
             <div className="flex items-center">
               <CheckCircle className="h-4 w-4 mr-1 text-gray-400" />
@@ -221,14 +225,14 @@ const TyreCardMobile: React.FC<TyreCardMobileProps> = ({
               Scan QR
             </Button>
           )}
-          
+
           {onEdit && (
             <Button onClick={onEdit} variant="outline" className="flex-1">
               <Edit className="h-4 w-4 mr-2" />
               Edit
             </Button>
           )}
-          
+
           {onViewDetails && (
             <Button onClick={onViewDetails} className="flex-1">
               View Details

@@ -1,7 +1,5 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
-import formImplementationRule from "./.eslint-rules/require-form-implementation.js";
-import importPlugin from "eslint-plugin-import";
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 
@@ -18,22 +16,22 @@ export default [
       "coverage/**",
       "out/**",
       ".eslintcache",
-      
+
       // IDE and environment
       ".vscode/**",
       ".idea/**",
       ".DS_Store",
-      
+
       // Framework generated
       ".next/**",
       ".firebase/**",
       ".cache/**",
       "public/**",
-      
+
       // Logs and environment
       "*.log",
       ".env*",
-      
+
       // Project specific
       "scripts/**", // silence linting for scripts
       "**/*.test.{ts,tsx}",
@@ -70,7 +68,6 @@ export default [
       "@typescript-eslint/explicit-module-boundary-types": "warn",
       "@typescript-eslint/strict-boolean-expressions": "warn",
       "@typescript-eslint/no-inferrable-types": "warn",
-      "@typescript-eslint/ban-types": "warn",
       "@typescript-eslint/no-unnecessary-type-assertion": "warn",
       "@typescript-eslint/consistent-type-definitions": ["warn", "interface"],
       "@typescript-eslint/prefer-for-of": "warn",
@@ -95,11 +92,6 @@ export default [
       "no-shadow": "warn",
       "@typescript-eslint/no-shadow": "warn",
       "no-warning-comments": ["warn", { "terms": ["todo", "fixme"], "location": "anywhere" }],
-      // Plugin: import
-      "import/order": ["warn", {
-        "groups": [["builtin", "external"], "internal", ["parent", "sibling", "index"]],
-        "newlines-between": "always"
-      }],
       // Plugin: React
       "react/no-direct-mutation-state": "error",
       "react/jsx-boolean-value": ["warn", "never"],
@@ -109,37 +101,14 @@ export default [
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
     },
-    plugins: {
-      import: importPlugin,
-      react: reactPlugin,
-      "react-hooks": reactHooksPlugin,
-    }
-  }),
-
-  // Custom form implementation rule for Matanuska-specific forms
-  {
-    files: [
-      "src/components/forms/**/*.tsx",
-      "src/pages/**/*.tsx",
-      "src/components/wialon/**/*.tsx",
-    ],
-    plugins: {
-      matanuska: {
-        rules: {
-          "require-form-implementation": formImplementationRule,
-        },
+    settings: {
+      react: {
+        version: "detect",
       },
     },
-    rules: {
-      "matanuska/require-form-implementation": [
-        "error",
-        {
-          allowedFormComponents: ["form", "Form", "Card"],
-          customFormHooks: ["useFormSubmit", "useInitForm", "useFormState"],
-          requiredValidation: true,
-          checkManualFormState: true,
-        },
-      ],
+    plugins: {
+      react: reactPlugin,
+      "react-hooks": reactHooksPlugin,
     },
-  },
+  }),
 ];

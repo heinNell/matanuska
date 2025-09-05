@@ -41,12 +41,25 @@ export async function wialonTokenLogin(token: string): Promise<WialonLoginRespon
     }
 
     const data: WialonLoginResponse = await response.json();
-    
-    // Check for Wialon API errors
-    if (data.error) {
-      throw new Error(`Wialon API error ${data.error}: ${data.reason || 'Unknown error'}`);
-    }
 
+    // Explicit error handling: Wialon sets an error code (number) when failing.
+    // We must distinguish between: undefined (no error field), 0 (success sentinel), >0 (actual error), invalid (NaN / wrong type).
+    const { error: errorCode } = data;
+    if (errorCode !== undefined && errorCode !== null) {
+      if (typeof errorCode !== 'number' || Number.isNaN(errorCode)) {
+        throw new Error(`Wialon API returned invalid error code: ${String(errorCode)}`);
+      }
+      if (errorCode !== 0) {
+        // Explicitly handle null / undefined / empty string
+        const rawReason = data.reason;
+        const reason = (rawReason !== undefined && rawReason !== null && rawReason.trim() !== '')
+          ? rawReason
+          : 'Unknown error';
+        throw new Error(`Wialon API error ${errorCode}: ${reason}`);
+      }
+      // If errorCode === 0 treat as success; optionally delete to normalize
+      // delete (data as Record<string, unknown>).error;
+    }
     return data;
   } catch (error) {
     console.error('Wialon login error:', error);

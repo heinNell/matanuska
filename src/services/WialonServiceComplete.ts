@@ -1,9 +1,9 @@
 // src/services/WialonServiceComplete.ts
-import { 
-  WialonPosition, 
-  WialonUnit, 
-  WialonSearchItemsResult, 
-  WialonFlags 
+import {
+  WialonPosition,
+  WialonUnit,
+  WialonSearchItemsResult,
+  WialonFlags
 } from "../types/wialon-types";
 
 // Enhanced types for complete API coverage
@@ -23,6 +23,84 @@ export interface WialonLoginResponse {
   gis_routing: string;
 }
 
+export interface WialonResource {
+  id: number;
+  nm: string;
+  cls: number;
+  mu: number;
+  rep?: Record<string, {
+    id: number;
+    n: string;
+    ct: string;
+    c: number;
+  }>;
+  repmax?: number;
+  uacl?: number;
+}
+
+export interface WialonUnitGroup {
+  id: number;
+  nm: string;
+  cls: number;
+  u?: number[]; // unit IDs
+  [key: string]: unknown;
+}
+
+export interface WialonUser {
+  id: number;
+  nm: string;
+  cls: number;
+  prp?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface WialonHardware {
+  id: number;
+  nm: string;
+  cls: number;
+  hw?: string;
+  [key: string]: unknown;
+}
+
+export interface WialonRawMessage {
+  t?: number;
+  tp?: string;
+  pos?: {
+    t?: number;
+    y?: number;
+    x?: number;
+    sp?: number;
+    c?: number;
+    cr?: number;
+  };
+  p?: Record<string, unknown>;
+  i?: number;
+}
+
+export interface ProcessedSearchData {
+  id: number;
+  name: string;
+  type: string;
+  reports: number;
+  userAccess: number;
+}
+
+export interface WialonSearchResult<T> {
+  searchSpec: {
+    itemsType: string;
+    propName: string;
+    propValueMask: string;
+    sortType: string;
+    propType?: string;
+    or_logic?: string;
+  };
+  dataFlags: number;
+  totalItemsCount: number;
+  indexFrom: number;
+  indexTo: number;
+  items?: T[];
+}
+
 export interface WialonAdvancedSearchParams {
   spec: {
     itemsType: string;
@@ -36,15 +114,6 @@ export interface WialonAdvancedSearchParams {
   flags: number;
   from: number;
   to: number;
-}
-
-export interface WialonSearchResult<T> {
-  searchSpec: Record<string, unknown>;
-  dataFlags: number;
-  totalItemsCount: number;
-  indexFrom: number;
-  indexTo: number;
-  items?: T[];
 }
 
 export interface WialonUnitDetailed extends WialonUnit {
@@ -207,7 +276,7 @@ export class WialonServiceComplete {
   private isInitialized = false;
 
   constructor(token?: string) {
-    this.token = token || process.env.VITE_WIALON_TOKEN || 
+    this.token = token || process.env.VITE_WIALON_TOKEN ||
       'c1099bc37c906fd0832d8e783b60ae0dFB204570A7D9753A37B331BA7C74FE035A292DC3';
   }
 
@@ -225,13 +294,13 @@ export class WialonServiceComplete {
    */
   async login(): Promise<WialonLoginResponse> {
     if (!this.isInitialized) this.initialize();
-    
+
     const params = { token: this.token };
     const response = await this.makeRequest('token/login', params) as WialonLoginResponse;
-    
+
     this.sessionId = response.eid;
     this.storeSessionData(response);
-    
+
     console.log('[WialonServiceComplete] Login successful, user:', response.user.nm);
     return response;
   }
@@ -439,7 +508,7 @@ export class WialonServiceComplete {
     };
 
     const results = await this.makeRequest('core/batch', params) as unknown[];
-    
+
     return results.map((result, index) => ({
       commandIndex: index,
       success: !this.hasError(result),
@@ -455,7 +524,7 @@ export class WialonServiceComplete {
     if (!this.sessionId) {
       throw new Error('Not logged in - call login() first');
     }
-    
+
     if (this.subscriptions.has(unitId)) {
       console.warn(`[WialonServiceComplete] Already subscribed to unit ${unitId}`);
       return;
@@ -616,7 +685,7 @@ export class WialonServiceComplete {
     }));
 
     const results = await this.executeBatchSafe(batchCommands);
-    
+
     return results.map(result => {
       if (result.success) {
         return result.data as WialonSearchResult<WialonUnitDetailed>;
@@ -648,7 +717,7 @@ export class WialonServiceComplete {
     }));
 
     const results = await this.executeBatchSafe(batchCommands);
-    
+
     return results.map((result, index) => {
       if (result.success) {
         const searchResult = result.data as WialonSearchResult<WialonUnitDetailed>;
@@ -737,7 +806,7 @@ export class WialonServiceComplete {
     const formData = new URLSearchParams();
     formData.append('svc', service);
     formData.append('params', JSON.stringify(params));
-    
+
     if (this.sessionId && service !== 'token/login') {
       formData.append('sid', this.sessionId);
     }
@@ -756,7 +825,7 @@ export class WialonServiceComplete {
       }
 
       const data = await response.json();
-      
+
       if (this.hasError(data)) {
         throw new WialonAPIError(data.error, service, params);
       }
@@ -767,11 +836,160 @@ export class WialonServiceComplete {
         throw error;
       }
       throw new WialonAPIError(
-        error instanceof Error ? error.message : 'Unknown error', 
-        service, 
+        error instanceof Error ? error.message : 'Unknown error',
+        service,
         params
       );
     }
+  }
+
+  /**
+   * Search items by query string using the real API response format
+   */
+  async searchItems(searchQuery: string): Promise<WialonSearchItemsResult<WialonResource>> {
+    if (this.sessionId === null || this.sessionId === '') {
+      throw new Error('Not logged in - call login() first');
+    }
+
+    try {
+      const result = await this.searchItemsAdvanced<WialonResource>({
+        spec: {
+          itemsType: 'avl_resource',
+          propName: 'sys_name',
+          propValueMask: searchQuery || '*',
+          sortType: 'sys_name',
+          propType: '',
+          or_logic: '0'
+        },
+        force: 1,
+        flags: WialonFlags.UNIT_RICH,
+        from: 0,
+        to: 0
+      });
+
+      return result as WialonSearchItemsResult<WialonResource>;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to search items: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Process the search results from real Wialon API response
+   */
+  processSearchResults(results: WialonSearchItemsResult<WialonResource>): ProcessedSearchData[] {
+    results.items?.forEach(item => {
+      console.log('Search Result Item:', item);
+    });
+
+    return results.items.map(item => ({
+      id: item.id,
+      name: typeof item.nm === 'string' && item.nm.length > 0 ? item.nm : `Resource ${item.id}`,
+      type: 'resource',
+      reports: typeof item.rep === 'object' && item.rep !== null ? Object.keys(item.rep).length : 0,
+      userAccess: typeof item.uacl === 'number' ? item.uacl : 0
+    }));
+  }
+
+  /**
+   * Search for Wialon items with full result structure
+   */
+  async searchItems(
+    itemsType: string = 'avl_unit',
+    propName: string = 'sys_name',
+    propValueMask: string = '*',
+    sortType: string = 'sys_name'
+  ): Promise<WialonSearchItemsResult> {
+    if (!this.sessionId) {
+      await this.login();
+    }
+
+    try {
+      const searchParams = {
+        spec: {
+          itemsType,
+          propName,
+          propValueMask,
+          sortType
+        },
+        force: 1,
+        flags: 0x1, // Basic item data
+        from: 0,
+        to: 0x7FFFFFFF
+      };
+
+      const response = await fetch(`${this.baseUrl}?svc=core/search_items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          params: JSON.stringify(searchParams),
+          sid: this.sessionId
+        })
+      });
+
+      if (!response.ok) {
+        throw new WialonAPIError(response.status, 'search_items', searchParams);
+      }
+
+      const result = await response.json();
+
+      if (result.error) {
+        throw new WialonAPIError(result.error, 'search_items', searchParams);
+      }
+
+      return result as WialonSearchItemsResult;
+    } catch (error) {
+      console.error('Search items failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Search for vehicles specifically
+   */
+  async searchVehicles(namePattern: string = '*'): Promise<WialonSearchItemsResult> {
+    return this.searchItems('avl_unit', 'sys_name', namePattern, 'sys_name');
+  }
+
+  /**
+   * Search for unit groups
+   */
+  async searchUnitGroups(namePattern: string = '*'): Promise<WialonSearchItemsResult> {
+    return this.searchItems('avl_unit_group', 'sys_name', namePattern, 'sys_name');
+  }
+
+  /**
+   * Process search results into simplified format
+   */
+  processSearchResults(searchResult: WialonSearchItemsResult): ProcessedSearchData[] {
+    if (!searchResult.items) {
+      return [];
+    }
+
+    return searchResult.items.map(item => ({
+      id: item.id,
+      name: item.nm || 'Unknown',
+      type: this.getItemTypeName(searchResult.searchSpec.itemsType),
+      reports: item.rep ? Object.keys(item.rep).length : 0,
+      userAccess: item.uacl || 0
+    }));
+  }
+
+  /**
+   * Get human-readable item type name
+   */
+  private getItemTypeName(itemsType: string): string {
+    const typeMap: Record<string, string> = {
+      'avl_unit': 'Vehicle',
+      'avl_unit_group': 'Unit Group',
+      'avl_resource': 'Resource',
+      'user': 'User',
+      'avl_hw': 'Hardware'
+    };
+
+    return typeMap[itemsType] || itemsType;
   }
 }
 

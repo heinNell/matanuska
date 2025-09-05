@@ -14,22 +14,22 @@ export default [
       "coverage/**",
       "out/**",
       ".eslintcache",
-      
+
       // IDE and environment
       ".vscode/**",
       ".idea/**",
       ".DS_Store",
-      
+
       // Framework generated
       ".next/**",
       ".firebase/**",
       ".cache/**",
       "public/**",
-      
+
       // Logs and environment
       "*.log",
       ".env*",
-      
+
       // Project specific
       "scripts/**",
       "**/*.test.{ts,tsx}",

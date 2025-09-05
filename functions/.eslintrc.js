@@ -29,5 +29,18 @@ module.exports = {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "indent": ["error", 2],
+    // ------- BLOCK ON 'Mock' -------
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Identifier[name=/Mock/i]",
+        "message": "Do not use identifiers containing 'Mock'."
+      },
+      {
+        "selector": "Literal[value=/Mock/i]",
+        "message": "Do not use literals containing 'Mock'."
+      }
+    ]
+    // ------- END BLOCK -------
   },
 };
