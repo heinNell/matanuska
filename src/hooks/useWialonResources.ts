@@ -41,5 +41,4 @@ export const useWialonResources = (session: any, loggedIn: boolean): WialonResou
 
   return resources;
 };
-
 export default useWialonResources;

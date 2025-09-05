@@ -54,3 +54,5 @@ export function useWialonUnitSensors(unitId: number, sensorIds: SensorIds): Sens
 
   return { ...data, loading, error };
 }
+
+export default useWialonUnitSensors;

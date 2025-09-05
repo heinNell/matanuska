@@ -3,51 +3,36 @@ import { Card, CardContent } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { QrCode, Camera } from "lucide-react";
 import { useCapacitor } from "../../hooks/useCapacitor";
+import UnifiedQRScanner from "./UnifiedQRScanner";
 import { toast } from "sonner";
 
 interface MobileQRScannerProps {
   onScanComplete: (data: string) => void;
+  onClose?: () => void;
+  title?: string;
 }
 
-export const MobileQRScanner: React.FC<MobileQRScannerProps> = ({ onScanComplete }) => {
-  const { isNative, scanQRCode } = useCapacitor();
-  const [isScanning, setIsScanning] = useState(false);
-
-  const handleScan = async () => {
-    if (!isNative) {
-      toast.error("QR scanning is only available in the mobile app");
-      return;
-    }
-
-    setIsScanning(true);
-    try {
-      const result = await scanQRCode();
-      if (result) {
-        onScanComplete(result);
-      }
-    } catch (error) {
-      toast.error("Failed to scan QR code");
-      console.error("QR scan error:", error);
-    } finally {
-      setIsScanning(false);
+export const MobileQRScanner: React.FC<MobileQRScannerProps> = ({
+  onScanComplete,
+  onClose,
+  title = "Scan Vehicle QR Code"
+}) => {
+  const handleScanResult = (result: any) => {
+    if (result.data) {
+      onScanComplete(result.data);
+    } else {
+      toast.error("No QR code data found");
     }
   };
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="text-center">
-          <QrCode className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <h3 className="text-lg font-medium mb-2">Scan Vehicle QR Code</h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Position the QR code within the camera view to scan
-          </p>
-          <Button onClick={handleScan} disabled={!isNative || isScanning} className="w-full">
-            <Camera className="w-4 h-4 mr-2" />
-            {isScanning ? "Scanning..." : isNative ? "Start Scan" : "Camera not available"}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <UnifiedQRScanner
+      onScanComplete={handleScanResult}
+      onClose={onClose}
+      title={title}
+      scanMode="barcode"
+      showLocationCapture={false}
+      placeholder="Enter vehicle code manually"
+    />
   );
 };

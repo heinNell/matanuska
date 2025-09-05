@@ -1,26 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { Capacitor } from '@capacitor/core';
-import { useNavigate } from 'react-router-dom';
-import MobileLayout from '../../components/mobile/MobileLayout';
-import MobileNavigation from '../../components/mobile/MobileNavigation';
-import TyreListMobile from '../../components/mobile/tyre/TyreListMobile';
-import TyreInspectionMobile from '../../components/mobile/tyre/TyreInspectionMobile';
-import TyreScanner from '../../components/mobile/tyre/TyreScanner';
-import TyreFormModal from '../../components/Models/Tyre/TyreFormModal';
-import { collection, query, getDocs, orderBy, addDoc, doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
+import React, { useState, useEffect } from "react";
+import { Capacitor } from "@capacitor/core";
+import { useNavigate, useParams } from "react-router-dom";
+import MobileLayout from "../../components/mobile/MobileLayout";
+import MobileNavigation from "../../components/mobile/MobileNavigation";
+import TyreListMobile from "../../components/mobile/tyre/TyreListMobile";
+import TyreInspectionMobile from "../../components/mobile/tyre/TyreInspectionMobile";
+import TyreScanner from "../../components/mobile/tyre/TyreScanner";
+import TyreFormModal from "../../components/Models/Tyre/TyreFormModal";
+import {
+  collection,
+  query,
+  getDocs,
+  orderBy,
+  addDoc,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "../../firebase";
 
 interface TyreMobilePageProps {
-  mode?: 'list' | 'inspection' | 'scanner' | 'add';
+  mode?: "list" | "inspection" | "scanner" | "add";
   tyreId?: string;
 }
 
-const TyreMobilePage: React.FC<TyreMobilePageProps> = ({
-  mode = 'list',
-  tyreId
-}) => {
+const TyreMobilePage: React.FC<TyreMobilePageProps> = ({ mode, tyreId }) => {
   const navigate = useNavigate();
-  const [currentMode, setCurrentMode] = useState(mode);
+  const params = useParams();
+
+  // Get mode and tyreId from URL params if not provided as props
+  const currentModeFromParams =
+    (params.mode as "list" | "inspection" | "scanner" | "add") || mode || "list";
+  const tyreIdFromParams = params.tyreId || tyreId;
+
+  const [currentMode, setCurrentMode] = useState(currentModeFromParams);
   const [tyres, setTyres] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTyre, setSelectedTyre] = useState<any>(null);
@@ -30,67 +44,64 @@ const TyreMobilePage: React.FC<TyreMobilePageProps> = ({
   useEffect(() => {
     setIsNativeApp(Capacitor.isNativePlatform());
     fetchTyres();
-    
+
     // If tyreId is provided, fetch and select that specific tyre
-    if (tyreId) {
-      fetchSpecificTyre(tyreId);
+    if (tyreIdFromParams) {
+      fetchSpecificTyre(tyreIdFromParams);
     }
-  }, [tyreId]);
-  
+  }, [tyreIdFromParams]);
+
   const fetchSpecificTyre = async (id: string) => {
     try {
       // First try to find the tyre in the already loaded tyres
-      const existingTyre = tyres.find(tyre => tyre.id === id);
-      
+      const existingTyre = tyres.find((tyre) => tyre.id === id);
+
       if (existingTyre) {
         setSelectedTyre(existingTyre);
         // If in list mode, switch to inspection mode for the selected tyre
-        if (currentMode === 'list') {
-          setCurrentMode('inspection');
+        if (currentMode === "list") {
+          setCurrentMode("inspection");
         }
       } else {
         // If not found in the current list, fetch it directly
         // Import getDoc at the top of the file if not already imported
-        const tyreDoc = doc(db, 'tyres', id);
+        const tyreDoc = doc(db, "tyres", id);
         const docSnap = await getDoc(tyreDoc);
-        
+
         if (docSnap.exists()) {
           const tyreData = { id: docSnap.id, ...docSnap.data() };
           setSelectedTyre(tyreData);
           // If in list mode, switch to inspection mode for the selected tyre
-          if (currentMode === 'list') {
-            setCurrentMode('inspection');
+          if (currentMode === "list") {
+            setCurrentMode("inspection");
           }
         } else {
-          console.error('Tyre not found with ID:', id);
+          console.error("Tyre not found with ID:", id);
         }
       }
     } catch (error) {
-      console.error('Error fetching specific tyre:', error);
+      console.error("Error fetching specific tyre:", error);
     }
   };
 
   useEffect(() => {
-    setCurrentMode(mode);
-  }, [mode]);
+    setCurrentMode(currentModeFromParams);
+  }, [currentModeFromParams]);
 
   const fetchTyres = async () => {
     try {
       setLoading(true);
-      const q = query(
-        collection(db, 'tyres'),
-        orderBy('createdAt', 'desc')
-      );
+      const q = query(collection(db, "tyres"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
-      
+
       const tyresList: any[] = [];
       querySnapshot.forEach((doc) => {
         tyresList.push({ id: doc.id, ...doc.data() });
       });
-      
+
       setTyres(tyresList);
     } catch (error) {
-      console.error('Error fetching tyres:', error);
+      console.error("Error fetching tyres:", error);
     } finally {
       setLoading(false);
     }
@@ -98,7 +109,7 @@ const TyreMobilePage: React.FC<TyreMobilePageProps> = ({
 
   const handleScanTyre = (tyre: any) => {
     setSelectedTyre(tyre);
-    setCurrentMode('inspection');
+    setCurrentMode("inspection");
   };
 
   const handleEditTyre = (tyre: any) => {
@@ -119,51 +130,50 @@ const TyreMobilePage: React.FC<TyreMobilePageProps> = ({
 
   const handleScanComplete = (scanData: { barcode?: string; photo?: string }) => {
     if (scanData.barcode) {
-      const foundTyre = tyres.find(tyre => 
-        tyre.tyreNumber === scanData.barcode ||
-        tyre.id === scanData.barcode
+      const foundTyre = tyres.find(
+        (tyre) => tyre.tyreNumber === scanData.barcode || tyre.id === scanData.barcode
       );
-      
+
       if (foundTyre) {
         handleScanTyre(foundTyre);
       } else {
         // Start inspection for new tyre
         setSelectedTyre({ tyreNumber: scanData.barcode });
-        setCurrentMode('inspection');
+        setCurrentMode("inspection");
       }
     }
-    
-    if (currentMode === 'scanner') {
-      setCurrentMode('list');
+
+    if (currentMode === "scanner") {
+      setCurrentMode("list");
     }
   };
 
   const handleInspectionSave = async (inspectionData: any) => {
     try {
       // Save inspection to Firebase
-      await addDoc(collection(db, 'tyreInspections'), {
+      await addDoc(collection(db, "tyreInspections"), {
         ...inspectionData,
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
 
       // Update tyre's last inspection date
       if (inspectionData.tyreId) {
-        const tyreRef = doc(db, 'tyres', inspectionData.tyreId);
+        const tyreRef = doc(db, "tyres", inspectionData.tyreId);
         await updateDoc(tyreRef, {
           lastInspection: inspectionData.inspectionDate,
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
       }
 
       // Refresh tyres list
       await fetchTyres();
-      
+
       // Return to list view
-      setCurrentMode('list');
+      setCurrentMode("list");
       setSelectedTyre(null);
     } catch (error) {
-      console.error('Error saving inspection:', error);
+      console.error("Error saving inspection:", error);
       throw error;
     }
   };
@@ -172,58 +182,58 @@ const TyreMobilePage: React.FC<TyreMobilePageProps> = ({
     try {
       if (selectedTyre?.id) {
         // Update existing tyre
-        const tyreRef = doc(db, 'tyres', selectedTyre.id);
+        const tyreRef = doc(db, "tyres", selectedTyre.id);
         await updateDoc(tyreRef, {
           ...tyreData,
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
       } else {
         // Add new tyre
-        await addDoc(collection(db, 'tyres'), {
+        await addDoc(collection(db, "tyres"), {
           ...tyreData,
           createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
       }
 
       // Refresh tyres list
       await fetchTyres();
-      
+
       // Close modal
       setShowAddModal(false);
       setSelectedTyre(null);
     } catch (error) {
-      console.error('Error saving tyre:', error);
+      console.error("Error saving tyre:", error);
       throw error;
     }
   };
 
   const renderContent = () => {
     switch (currentMode) {
-      case 'inspection':
+      case "inspection":
         return (
           <TyreInspectionMobile
             tyreId={selectedTyre?.id}
             tyreNumber={selectedTyre?.tyreNumber}
             onSave={handleInspectionSave}
             onCancel={() => {
-              setCurrentMode('list');
+              setCurrentMode("list");
               setSelectedTyre(null);
             }}
           />
         );
 
-      case 'scanner':
+      case "scanner":
         return (
           <TyreScanner
             scanMode="barcode"
             title="Scan Tyre QR Code"
             onScanComplete={handleScanComplete}
-            onCancel={() => setCurrentMode('list')}
+            onCancel={() => setCurrentMode("list")}
           />
         );
 
-      case 'list':
+      case "list":
       default:
         return (
           <>
@@ -237,15 +247,18 @@ const TyreMobilePage: React.FC<TyreMobilePageProps> = ({
               onViewDetails={handleViewDetails}
               enableScanner={isNativeApp}
             />
-            
+
             {/* Bottom navigation - only show in list mode */}
             <MobileNavigation
               onNewTyre={handleAddNew}
-              onScanTyre={() => setCurrentMode('scanner')}
-              notificationCount={tyres.filter(t => 
-                !t.lastInspection || 
-                new Date(t.lastInspection) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-              ).length}
+              onScanTyre={() => setCurrentMode("scanner")}
+              notificationCount={
+                tyres.filter(
+                  (t) =>
+                    !t.lastInspection ||
+                    new Date(t.lastInspection) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+                ).length
+              }
             />
           </>
         );
@@ -298,7 +311,7 @@ const TyreMobilePage: React.FC<TyreMobilePageProps> = ({
         }
 
         /* Touch-friendly interactive elements */
-        button, 
+        button,
         .clickable {
           min-height: 44px;
           min-width: 44px;

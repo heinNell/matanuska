@@ -1,5 +1,5 @@
 import { ArrowDownToLine, Clipboard, Package, QrCode, Truck, Wrench } from "lucide-react";
-import { QRCode } from "qrcode.react";
+import * as QRCode from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, firestore, getDocs } from "../../firebase";
@@ -462,12 +462,8 @@ const QRGenerator = () => {
           {qrGenerated ? (
             <div className="flex-1 flex flex-col items-center justify-center space-y-6">
               <div className="qr-container bg-white p-4 rounded-lg shadow-sm">
-                <div style={{ padding: '20px' }}>
-                  <QRCode
-                    value={qrValue}
-                    size={200}
-                    level="M"
-                  />
+                <div style={{ padding: "20px" }}>
+                  <QRCode value={qrValue} size={200} level="M" />
                 </div>
               </div>
               <div className="text-sm text-gray-500 text-center break-all">

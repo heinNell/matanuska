@@ -1,0 +1,2 @@
+[dotenv@17.2.1] injecting env (53) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.2.1] injecting env (48) from .env.local -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar

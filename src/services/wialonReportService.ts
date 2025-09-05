@@ -84,3 +84,82 @@ export async function applyReportResult(session: WialonSession): Promise<any> {
   }
   return data;
 }
+"reportProps": {
+  "speedLimit": 90,
+  "maxMessagesInterval": 0,
+  "dailyEngineHoursRate": 0,
+  "urbanMaxSpeed": 0,
+  "mileageCoefficient": 0,
+  "fuelRateCoefficient": 55,
+  "speedingTolerance": 10,
+  "speedingMinDuration": 1,
+  "speedingMode": 0,
+  "driver_activity": { "type": 1 },
+  "fuelConsRates": {
+    "consSummer": 55,
+    "consWinter": 55,
+    "winterMonthFrom": 11,
+    "winterDayFrom": 1,
+    "winterMonthTo": 1,
+    "winterDayTo": 29
+  }
+},
+"aliases": [],
+"driving": {
+  "acceleration": [
+    { "flags": 2, "min_value": 0.25, "name": "Acceleration: extreme", "penalties": 2000 },
+    {
+      "flags": 2,
+      "max_value": 0.25,
+      "min_value": 0.16,
+      "name": "Acceleration: medium",
+      "penalties": 500
+    }
+  ],
+  "brake": [
+    { "flags": 2, "min_value": 0.25, "name": "Brake: extreme", "penalties": 2000 },
+    {
+      "flags": 2,
+      "max_value": 0.25,
+      "min_value": 0.16,
+      "name": "Brake: medium",
+      "penalties": 500
+    }
+  ],
+  "global": { "accel_mode": "0" },
+  "idling": [
+    {
+      "flags": 0,
+      "max_value": 10800,
+      "min_value": 1800,
+      "name": "Idling",
+      "penalties": 1,
+      "validator_id": 3
+    }
+  ],
+  "speeding": [
+    {
+      "flags": 2,
+      "max_duration": 30,
+      "max_speed": 95,
+      "max_value": 95,
+      "min_duration": 10,
+      "min_speed": 85,
+      "min_value": 85,
+      "name": "Speeding: extreme",
+      "penalties": 5000
+    }
+  ],
+  "turn": [{ "flags": 2, "min_value": 0.25, "name": "Turn: extreme", "penalties": 500 }]
+},
+"trip": {
+  "type": 1,
+  "gpsCorrection": 1,
+  "minSat": 2,
+  "minMovingSpeed": 1,
+  "minStayTime": 300,
+  "maxMessagesDistance": 10000,
+  "minTripTime": 60,
+  "minTripDistance": 100
+}
+}

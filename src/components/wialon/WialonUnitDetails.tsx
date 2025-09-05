@@ -1,6 +1,6 @@
 import React from "react";
 import { useWialonContext } from "../../context/WialonContext";
-import { useWialonUnits } from "../../hooks/useWialonUnits";
+import { useWialonUnitsEnhanced } from "../../hooks/useWialonUnitsEnhanced";
 import { ExtendedWialonUnit } from "../../hooks/useWialon";
 import type { WialonUnitComplete } from "../../types/wialon-complete";
 
@@ -22,7 +22,8 @@ const WialonUnitDetails: React.FC<WialonUnitDetailsProps> = ({
   onClose,
 }) => {
   const { selectedUnit, setSelectedUnit } = useWialonContext();
-  const { getUnitDetails, loading, error } = useWialonUnits();
+  // Use enhanced hook for getting complete unit details
+  const { getUnitDetails, loading, error } = useWialonUnitsEnhanced();
   const [completeUnit, setCompleteUnit] = React.useState<WialonUnitComplete | null>(null);
   const unitToDisplay = unit || selectedUnit;
 

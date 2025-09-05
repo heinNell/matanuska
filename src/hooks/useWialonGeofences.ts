@@ -91,28 +91,34 @@ const useWialonGeofences = (
         const zoneArray = zones ? Object.values(zones) : [];
 
         // Map zone data to our format with defensive coding
-        const formattedGeofences: WialonGeofence[] = zoneArray.map((z: any) => {
-          if (!z) return null;
+        const formattedGeofences: WialonGeofence[] = zoneArray
+          .map((z: any) => {
+            if (!z) return null;
 
-          return {
-            id: z.id ?? z.i ?? "",
-            n: z.n ?? z.name ?? "Unnamed",
-            t: typeof z.t === "number" ? z.t : 0,
-            w: typeof z.w === "number" ? z.w : 0,
-            c: z.c ?? "",
-            // Ensure points exist and are properly formatted
-            p: Array.isArray(z.p) ? z.p.map((point: any) => ({
-              x: typeof point.x === 'number' ? point.x : 0,
-              y: typeof point.y === 'number' ? point.y : 0,
-              r: typeof point.r === 'number' ? point.r : 0
-            })) : [],
-          };
-        }).filter(Boolean) as WialonGeofence[]; // Remove any null entries
+            return {
+              id: z.id ?? z.i ?? "",
+              n: z.n ?? z.name ?? "Unnamed",
+              t: typeof z.t === "number" ? z.t : 0,
+              w: typeof z.w === "number" ? z.w : 0,
+              c: z.c ?? "",
+              // Ensure points exist and are properly formatted
+              p: Array.isArray(z.p)
+                ? z.p.map((point: any) => ({
+                    x: typeof point.x === "number" ? point.x : 0,
+                    y: typeof point.y === "number" ? point.y : 0,
+                    r: typeof point.r === "number" ? point.r : 0,
+                  }))
+                : [],
+            };
+          })
+          .filter(Boolean) as WialonGeofence[]; // Remove any null entries
 
         setGeofences(formattedGeofences);
       } catch (err) {
         console.error("Error processing geofence data:", err);
-        setError(`Failed to process geofence data: ${err instanceof Error ? err.message : String(err)}`);
+        setError(
+          `Failed to process geofence data: ${err instanceof Error ? err.message : String(err)}`
+        );
         setGeofences([]);
       }
     } catch (err) {

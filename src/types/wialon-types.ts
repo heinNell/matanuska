@@ -100,10 +100,6 @@ export interface WialonSearchItemsResult<T = unknown> {
   items: T[];
 }
 
-export const WialonFlags = {
-  UNIT_RICH: 0x0001ffff,
-} as const;
-
 export interface WialonUnit {
   id: number;
   nm?: string;
@@ -119,7 +115,3 @@ export interface WialonSearchItemsResult<T = unknown> {
   items: T[];
   [k: string]: unknown;
 }
-
-export const WialonFlags = {
-  UNIT_RICH: 0x0001ffff, // base + pos + lastMessage, etc.
-} as const;

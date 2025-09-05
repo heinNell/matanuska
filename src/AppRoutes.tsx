@@ -3,7 +3,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 
 // A tiny helper to keep JSX clean
-const withSuspense = (Comp: React.LazyExoticComponent<React.ComponentType<unknown>>, props = {}) => (
+const withSuspense = (
+  Comp: React.LazyExoticComponent<React.ComponentType<unknown>>,
+  props = {}
+) => (
   <Suspense fallback={<div className="p-6">Loading…</div>}>
     <Comp {...props} />
   </Suspense>
@@ -132,6 +135,11 @@ const TyreInventoryDashboard = lazy(() => import("./pages/tyres/TyreInventoryDas
 const TyreHistoryPage = lazy(() => import("./pages/tyres/TyreHistoryPage"));
 const TyreFleetMap = lazy(() => import("./pages/tyres/TyreFleetMap"));
 const TyreDashboard = lazy(() => import("./pages/tyres/TyreDashboard"));
+
+/* -----------------------------
+ * Mobile Pages
+ * ----------------------------- */
+const TyreMobilePage = lazy(() => import("./pages/mobile/TyreMobilePage"));
 
 /* -----------------------------
  * Wialon
@@ -294,6 +302,16 @@ export const AppRoutes: React.FC = () => {
           <Route path="vehicle-view" element={withSuspense(VehicleTyreView)} />
           <Route path="vehicle-view-a" element={withSuspense(VehicleTyreViewA)} />
           <Route path="inventory-dashboard" element={withSuspense(TyreInventoryDashboard)} />
+          <Route path="mobile" element={withSuspense(TyreMobilePage)} />
+          <Route path="mobile/:mode" element={withSuspense(TyreMobilePage)} />
+          <Route path="mobile/:mode/:tyreId" element={withSuspense(TyreMobilePage)} />
+        </Route>
+
+        {/* Mobile-specific routes */}
+        <Route path="mobile">
+          <Route path="tyres" element={withSuspense(TyreMobilePage)} />
+          <Route path="tyres/:mode" element={withSuspense(TyreMobilePage)} />
+          <Route path="tyres/:mode/:tyreId" element={withSuspense(TyreMobilePage)} />
         </Route>
 
         {/* Workshop */}

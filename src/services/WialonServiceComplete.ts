@@ -1,9 +1,9 @@
 // src/services/WialonServiceComplete.ts
-import {
-  WialonPosition,
-  WialonUnit,
-  WialonSearchItemsResult,
-  WialonFlags
+import { 
+  WialonPosition, 
+  WialonUnit, 
+  WialonSearchItemsResult, 
+  WialonFlags 
 } from "../types/wialon-types";
 
 // Enhanced types for complete API coverage
@@ -207,7 +207,7 @@ export class WialonServiceComplete {
   private isInitialized = false;
 
   constructor(token?: string) {
-    this.token = token || process.env.VITE_WIALON_TOKEN ||
+    this.token = token || process.env.VITE_WIALON_TOKEN || 
       'c1099bc37c906fd0832d8e783b60ae0dFB204570A7D9753A37B331BA7C74FE035A292DC3';
   }
 
@@ -225,13 +225,13 @@ export class WialonServiceComplete {
    */
   async login(): Promise<WialonLoginResponse> {
     if (!this.isInitialized) this.initialize();
-
+    
     const params = { token: this.token };
     const response = await this.makeRequest('token/login', params) as WialonLoginResponse;
-
+    
     this.sessionId = response.eid;
     this.storeSessionData(response);
-
+    
     console.log('[WialonServiceComplete] Login successful, user:', response.user.nm);
     return response;
   }
@@ -439,7 +439,7 @@ export class WialonServiceComplete {
     };
 
     const results = await this.makeRequest('core/batch', params) as unknown[];
-
+    
     return results.map((result, index) => ({
       commandIndex: index,
       success: !this.hasError(result),
@@ -455,7 +455,7 @@ export class WialonServiceComplete {
     if (!this.sessionId) {
       throw new Error('Not logged in - call login() first');
     }
-
+    
     if (this.subscriptions.has(unitId)) {
       console.warn(`[WialonServiceComplete] Already subscribed to unit ${unitId}`);
       return;
@@ -616,7 +616,7 @@ export class WialonServiceComplete {
     }));
 
     const results = await this.executeBatchSafe(batchCommands);
-
+    
     return results.map(result => {
       if (result.success) {
         return result.data as WialonSearchResult<WialonUnitDetailed>;
@@ -648,7 +648,7 @@ export class WialonServiceComplete {
     }));
 
     const results = await this.executeBatchSafe(batchCommands);
-
+    
     return results.map((result, index) => {
       if (result.success) {
         const searchResult = result.data as WialonSearchResult<WialonUnitDetailed>;
@@ -737,7 +737,7 @@ export class WialonServiceComplete {
     const formData = new URLSearchParams();
     formData.append('svc', service);
     formData.append('params', JSON.stringify(params));
-
+    
     if (this.sessionId && service !== 'token/login') {
       formData.append('sid', this.sessionId);
     }
@@ -756,7 +756,7 @@ export class WialonServiceComplete {
       }
 
       const data = await response.json();
-
+      
       if (this.hasError(data)) {
         throw new WialonAPIError(data.error, service, params);
       }
@@ -767,8 +767,8 @@ export class WialonServiceComplete {
         throw error;
       }
       throw new WialonAPIError(
-        error instanceof Error ? error.message : 'Unknown error',
-        service,
+        error instanceof Error ? error.message : 'Unknown error', 
+        service, 
         params
       );
     }

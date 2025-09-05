@@ -6,15 +6,20 @@ import { Button } from '../../ui/Button';
 import { Card, CardContent, CardHeader } from '../../ui/Card';
 
 interface TyreScannerProps {
-  onScanComplete: (data: { barcode?: string; photo?: string }) => void;
+  onScanComplete: (result: ScanResult) => void;
   onCancel: () => void;
-  scanMode: 'barcode' | 'photo' | 'both';
+  scanMode?: 'barcode' | 'photo' | 'both';
   title?: string;
 }
 
 interface ScanResult {
   barcode?: string;
   photo?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+  };
 }
 
 const TyreScanner: React.FC<TyreScannerProps> = ({
