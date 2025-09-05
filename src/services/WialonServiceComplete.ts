@@ -257,7 +257,8 @@ export class WialonAPIError extends Error {
   }
 }
 
-const DEFAULT_URL =
+// Fix: proper constant name (previously caused parsing error)
+const WIALON_API_BASE_URL =
   (typeof import.meta !== "undefined" &&
     (import.meta as { env?: { VITE_WIALON_API_URL?: string } }).env?.VITE_WIALON_API_URL) ||
   "https://hst-api.wialon.com";
@@ -267,7 +268,8 @@ const DEFAULT_URL =
  * Replaces the existing wialonService.ts with comprehensive functionality
  */
 export class WialonServiceComplete {
-  private baseUrl = 'https://hst-api.wialon.com/wialon/ajax.html';
+  // Updated to use the constant
+  private baseUrl = `${WIALON_API_BASE_URL}/wialon/ajax.html`;
   private sessionId: string | null = null;
   private token: string;
   private userId = 600542271; // Your actual user ID
@@ -343,7 +345,7 @@ export class WialonServiceComplete {
    * Advanced search with all supported filters
    */
   async searchItemsAdvanced<T>(params: WialonAdvancedSearchParams): Promise<WialonSearchResult<T>> {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
 
@@ -382,7 +384,7 @@ export class WialonServiceComplete {
    * Get unit by ID with enhanced error handling
    */
   async getUnitById(unitId: number): Promise<WialonUnitDetailed | null> {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
 
@@ -411,7 +413,7 @@ export class WialonServiceComplete {
    * Get unit history with proper error handling
    */
   async getUnitHistory(unitId: number, from: Date, to: Date): Promise<WialonPosition[]> {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
     if (from > to) {
@@ -462,7 +464,7 @@ export class WialonServiceComplete {
    * Execute comprehensive reports with all parameters
    */
   async executeReportComplete(params: WialonReportParamsComplete): Promise<WialonReportResultComplete> {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
 
@@ -487,7 +489,7 @@ export class WialonServiceComplete {
    * Execute custom method (compatibility with existing code)
    */
   async executeCustomMethod<T>(methodName: string, params: Record<string, unknown>): Promise<T> {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
 
@@ -498,7 +500,7 @@ export class WialonServiceComplete {
    * Execute batch operations with error handling
    */
   async executeBatchSafe(commands: WialonBatchCommand[], stopOnError = false): Promise<WialonBatchResult[]> {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
 
@@ -521,7 +523,7 @@ export class WialonServiceComplete {
    * Subscribe to unit updates (enhanced version)
    */
   subscribeToUnit(unitId: number, callback: (unit: WialonUnitDetailed) => void): void {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
 
@@ -655,7 +657,7 @@ export class WialonServiceComplete {
    * Get report status (for server-side execution)
    */
   async getReportStatus(): Promise<WialonReportStatus> {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
 
@@ -845,8 +847,9 @@ export class WialonServiceComplete {
 
   /**
    * Search items by query string using the real API response format
+   * (Renamed from searchItems to avoid clash with generic searchItems below)
    */
-  async searchItems(searchQuery: string): Promise<WialonSearchItemsResult<WialonResource>> {
+  async searchResources(searchQuery: string): Promise<WialonSearchItemsResult<WialonResource>> {
     if (this.sessionId === null || this.sessionId === '') {
       throw new Error('Not logged in - call login() first');
     }
@@ -870,19 +873,20 @@ export class WialonServiceComplete {
       return result as WialonSearchItemsResult<WialonResource>;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Failed to search items: ${errorMessage}`);
+      throw new Error(`Failed to search resources: ${errorMessage}`);
     }
   }
 
   /**
-   * Process the search results from real Wialon API response
+   * Process the search results from real Wialon API response (resource-specific)
+   * (Renamed to avoid duplicate method name with generic processor below)
    */
-  processSearchResults(results: WialonSearchItemsResult<WialonResource>): ProcessedSearchData[] {
+  processResourceSearchResults(results: WialonSearchItemsResult<WialonResource>): ProcessedSearchData[] {
     results.items?.forEach(item => {
       console.log('Search Result Item:', item);
     });
 
-    return results.items.map(item => ({
+    return (results.items || []).map(item => ({
       id: item.id,
       name: typeof item.nm === 'string' && item.nm.length > 0 ? item.nm : `Resource ${item.id}`,
       type: 'resource',

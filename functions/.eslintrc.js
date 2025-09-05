@@ -1,46 +1,60 @@
 module.exports = {
   root: true,
   env: {
+    browser: true,
     es6: true,
     node: true,
   },
   extends: [
     "eslint:recommended",
+    "@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
-    "google",
-    "plugin:@typescript-eslint/recommended",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: ["tsconfig.json", "tsconfig.dev.json"],
+    project: "./tsconfig.json",
+    ecmaVersion: 2020,
     sourceType: "module",
+    ecmaFeatures: {
+      jsx: true,
+    },
   },
-  ignorePatterns: [
-    "/lib/**/*", // Ignore built files.
-    "/generated/**/*", // Ignore generated files.
-  ],
   plugins: [
     "@typescript-eslint",
+    "react",
+    "react-hooks",
     "import",
   ],
-  rules: {
-    "quotes": ["error", "double"],
-    "import/no-unresolved": 0,
-    "indent": ["error", 2],
-    // ------- BLOCK ON 'Mock' -------
-    "no-restricted-syntax": [
-      "error",
-      {
-        "selector": "Identifier[name=/Mock/i]",
-        "message": "Do not use identifiers containing 'Mock'."
+  settings: {
+    react: {
+      version: "detect",
+    },
+    "import/resolver": {
+      typescript: {
+        alwaysTryTypes: true,
       },
-      {
-        "selector": "Literal[value=/Mock/i]",
-        "message": "Do not use literals containing 'Mock'."
-      }
-    ]
-    // ------- END BLOCK -------
+    },
   },
+  rules: {
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "import/order": ["error", {
+      "groups": ["builtin", "external", "internal", "parent", "sibling"],
+      "newlines-between": "always",
+    }],
+    "prefer-const": "error",
+    "no-var": "error",
+  },
+  ignorePatterns: [
+    "dist/**/*",
+    "build/**/*",
+    "node_modules/**/*",
+    "*.js"
+  ],
 };

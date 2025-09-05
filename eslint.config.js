@@ -100,6 +100,20 @@ export default [
       // Plugin: React Hooks
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+
+      // ------- BLOCK ON 'Mock' -------
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector": "Identifier[name=/Mock/i]",
+          "message": "Do not use identifiers containing 'Mock'."
+        },
+        {
+          "selector": "Literal[value=/Mock/i]",
+          "message": "Do not use literals containing 'Mock'."
+        }
+      ]
+      // ------- END BLOCK -------
     },
     settings: {
       react: {

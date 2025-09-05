@@ -218,3 +218,570 @@ d /workspaces/matanuska && npx eslint src/components/mobile/MobileLayout.tsx src
   82:35  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
 
 ✖ 15 problems (1 error, 14 warnings)
+/workspaces/matanuska/src/App.tsx
+    5:8   error    'TrackingPage' is defined but never used. Allowed unused vars must match /^_/u                                                                                      @typescript-eslint/no-unused-vars
+    6:8   error    'WialonPlayground' is defined but never used. Allowed unused vars must match /^_/u                                                                                  @typescript-eslint/no-unused-vars
+   68:53  error    'NormalizedError' is defined but never used. Allowed unused vars must match /^_/u                                                                                   @typescript-eslint/no-unused-vars
+   97:41  warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  100:13  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  100:54  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  111:38  warning  Unexpected value in conditional. A boolean expression is required                                                                                                   @typescript-eslint/strict-boolean-expressions
+  113:15  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  114:15  warning  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                @typescript-eslint/strict-boolean-expressions
+  129:45  warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  143:71  warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  148:53  warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  173:39  warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  190:22  warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  202:5   warning  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  203:15  warning  Missing return type on function                                                                                                                                     @typescript-eslint/explicit-function-return-type
+  212:11  warning  Empty components are self-closing                                                                                                                                   react/self-closing-comp
+  128:42  warning  Type number trivially inferred from a number literal, remove type annotation                                                                                        @typescript-eslint/no-inferrable-types
+  142:12  error    'error' is defined but never used                                                                                                                                   @typescript-eslint/no-unused-vars
+  158:40  warning  Type number trivially inferred from a number literal, remove type annotation                                                                                        @typescript-eslint/no-inferrable-types
+  160:3   warning  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  164:5   warning  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  181:7   warning  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/workspaces/matanuska/src/utils/offlineCache.ts
+   28:41  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+   29:15  warning  'db' is already declared in the upper scope on line 15 column 5                             no-shadow
+   29:15  warning  'db' is already declared in the upper scope on line 15 column 5                             @typescript-eslint/no-shadow
+   46:35  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+   52:33  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+   66:31  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   94:30  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+   99:33  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  113:31  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  127:35  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  130:14  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  152:33  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  168:3   warning  Argument 'data' should be typed with a non-any type                                         @typescript-eslint/explicit-module-boundary-types
+  168:10  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  190:30  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  195:33  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  208:32  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  221:25  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  223:41  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  226:13  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  265:33  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  289:35  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  292:13  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  304:33  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  316:77  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  322:13  warning  'key' is already declared in the upper scope on line 317 column 7                           no-shadow
+  322:13  warning  'key' is already declared in the upper scope on line 317 column 7                           @typescript-eslint/no-shadow
+  326:28  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+
+/workspaces/matanuska/src/utils/offlineOperations.ts
+  12:6   warning  Unexpected object value in conditional. The condition is always true  @typescript-eslint/strict-boolean-expressions
+  29:3   warning  Argument 'data' should be typed with a non-any type                   @typescript-eslint/explicit-module-boundary-types
+  29:9   warning  Unexpected any. Specify a different type                              @typescript-eslint/no-explicit-any
+  67:12  warning  Unexpected any. Specify a different type                              @typescript-eslint/no-explicit-any
+
+/workspaces/matanuska/src/utils/pdfGenerators.ts
+    7:13  warning  Interface name `jsPDF` must match one of the following formats: PascalCase                         @typescript-eslint/naming-convention
+    8:26  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  232:3   warning  Expected a `for-of` loop instead of a `for` loop with this simple iteration                        @typescript-eslint/prefer-for-of
+  234:16  warning  This assertion is unnecessary since it does not change the type of the expression                  @typescript-eslint/no-unnecessary-type-assertion
+  245:3   warning  Expected a `for-of` loop instead of a `for` loop with this simple iteration                        @typescript-eslint/prefer-for-of
+  247:16  warning  This assertion is unnecessary since it does not change the type of the expression                  @typescript-eslint/no-unnecessary-type-assertion
+  301:5   warning  Expected a `for-of` loop instead of a `for` loop with this simple iteration                        @typescript-eslint/prefer-for-of
+  303:18  warning  This assertion is unnecessary since it does not change the type of the expression                  @typescript-eslint/no-unnecessary-type-assertion
+  336:3   warning  Expected a `for-of` loop instead of a `for` loop with this simple iteration                        @typescript-eslint/prefer-for-of
+  338:16  warning  This assertion is unnecessary since it does not change the type of the expression                  @typescript-eslint/no-unnecessary-type-assertion
+  425:5   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  446:7   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  447:20  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  447:28  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+
+/workspaces/matanuska/src/utils/placesApiGuards.ts
+   12:5   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   13:5   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   14:5   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   23:5   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   24:5   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   48:9   warning  Unexpected object value in conditional. The condition is always true                        @typescript-eslint/strict-boolean-expressions
+   79:34  warning  Type number trivially inferred from a number literal, remove type annotation                @typescript-eslint/no-inferrable-types
+  110:3   warning  Type number trivially inferred from a number literal, remove type annotation                @typescript-eslint/no-inferrable-types
+  111:3   warning  Type number trivially inferred from a number literal, remove type annotation                @typescript-eslint/no-inferrable-types
+
+/workspaces/matanuska/src/utils/placesService.ts
+   14:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+   20:10  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+   65:15  warning  This assertion is unnecessary since it does not change the type of the expression                     @typescript-eslint/no-unnecessary-type-assertion
+   80:53  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+   80:66  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+   81:76  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+  126:15  warning  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly  @typescript-eslint/strict-boolean-expressions
+  132:47  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  132:60  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  133:76  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+  189:44  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  189:57  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  190:76  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+  208:53  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+  208:53  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+  216:12  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/placesService_clean.ts
+   14:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+   20:10  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+   65:15  warning  This assertion is unnecessary since it does not change the type of the expression                     @typescript-eslint/no-unnecessary-type-assertion
+   80:53  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+   80:66  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+   81:76  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+  126:15  warning  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly  @typescript-eslint/strict-boolean-expressions
+  132:47  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  132:60  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  133:76  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+  189:44  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  189:57  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  190:76  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+  208:53  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+  208:53  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+  216:12  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/qrCodeUtils.ts
+   43:28  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   74:28  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   75:12  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   89:38  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  105:45  warning  Unexpected object value in conditional. The condition is always true                        @typescript-eslint/strict-boolean-expressions
+  112:17  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  116:43  warning  Unexpected object value in conditional. The condition is always true                        @typescript-eslint/strict-boolean-expressions
+  123:17  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  123:33  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  131:42  warning  Unexpected object value in conditional. The condition is always true                        @typescript-eslint/strict-boolean-expressions
+  148:14  error    'e' is defined but never used                                                               @typescript-eslint/no-unused-vars
+  162:10  warning  Unexpected object value in conditional. The condition is always true                        @typescript-eslint/strict-boolean-expressions
+  170:19  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  178:9   error    Unexpected lexical declaration in case block                                                no-case-declarations
+  179:9   error    Unexpected lexical declaration in case block                                                no-case-declarations
+  185:9   error    Unexpected lexical declaration in case block                                                no-case-declarations
+  186:9   error    Unexpected lexical declaration in case block                                                no-case-declarations
+  192:9   error    Unexpected lexical declaration in case block                                                no-case-declarations
+  193:9   error    Unexpected lexical declaration in case block                                                no-case-declarations
+  204:17  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  278:12  error    'e' is defined but never used                                                               @typescript-eslint/no-unused-vars
+
+/workspaces/matanuska/src/utils/requireEnv.ts
+  2:8  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  2:8  warning  Missing return type on function                                                             @typescript-eslint/explicit-module-boundary-types
+  4:8  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/sageDataMapping.ts
+   86:18  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  113:24  warning  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly  @typescript-eslint/strict-boolean-expressions
+  128:12  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  129:13  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  130:14  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  131:11  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  151:15  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  152:19  warning  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/setupEnv.ts
+  47:8  warning  Unexpected object value in conditional. The condition is always true  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/sidebar-validator.ts
+  79:39  warning  Missing return type on function                                       @typescript-eslint/explicit-function-return-type
+  79:39  warning  Missing return type on function                                       @typescript-eslint/explicit-module-boundary-types
+  87:10  warning  Unexpected object value in conditional. The condition is always true  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/syncService.ts
+    64:51  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+    65:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    66:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    67:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    68:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    69:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    70:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    71:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    72:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    75:3   error    The generic type arguments should be specified as part of the constructor type arguments           @typescript-eslint/consistent-generic-constructors
+    75:39  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+    94:68  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   178:15  warning  'collection' is already declared in the upper scope on line 3 column 3                             @typescript-eslint/no-shadow
+   213:10  warning  Unexpected object value in conditional. The condition is always true                               @typescript-eslint/strict-boolean-expressions
+   213:19  warning  Unexpected object value in conditional. The condition is always true                               @typescript-eslint/strict-boolean-expressions
+   323:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+   469:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+   536:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+   721:12  warning  Unexpected object value in conditional. The condition is always true                               @typescript-eslint/strict-boolean-expressions
+   736:12  warning  Unexpected object value in conditional. The condition is always true                               @typescript-eslint/strict-boolean-expressions
+   764:33  warning  Unexpected object value in conditional. The condition is always true                               @typescript-eslint/strict-boolean-expressions
+   836:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+   903:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+   970:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+  1037:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+  1062:11  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  1121:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+  1393:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+  1567:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+  1736:29  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+  1862:50  warning  Argument 'inspectionData' should be typed with a non-any type                                      @typescript-eslint/explicit-module-boundary-types
+  1862:66  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  1886:12  warning  Unexpected object value in conditional. The condition is always true                               @typescript-eslint/strict-boolean-expressions
+  1936:34  warning  Argument 'requestData' should be typed with a non-any type                                         @typescript-eslint/explicit-module-boundary-types
+  1936:47  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  1948:17  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  1984:27  warning  'doc' is already declared in the upper scope on line 5 column 3                                    @typescript-eslint/no-shadow
+
+/workspaces/matanuska/src/utils/taskHistory.ts
+   64:3   warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+   64:3   warning  Missing return type on function                                                                    @typescript-eslint/explicit-module-boundary-types
+   92:3   warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+   92:3   warning  Missing return type on function                                                                    @typescript-eslint/explicit-module-boundary-types
+  108:3   warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+  108:3   warning  Missing return type on function                                                                    @typescript-eslint/explicit-module-boundary-types
+  113:12  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  117:87  warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+  117:87  warning  Missing return type on function                                                                    @typescript-eslint/explicit-module-boundary-types
+  122:12  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  126:79  warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+  126:79  warning  Missing return type on function                                                                    @typescript-eslint/explicit-module-boundary-types
+  131:12  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/tripDebugger.ts
+   15:48  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+   15:48  warning  Missing return type on function                                                             @typescript-eslint/explicit-module-boundary-types
+   16:8   warning  Unexpected object value in conditional. The condition is always true                        @typescript-eslint/strict-boolean-expressions
+   94:8   warning  Unexpected object value in conditional. The condition is always true                        @typescript-eslint/strict-boolean-expressions
+  131:36  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  131:52  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  133:48  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  147:8   warning  Unexpected object value in conditional. The condition is always true                        @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/triphelpers.ts
+   16:8   warning  Unexpected value in conditional. A boolean expression is required                                     @typescript-eslint/strict-boolean-expressions
+   31:8   warning  Unexpected value in conditional. A boolean expression is required                                     @typescript-eslint/strict-boolean-expressions
+   69:8   warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+   73:43  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+   73:43  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+   76:47  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+   81:23  warning  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly  @typescript-eslint/strict-boolean-expressions
+  113:27  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  119:27  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  128:8   warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  132:9   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  133:9   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  157:3   warning  Type number trivially inferred from a number literal, remove type annotation                          @typescript-eslint/no-inferrable-types
+  158:3   warning  Type number trivially inferred from a number literal, remove type annotation                          @typescript-eslint/no-inferrable-types
+  160:18  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  181:51  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+  181:51  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+  197:28  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  211:53  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+  211:53  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+  227:9   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  228:9   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  244:44  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+  244:44  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+  246:19  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  265:8   warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  286:80  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+  286:80  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+  289:5   warning  Unexpected 'todo' comment: 'TODO: Implement real export'                                              no-warning-comments
+  295:85  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+  295:85  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+  306:56  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  329:56  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  333:56  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  342:55  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  343:79  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  344:87  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  355:12  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  358:31  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  358:49  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  371:39  warning  Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  376:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required            @typescript-eslint/strict-boolean-expressions
+  389:59  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  390:57  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  454:91  warning  Missing return type on function                                                                       @typescript-eslint/explicit-function-return-type
+  454:91  warning  Missing return type on function                                                                       @typescript-eslint/explicit-module-boundary-types
+  522:41  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  538:30  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  561:12  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  578:23  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  578:67  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly     @typescript-eslint/strict-boolean-expressions
+  594:10  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+  608:31  warning  Unexpected object value in conditional. The condition is always true                                  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/tyreAnalytics.ts
+   1:13  warning  Use an `interface` instead of a `type`  @typescript-eslint/consistent-type-definitions
+  45:8   warning  Missing return type on function         @typescript-eslint/explicit-function-return-type
+  45:8   warning  Missing return type on function         @typescript-eslint/explicit-module-boundary-types
+  81:8   warning  Missing return type on function         @typescript-eslint/explicit-function-return-type
+  81:8   warning  Missing return type on function         @typescript-eslint/explicit-module-boundary-types
+
+/workspaces/matanuska/src/utils/tyreConstants.ts
+   56:38  warning  'fleet' is already declared in the upper scope on line 56 column 9                                  no-shadow
+   56:38  warning  'fleet' is already declared in the upper scope on line 56 column 9                                  @typescript-eslint/no-shadow
+  232:10  error    Do not use identifiers containing 'Mock'                                                            no-restricted-syntax
+  233:9   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly   @typescript-eslint/strict-boolean-expressions
+  234:9   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly   @typescript-eslint/strict-boolean-expressions
+  235:9   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly   @typescript-eslint/strict-boolean-expressions
+  236:9   warning  Unexpected nullable enum value in conditional. Please handle the nullish/zero/NaN cases explicitly  @typescript-eslint/strict-boolean-expressions
+  264:14  error    Do not use identifiers containing 'Mock'                                                            no-restricted-syntax
+  275:22  warning  Unexpected object value in conditional. The condition is always true                                @typescript-eslint/strict-boolean-expressions
+  276:12  warning  Unexpected object value in conditional. The condition is always true                                @typescript-eslint/strict-boolean-expressions
+  282:29  warning  Unexpected value in conditional. A boolean expression is required                                   @typescript-eslint/strict-boolean-expressions
+  308:14  error    Do not use identifiers containing 'Mock'                                                            no-restricted-syntax
+  308:31  error    Do not use identifiers containing 'Mock'                                                            no-restricted-syntax
+
+/workspaces/matanuska/src/utils/tyreTypeConverter.ts
+    8:32  warning  Argument 'tyre' should be typed with a non-any type                                         @typescript-eslint/explicit-module-boundary-types
+    8:38  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   11:5   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   15:43  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   25:3   warning  Argument 'tyre' should be typed with a non-any type                                         @typescript-eslint/explicit-module-boundary-types
+   25:9   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   27:4   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   28:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   46:9   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   46:20  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   47:19  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   48:14  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   49:24  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   50:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   51:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   52:14  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   53:16  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   54:18  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   55:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   56:17  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   57:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   61:16  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   63:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   64:18  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   65:18  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   66:20  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   74:21  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   76:24  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   77:23  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   78:36  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   79:31  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   80:26  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   90:20  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   91:19  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   92:32  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   93:27  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   94:22  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  106:45  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  107:16  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  109:5   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  109:30  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  109:49  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  109:74  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  115:9   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  115:20  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  116:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  117:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  118:19  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  120:14  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  121:13  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  122:19  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  123:20  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  124:17  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  125:21  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  126:24  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  127:14  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  128:16  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  129:18  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  130:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  131:17  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  132:12  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  133:15  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  133:32  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  135:17  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  135:49  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  136:15  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  136:46  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  146:48  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  146:78  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  147:70  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+
+/workspaces/matanuska/src/utils/unitIconUtils.ts
+  4:29  warning  Argument 'unit' should be typed with a non-any type                                         @typescript-eslint/explicit-module-boundary-types
+  4:35  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  6:5   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/useTyreStores.tsx
+  10:6   warning  Use an `interface` instead of a `type`       @typescript-eslint/consistent-type-definitions
+  19:25  warning  Unexpected empty async method 'addStore'     no-empty-function
+  19:25  error    Unexpected empty async method 'addStore'     @typescript-eslint/no-empty-function
+  20:28  warning  Unexpected empty async method 'updateEntry'  no-empty-function
+  20:28  error    Unexpected empty async method 'updateEntry'  @typescript-eslint/no-empty-function
+  28:8   warning  Missing return type on function              @typescript-eslint/explicit-function-return-type
+  28:8   warning  Missing return type on function              @typescript-eslint/explicit-module-boundary-types
+  33:15  warning  Missing return type on function              @typescript-eslint/explicit-function-return-type
+  49:8   warning  Missing return type on function              @typescript-eslint/explicit-function-return-type
+  49:8   warning  Missing return type on function              @typescript-eslint/explicit-module-boundary-types
+
+/workspaces/matanuska/src/utils/validation.ts
+  213:8  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/webhookSenders.ts
+   36:13   warning  Unexpected object value in conditional. The condition is always true                               @typescript-eslint/strict-boolean-expressions
+   36:103  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   58:38   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+   82:13   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  117:13   warning  Unexpected object value in conditional. The condition is always true                               @typescript-eslint/strict-boolean-expressions
+  117:104  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  139:38   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  163:13   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  194:25   warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+
+/workspaces/matanuska/src/utils/wialonApi.ts
+  2:8  warning  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  2:8  warning  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+
+/workspaces/matanuska/src/utils/wialonAuth.ts
+   2:8   warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+   2:8   warning  Missing return type on function                                                             @typescript-eslint/explicit-module-boundary-types
+   4:9   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   7:24  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+   8:25  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  13:8   warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  13:8   warning  Missing return type on function                                                             @typescript-eslint/explicit-module-boundary-types
+  24:8   warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  24:8   warning  Missing return type on function                                                             @typescript-eslint/explicit-module-boundary-types
+  32:8   warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  32:8   warning  Missing return type on function                                                             @typescript-eslint/explicit-module-boundary-types
+  33:19  warning  This assertion is unnecessary since it does not change the type of the expression           @typescript-eslint/no-unnecessary-type-assertion
+  33:63  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  34:16  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  35:10  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonAuth2.ts
+  10:23  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  19:42  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  29:24  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  30:44  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  37:30  warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  52:43  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  76:43  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  97:41  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  97:57  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonConfig.tsx
+   88:36  error    Array type using 'Array<any>' is forbidden. Use 'any[]' instead                                    @typescript-eslint/array-type
+   88:42  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   93:13  error    Do not use identifiers containing 'Mock'                                                           no-restricted-syntax
+   98:15  error    Do not use identifiers containing 'Mock'                                                           no-restricted-syntax
+  109:5   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  114:5   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  151:27  warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+  162:35  warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+  185:21  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  191:18  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  198:29  warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+  224:18  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  251:18  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  284:16  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonConfig2.ts
+  41:15  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonDiagnostics.ts
+   66:8   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  104:8   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  135:12  error    'e' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+  152:18  warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonInit.ts
+   12:14  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   15:20  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   16:23  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   17:10  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+   20:54  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   24:9   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+   48:12  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   49:22  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+   56:8   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+   57:8   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+   93:37  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   94:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  101:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonLoader.ts
+   26:25  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+   47:9   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+   56:26  warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+   63:27  warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+   91:3   warning  Type string trivially inferred from a string literal, remove type annotation                       @typescript-eslint/no-inferrable-types
+   92:12  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+   96:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  105:41  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  106:13  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  137:38  warning  Argument 'session' should be typed with a non-any type                                             @typescript-eslint/explicit-module-boundary-types
+  137:47  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  137:61  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  139:10  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  147:89  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
+  148:11  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  154:21  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  164:30  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+  177:38  warning  Missing return type on function                                                                    @typescript-eslint/explicit-function-return-type
+  177:38  warning  Missing return type on function                                                                    @typescript-eslint/explicit-module-boundary-types
+  181:20  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required         @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonSensorData.ts
+    4:1   error    Unexpected var, use let or const instead                                                                    no-var
+    4:21  warning  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+   17:8   warning  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+   53:8   warning  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly           @typescript-eslint/strict-boolean-expressions
+   74:3   warning  Argument 'unit' should be typed with a non-any type                                                         @typescript-eslint/explicit-module-boundary-types
+   74:9   warning  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+   75:3   warning  Argument 'lastMessage' should be typed with a non-any type                                                  @typescript-eslint/explicit-module-boundary-types
+   75:16  warning  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+  186:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                  @typescript-eslint/strict-boolean-expressions
+  187:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                  @typescript-eslint/strict-boolean-expressions
+  188:8   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                  @typescript-eslint/strict-boolean-expressions
+  194:10  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                  @typescript-eslint/strict-boolean-expressions
+  197:18  warning  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+  199:11  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                  @typescript-eslint/strict-boolean-expressions
+  203:29  warning  Unexpected any value in array predicate return type. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  203:33  warning  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+  209:10  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                  @typescript-eslint/strict-boolean-expressions
+  219:10  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required                  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonService.ts
+   10:20   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   11:3    warning  Type boolean trivially inferred from a boolean literal, remove type annotation              @typescript-eslint/no-inferrable-types
+   25:45   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   56:12   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   81:27   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   82:31   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+   94:64   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+   95:55   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  102:60   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  102:91   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  102:105  warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  104:10   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  108:81   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  118:58   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  120:10   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  133:10   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  134:21   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  135:37   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  136:10   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  140:10   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  140:18   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  157:10   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  157:29   warning  Unexpected empty arrow function                                                             no-empty-function
+  157:29   error    Unexpected empty arrow function                                                             @typescript-eslint/no-empty-function
+  159:24   warning  Missing return type on function                                                             @typescript-eslint/explicit-function-return-type
+  160:23   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  161:39   warning  Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  162:12   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  164:12   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  164:20   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  202:12   warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+
+/workspaces/matanuska/src/utils/wialonUnitUtils.ts
+   9:37  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+  10:14  warning  Unexpected any value in conditional. An explicit comparison or type conversion is required  @typescript-eslint/strict-boolean-expressions
+
+✖ 12460 problems (4321 errors, 8139 warnings)
+  81 errors and 527 warnings potentially fixable with the `--fix` option.
