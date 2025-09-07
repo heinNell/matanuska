@@ -1,5 +1,6 @@
 const DEFAULT_API_URL =
-  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_WIALON_API_URL) ||
+  (typeof import.meta !== "undefined" &&
+    (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_WIALON_API_URL) ||
   "https://hst-api.wialon.com";
 
 export type WialonSid = string;
@@ -8,6 +9,15 @@ export interface WialonHttpOptions {
   baseUrl?: string;
   timeoutMs?: number;
 }
+
+// New minimal types for Wialon responses/params
+export interface WialonLoginResponse {
+  eid?: string;
+  sid?: string;
+  base_url?: string;
+  [key: string]: unknown;
+}
+export type WialonParams = Record<string, unknown>;
 
 export class WialonHttp {
   private baseUrl: string;
@@ -29,18 +39,18 @@ export class WialonHttp {
     this.sid = sid;
   }
 
-  async loginWithToken(token: string): Promise<any> {
-    const res = await this.call<any>("token/login", { token });
-    const sid = (res?.eid || res?.sid) as string | undefined;
+  async loginWithToken(token: string): Promise<WialonLoginResponse> {
+    const res = await this.call<WialonLoginResponse>("token/login", { token });
+    const sid = res.eid || res.sid;
     if (!sid) throw new Error("Wialon login did not return eid/sid.");
     this.sid = sid;
-    if (res?.base_url) this.setBaseUrl(res.base_url);
+    if (res.base_url) this.setBaseUrl(res.base_url);
     return res;
   }
 
   async logout(): Promise<void> {
     try {
-      if (this.sid) await this.call<any>("core/logout", {});
+      if (this.sid) await this.call<unknown>("core/logout", {});
     } finally {
       this.sid = null;
     }
@@ -51,11 +61,14 @@ export class WialonHttp {
     const t = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
       const url = `${this.baseUrl}/wialon/ajax.html`;
-      const merged = this.sid != null ? { ...(params as any), sid: this.sid } : params;
+      const mergedParams: WialonParams =
+        this.sid != null
+          ? { ...(isRecord(params) ? params : {}), sid: this.sid }
+          : (isRecord(params) ? params : {});
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ svc, params: JSON.stringify(merged ?? {}) }),
+        body: new URLSearchParams({ svc, params: JSON.stringify(mergedParams) }),
         signal: controller.signal,
       });
       if (!res.ok) throw new Error(`HTTP ${res.status} for ${svc}`);
@@ -67,6 +80,11 @@ export class WialonHttp {
       clearTimeout(t);
     }
   }
+}
+
+// Local type guard to safely treat params as a record
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }
 
 export default WialonHttp;

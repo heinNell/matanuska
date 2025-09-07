@@ -286,7 +286,7 @@ export class WialonServiceComplete {
    * Initialize the service
    */
   initialize(): void {
-    if (this.isInitialized) return;
+    if (this.isInitialized === true) return;
     this.isInitialized = true;
     console.log('[WialonServiceComplete] Initialized');
   }
@@ -295,7 +295,7 @@ export class WialonServiceComplete {
    * Complete login with full session data
    */
   async login(): Promise<WialonLoginResponse> {
-    if (!this.isInitialized) this.initialize();
+    if (this.isInitialized === false) this.initialize();
 
     const params = { token: this.token };
     const response = await this.makeRequest('token/login', params) as WialonLoginResponse;
@@ -328,7 +328,7 @@ export class WialonServiceComplete {
    * Logout and cleanup
    */
   async logout(): Promise<void> {
-    if (!this.sessionId) return;
+    if (this.sessionId === null || this.sessionId === '') return;
 
     try {
       await this.makeRequest('core/logout', {});
@@ -433,7 +433,7 @@ export class WialonServiceComplete {
         flagsMask: 0xFFFFFFFF
       });
 
-      if (!loadResult) return [];
+      if (loadResult === null || loadResult === undefined) return [];
 
       // Get messages
       const messagesResult = await this.makeRequest('messages/get_messages', {
@@ -449,10 +449,14 @@ export class WialonServiceComplete {
         // Ignore unload errors
       }
 
-      const messages = (messagesResult as any)?.messages || [];
+      interface MessageResult {
+        messages?: unknown[];
+      }
+
+      const messages = (messagesResult as MessageResult)?.messages || [];
       return messages
-        .map((msg: any) => this.processMessage(msg))
-        .filter((pos: WialonPosition | null) => pos !== null) as WialonPosition[];
+        .map((msg: unknown) => this.processMessage(msg as WialonRawMessage))
+        .filter((pos: WialonPosition | null) => pos !== null);
 
     } catch (error) {
       console.error(`[WialonServiceComplete] getUnitHistory ${unitId} failed:`, error);
@@ -534,8 +538,8 @@ export class WialonServiceComplete {
 
     const intervalId = window.setInterval(async () => {
       try {
-        const unit = await this.getUnitById(unitId);
-        if (unit) callback(unit);
+      const unit = await this.getUnitById(unitId);
+      if (unit !== null) callback(unit);
       } catch (error) {
         console.warn(`[WialonServiceComplete] Polling unit ${unitId} failed:`, error);
       }
@@ -668,7 +672,7 @@ export class WialonServiceComplete {
    * Cleanup report resources
    */
   async cleanupReport(): Promise<void> {
-    if (!this.sessionId) return;
+    if (this.sessionId === null || this.sessionId === '') return;
 
     try {
       await this.makeRequest('report/cleanup_result', {});
@@ -809,7 +813,7 @@ export class WialonServiceComplete {
     formData.append('svc', service);
     formData.append('params', JSON.stringify(params));
 
-    if (this.sessionId && service !== 'token/login') {
+    if (this.sessionId !== null && this.sessionId !== '' && service !== 'token/login') {
       formData.append('sid', this.sessionId);
     }
 
@@ -899,12 +903,12 @@ export class WialonServiceComplete {
    * Search for Wialon items with full result structure
    */
   async searchItems(
-    itemsType: string = 'avl_unit',
-    propName: string = 'sys_name',
-    propValueMask: string = '*',
-    sortType: string = 'sys_name'
+    itemsType = 'avl_unit',
+    propName = 'sys_name',
+    propValueMask = '*',
+    sortType = 'sys_name'
   ): Promise<WialonSearchItemsResult> {
-    if (!this.sessionId) {
+    if (this.sessionId === null || this.sessionId === '') {
       await this.login();
     }
 
@@ -953,14 +957,14 @@ export class WialonServiceComplete {
   /**
    * Search for vehicles specifically
    */
-  async searchVehicles(namePattern: string = '*'): Promise<WialonSearchItemsResult> {
+  async searchVehicles(namePattern = '*'): Promise<WialonSearchItemsResult> {
     return this.searchItems('avl_unit', 'sys_name', namePattern, 'sys_name');
   }
 
   /**
    * Search for unit groups
    */
-  async searchUnitGroups(namePattern: string = '*'): Promise<WialonSearchItemsResult> {
+  async searchUnitGroups(namePattern = '*'): Promise<WialonSearchItemsResult> {
     return this.searchItems('avl_unit_group', 'sys_name', namePattern, 'sys_name');
   }
 

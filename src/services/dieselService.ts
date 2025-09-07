@@ -37,7 +37,8 @@ export const addDieselRecord = async (record: DieselConsumptionRecord): Promise<
     const recordWithTimestamp: DieselConsumptionRecord = {
       ...record,
       date:
-        (record.date ?? (record as DieselRecordWithLegacyDateISO).dateISO)
+        (record.date !== undefined && record.date !== null) ||
+        ((record as DieselRecordWithLegacyDateISO).dateISO !== undefined && (record as DieselRecordWithLegacyDateISO).dateISO !== null && (record as DieselRecordWithLegacyDateISO).dateISO !== '')
           ? Timestamp.fromDate(new Date((record as DieselRecordWithLegacyDateISO).dateISO!))
           : undefined,
       createdAt: serverTimestamp(),
@@ -46,7 +47,7 @@ export const addDieselRecord = async (record: DieselConsumptionRecord): Promise<
 
     const docRef = await addDoc(collection(firestore, DIESEL_COLLECTION), recordWithTimestamp);
     return docRef.id;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error adding diesel record:", error);
     throw error;
   }
@@ -63,7 +64,7 @@ snap.forEach((d) => {
  records.push({ id: d.id, ...d.data() } as DieselConsumptionRecord);
 });
     return records;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error getting diesel records:", error);
     throw error;
   }
@@ -96,9 +97,9 @@ export const getDieselRecordsForVehicle = async (
 
     // de-dup on id
     const map = new Map<string, DieselConsumptionRecord>();
-    [...a1, ...a2].forEach((r: RawDocumentData) => map.set(r.id, r as DieselConsumptionRecord));
+    [...a1, ...a2].forEach((r: RawDocumentData) => map.set(r.id, r as unknown as DieselConsumptionRecord));
     return [...map.values()];
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error getting diesel records for vehicle:", error);
     throw error;
   }
@@ -114,11 +115,13 @@ export const updateDieselRecord = async (
   try {
     const dataWithTimestamp: Partial<DieselConsumptionRecord> = {
       ...updatedData,
-      ...(updatedData.dateISO ? { date: Timestamp.fromDate(new Date(updatedData.dateISO)) } : {}),
+      ...(updatedData.dateISO !== undefined && updatedData.dateISO !== null && updatedData.dateISO !== ''
+          ? { date: Timestamp.fromDate(new Date(updatedData.dateISO)) }
+          : {}),
       updatedAt: serverTimestamp(),
     };
     await updateDoc(doc(firestore, DIESEL_COLLECTION, id), dataWithTimestamp);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error updating diesel record:", error);
     throw error;
   }
@@ -130,7 +133,7 @@ export const updateDieselRecord = async (
 export const deleteDieselRecord = async (id: string): Promise<void> => {
   try {
     await deleteDoc(doc(firestore, DIESEL_COLLECTION, id));
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error deleting diesel record:", error);
     throw error;
   }
@@ -145,7 +148,7 @@ export const getDieselRecordById = async (id: string): Promise<DieselConsumption
     const snap = await getDoc(ref);
     if (!snap.exists()) return null;
     return { id: snap.id, ...snap.data() } as DieselConsumptionRecord;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error getting diesel record:", error);
     throw error;
   }
@@ -173,7 +176,7 @@ export const getDieselRecordsForDateRange = async (
 
     const snap = await getDocs(q);
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as DieselConsumptionRecord);
-  } catch (error) {
+  } catch (error: unknown) {
     // If you still store string dates in some docs, you can fall back to client filtering:
     // const all = await getAllDieselRecords();
     // return all.filter(r => r.dateISO && r.dateISO >= startDate && r.dateISO <= endDate);
@@ -188,7 +191,7 @@ export const getDieselRecordsForDateRange = async (
 export const linkDieselToTrip = async (dieselId: string, tripId: string): Promise<void> => {
   try {
     await updateDieselRecord(dieselId, { tripId });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error linking diesel to trip:", error);
     throw error;
   }
@@ -201,7 +204,7 @@ export const getAllDieselNorms = async (): Promise<DieselNorm[]> => {
   try {
     const snap = await getDocs(collection(firestore, DIESEL_NORMS_COLLECTION));
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as DieselNorm);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error getting diesel norms:", error);
     throw error;
   }
@@ -212,7 +215,7 @@ export const getAllDieselNorms = async (): Promise<DieselNorm[]> => {
  */
 export const upsertDieselNorm = async (norm: DieselNorm): Promise<string> => {
   try {
-    if (norm.id) {
+    if (norm.id !== undefined && norm.id !== null && norm.id !== '') {
       await updateDoc(doc(firestore, DIESEL_NORMS_COLLECTION, norm.id), {
         ...norm,
         updatedAt: serverTimestamp(),
@@ -226,7 +229,7 @@ export const upsertDieselNorm = async (norm: DieselNorm): Promise<string> => {
       } as DieselNorm);
       return ref.id;
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error upserting diesel norm:", error);
     throw error;
   }
@@ -238,7 +241,7 @@ export const upsertDieselNorm = async (norm: DieselNorm): Promise<string> => {
 export const deleteDieselNorm = async (id: string): Promise<void> => {
   try {
     await deleteDoc(doc(firestore, DIESEL_NORMS_COLLECTION, id));
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error deleting diesel norm:", error);
     throw error;
   }
@@ -283,7 +286,7 @@ export const calculateDieselStats = async (
       recordCount: records.length,
       totalDistance,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error calculating diesel stats:", error);
     throw error;
   }
