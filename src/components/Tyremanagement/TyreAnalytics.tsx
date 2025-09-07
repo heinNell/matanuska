@@ -27,7 +27,7 @@ const BrandDistributionChart = ({ tyres }: { tyres: Tyre[] }) => {
             <div
               className="bg-blue-600 h-2 rounded-full"
               style={{width: `${(count / tyres.length) * 100}%`}}
-            ></div>
+             />
           </div>
         </div>
       ))}
@@ -70,7 +70,7 @@ const TreadWearChart = ({ tyres }: { tyres: Tyre[] }) => {
                 'bg-red-500'
               }`}
               style={{width: `${tyres.length ? (count / tyres.length) * 100 : 0}%`}}
-            ></div>
+             />
           </div>
         </div>
       ))}

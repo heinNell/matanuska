@@ -323,10 +323,10 @@ const CostForm: React.FC<CostFormProps> = ({ tripId, cost, onSubmit, onCancel, e
         {hasFiles && (
           <div className="bg-green-50 border border-green-200 rounded-md p-3">
             <p className="text-sm font-medium text-green-800 mb-2">
-              Selected Files ({selectedFiles!.length}):
+              Selected Files ({selectedFiles.length}):
             </p>
             <ul className="text-sm text-green-700 space-y-1">
-              {Array.from(selectedFiles!).map((file, index) => (
+              {Array.from(selectedFiles).map((file, index) => (
                 <li key={index} className="flex items-center">
                   <Upload className="w-3 h-3 mr-2" />
                   {file.name} ({(file.size / 1024).toFixed(1)} KB)
@@ -339,10 +339,10 @@ const CostForm: React.FC<CostFormProps> = ({ tripId, cost, onSubmit, onCancel, e
         {hasExistingAttachments && (
           <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
             <p className="text-sm font-medium text-gray-800 mb-2">
-              Existing Attachments ({cost!.attachments.length}):
+              Existing Attachments ({cost.attachments.length}):
             </p>
             <ul className="text-sm text-gray-700 space-y-1">
-              {cost!.attachments.map((attachment) => (
+              {cost.attachments.map((attachment) => (
                 <li key={attachment.id} className="flex items-center">
                   <Upload className="w-3 h-3 mr-2" />
                   {attachment.filename}

@@ -15,9 +15,9 @@ import CompletedTrips from "./CompletedTrips"; // Using local version
 import TripCalendarPage from "./TripCalendarPage";
 
 // Types
-type TripManagerProps = {
+interface TripManagerProps {
   displayCurrency?: SupportedCurrency;
-};
+}
 
 /**
  * TripManager - Consolidated component for trip management
@@ -148,7 +148,7 @@ const TripManager: React.FC<TripManagerProps> = ({ displayCurrency = "USD" }) =>
 
       {isLoading && (
         <div className="flex justify-center items-center py-4 mb-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700" />
           <span className="ml-2 text-gray-700">Loading trip data...</span>
         </div>
       )}

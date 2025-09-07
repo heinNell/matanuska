@@ -62,7 +62,7 @@ export const searchPlacesByText = (
 
     const request: google.maps.places.FindPlaceFromQueryRequest = {
       query,
-      fields: fields as string[],
+      fields: fields,
     };
 
     // Add location bias if provided

@@ -151,7 +151,7 @@ const TripTimelineLive: React.FC = () => {
                       style={{ 
                         width: `${trip.deliveredStatus ? 100 : trip.shippedStatus ? 50 : 25}%` 
                       }}
-                    ></div>
+                     />
                   </div>
                 </div>
               </div>

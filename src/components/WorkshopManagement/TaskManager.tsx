@@ -298,7 +298,7 @@ const TaskManager: React.FC<TaskManagerProps> = ({
               <div
                 className="h-4 bg-blue-600 rounded-full"
                 style={{ width: `${stats.completionPercentage}%` }}
-              ></div>
+               />
             </div>
           </div>
           <div className="ml-4 whitespace-nowrap text-sm font-medium">

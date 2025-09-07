@@ -102,19 +102,19 @@ const WorkshopAnalytics: React.FC = () => {
                 </p>
                 <div className="mt-4 grid grid-cols-2 gap-2 max-w-xs mx-auto text-sm">
                   <div className="flex items-center">
-                    <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                    <span className="w-3 h-3 bg-blue-500 rounded-full mr-2" />
                     <span>Scheduled Maintenance (36%)</span>
                   </div>
                   <div className="flex items-center">
-                    <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                    <span className="w-3 h-3 bg-green-500 rounded-full mr-2" />
                     <span>Repairs (24%)</span>
                   </div>
                   <div className="flex items-center">
-                    <span className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                    <span className="w-3 h-3 bg-yellow-500 rounded-full mr-2" />
                     <span>Tyre Services (18%)</span>
                   </div>
                   <div className="flex items-center">
-                    <span className="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                    <span className="w-3 h-3 bg-red-500 rounded-full mr-2" />
                     <span>Inspections (22%)</span>
                   </div>
                 </div>
@@ -168,7 +168,7 @@ const WorkshopAnalytics: React.FC = () => {
                   <span className="text-sm font-medium text-gray-900">85%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: "85%" }}></div>
+                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: "85%" }} />
                 </div>
               </div>
 
@@ -178,7 +178,7 @@ const WorkshopAnalytics: React.FC = () => {
                   <span className="text-sm font-medium text-gray-900">92%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-green-600 h-2 rounded-full" style={{ width: "92%" }}></div>
+                  <div className="bg-green-600 h-2 rounded-full" style={{ width: "92%" }} />
                 </div>
               </div>
 
@@ -188,7 +188,7 @@ const WorkshopAnalytics: React.FC = () => {
                   <span className="text-sm font-medium text-gray-900">78%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-orange-600 h-2 rounded-full" style={{ width: "78%" }}></div>
+                  <div className="bg-orange-600 h-2 rounded-full" style={{ width: "78%" }} />
                 </div>
               </div>
 
@@ -198,7 +198,7 @@ const WorkshopAnalytics: React.FC = () => {
                   <span className="text-sm font-medium text-gray-900">81%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-purple-600 h-2 rounded-full" style={{ width: "81%" }}></div>
+                  <div className="bg-purple-600 h-2 rounded-full" style={{ width: "81%" }} />
                 </div>
               </div>
             </div>

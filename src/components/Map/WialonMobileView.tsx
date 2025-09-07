@@ -74,7 +74,7 @@ const WialonMobileView: React.FC<WialonMobileViewProps> = ({
                           ? "bg-yellow-500"
                           : "bg-gray-500"
                     }`}
-                  ></span>
+                   />
                   <span>
                     {unit.status === "active"
                       ? "Active"

@@ -346,7 +346,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
                 </tbody>
                 <tfoot className="bg-gray-50">
                   <tr>
-                    <td colSpan={4} rowSpan={4} className="py-2 px-4 border-b"></td>
+                    <td colSpan={4} rowSpan={4} className="py-2 px-4 border-b" />
                     <td className="py-2 px-4 border-b text-right font-medium">Subtotal:</td>
                     <td className="py-2 px-4 border-b text-right">${data.subTotal.toFixed(2)}</td>
                   </tr>
@@ -773,7 +773,7 @@ const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
               </tbody>
               <tfoot className="bg-gray-50">
                 <tr>
-                  <td colSpan={4} rowSpan={4} className="py-2 px-3 border-b"></td>
+                  <td colSpan={4} rowSpan={4} className="py-2 px-3 border-b" />
                   <td className="py-2 px-3 border-b text-right font-medium">Subtotal:</td>
                   <td colSpan={2} className="py-2 px-3 border-b">
                     ${data.subTotal.toFixed(2)}

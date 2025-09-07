@@ -23,7 +23,7 @@ const InvoiceApprovalFlow: React.FC = () => {
             <p className="mt-2 font-medium">Creation</p>
             <p className="text-sm text-gray-500">Invoice created by staff</p>
           </div>
-          <div className="hidden md:block w-full h-0.5 bg-blue-200"></div>
+          <div className="hidden md:block w-full h-0.5 bg-blue-200" />
           <div className="w-full md:w-1/4 p-4 text-center">
             <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
               <span className="text-white font-bold">2</span>
@@ -31,7 +31,7 @@ const InvoiceApprovalFlow: React.FC = () => {
             <p className="mt-2 font-medium">Department Review</p>
             <p className="text-sm text-gray-500">Department manager approval</p>
           </div>
-          <div className="hidden md:block w-full h-0.5 bg-blue-200"></div>
+          <div className="hidden md:block w-full h-0.5 bg-blue-200" />
           <div className="w-full md:w-1/4 p-4 text-center">
             <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
               <span className="text-white font-bold">3</span>
@@ -39,7 +39,7 @@ const InvoiceApprovalFlow: React.FC = () => {
             <p className="mt-2 font-medium">Finance Review</p>
             <p className="text-sm text-gray-500">Finance department validation</p>
           </div>
-          <div className="hidden md:block w-full h-0.5 bg-blue-200"></div>
+          <div className="hidden md:block w-full h-0.5 bg-blue-200" />
           <div className="w-full md:w-1/4 p-4 text-center">
             <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center mx-auto">
               <span className="text-white font-bold">4</span>

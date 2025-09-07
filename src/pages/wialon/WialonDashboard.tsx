@@ -76,7 +76,7 @@ const WialonDashboard: FC = () => {
                 <InfoPanel />
             </aside>
             <div id="map-container" className="main-map">
-                 <div id="map" ref={node => setMap(node)}></div> {/* Leaflet map mount point */}
+                 <div id="map" ref={node => setMap(node)} /> {/* Leaflet map mount point */}
             </div>
 
             {/* These components are mounted but not rendered in the DOM directly */}

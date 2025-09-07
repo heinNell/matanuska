@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { AlertTriangle, Package, DollarSign } from 'lucide-react';
 
 interface TyreInventoryStatsProps {
-  inventory: Array<{
+  inventory: {
     quantity: number;
     minStock: number;
     cost: number;
-  }>;
+  }[];
 }
 
 export const TyreInventoryStats: React.FC<TyreInventoryStatsProps> = ({ inventory }) => {

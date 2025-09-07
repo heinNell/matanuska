@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader } from "../../../components/ui/Card";
 import { Select } from "../../ui/FormElements";
 import { InspectionItemCard } from "../../ui/InspectionItemCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/Tabs";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 
 // Mock user roles for the inspector dropdown
 const INSPECTORS = [
@@ -296,7 +296,7 @@ const InspectionForm: React.FC<InspectionFormProps> = ({
                 {itemStats.failed > 0 &&
                   formState.items.some(
                     (item: any) => item.category === category && item.status === "fail"
-                  ) && <span className="w-2 h-2 rounded-full bg-red-500"></span>}
+                  ) && <span className="w-2 h-2 rounded-full bg-red-500" />}
               </TabsTrigger>
             ))}
           </TabsList>

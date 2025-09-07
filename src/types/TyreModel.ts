@@ -308,7 +308,7 @@ export class TyreService {
     }
   }
 
-  static calculateTotalCostOfOwnership(tyre: Tyre, includeRepairs: boolean = true): number {
+  static calculateTotalCostOfOwnership(tyre: Tyre, includeRepairs = true): number {
     let totalCost = tyre.purchaseDetails.cost;
     if (includeRepairs && tyre.maintenanceHistory && tyre.maintenanceHistory.repairs) {
       totalCost += tyre.maintenanceHistory.repairs.reduce((sum, repair) => sum + repair.cost, 0);

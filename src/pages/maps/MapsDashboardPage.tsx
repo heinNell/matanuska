@@ -17,7 +17,7 @@ const MapsView = lazy(() => import("@/components/Map/MapsView"));
 
 type TabId = "fleet" | "wialonLive" | "wialonWeb";
 
-type VehicleProps = {
+interface VehicleProps {
   name?: string;
   brand?: string;
   model?: string;
@@ -27,7 +27,7 @@ type VehicleProps = {
   cargoType?: string;
   engineModel?: string;
   phone?: string;
-};
+}
 
 const TabButton: React.FC<{
   id: TabId;

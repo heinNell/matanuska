@@ -240,7 +240,7 @@ export const WialonMapView: React.FC<WialonMapViewProps> = ({
       >
         {!mapLoaded && (
           <div className="map-loading">
-            <div className="loading-spinner"></div>
+            <div className="loading-spinner" />
             <p>Loading map...</p>
           </div>
         )}
@@ -248,15 +248,15 @@ export const WialonMapView: React.FC<WialonMapViewProps> = ({
 
       <div className="map-legend">
         <div className="legend-item">
-          <span className="legend-marker online"></span>
+          <span className="legend-marker online" />
           Online Units
         </div>
         <div className="legend-item">
-          <span className="legend-marker offline"></span>
+          <span className="legend-marker offline" />
           Offline Units
         </div>
         <div className="legend-item">
-          <span className="legend-marker selected"></span>
+          <span className="legend-marker selected" />
           Selected Unit
         </div>
       </div>

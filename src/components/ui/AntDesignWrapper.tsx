@@ -1,13 +1,13 @@
 import React from "react";
 
 // Type definition for Ant Design's default export
-type AntDesignModule = {
+interface AntDesignModule {
   Card: React.ComponentType<any>;
   Table: React.ComponentType<any>;
   Button: React.ComponentType<any>;
   Input: React.ComponentType<any>;
   // Add other components you need...
-};
+}
 
 // Create a context for Ant Design components
 const AntDesignContext = React.createContext<AntDesignModule | null>(null);

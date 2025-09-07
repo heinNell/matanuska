@@ -61,7 +61,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
     impact: "low" | "medium" | "high";
   }>({
     customerName: "",
-    loadRequestDate: new Date().toISOString().split("T")[0]!,
+    loadRequestDate: new Date().toISOString().split("T")[0],
     requestedPickupDate: "",
     requestedDeliveryDate: "",
     route: "",
@@ -249,7 +249,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
     setEditingLoad(null);
     setFormData({
       customerName: "",
-      loadRequestDate: new Date().toISOString().split("T")[0]!,
+      loadRequestDate: new Date().toISOString().split("T")[0],
       requestedPickupDate: "",
       requestedDeliveryDate: "",
       route: "",
@@ -793,7 +793,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
                   onChange={(e) => handleResolutionChange("compensationOffered", e.target.value)}
                   placeholder="0.00"
                 />
-                <div></div>
+                <div />
               </div>
 
               <TextArea

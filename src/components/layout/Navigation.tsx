@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Bell, Search, Settings, User, Menu } from "lucide-react";
 
 /** Optional external context; falls back to mock if not provided */
-type SyncState = { isOnline: boolean };
+interface SyncState { isOnline: boolean }
 export const SyncContext = React.createContext<SyncState>({ isOnline: true });
 const useSyncContext = () => useContext(SyncContext);
 

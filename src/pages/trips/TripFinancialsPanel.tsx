@@ -316,7 +316,7 @@ const TripFinancialsPanel: React.FC<TripFinancialsPanelProps> = ({ tripId }) => 
                           <div
                             className="bg-blue-600 h-2 rounded-full"
                             style={{ width: `${percentage}%` }}
-                          ></div>
+                           />
                         </div>
                       </div>
                     </div>
@@ -379,7 +379,7 @@ const TripFinancialsPanel: React.FC<TripFinancialsPanelProps> = ({ tripId }) => 
                       <div
                         className="bg-blue-600 h-1.5 rounded-full"
                         style={{ width: "100%" }}
-                      ></div>
+                       />
                     </div>
                   </div>
 
@@ -400,7 +400,7 @@ const TripFinancialsPanel: React.FC<TripFinancialsPanelProps> = ({ tripId }) => 
                         style={{
                           width: `${((financials.comparisonMetrics?.companyAvgCostPerKm || 0) / financials.perKmMetrics.costPerKm) * 100}%`,
                         }}
-                      ></div>
+                       />
                     </div>
                   </div>
 
@@ -421,7 +421,7 @@ const TripFinancialsPanel: React.FC<TripFinancialsPanelProps> = ({ tripId }) => 
                         style={{
                           width: `${((financials.comparisonMetrics?.industryAvgCostPerKm || 0) / financials.perKmMetrics.costPerKm) * 100}%`,
                         }}
-                      ></div>
+                       />
                     </div>
                   </div>
                 </div>

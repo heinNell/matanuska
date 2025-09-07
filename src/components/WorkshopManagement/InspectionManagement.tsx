@@ -221,7 +221,7 @@ const InspectionManagement: React.FC<InspectionManagementProps> = ({
       <div className="flex-1 overflow-auto">
         {isLoading ? (
           <div className="h-full flex items-center justify-center">
-            <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin"></div>
+            <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin" />
           </div>
         ) : filteredInspections.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-gray-500">

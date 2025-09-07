@@ -230,7 +230,7 @@ const PurchaseOrderSync: React.FC = () => {
           <CardContent className="p-0 max-h-[600px] overflow-y-auto">
             {loading ? (
               <div className="p-4 text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto" />
                 <p className="mt-2 text-gray-500">Loading purchase orders...</p>
               </div>
             ) : purchaseOrders.length === 0 ? (

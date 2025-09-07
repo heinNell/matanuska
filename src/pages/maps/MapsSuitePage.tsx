@@ -12,7 +12,7 @@ const MapsView = lazy(() => import("@/components/Map/MapsView"));
 
 type TabId = "fleet" | "enhanced" | "wialonLive" | "wialonWeb";
 
-type VehicleProps = {
+interface VehicleProps {
   name?: string;
   brand?: string;
   model?: string;
@@ -22,7 +22,7 @@ type VehicleProps = {
   cargoType?: string;
   engineModel?: string;
   phone?: string;
-};
+}
 
 const TabButton: React.FC<{
   id: TabId;
@@ -153,9 +153,9 @@ const MapsSuitePage: React.FC = () => {
                     zoom={11}
                     showMapTypeControl={false}
                     showStreetViewControl={window.innerWidth > 640} // Hide on small screens
-                    showZoomControl={true}
-                    showFullscreenControl={true}
-                    showPlacesSearch={true}
+                    showZoomControl
+                    showFullscreenControl
+                    showPlacesSearch
                     showRoutes={false} // flip to true if you pass 2+ locations
                     defaultIconType="default"
                     onLocationSelect={(loc) => console.debug("Selected location", loc)}
@@ -177,7 +177,7 @@ const MapsSuitePage: React.FC = () => {
                       <WialonMobileView
                         mapRef={React.useRef<HTMLDivElement>(null)}
                         isLoading={false}
-                        isLoggedIn={true}
+                        isLoggedIn
                         units={[]}
                         trackingOrders={[]}
                         onSelectUnit={(unitId: string) => console.log("Selected unit", unitId)}

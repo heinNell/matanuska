@@ -17,7 +17,7 @@ import { db } from "../firebase";
 /** -----------------------------
  * Types
  * ------------------------------*/
-export type Driver = {
+export interface Driver {
   id: string;
   idNo?: string | null;
   name: string;
@@ -26,9 +26,9 @@ export type Driver = {
   joinDate?: string;
   createdAt?: string;
   updatedAt?: string;
-};
+}
 
-export type Authorization = {
+export interface Authorization {
   id: string;
   idNo: string | null;
   name?: string | null;
@@ -40,14 +40,14 @@ export type Authorization = {
   authorised?: string | boolean;
   createdAt?: string | null;
   updatedAt?: string | null;
-};
+}
 
-type UseDriverDetailArgs = {
+interface UseDriverDetailArgs {
   idNo?: string;
   driverId?: string;
   realtime?: boolean;
   expiringSoonDays?: number;
-};
+}
 
 type GroupedAuthorizations = Record<string, Authorization[]>;
 

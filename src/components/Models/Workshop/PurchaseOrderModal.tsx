@@ -209,7 +209,7 @@ export const PurchaseOrderModal: React.FC<POProps> = ({ po, onSave, onClose, onD
                   <th className="p-2">Unit</th>
                   <th className="p-2">Unit Cost</th>
                   <th className="p-2">Total</th>
-                  {editMode && <th className="p-2"></th>}
+                  {editMode && <th className="p-2" />}
                 </tr>
               </thead>
               <tbody>

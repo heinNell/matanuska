@@ -32,7 +32,7 @@ function ensureFirebase() {
 /* ────────────────────────────────────────────────────────────────
    2.  Master vendor list (exactly the same data you provided)
    ──────────────────────────────────────────────────────────────── */
-type Vendor = {
+interface Vendor {
   vendorId: string;
   vendorName: string;
   contactPerson: string;
@@ -40,7 +40,7 @@ type Vendor = {
   mobile: string;
   address: string;
   city: string;
-};
+}
 
 const vendorList: Vendor[] = [
   { vendorId: "Joharita Enterprizes CC t/a Field Tyre", vendorName: "Field Tyre Services", contactPerson: "Joharita", workEmail: "admin@fieldtyreservices.co.za", mobile: "", address: "13 Varty Street Duncanville Vereeniging 1930", city: "Vereeniging" },

@@ -87,7 +87,7 @@ export const formatDistance = (distanceKm: number): string => {
  */
 export const calculateTravelTime = (
   distanceKm: number,
-  speedKmh: number = 60
+  speedKmh = 60
 ): string => {
   if (distanceKm <= 0 || speedKmh <= 0) {
     return 'N/A';
@@ -121,9 +121,9 @@ export const calculateTravelTime = (
 export const getStaticMapUrl = (
   lat: number,
   lng: number,
-  zoom: number = 14,
-  width: number = 400,
-  height: number = 200
+  zoom = 14,
+  width = 400,
+  height = 200
 ): string => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
@@ -142,7 +142,7 @@ export const getStaticMapUrl = (
 export const getRandomLocation = (
   centerLat: number,
   centerLng: number,
-  radiusKm: number = 5
+  radiusKm = 5
 ): { lat: number; lng: number } => {
   // Convert radius from kilometers to degrees (approximate)
   const radiusDegrees = radiusKm / 111;

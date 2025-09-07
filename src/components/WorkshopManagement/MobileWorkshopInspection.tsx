@@ -68,13 +68,13 @@ export const MobileWorkshopInspection: React.FC = () => {
   const { isNative, takePhoto, hasPermissions, requestPermissions } = useCapacitor();
 
   const [formData, setFormData] = useState<InspectionFormData>({
-    vehicleId: (searchParams.get("vehicleId") ?? "") as string,
-    templateId: (searchParams.get("templateId") ?? "") as string,
+    vehicleId: (searchParams.get("vehicleId") ?? ""),
+    templateId: (searchParams.get("templateId") ?? ""),
     inspectionType: searchParams.get("inspectionType") ?? "daily",
     inspectorName: "",
     driverName: "",
     status: "not_started",
-    scheduledDate: (searchParams.get("scheduledDate") ?? new Date().toISOString().split("T")[0]) as string,
+    scheduledDate: (searchParams.get("scheduledDate") ?? new Date().toISOString().split("T")[0]),
     items: [],
     generalNotes: "",
     defectsFound: 0,
@@ -125,7 +125,7 @@ export const MobileWorkshopInspection: React.FC = () => {
         (error) => console.log("Location not available:", error)
       );
     }
-    // eslint-disable-next-line
+     
   }, [formData.templateId]);
 
   const getCategories = () => {
@@ -629,7 +629,7 @@ export const MobileWorkshopInspection: React.FC = () => {
               className="w-full bg-green-600 hover:bg-green-700"
             >
               {loading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
               ) : (
                 <Save className="w-4 h-4 mr-2" />
               )}

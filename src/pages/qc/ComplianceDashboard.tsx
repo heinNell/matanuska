@@ -65,7 +65,7 @@ const ComplianceDashboard: React.FC = () => {
               <div
                 className="bg-green-600 h-2.5 rounded-full"
                 style={{ width: `${metrics.dotComplianceRate}%` }}
-              ></div>
+               />
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">{metrics.compliantVehicles} of {metrics.totalVehicles} vehicles compliant</span>
@@ -88,7 +88,7 @@ const ComplianceDashboard: React.FC = () => {
                   metrics.safetyScore > 80 ? 'bg-amber-500' : 'bg-red-500'
                 }`}
                 style={{ width: `${metrics.safetyScore}%` }}
-              ></div>
+               />
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">

@@ -240,7 +240,7 @@ const HoursOfService: React.FC = () => {
                       <div className="flex items-center">
                         <div
                           className={`h-2.5 w-2.5 rounded-full ${getStatusColor(record.status)} mr-2`}
-                        ></div>
+                         />
                         <span className="text-sm text-gray-900 capitalize">
                           {record.status.replace("-", " ")}
                         </span>
@@ -263,7 +263,7 @@ const HoursOfService: React.FC = () => {
                           style={{
                             width: `${calculatePercentage(record.drivingHours, hosLimits.dailyDriving)}%`,
                           }}
-                        ></div>
+                         />
                       </div>
                       <div className="text-sm text-gray-900 mt-2 mb-1">
                         On Duty: {record.dutyHours}h / {hosLimits.dailyDuty}h
@@ -280,7 +280,7 @@ const HoursOfService: React.FC = () => {
                           style={{
                             width: `${calculatePercentage(record.dutyHours, hosLimits.dailyDuty)}%`,
                           }}
-                        ></div>
+                         />
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -305,7 +305,7 @@ const HoursOfService: React.FC = () => {
                           style={{
                             width: `${calculatePercentage(record.weeklyDrivingTotal, hosLimits.weeklyDriving)}%`,
                           }}
-                        ></div>
+                         />
                       </div>
                       <div className="text-sm text-gray-900 mt-2 mb-1">
                         On Duty: {record.weeklyDutyTotal}h / {hosLimits.weeklyDuty}h
@@ -323,7 +323,7 @@ const HoursOfService: React.FC = () => {
                           style={{
                             width: `${calculatePercentage(record.weeklyDutyTotal, hosLimits.weeklyDuty)}%`,
                           }}
-                        ></div>
+                         />
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -338,7 +338,7 @@ const HoursOfService: React.FC = () => {
                           style={{
                             width: `${Math.min(100, (record.restHours / hosLimits.restPeriod) * 100)}%`,
                           }}
-                        ></div>
+                         />
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

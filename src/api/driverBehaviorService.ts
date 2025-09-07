@@ -49,9 +49,9 @@ type SyncStatus = "idle" | "syncing" | "success" | "error";
    Service
    ========================= */
 export class DriverBehaviorService {
-  private driverBehaviorUnsubscribes: Map<string, Unsubscribe> = new Map();
-  private globalUnsubscribes: Map<string, Unsubscribe> = new Map();
-  private pendingChanges: Map<string, any> = new Map();
+  private driverBehaviorUnsubscribes = new Map<string, Unsubscribe>();
+  private globalUnsubscribes = new Map<string, Unsubscribe>();
+  private pendingChanges = new Map<string, any>();
   private callbacks: DriverBehaviorCallbacks = {};
   private isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
   private lastSynced: Date | null = null;

@@ -104,9 +104,9 @@ export function parseTyreSize(sizeStr: string): TyreSize {
 
   if (match) {
     return {
-  width: parseInt(match[1]!, 10),
-  aspectRatio: parseInt(match[2]!, 10),
-  rimDiameter: parseFloat(match[3]!),
+  width: parseInt(match[1], 10),
+  aspectRatio: parseInt(match[2], 10),
+  rimDiameter: parseFloat(match[3]),
     };
   }
 
@@ -133,10 +133,10 @@ export function createStockEntryFromAllocation(tyreAllocation: TyreAllocation, t
   };
 
   return {
-    tyreId: tyreAllocation.tyreCode!,
-    brand: tyreAllocation.brand!,
-    pattern: tyreAllocation.pattern!,
-    size: tyreAllocation.size!,
+    tyreId: tyreAllocation.tyreCode,
+    brand: tyreAllocation.brand,
+    pattern: tyreAllocation.pattern,
+    size: tyreAllocation.size,
     type: tyreType,
     currentTreadDepth: tyreAllocation.treadDepth ?? 0,
     lastMountOdometer: tyreAllocation.odometerAtFitment ?? 0,

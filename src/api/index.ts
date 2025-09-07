@@ -233,62 +233,62 @@ app.post("/api/inventory/import", async (req: Request, res: Response) => {
 
       try {
         location = isArray
-          ? (record as CSVRecordArray)[0]?.toString() || ""
-          : (record as CSVRecordObject).location || "";
+          ? (record)[0]?.toString() || ""
+          : (record).location || "";
         tyreId = isArray
-          ? (record as CSVRecordArray)[1]?.toString() || ""
-          : (record as CSVRecordObject).tyreId || "";
+          ? (record)[1]?.toString() || ""
+          : (record).tyreId || "";
         description = isArray
-          ? (record as CSVRecordArray)[2]?.toString() || ""
-          : (record as CSVRecordObject).description || "";
+          ? (record)[2]?.toString() || ""
+          : (record).description || "";
         pattern = isArray
-          ? (record as CSVRecordArray)[3]?.toString() || ""
-          : (record as CSVRecordObject).pattern || "";
+          ? (record)[3]?.toString() || ""
+          : (record).pattern || "";
         quantity =
           parseFloat(
             isArray
-              ? (record as CSVRecordArray)[4]?.toString() || "0"
-              : (record as CSVRecordObject).quantity?.toString() || "0"
+              ? (record)[4]?.toString() || "0"
+              : (record).quantity?.toString() || "0"
           ) || 0;
         status = isArray
-          ? (record as CSVRecordArray)[5]?.toString() || ""
-          : (record as CSVRecordObject).status || "";
+          ? (record)[5]?.toString() || ""
+          : (record).status || "";
         axlePosition = isArray
-          ? (record as CSVRecordArray)[6]?.toString() || ""
-          : (record as CSVRecordObject).axlePosition || "";
+          ? (record)[6]?.toString() || ""
+          : (record).axlePosition || "";
         size = isArray
-          ? (record as CSVRecordArray)[7]?.toString() || ""
-          : (record as CSVRecordObject).size || "";
+          ? (record)[7]?.toString() || ""
+          : (record).size || "";
         model = isArray
-          ? (record as CSVRecordArray)[8]?.toString() || ""
-          : (record as CSVRecordObject).model || "";
+          ? (record)[8]?.toString() || ""
+          : (record).model || "";
         brand = isArray
-          ? (record as CSVRecordArray)[9]?.toString() || ""
-          : (record as CSVRecordObject).brand || "";
+          ? (record)[9]?.toString() || ""
+          : (record).brand || "";
         vehicleId = isArray
-          ? (record as CSVRecordArray)[10]?.toString() || ""
-          : (record as CSVRecordObject).vehicleId || "";
+          ? (record)[10]?.toString() || ""
+          : (record).vehicleId || "";
         registrationNumber = isArray
-          ? (record as CSVRecordArray)[11]?.toString() || ""
-          : (record as CSVRecordObject).registrationNumber || "";
+          ? (record)[11]?.toString() || ""
+          : (record).registrationNumber || "";
         price =
           parseFloat(
             isArray
-              ? (record as CSVRecordArray)[12]?.toString() || "0"
-              : (record as CSVRecordObject).price?.toString() || "0"
+              ? (record)[12]?.toString() || "0"
+              : (record).price?.toString() || "0"
           ) || 0;
         holdingBay = isArray
-          ? (record as CSVRecordArray)[13]?.toString() || ""
-          : (record as CSVRecordObject).holdingBay || "";
+          ? (record)[13]?.toString() || ""
+          : (record).holdingBay || "";
         expiryDate = isArray
-          ? (record as CSVRecordArray)[14]?.toString() || ""
-          : (record as CSVRecordObject).expiryDate || "";
+          ? (record)[14]?.toString() || ""
+          : (record).expiryDate || "";
         dateAdded = isArray
-          ? (record as CSVRecordArray)[15]?.toString() || new Date().toLocaleDateString()
-          : (record as CSVRecordObject).dateAdded || new Date().toLocaleDateString();
+          ? (record)[15]?.toString() || new Date().toLocaleDateString()
+          : (record).dateAdded || new Date().toLocaleDateString();
         mileage = isArray
-          ? (record as CSVRecordArray)[16]?.toString() || "0"
-          : (record as CSVRecordObject).mileage || "0";
+          ? (record)[16]?.toString() || "0"
+          : (record).mileage || "0";
 
         id = tyreId
           ? `${location.replace(/[^a-zA-Z0-9]/g, "_")}_${tyreId.replace(/[^a-zA-Z0-9]/g, "_")}`

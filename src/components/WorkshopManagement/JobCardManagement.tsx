@@ -177,7 +177,7 @@ const JobCardManagement: React.FC<JobCardManagementProps> = ({
       <div className="flex-1 overflow-hidden">
         {isLoading ? (
           <div className="h-full flex items-center justify-center">
-            <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin"></div>
+            <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin" />
           </div>
         ) : filteredJobCards.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-gray-500">
@@ -198,7 +198,7 @@ const JobCardManagement: React.FC<JobCardManagementProps> = ({
               <JobCardCard
                 key={jobCard.id}
                 jobCard={jobCard}
-                showActions={true}
+                showActions
               />
             ))}
           </div>

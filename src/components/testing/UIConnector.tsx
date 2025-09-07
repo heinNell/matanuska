@@ -12,7 +12,7 @@ interface UIElement {
 
 const styles = {
   container: {
-    position: "fixed" as "fixed",
+    position: "fixed" as const,
     bottom: "20px",
     right: "20px",
     backgroundColor: "rgba(0, 0, 0, 0.8)",
@@ -320,7 +320,7 @@ export const UIConnector: React.FC = () => {
                   ...styles.status,
                   ...(button.connected ? styles.statusGood : styles.statusBad),
                 }}
-              ></span>
+               />
               {button.examples[0]}
             </li>
           ))}
@@ -346,7 +346,7 @@ export const UIConnector: React.FC = () => {
                   ...styles.status,
                   ...(form.connected ? styles.statusGood : styles.statusBad),
                 }}
-              ></span>
+               />
               {form.examples[0]}
             </li>
           ))}
@@ -371,7 +371,7 @@ export const UIConnector: React.FC = () => {
                   ...styles.status,
                   ...(link.connected ? styles.statusGood : styles.statusBad),
                 }}
-              ></span>
+               />
               {link.examples[0]}
             </li>
           ))}

@@ -56,7 +56,7 @@ const MainTripWorkflow = () => {
           <div
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
             style={{ width: `${((step + 1) / steps.length) * 100}%` }}
-          ></div>
+           />
         </div>
 
         {/* Step Indicators */}

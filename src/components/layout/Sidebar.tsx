@@ -332,7 +332,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
         )}
         onClick={closeSidebar}
         aria-hidden="true"
-      ></div>
+       />
 
       {/* Sidebar Content */}
       <aside

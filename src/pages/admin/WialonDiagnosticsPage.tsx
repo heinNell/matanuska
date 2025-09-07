@@ -17,8 +17,7 @@ const WialonDiagnosticsPage: React.FC = () => {
   }, []);
 
   return (
-    <>
-      <div className="container py-10">
+    <div className="container py-10">
         <div className="flex flex-col gap-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Wialon Integration Diagnostics</h1>
@@ -183,7 +182,6 @@ const WialonDiagnosticsPage: React.FC = () => {
           </Tabs>
         </div>
       </div>
-    </>
   );
 };
 

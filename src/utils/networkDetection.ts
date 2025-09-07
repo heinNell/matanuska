@@ -125,7 +125,7 @@ export const checkNetworkConnectivity = async (forceCheck = false): Promise<Netw
 /**
  * Ping an endpoint to check if it's reachable
  */
-const pingEndpoint = async (url: string, timeout: number = 5000): Promise<boolean> => {
+const pingEndpoint = async (url: string, timeout = 5000): Promise<boolean> => {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -155,7 +155,7 @@ const updateState = (newState: NetworkState): void => {
 /**
  * Start periodic network checks
  */
-export const startNetworkMonitoring = (checkIntervalMs: number = 30000): void => {
+export const startNetworkMonitoring = (checkIntervalMs = 30000): void => {
   // Perform initial check
   checkNetworkConnectivity();
 

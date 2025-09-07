@@ -1,7 +1,7 @@
 // wialonSensorData.ts - Safe & typed utility for AVL unit sensor parsing
 
 // Add this at the top if not already declared globally in a .d.ts file:
-declare var wialon: any;
+declare let wialon: any;
 
 export interface WialonSensor {
   id: number;

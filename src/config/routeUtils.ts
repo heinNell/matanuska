@@ -86,7 +86,7 @@ export const findSidebarItemByPath = (path: string): SidebarItem | undefined => 
 };
 
 // This function returns the breadcrumb path for a given route
-export const getBreadcrumbsFromPath = (path: string): Array<{label: string, path: string}> => {
+export const getBreadcrumbsFromPath = (path: string): {label: string, path: string}[] => {
   const parts = path.split('/').filter(Boolean);
   const breadcrumbs = [];
   

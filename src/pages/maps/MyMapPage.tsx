@@ -16,7 +16,7 @@ const MapsView = lazy(() => import("@/components/maps/MapsView"));
 
 type TabId = "fleet" | "enhanced" | "wialonLive" | "wialonWeb";
 
-type VehicleProps = {
+interface VehicleProps {
   name?: string;
   brand?: string;
   model?: string;
@@ -26,7 +26,7 @@ type VehicleProps = {
   cargoType?: string;
   engineModel?: string;
   phone?: string;
-};
+}
 
 const TabButton: React.FC<{
   id: TabId;
@@ -156,10 +156,10 @@ const MapsSuitePage: React.FC = () => {
                     center={{ lat: -25.7479, lng: 28.2293 }} // Pretoria
                     zoom={11}
                     showMapTypeControl={false}
-                    showStreetViewControl={true}
-                    showZoomControl={true}
-                    showFullscreenControl={true}
-                    showPlacesSearch={true}
+                    showStreetViewControl
+                    showZoomControl
+                    showFullscreenControl
+                    showPlacesSearch
                     showRoutes={false} // flip to true if you pass 2+ locations
                     defaultIconType="default"
                     onLocationSelect={(loc: { lat: number; lng: number; label?: string }) =>

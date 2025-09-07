@@ -8,7 +8,7 @@ import {
  */
 class WialonService {
   private session: any;
-  private isReady: boolean = false;
+  private isReady = false;
   private TOKEN: string;
 
   constructor(token: string) {

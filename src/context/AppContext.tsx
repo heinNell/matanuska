@@ -69,7 +69,7 @@ function adaptTripForFirebase(trip: Trip | Partial<Trip>): Partial<TripFromTripT
       // Ensure description property exists
       description: cost.notes || cost.category || `${cost.category} - ${cost.amount}`,
       // Ensure category is a valid string for TripFromTripTs.CostEntry
-      category: cost.category as any,
+      category: cost.category,
     };
   };
 

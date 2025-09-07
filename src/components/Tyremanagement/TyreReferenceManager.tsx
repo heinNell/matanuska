@@ -801,7 +801,7 @@ const TyreReferenceManager: React.FC = () => {
               >
                 {tab.label}
                 {loading[tab.id === "positions" ? "vehiclePositions" : tab.id] && (
-                  <span className="ml-2 inline-block h-2 w-2 bg-blue-600 rounded-full animate-pulse"></span>
+                  <span className="ml-2 inline-block h-2 w-2 bg-blue-600 rounded-full animate-pulse" />
                 )}
               </button>
             ))}

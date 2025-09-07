@@ -12,12 +12,12 @@ interface WialonCore {
       getBaseUrl(): string;
       logout(callback: () => void): void;
       loadLibrary(libs: string, callback: () => void): void;
-      updateDataFlags(flags: Array<{
+      updateDataFlags(flags: {
         type: string;
         data: string;
         flags: number;
         mode: number;
-      }>, callback: (code: number) => void): void;
+      }[], callback: (code: number) => void): void;
       getItems(type: string): any[];
       getItem(id: number): any;
     };

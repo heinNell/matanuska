@@ -55,7 +55,7 @@ export function WialonFleetDashboard({ className }: WialonFleetDashboardProps) {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-gray-100 animate-pulse h-24 rounded-lg"></div>
+            <div key={i} className="bg-gray-100 animate-pulse h-24 rounded-lg" />
           ))}
         </div>
       ) : (
@@ -78,7 +78,7 @@ export function WialonFleetDashboard({ className }: WialonFleetDashboardProps) {
                   <p className="text-sm text-gray-500">ID: {unit.id}</p>
                 </div>
                 <div className="ml-2 flex-shrink-0">
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full" />
                 </div>
               </div>
 

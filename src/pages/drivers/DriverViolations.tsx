@@ -321,7 +321,7 @@ const DriverViolations: React.FC = () => {
                   <div
                     className="h-full bg-blue-500 rounded-full"
                     style={{ width: `${(count / violations.length) * 100}%` }}
-                  ></div>
+                   />
                 </div>
               </div>
             ))}

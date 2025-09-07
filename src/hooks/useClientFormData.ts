@@ -125,7 +125,7 @@ export const useCountries = () => {
   ];
 };
 
-export const useProvinces = (country: string = "South Africa") => {
+export const useProvinces = (country = "South Africa") => {
   const provinces = {
     "South Africa": [
       "Eastern Cape",

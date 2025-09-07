@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 // Types
-type UIStatus = {
+interface UIStatus {
   totalElements: number;
   connectedElements: number;
   disconnectedElements: number;
@@ -10,7 +10,7 @@ type UIStatus = {
     forms: { total: number; connected: number };
     inputs: { total: number; connected: number };
   };
-};
+}
 
 /**
  * UIConnector Component
@@ -126,7 +126,7 @@ const UIConnector: React.FC = () => {
     stats.totalElements += forms.length;
 
     forms.forEach((form) => {
-      const element = form as HTMLFormElement;
+      const element = form;
       const hasHandler = hasSubmitHandler(element);
 
       if (hasHandler) {
@@ -313,7 +313,7 @@ const UIConnector: React.FC = () => {
                       : "#f44336",
                 transition: "width 0.5s ease",
               }}
-            ></div>
+             />
           </div>
           <p>{connectionPercentage}% connected</p>
 
@@ -337,7 +337,7 @@ const UIConnector: React.FC = () => {
                   backgroundColor: "#4CAF50",
                   marginRight: "5px",
                 }}
-              ></div>
+               />
               <span>Connected Element</span>
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -348,7 +348,7 @@ const UIConnector: React.FC = () => {
                   backgroundColor: "#f44336",
                   marginRight: "5px",
                 }}
-              ></div>
+               />
               <span>Disconnected Element</span>
             </div>
           </div>

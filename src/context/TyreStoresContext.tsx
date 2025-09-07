@@ -5,13 +5,13 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 // Context interface
-type TyreStoresContextType = {
+interface TyreStoresContextType {
   stores: TyreStore[];
   addStore: (store: TyreStore) => Promise<void>;
   updateEntry: (storeId: string, entry: StockEntry) => Promise<void>;
   removeEntry: (storeId: string, tyreId: string) => Promise<void>;
   moveEntry: (fromStoreId: string, toStoreId: string, entry: StockEntry) => Promise<void>;
-};
+}
 
 const TyreStoresContext = createContext<TyreStoresContextType | undefined>(undefined);
 

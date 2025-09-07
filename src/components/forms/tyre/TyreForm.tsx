@@ -36,7 +36,7 @@ const TyreForm: React.FC<TyreFormProps> = ({
     speedRating: initialData.speedRating || "",
     type: initialData.type || "standard",
     purchaseDetails: initialData.purchaseDetails || {
-      date: new Date().toISOString().split("T")[0] as string,
+      date: new Date().toISOString().split("T")[0],
       cost: 0,
       supplier: "",
       warranty: "",
@@ -54,7 +54,7 @@ const TyreForm: React.FC<TyreFormProps> = ({
       pressure: 0,
       temperature: 0,
       status: "good",
-      lastInspectionDate: new Date().toISOString().split("T")[0] as string,
+      lastInspectionDate: new Date().toISOString().split("T")[0],
       nextInspectionDue: "",
     },
     status: initialData.status || "new",
@@ -143,9 +143,9 @@ const TyreForm: React.FC<TyreFormProps> = ({
       if (parent && child) {
         setFormData((prev) => ({
           ...prev,
-          [parent as string]: {
+          [parent]: {
             ...(prev[parent as keyof typeof prev] as Record<string, any>),
-            [child as string]: value,
+            [child]: value,
           },
         }));
       }
@@ -168,9 +168,9 @@ const TyreForm: React.FC<TyreFormProps> = ({
       if (parent && child) {
         setFormData((prev) => ({
           ...prev,
-          [parent as string]: {
+          [parent]: {
             ...(prev[parent as keyof typeof prev] as Record<string, any>),
-            [child as string]: isNaN(numValue) ? 0 : numValue,
+            [child]: isNaN(numValue) ? 0 : numValue,
           },
         }));
       }
@@ -670,7 +670,7 @@ const TyreForm: React.FC<TyreFormProps> = ({
           <Button
             variant="outline"
             onClick={() => {
-              const sections: Array<"basic" | "technical" | "installation" | "condition"> = [
+              const sections: ("basic" | "technical" | "installation" | "condition")[] = [
                 "basic",
                 "technical",
                 "installation",
@@ -690,7 +690,7 @@ const TyreForm: React.FC<TyreFormProps> = ({
         {activeSection !== "condition" ? (
           <Button
             onClick={() => {
-              const sections: Array<"basic" | "technical" | "installation" | "condition"> = [
+              const sections: ("basic" | "technical" | "installation" | "condition")[] = [
                 "basic",
                 "technical",
                 "installation",

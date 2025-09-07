@@ -391,16 +391,16 @@ const StockManager: React.FC = () => {
                   if (mappedKey === "quantity" || mappedKey === "reorderLevel" || mappedKey === "unitCost") {
                     const numValue = parseFloat(value || "0");
                     if (!isNaN(numValue)) {
-                      (item as Partial<StockItem>)[mappedKey] = numValue as any;
+                      (item)[mappedKey] = numValue as any;
                     }
                   } else if (mappedKey === "lastOrderDate") {
                     if (value) {
-                      (item as Partial<StockItem>)[mappedKey] = value as any;
+                      (item)[mappedKey] = value as any;
                     } else {
-                      (item as Partial<StockItem>)[mappedKey] = null;
+                      (item)[mappedKey] = null;
                     }
                   } else {
-                    (item as Partial<StockItem>)[mappedKey] = value as any;
+                    (item)[mappedKey] = value as any;
                   }
                 }
               });

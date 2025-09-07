@@ -25,7 +25,7 @@ let useDirectApi          = false;
 let serviceCheckAttempted = false;
 let authErrorDetected     = false;
 let lastErrorMessage: string | null = null;
-let requestedLibraries    = new Set<string>();      // track libs across calls
+const requestedLibraries    = new Set<string>();      // track libs across calls
 
 /* ───────────────────────────────────────── HELPERS ────────────────────────────────────────── */
 

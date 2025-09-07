@@ -165,7 +165,7 @@ const DieselImportModal: React.FC<DieselImportModalProps> = ({ isOpen, onClose }
         const probeDiscrepancy = probeReading !== undefined ? litresFilled - probeReading : undefined;
 
         // Currency normalization to union
-        const currency = (row.currency?.toUpperCase() === "USD" ? "USD" : "ZAR") as "USD" | "ZAR";
+        const currency = (row.currency?.toUpperCase() === "USD" ? "USD" : "ZAR");
 
         // Fix: Use a safe fallback for row.date, and handle potential undefined (THIS IS THE FIX!)
         const dateStr: string =

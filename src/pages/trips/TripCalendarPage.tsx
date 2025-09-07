@@ -345,7 +345,7 @@ const TripCalendarPage: React.FC = () => {
           )}
           {loading ? (
             <div className="flex items-center justify-center h-96">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
               <span className="ml-3 text-gray-700">Loading timeline data...</span>
             </div>
           ) : filteredVehicles.length === 0 ? (
@@ -472,42 +472,42 @@ const TripCalendarPage: React.FC = () => {
               <span
                 className="inline-block w-3 h-3 rounded"
                 style={{ background: TYPE_COLORS["active"] || "#3b82f6" }}
-              ></span>
+               />
               <span className="ml-1 text-sm">Active</span>
             </div>
             <div className="flex items-center">
               <span
                 className="inline-block w-3 h-3 rounded"
                 style={{ background: TYPE_COLORS["completed"] || "#10b981" }}
-              ></span>
+               />
               <span className="ml-1 text-sm">Completed</span>
             </div>
             <div className="flex items-center">
               <span
                 className="inline-block w-3 h-3 rounded"
                 style={{ background: TYPE_COLORS["invoiced"] || "#f59e0b" }}
-              ></span>
+               />
               <span className="ml-1 text-sm">Invoiced</span>
             </div>
             <div className="flex items-center">
               <span
                 className="inline-block w-3 h-3 rounded"
                 style={{ background: TYPE_COLORS["paid"] || "#6366f1" }}
-              ></span>
+               />
               <span className="ml-1 text-sm">Paid</span>
             </div>
             <div className="flex items-center">
               <span
                 className="inline-block w-3 h-3 rounded"
                 style={{ background: TYPE_COLORS["delayed"] || "#f59e0b" }}
-              ></span>
+               />
               <span className="ml-1 text-sm">Delayed</span>
             </div>
             <div className="flex items-center">
               <span
                 className="inline-block w-3 h-3 rounded"
                 style={{ background: TYPE_COLORS["cancelled"] || "#ef4444" }}
-              ></span>
+               />
               <span className="ml-1 text-sm">Cancelled</span>
             </div>
             {Object.entries(TYPE_COLORS)
@@ -528,7 +528,7 @@ const TripCalendarPage: React.FC = () => {
                   <span
                     className="inline-block w-3 h-3 rounded"
                     style={{ background: color }}
-                  ></span>
+                   />
                   <span className="ml-1 text-sm">{type}</span>
                 </div>
               ))}

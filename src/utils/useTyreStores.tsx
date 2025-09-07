@@ -7,11 +7,11 @@ import {
 import { TyreStore, StockEntry } from '../types/tyre';
 
 // Define the context type
-type TyreStoresContextType = {
+interface TyreStoresContextType {
   stores: TyreStore[];
   addStore: (store: TyreStore) => Promise<void>;
   updateEntry: (storeId: string, entry: StockEntry) => Promise<void>;
-};
+}
 
 // Create the context with default values
 const TyreStoresContext = createContext<TyreStoresContextType>({

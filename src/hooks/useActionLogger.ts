@@ -63,11 +63,11 @@ export interface IActionLogger {
 // No-op console logger so the app never crashes if you don't pass a backend logger.
 const defaultLogger: IActionLogger = {
   logAction: (params) => {
-    // eslint-disable-next-line no-console
+     
     console.log("[ActionLog]", params);
   },
   logDriverBehaviorEvent: (action, event, additionalDetails) => {
-    // eslint-disable-next-line no-console
+     
     console.log("[DriverEventLog]", { action, event, additionalDetails });
   },
 };

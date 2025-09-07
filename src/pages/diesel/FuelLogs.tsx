@@ -346,15 +346,13 @@ const FuelLogs: React.FC = () => {
               : 0;
             
             return (
-              <>
-                <Table.Summary.Row>
+              <Table.Summary.Row>
                   <Table.Summary.Cell index={0} colSpan={4}><Text strong>Total/Average:</Text></Table.Summary.Cell>
                   <Table.Summary.Cell index={4}><Text strong>{totalAmount.toFixed(1)} L</Text></Table.Summary.Cell>
                   <Table.Summary.Cell index={5}><Text strong>${totalCost.toFixed(2)}</Text></Table.Summary.Cell>
                   <Table.Summary.Cell index={6}><Text strong>{avgEfficiency.toFixed(1)} L/100km</Text></Table.Summary.Cell>
-                  <Table.Summary.Cell index={7} colSpan={2}></Table.Summary.Cell>
+                  <Table.Summary.Cell index={7} colSpan={2} />
                 </Table.Summary.Row>
-              </>
             );
           }}
         />

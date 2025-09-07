@@ -74,7 +74,7 @@ declare global {
         /* ignore */
       }
       try {
-        const v = (process as NodeJS.Process)?.env?.[k];
+        const v = (process)?.env?.[k];
         if (typeof v !== "undefined") return String(v);
       } catch {
         /* ignore */

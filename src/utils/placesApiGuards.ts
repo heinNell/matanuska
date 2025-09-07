@@ -76,7 +76,7 @@ export const safeInitPlacesService = (
 /**
  * Wait for Places API to be ready with timeout
  */
-export const waitForPlacesApi = (timeoutMs: number = 5000): Promise<boolean> => {
+export const waitForPlacesApi = (timeoutMs = 5000): Promise<boolean> => {
   return new Promise((resolve) => {
     if (isPlacesApiReady()) {
       resolve(true);
@@ -107,8 +107,8 @@ export const waitForPlacesApi = (timeoutMs: number = 5000): Promise<boolean> => 
  */
 export const safeExecutePlacesOperation = async <T>(
   operation: () => T,
-  maxRetries: number = 3,
-  retryDelayMs: number = 500
+  maxRetries = 3,
+  retryDelayMs = 500
 ): Promise<T | null> => {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (!isPlacesApiReady()) {

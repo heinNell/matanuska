@@ -238,9 +238,9 @@ export function parseTyreSize(sizeStr: string): TyreSize {
   const match = sizeStr.match(regex);
   if (match) {
     return {
-      width: parseInt(match[1]!, 10),
-      aspectRatio: parseInt(match[2]!, 10),
-      rimDiameter: parseFloat(match[3]!),
+      width: parseInt(match[1], 10),
+      aspectRatio: parseInt(match[2], 10),
+      rimDiameter: parseFloat(match[3]),
       displayString: sizeStr,
     };
   }

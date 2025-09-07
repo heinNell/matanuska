@@ -219,7 +219,7 @@ export const WialonAlerts: React.FC<WialonAlertsProps> = ({
     return (
       <div className={`wialon-alerts loading ${className}`}>
         <div className="loading-container">
-          <div className="loading-spinner"></div>
+          <div className="loading-spinner" />
           <p>Loading alerts...</p>
         </div>
       </div>

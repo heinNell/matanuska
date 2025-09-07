@@ -264,7 +264,7 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
                         <div
                           className="h-full bg-blue-500 rounded-full"
                           style={{ width: `${(data.litres / stats.totalLitres) * 100}%` }}
-                        ></div>
+                         />
                       </div>
                       <span className="ml-2 text-sm font-medium">
                         {data.litres.toLocaleString()} L
@@ -302,7 +302,7 @@ const DieselAnalysis: React.FC<DieselAnalysisProps> = ({ dieselRecords = [] }) =
                         <div
                           className="h-full bg-green-500 rounded-full"
                           style={{ width: `${(data.litres / (stats.totalLitres * 0.5)) * 100}%` }}
-                        ></div>
+                         />
                       </div>
                       <span className="ml-2 text-sm font-medium">
                         {data.litres.toLocaleString()} L

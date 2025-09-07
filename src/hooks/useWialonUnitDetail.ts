@@ -7,23 +7,23 @@ import type { Position } from "../types/wialon-position";
  * Local UnitDetail shape used by the app.
  * Keeps things intentionally permissive because Wialon SDK shapes vary by version/wrapper.
  */
-export type UnitDetail = {
+export interface UnitDetail {
   id: number | string;
   name: string;
   iconUrl?: string | null;
   position?: Position | null;
   properties?: Record<string, any> | null;
   raw?: Record<string, any> | null;
-};
+}
 
 /** Hook result shape (explicit so callers / TS know available fields) */
-export type UseWialonUnitDetailResult = {
+export interface UseWialonUnitDetailResult {
   detail: UnitDetail | null;
   unit: UnitDetail | null;            // alias for backward compatibility
   loading: boolean;
   error: string | null;
   refresh: () => void;
-};
+}
 
 export function useWialonUnitDetail(unitId?: string | number | null, token?: string): UseWialonUnitDetailResult {
   const [detail, setDetail] = useState<UnitDetail | null>(null);

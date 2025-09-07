@@ -4,10 +4,10 @@ import { useLoadGoogleMaps } from "../../utils/googleMapsLoader";
 interface GoogleMapProps {
   center?: { lat: number; lng: number };
   zoom?: number;
-  markers?: Array<{
+  markers?: {
     position: { lat: number; lng: number };
     title?: string;
-  }>;
+  }[];
   className?: string;
   style?: React.CSSProperties;
   onMapLoad?: (map: google.maps.Map) => void;
@@ -111,7 +111,7 @@ const GoogleMapComponent: React.FC<GoogleMapProps> = ({
         style={containerStyle}
       >
         <div className="flex flex-col items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-blue-500 mb-2 sm:mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-blue-500 mb-2 sm:mb-4" />
           <p className="text-sm sm:text-base text-gray-600">Loading map...</p>
         </div>
       </div>

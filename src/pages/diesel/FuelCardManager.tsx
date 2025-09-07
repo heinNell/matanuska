@@ -272,7 +272,7 @@ const FuelCardManager: React.FC = () => {
                   <tr>
                     <td colSpan={9} className="px-6 py-4 text-center text-sm text-gray-500">
                       <div className="flex justify-center items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500" />
                         <span>Loading fuel cards...</span>
                       </div>
                     </td>
@@ -322,7 +322,7 @@ const FuelCardManager: React.FC = () => {
                               style={{
                                 width: `${Math.min(100, (card.currentUsage / card.monthlyLimit) * 100)}%`,
                               }}
-                            ></div>
+                             />
                           </div>
                         </div>
                       </td>

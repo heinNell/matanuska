@@ -9,35 +9,35 @@ interface FleetAnalyticsState {
     maintenance: number;
     percentOperational: number;
   };
-  monthlyROI: Array<{
+  monthlyROI: {
     month: string;
     roi: number;
-  }>;
-  fleetUtilization: Array<{
+  }[];
+  fleetUtilization: {
     month: string;
     utilization: number;
-  }>;
-  performance: Array<{
+  }[];
+  performance: {
     month: string;
     fuelEfficiency: number;
     maintenanceCost: number;
-  }>;
-  costAnalysis: Array<{
+  }[];
+  costAnalysis: {
     date: string;
     operations: number;
     maintenance: number;
-  }>;
-  fleetAnalytics: Array<{
+  }[];
+  fleetAnalytics: {
     date: string;
     fuel: number;
     maintenance: number;
     roi: number;
-  }>;
-  vehicleUtilization: Array<{
+  }[];
+  vehicleUtilization: {
     date: string;
     idleTime: number;
     activeTime: number;
-  }>;
+  }[];
   // For data filtering functionality
   activeFilters: string[];
   dateRange: {

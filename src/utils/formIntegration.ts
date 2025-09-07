@@ -267,7 +267,7 @@ export const useTyrePatternOptions = (brand?: string, size?: string) => {
       setError(null);
 
       try {
-        let q = query(
+        const q = query(
           collection(db, "tyrePatterns"),
           where("brand", "==", brand),
           where("size", "==", size)

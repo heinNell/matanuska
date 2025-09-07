@@ -65,7 +65,7 @@ const DriverDetails: React.FC = () => {
   if (loading) {
     return (
       <div className="p-6 flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
       </div>
     );
   }
@@ -380,7 +380,7 @@ const DriverDetails: React.FC = () => {
                   <span
                     className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
                     aria-hidden="true"
-                  ></span>
+                   />
                   <div className="relative flex space-x-3">
                     <div>
                       <span className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
@@ -403,7 +403,7 @@ const DriverDetails: React.FC = () => {
                   <span
                     className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
                     aria-hidden="true"
-                  ></span>
+                   />
                   <div className="relative flex space-x-3">
                     <div>
                       <span className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">

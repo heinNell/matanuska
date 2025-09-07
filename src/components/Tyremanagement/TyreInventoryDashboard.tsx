@@ -464,7 +464,7 @@ const TyreInventoryDashboard: React.FC<TyreInventoryDashboardProps> = ({
                 <tr>
                   <td colSpan={9} className="px-6 py-4 text-center">
                     <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500" />
                     </div>
                     <p className="mt-2 text-sm text-gray-500">Loading tyre inventory...</p>
                   </td>
@@ -507,7 +507,7 @@ const TyreInventoryDashboard: React.FC<TyreInventoryDashboardProps> = ({
                         <div
                           className={`h-1.5 rounded-full ${tyre.km > tyre.kmLimit * 0.8 ? "bg-red-500" : "bg-blue-500"}`}
                           style={{ width: `${Math.min(100, (tyre.km / tyre.kmLimit) * 100)}%` }}
-                        ></div>
+                         />
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -522,7 +522,7 @@ const TyreInventoryDashboard: React.FC<TyreInventoryDashboardProps> = ({
                                 : "bg-red-500"
                           }`}
                           style={{ width: `${calculateTreadPercentage(tyre.treadDepth)}%` }}
-                        ></div>
+                         />
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

@@ -522,11 +522,11 @@ const WialonDashboard: FC = () => {
 
       {/* Main Content (Map and Log) */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <div ref={mapRef} className="flex-1 min-h-0 z-0"></div>
+        <div ref={mapRef} className="flex-1 min-h-0 z-0" />
         {/* Log Panel */}
         <div className="bg-gray-900 text-gray-300 p-4 text-sm font-mono overflow-y-auto max-h-48 md:max-h-32 flex-shrink-0 z-10">
           <p className="text-white font-bold mb-1">Log:</p>
-          <div ref={logRef}></div>
+          <div ref={logRef} />
         </div>
       </div>
     </div>

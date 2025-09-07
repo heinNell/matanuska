@@ -224,7 +224,7 @@ const AddNewTyreForm: React.FC<AddNewTyreFormProps> = ({ onSubmit, onCancel, ini
       string,
       {
         name: string;
-        positions: Array<{ id: string; name: string }>;
+        positions: { id: string; name: string }[];
       }
     >
   >({});
@@ -250,11 +250,11 @@ const AddNewTyreForm: React.FC<AddNewTyreFormProps> = ({ onSubmit, onCancel, ini
           string,
           {
             name: string;
-            positions: Array<{ id: string; name: string }>;
+            positions: { id: string; name: string }[];
           }
         > = {};
 
-        const types: Array<{ id: string; name: string }> = [];
+        const types: { id: string; name: string }[] = [];
 
         querySnapshot.forEach((doc) => {
           const data = doc.data();
@@ -290,7 +290,7 @@ const AddNewTyreForm: React.FC<AddNewTyreFormProps> = ({ onSubmit, onCancel, ini
   const [selectedVehicleType, setSelectedVehicleType] = useState<string>(
     initialData?.vehicleType || "standard"
   );
-  const [availablePositions, setAvailablePositions] = useState<Array<{ id: string; name: string }>>(
+  const [availablePositions, setAvailablePositions] = useState<{ id: string; name: string }[]>(
     () => {
       // Initially set to standard positions, will be updated when Firestore data loads
       return standardAxlePositions.map((pos) => ({ id: pos, name: pos }));

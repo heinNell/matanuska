@@ -29,7 +29,7 @@ interface VehicleTrackingData {
 
 class BackgroundLocationService {
   private watchId: string | null = null;
-  private isTracking: boolean = false;
+  private isTracking = false;
   private trackingData: VehicleTrackingData | null = null;
   private locationBuffer: LocationUpdate[] = [];
   private syncTimer: NodeJS.Timeout | null = null;

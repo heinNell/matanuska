@@ -21,7 +21,7 @@ const UnitsTable: React.FC = () => {
   const filteredAndSortedUnits = useMemo(() => {
     if (!units || units.length === 0) return [];
 
-    let filtered = units.filter((unit: UnitInfo) => {
+    const filtered = units.filter((unit: UnitInfo) => {
       // Search filter by name or id
       if (filters.searchTerm) {
         const searchLower = filters.searchTerm.toLowerCase();

@@ -50,8 +50,8 @@ const VehiclePositionDiagram: React.FC<VehiclePositionDiagramProps> = ({
   const renderReeferDiagram = () => (
     <div className="relative w-full h-64 bg-gray-100 rounded-lg p-4">
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-        <div className="w-16 h-8 bg-blue-500 rounded-lg"></div>
-        <div className="w-64 h-12 bg-gray-300 rounded-lg mt-2"></div>
+        <div className="w-16 h-8 bg-blue-500 rounded-lg" />
+        <div className="w-64 h-12 bg-gray-300 rounded-lg mt-2" />
         <div className="text-xs mt-1 font-semibold">Reefer (3-Axle Trailer)</div>
       </div>
       
@@ -76,8 +76,8 @@ const VehiclePositionDiagram: React.FC<VehiclePositionDiagramProps> = ({
   const renderInterlinkDiagram = () => (
     <div className="relative w-full h-96 bg-gray-100 rounded-lg p-4 overflow-y-auto">
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-        <div className="w-16 h-8 bg-green-500 rounded-lg"></div>
-        <div className="w-80 h-16 bg-gray-300 rounded-lg mt-2"></div>
+        <div className="w-16 h-8 bg-green-500 rounded-lg" />
+        <div className="w-80 h-16 bg-gray-300 rounded-lg mt-2" />
         <div className="text-xs mt-1 font-semibold">Interlink (4-Axle Trailer)</div>
       </div>
       

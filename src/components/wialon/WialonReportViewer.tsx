@@ -50,7 +50,7 @@ export const WialonReportViewer: React.FC<WialonReportViewerProps> = ({
     return (
       <div className={`wialon-report-viewer loading ${className}`}>
         <div className="loading-container">
-          <div className="loading-spinner"></div>
+          <div className="loading-spinner" />
           <p>Executing report...</p>
         </div>
       </div>

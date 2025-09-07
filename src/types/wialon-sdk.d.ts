@@ -60,7 +60,7 @@ declare namespace W {
     loginToken(token: string, params: string, callback: (code: number) => void): void;
     loadLibrary(name: string): void;
     updateDataFlags(
-      flags: Array<{ type: string; data: string; flags: number; mode: number }>,
+      flags: { type: string; data: string; flags: number; mode: number }[],
       callback: (code: number) => void
     ): void;
     getItems(type?: string): any[];
@@ -92,7 +92,7 @@ declare namespace W {
       getIconUrl(size: number): string;
       getPosition(): WialonPosition | null;
       getLastMessage(): any | null;
-      getSensors(): { [key: string]: WialonSensor } | undefined;
+      getSensors(): Record<string, WialonSensor> | undefined;
       getSensor(sensorId: number): WialonSensor | undefined;
       calculateSensorValue(sensor: WialonSensor, message: any): number | undefined;
       getUniqueId(): string;

@@ -110,7 +110,7 @@ const FleetLocationMapPage: React.FC = () => {
         <EnhancedMapComponent
           locations={displayedVehicles}
           height="600px"
-          showPlacesSearch={true}
+          showPlacesSearch
           showRoutes={showRoutes}
           routeOptions={{
             strokeColor: "#3B82F6",

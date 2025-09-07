@@ -245,10 +245,10 @@ const FlagResolutionModal: React.FC<FlagResolutionModalProps> = ({
             {hasFileUpload && (
               <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm">
                 <p className="text-green-800 font-medium mb-1">
-                  ✓ {selectedFiles!.length} file(s) will be uploaded:
+                  ✓ {selectedFiles.length} file(s) will be uploaded:
                 </p>
                 <ul className="text-green-700 space-y-1">
-                  {Array.from(selectedFiles!).map((file, index) => (
+                  {Array.from(selectedFiles).map((file, index) => (
                     <li key={index} className="flex items-center">
                       <Upload className="w-3 h-3 mr-2" />
                       {file.name} ({(file.size / 1024).toFixed(1)} KB)
@@ -288,7 +288,7 @@ const FlagResolutionModal: React.FC<FlagResolutionModalProps> = ({
               </p>
             )}
             {hasNotesChange && <p>• Notes will be updated</p>}
-            {hasFileUpload && <p>• {selectedFiles!.length} document(s) will be uploaded</p>}
+            {hasFileUpload && <p>• {selectedFiles.length} document(s) will be uploaded</p>}
             <p>• Flag status will be marked as "Resolved"</p>
             <p>• Resolution will be logged with timestamp and user</p>
           </div>

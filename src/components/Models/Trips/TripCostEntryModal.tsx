@@ -19,7 +19,7 @@ interface CostEntry {
 }
 
 // Internal form state uses a fully-required shape for controlled inputs
-type CostEntryFormData = {
+interface CostEntryFormData {
   category: string;
   subType: string;
   currency: string;
@@ -30,7 +30,7 @@ type CostEntryFormData = {
   missingDocReason: string;
   isFlagged: boolean;
   manuallyFlagged: boolean;
-};
+}
 
 interface TripCostEntryModalProps {
   isOpen: boolean;

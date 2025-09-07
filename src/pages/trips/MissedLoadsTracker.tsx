@@ -801,7 +801,7 @@ const MissedLoadsTracker: React.FC<MissedLoadsTrackerProps> = ({
                   onChange={(e) => handleResolutionChange("compensationOffered", e.target.value)}
                   placeholder="0.00"
                 />
-                <div></div>
+                <div />
               </div>
 
               <TextArea

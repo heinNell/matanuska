@@ -109,7 +109,7 @@ export function VehicleUtilizationChart() {
                   className="text-lg leading-none font-bold sm:text-3xl px-2 py-1 rounded-md"
                   style={{
                     color: chartConfig[chart].color,
-                    backgroundColor: bgColors[chart as keyof typeof bgColors],
+                    backgroundColor: bgColors[chart],
                   }}
                 >
                   {total[key as keyof typeof total].toLocaleString()} hrs

@@ -200,16 +200,16 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
       if (parent && child) {
         setFormData((prev: Partial<Tyre>) => ({
           ...prev,
-          [parent as string]: {
+          [parent]: {
             ...(prev[parent as keyof typeof prev] as Record<string, any>),
-            [child as string]: parsedValue, // Use parsedValue here
+            [child]: parsedValue, // Use parsedValue here
           },
         }));
       }
     } else if (name) {
       setFormData((prev: Partial<Tyre>) => ({
         ...prev,
-        [name as string]: parsedValue, // Use parsedValue here
+        [name]: parsedValue, // Use parsedValue here
       }));
     }
   };
@@ -222,16 +222,16 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
       if (parent && child) {
         setFormData((prev: Partial<Tyre>) => ({
           ...prev,
-          [parent as string]: {
+          [parent]: {
             ...(prev[parent as keyof typeof prev] as Record<string, any>),
-            [child as string]: isNaN(numValue) ? 0 : numValue,
+            [child]: isNaN(numValue) ? 0 : numValue,
           },
         }));
       }
     } else if (name) {
       setFormData((prev: Partial<Tyre>) => ({
         ...prev,
-        [name as string]: isNaN(numValue) ? 0 : numValue,
+        [name]: isNaN(numValue) ? 0 : numValue,
       }));
     }
   };
@@ -645,7 +645,7 @@ const TyreFormModal: React.FC<TyreFormModalProps> = ({
             {activeSection !== "condition" ? (
               <Button
                 onClick={() => {
-                  const sections: Array<"basic" | "technical" | "installation" | "condition"> = [
+                  const sections: ("basic" | "technical" | "installation" | "condition")[] = [
                     "basic",
                     "technical",
                     "installation",

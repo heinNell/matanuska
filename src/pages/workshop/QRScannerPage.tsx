@@ -73,7 +73,7 @@ const QRScannerPage: React.FC = () => {
           <span>Back</span>
         </button>
         <h1 className="text-2xl font-bold text-center flex-1">QR Code Scanner</h1>
-        <div className="w-20"></div> {/* Spacer for alignment */}
+        <div className="w-20" /> {/* Spacer for alignment */}
       </div>
       
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">

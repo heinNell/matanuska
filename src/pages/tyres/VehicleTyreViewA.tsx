@@ -73,7 +73,7 @@ export const VehicleTyreView: React.FC<VehicleTyreViewProps> = ({
     ? {
         fleetNumber: selectedVehicle,
         vehicleType: vehicle?.type || "unknown",
-        positions: (rawConfig.positions as any[]).map((p) => ({
+        positions: (rawConfig.positions).map((p) => ({
           position: p.id || p.position || "SP",
           // additional fields left undefined
         })),
@@ -111,7 +111,7 @@ export const VehicleTyreView: React.FC<VehicleTyreViewProps> = ({
             label="Select Vehicle for Tyre View"
             placeholder="Choose a vehicle to view tyre details..."
             activeOnly={false}
-            showDetails={true}
+            showDetails
           />
         </div>
       </div>
@@ -120,7 +120,7 @@ export const VehicleTyreView: React.FC<VehicleTyreViewProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Visual Vehicle Diagram */}
           <Card>
-            <CardHeader title="Tyre Layout"></CardHeader>
+            <CardHeader title="Tyre Layout" />
             <CardContent>
               <table className="w-full text-sm text-left">
                 <thead>
@@ -242,7 +242,7 @@ export const VehicleTyreView: React.FC<VehicleTyreViewProps> = ({
                         <span className="text-gray-500">Distance Run:</span>{" "}
                         {(
                           selectedTyre.kmRun ??
-                          (selectedTyre as any).milesRun ??
+                          (selectedTyre).milesRun ??
                           0
                         ).toLocaleString()}{" "}
                         km
@@ -339,7 +339,7 @@ export const VehicleTyreView: React.FC<VehicleTyreViewProps> = ({
                       <p className="text-xs text-gray-500">
                         Tread: {tyre.condition?.treadDepth || 0}mm | Pressure:{" "}
                         {tyre.condition?.pressure || 0} PSI | Distance:{" "}
-                        {(tyre.kmRun ?? (tyre as any).milesRun ?? 0).toLocaleString()} km
+                        {(tyre.kmRun ?? (tyre).milesRun ?? 0).toLocaleString()} km
                       </p>
                     </div>
                     <div className="text-right space-y-1">

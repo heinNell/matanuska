@@ -229,12 +229,12 @@ const FlagsInvestigations: React.FC = () => {
                           <p className="text-sm text-gray-500">Trip</p>
                           <p className="font-medium">
                             Fleet{" "}
-                            {(cost as FlaggedCost).tripFleetNumber ||
+                            {(cost).tripFleetNumber ||
                               trip?.fleetNumber ||
                               cost.tripId}
                           </p>
                           <p className="text-sm text-gray-600">
-                            {(cost as FlaggedCost).tripRoute || trip?.route || "-"}
+                            {(cost).tripRoute || trip?.route || "-"}
                           </p>
                         </div>
                         <div>

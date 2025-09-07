@@ -208,7 +208,7 @@ const QRGenerator: React.FC = () => {
                     onClick={onClick}
                   >
                     <div className="w-6 h-6 mb-2 rounded-full border-4 flex items-center justify-center">
-                      <div className="w-1 h-1 bg-current rounded-full"></div>
+                      <div className="w-1 h-1 bg-current rounded-full" />
                     </div>
                     <span>Tyre Position</span>
                   </button>
@@ -294,7 +294,7 @@ const QRGenerator: React.FC = () => {
                       value={qrValue}
                       size={200}
                       level="M"
-                      includeMargin={true} // Use this instead of marginSize
+                      includeMargin // Use this instead of marginSize
                     />
                   </div>
                 </div>

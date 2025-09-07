@@ -81,7 +81,7 @@ export interface UseTyreCatalog {
   removePattern: (p: { brand: string; pattern: string; size: string }) => Promise<void>;
 
   // bulk
-  bulkUpsertPatterns: (rows: Array<Omit<TyrePatternDoc, "id" | "createdAt">>) => Promise<number>;
+  bulkUpsertPatterns: (rows: Omit<TyrePatternDoc, "id" | "createdAt">[]) => Promise<number>;
 }
 
 export function useTyreCatalog(): UseTyreCatalog {
@@ -93,7 +93,7 @@ export function useTyreCatalog(): UseTyreCatalog {
 
   /** Realtime subscriptions */
   useEffect(() => {
-    const unsubscribers: Array<() => void> = [];
+    const unsubscribers: (() => void)[] = [];
 
     // brands
     unsubscribers.push(
@@ -242,7 +242,7 @@ export function useTyreCatalog(): UseTyreCatalog {
   );
 
   const bulkUpsertPatterns = useCallback(
-    async (rows: Array<Omit<TyrePatternDoc, "id" | "createdAt">>) => {
+    async (rows: Omit<TyrePatternDoc, "id" | "createdAt">[]) => {
       const batch = writeBatch(firestore);
       let n = 0;
       for (const r of rows) {

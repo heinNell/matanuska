@@ -91,7 +91,7 @@ const InvoiceFollowUpModal: React.FC<InvoiceFollowUpModalProps> = ({
     if (!validateForm()) return;
 
     const followUpData = {
-      followUpDate: formData.followUpDate!, // Add non-null assertion since we validate it
+      followUpDate: formData.followUpDate, // Add non-null assertion since we validate it
       contactMethod: formData.contactMethod,
       responsibleStaff: formData.responsibleStaff.trim(),
       responseSummary: formData.responseSummary.trim(),

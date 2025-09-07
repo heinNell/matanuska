@@ -1057,9 +1057,9 @@ const ActiveTripsPage: React.FC = () => {
           if (!costTrip) return;
           await addCostEntry(
             {
-              ...(data as any),
+              ...(data),
               tripId: costTrip.id,
-            } as any,
+            },
             files
           );
           setIsCostModalOpen(false);
@@ -1077,7 +1077,7 @@ const ActiveTripsPage: React.FC = () => {
           tripData={systemCostsTrip as any}
           onGenerateCosts={async (costs: any[]) => {
             for (const c of costs) {
-              await addCostEntry({ ...(c as any), tripId: systemCostsTrip.id } as any);
+              await addCostEntry({ ...(c), tripId: systemCostsTrip.id });
             }
             setIsSystemCostsOpen(false);
             setSystemCostsTrip(null);

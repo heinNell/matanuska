@@ -16,7 +16,7 @@ declare namespace google.maps {
     setOptions(options: MapOptions): void;
     getBounds(): LatLngBounds | undefined;
     fitBounds(bounds: LatLngBounds | LatLngBoundsLiteral, padding?: number | Padding): void;
-    controls: Array<MVCArray<Node>>;
+    controls: MVCArray<Node>[];
     data: Data;
     mapTypes: MapTypeRegistry;
     overlayMapTypes: MVCArray<MapType>;
@@ -40,13 +40,13 @@ declare namespace google.maps {
     streetViewControl?: boolean;
     rotateControl?: boolean;
     fullscreenControl?: boolean;
-    styles?: Array<MapTypeStyle>;
+    styles?: MapTypeStyle[];
     tilt?: number;
     restriction?: MapRestriction;
   }
 
   interface MapTypeStyle {
-    stylers: Array<{ [key: string]: string | number | boolean }>;
+    stylers: Record<string, string | number | boolean>[];
     elementType?: string;
     featureType?: string;
   }
@@ -105,7 +105,7 @@ declare namespace google.maps {
     setPosition(latLng: LatLng | LatLngLiteral): void;
     setTitle(title: string): void;
     setLabel(label: string | MarkerLabel): void;
-    setIcon(icon: string | Icon | Symbol): void;
+    setIcon(icon: string | Icon | symbol): void;
     setOpacity(opacity: number): void;
     setVisible(visible: boolean): void;
     setZIndex(zIndex: number): void;
@@ -119,7 +119,7 @@ declare namespace google.maps {
     position: LatLng | LatLngLiteral;
     map?: Map;
     title?: string;
-    icon?: string | Icon | Symbol;
+    icon?: string | Icon | symbol;
     label?: string | MarkerLabel;
     draggable?: boolean;
     clickable?: boolean;
@@ -147,8 +147,8 @@ declare namespace google.maps {
   }
 
   class MVCArray<T> {
-    constructor(array?: Array<T>);
-    getArray(): Array<T>;
+    constructor(array?: T[]);
+    getArray(): T[];
     getAt(i: number): T;
     getLength(): number;
     insertAt(i: number, elem: T): void;
@@ -197,7 +197,7 @@ declare namespace google.maps {
 
   class Data {
     add(feature: Data.Feature | Data.FeatureOptions): Data.Feature;
-    addGeoJson(geoJson: object, options?: Data.GeoJsonOptions): Array<Data.Feature>;
+    addGeoJson(geoJson: object, options?: Data.GeoJsonOptions): Data.Feature[];
     contains(feature: Data.Feature): boolean;
     forEach(callback: (feature: Data.Feature) => void): void;
     getFeatureById(id: number | string): Data.Feature | null;
@@ -237,7 +237,7 @@ declare namespace google.maps {
       editable?: boolean;
       fillColor?: string;
       fillOpacity?: number;
-      icon?: string | Icon | Symbol;
+      icon?: string | Icon | symbol;
       shape?: object; // MarkerShape
       strokeColor?: string;
       strokeOpacity?: number;

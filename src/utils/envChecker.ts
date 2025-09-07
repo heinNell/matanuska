@@ -43,7 +43,7 @@ export function checkEnvVariable(name: string): {
  */
 
 export function checkEnvVariables(): {
-  variables: Array<{ name: string; exists: boolean; preview: string }>;
+  variables: { name: string; exists: boolean; preview: string }[];
   allVariables: string[];
   missingVariables: string[];
 } {

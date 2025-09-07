@@ -223,17 +223,15 @@ const PendingInvoicesPage: React.FC = () => {
             const totalAmount = pageData.reduce((total, invoice) => total + invoice.amount, 0);
 
             return (
-              <>
-                <Table.Summary.Row>
+              <Table.Summary.Row>
                   <Table.Summary.Cell index={0} colSpan={2}>
                     <Text strong>Total</Text>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell index={2}>
                     <Text strong>${totalAmount.toFixed(2)}</Text>
                   </Table.Summary.Cell>
-                  <Table.Summary.Cell index={3} colSpan={4}></Table.Summary.Cell>
+                  <Table.Summary.Cell index={3} colSpan={4} />
                 </Table.Summary.Row>
-              </>
             );
           }}
         />

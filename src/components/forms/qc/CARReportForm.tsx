@@ -60,7 +60,7 @@ const CARReportForm: React.FC<CARReportFormProps> = ({
   const [formData, setFormData] = useState<FormData>({
     responsibleReporter: "",
     responsiblePerson: "",
-    dateOfIncident: new Date().toISOString().split("T")[0] as string, // Always a string
+    dateOfIncident: new Date().toISOString().split("T")[0], // Always a string
     dateDue: "",
     clientReport: "",
     severity: "medium" as "high" | "medium" | "low",
@@ -68,8 +68,8 @@ const CARReportForm: React.FC<CARReportFormProps> = ({
     // New fields based on CARReport type
     incidentType: "",
     description: "",
-    dueDate: new Date().toISOString().split("T")[0] as string,
-    issueDate: new Date().toISOString().split("T")[0] as string, // Always a string
+    dueDate: new Date().toISOString().split("T")[0],
+    issueDate: new Date().toISOString().split("T")[0], // Always a string
     issuedBy: "Current User", // In a real app, use the logged-in user
     priority: "medium" as "high" | "medium" | "low",
     rootCause: "",
@@ -176,7 +176,7 @@ const CARReportForm: React.FC<CARReportFormProps> = ({
         ...prev,
         responsiblePerson: linkedEvent.driverName,
         dateOfIncident: linkedEvent.eventDate,
-        dateDue: dueDate.toISOString().split("T")[0] as string,
+        dateDue: dueDate.toISOString().split("T")[0],
         severity:
           linkedEvent.severity === "critical"
             ? "high"

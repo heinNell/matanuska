@@ -211,7 +211,7 @@ const CarbonFootprintCalc: React.FC = () => {
                     <span className="text-sm font-medium">42%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-green-600 h-2.5 rounded-full" style={{ width: "42%" }}></div>
+                    <div className="bg-green-600 h-2.5 rounded-full" style={{ width: "42%" }} />
                   </div>
                 </div>
 
@@ -224,7 +224,7 @@ const CarbonFootprintCalc: React.FC = () => {
                     <div
                       className="bg-yellow-500 h-2.5 rounded-full"
                       style={{ width: "18%" }}
-                    ></div>
+                     />
                   </div>
                 </div>
 
@@ -234,7 +234,7 @@ const CarbonFootprintCalc: React.FC = () => {
                     <span className="text-sm font-medium">5%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-red-500 h-2.5 rounded-full" style={{ width: "5%" }}></div>
+                    <div className="bg-red-500 h-2.5 rounded-full" style={{ width: "5%" }} />
                   </div>
                 </div>
               </div>

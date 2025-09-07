@@ -142,7 +142,7 @@ validateConfig();
 // Initialize Firebase with the appropriate configuration - only if not already initialized
 export const firebaseApp: FirebaseApp = (() => {
   const existingApps = getApps();
-  return existingApps.length === 0 ? initializeApp(firebaseConfig) : (existingApps[0] as FirebaseApp);
+  return existingApps.length === 0 ? initializeApp(firebaseConfig) : (existingApps[0]);
 })();
 
 
@@ -803,7 +803,7 @@ export function listenToDriverBehaviorEventsAllMonths(
   onError?: (err: Error) => void
 ): () => void {
   const months = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
-  const unsubs: Array<() => void> = [];
+  const unsubs: (() => void)[] = [];
   months.forEach((mm) => {
     const q = query(
       collectionGroup(firestore, mm),

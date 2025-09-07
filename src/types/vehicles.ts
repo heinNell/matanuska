@@ -15,7 +15,7 @@ export const FLEET_VEHICLES: Vehicle[] = [
   { id: '2', status: 'inactive', type: 'hatchback', series: 'B', registrationNo: 'ABC 456', mileage: 30000 },
 ];
 
-export const getFleetStats = (): { total: number; active: number; maintenance: number; outOfService: number; byType: { [key: string]: number } } => {
+export const getFleetStats = (): { total: number; active: number; maintenance: number; outOfService: number; byType: Record<string, number> } => {
   return {
     total: 100,
     active: 80,
@@ -29,7 +29,7 @@ export const searchVehicles = (query: string): Vehicle[] => {
   return FLEET_VEHICLES.filter(vehicle => vehicle.model?.includes(query));
 };
 
-export const filterVehicles = (filters: { [key: string]: any }): Vehicle[] => {
+export const filterVehicles = (filters: Record<string, any>): Vehicle[] => {
   return FLEET_VEHICLES.filter(vehicle => {
     return Object.keys(filters).every(key => {
       const value = (vehicle as any)[key];

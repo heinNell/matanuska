@@ -9,7 +9,7 @@ import { FleetTyreMapping, Tyre, TyrePosition, formatTyreSize } from "../../type
 import { getPositionsByFleet } from "../../utils/tyreConstants";
 
 // Helper functions needed for this component
-const formatCurrency = (amount: number | undefined, currency: string = "ZAR"): string => {
+const formatCurrency = (amount: number | undefined, currency = "ZAR"): string => {
   if (amount === undefined || isNaN(amount)) return "N/A";
 
   return new Intl.NumberFormat("en-ZA", {
@@ -265,23 +265,23 @@ const VehicleTyreView: React.FC<VehicleTyreViewProps> = ({
                 <div className="absolute top-2 right-2 bg-white p-2 rounded-md shadow-sm">
                   <div className="text-xs font-medium mb-1">Status Legend</div>
                   <div className="flex items-center space-x-1">
-                    <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                    <span className="w-3 h-3 bg-green-500 rounded-full" />
                     <span className="text-xs">Good</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                    <span className="w-3 h-3 bg-yellow-500 rounded-full" />
                     <span className="text-xs">Warning</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
+                    <span className="w-3 h-3 bg-orange-500 rounded-full" />
                     <span className="text-xs">Critical</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                    <span className="w-3 h-3 bg-red-500 rounded-full" />
                     <span className="text-xs">Replace</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <span className="w-3 h-3 bg-gray-200 rounded-full"></span>
+                    <span className="w-3 h-3 bg-gray-200 rounded-full" />
                     <span className="text-xs">Empty</span>
                   </div>
                 </div>
@@ -371,7 +371,7 @@ const VehicleTyreView: React.FC<VehicleTyreViewProps> = ({
                       <tr className="border-b">
                         <td className="py-2 text-gray-600">Cost/KM</td>
                         <td className="py-2 font-medium">
-                          {formatCurrency(calculateCostPerKm(getTyreAtPosition(selectedPosition)!))}
+                          {formatCurrency(calculateCostPerKm(getTyreAtPosition(selectedPosition)))}
                         </td>
                       </tr>
                       <tr className="border-b">

@@ -34,7 +34,7 @@ export interface Tyre {
   supplier?: string;
   retread?: boolean;
   lastInspectionDate?: string; // Used interchangeably with lastInspection
-  inspectionHistory?: Array<{
+  inspectionHistory?: {
     id: string;
     date: string;
     inspector: string;
@@ -43,7 +43,7 @@ export interface Tyre {
     sidewallCondition?: string;
     status: string;
     timestamp: string;
-  }>;
+  }[];
 }
 
 export interface TyreInspection {
@@ -129,20 +129,20 @@ export interface EnhancedTyre {
   mountStatus: TyreMountStatus;
 
   maintenanceHistory: {
-    rotations: Array<{
+    rotations: {
       date: string;
       fromPosition: string;
       toPosition: string;
       mileage: number;
       technician: string;
-    }>;
-    repairs: Array<{
+    }[];
+    repairs: {
       date: string;
       type: string;
       description: string;
       cost: number;
       technician: string;
-    }>;
+    }[];
     inspections: TyreInspectionEntry[];
   };
 
@@ -258,9 +258,9 @@ export interface JobCard {
   rcaRequired: boolean;
   rcaCompleted: boolean;
   templateId?: string;
-  checklistProgress?: { [key: string]: boolean };
-  qualityCheckProgress?: { [key: string]: boolean };
-  safetyCheckProgress?: { [key: string]: boolean };
+  checklistProgress?: Record<string, boolean>;
+  qualityCheckProgress?: Record<string, boolean>;
+  safetyCheckProgress?: Record<string, boolean>;
 }
 
 export interface WorkOrder {
@@ -335,12 +335,12 @@ export interface TyreInventoryItem {
 
 export interface VehicleTyreConfiguration {
   vehicleType: string;
-  positions: Array<{
+  positions: {
     position: string;
     displayName: string;
     coordinates: { x: number; y: number };
     isSpare: boolean;
-  }>;
+  }[];
 }
 
 export interface InventoryItem {

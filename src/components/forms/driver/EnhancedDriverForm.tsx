@@ -132,7 +132,7 @@ interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 const TextArea: React.FC<TextAreaProps> = ({ label, error, id, name, ...props }) => (
   <div>
     {label && <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>}
-    <textarea id={id} name={name} {...props} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+    <textarea id={id} name={name} {...props} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
     {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
   </div>
 );
@@ -236,7 +236,7 @@ const defaultFormData: DriverData = {
   employeeNumber: "",
   licenseInfo: defaultLicenseInfo,
   // Ensure dateHired is always a string by providing default value
-  dateHired: new Date().toISOString().split("T")[0] as string,
+  dateHired: new Date().toISOString().split("T")[0],
   status: "active",
   emergencyContact: defaultEmergencyContact,
   medicalInfo: defaultMedicalInfo,
@@ -307,7 +307,7 @@ const EnhancedDriverForm: React.FC<EnhancedDriverFormProps> = ({
         ...prev,
         [parent as keyof DriverData]: {
           ...((prev[parent as keyof DriverData] as Record<string, unknown>) ?? {}),
-          [child as string]: value,
+          [child]: value,
         },
       }));
     } else {

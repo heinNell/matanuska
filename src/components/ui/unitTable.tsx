@@ -60,7 +60,7 @@ const UnitsTable: React.FC<UnitsTableProps> = ({ wialonToken }) => {
     const filteredAndSortedUnits = useMemo(() => {
         if (!units || units.length === 0) return [];
 
-        let filtered = units.filter((unit: Unit) => {
+        const filtered = units.filter((unit: Unit) => {
             // Search filter
             if (filters.searchTerm) {
                 const searchLower = filters.searchTerm.toLowerCase();

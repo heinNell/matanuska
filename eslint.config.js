@@ -63,15 +63,19 @@ export default [
         varsIgnorePattern: "^_",
         ignoreRestSiblings: true
       }],
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/explicit-function-return-type": ["warn", { allowExpressions: false }],
       "@typescript-eslint/explicit-module-boundary-types": "warn",
       "@typescript-eslint/strict-boolean-expressions": "warn",
       "@typescript-eslint/no-inferrable-types": "warn",
       "@typescript-eslint/no-unnecessary-type-assertion": "warn",
-      "@typescript-eslint/consistent-type-definitions": ["warn", "interface"],
+      "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
       "@typescript-eslint/prefer-for-of": "warn",
       "@typescript-eslint/no-unused-expressions": "warn",
+      // Strict TypeScript rules
+      "@typescript-eslint/adjacent-overload-signatures": "error",
+      "@typescript-eslint/consistent-indexed-object-style": ["error", "record"],
+      "@typescript-eslint/array-type": ["error", { default: "array" }],
       // Enterprise hardening
       "@typescript-eslint/no-floating-promises": "warn",
       "@typescript-eslint/naming-convention": [

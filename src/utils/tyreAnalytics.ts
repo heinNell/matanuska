@@ -1,9 +1,9 @@
-export type TyreStat = {
+export interface TyreStat {
   brand: string;
   model: string;
   totalDistance: number;
   totalCost: number;
-};
+}
 
 export type RankedTyre = TyreStat & {
   costPerKm: number;

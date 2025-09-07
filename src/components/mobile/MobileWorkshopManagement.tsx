@@ -610,7 +610,7 @@ export const MobileWorkshopManagement: React.FC<MobileWorkshopManagementProps> =
         <MobileCameraCapture
           title="Job Card Photos"
           captureMode="multiple"
-          showLocationCapture={true}
+          showLocationCapture
           onCapture={handleCameraCapture}
           onClose={() => {
             setShowCamera(false);

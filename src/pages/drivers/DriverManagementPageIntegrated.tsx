@@ -321,7 +321,7 @@ const DriverManagementPage: React.FC = () => {
           onCancel={() => setShowDriverForm(false)}
           initialData={selectedDriver || undefined}
           driverId={selectedDriver?.id}
-          isModal={true}
+          isModal
         />
       </Modal>
     </div>

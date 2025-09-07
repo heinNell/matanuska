@@ -43,7 +43,7 @@ const DriverProfiles: React.FC = () => {
       const nameFromFirstLast = [d.firstName, d.lastName].filter(Boolean).join(" ");
       const nameFromNameSurname = [d.name, d.surname].filter(Boolean).join(" ");
       const displayName = nameFromFirstLast || nameFromNameSurname || d.id;
-      return { ...d, displayName } as any;
+      return { ...d, displayName };
     });
 
     return list.filter((driver: any) => {
@@ -212,7 +212,7 @@ const DriverProfiles: React.FC = () => {
                                 : "bg-red-500"
                           }`}
                           style={{ width: `${driver.safetyScore}%` }}
-                        ></div>
+                         />
                       </div>
                       <span className="ml-2 text-sm text-gray-700">{driver.safetyScore}</span>
                     </div>

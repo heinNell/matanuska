@@ -10,7 +10,7 @@ import {
 // Lightweight converters so onSnapshot returns typed objects
 const as = <T>(): FirestoreDataConverter<T> => ({
   toFirestore: (d: T): DocumentData => d as unknown as DocumentData,
-  fromFirestore: (snap) => ({ id: snap.id, ...(snap.data() as DocumentData) } as T),
+  fromFirestore: (snap) => ({ id: snap.id, ...(snap.data()) } as T),
 });
 
 const jc = () => collection(db, "jobCards").withConverter(as<JobCard>());

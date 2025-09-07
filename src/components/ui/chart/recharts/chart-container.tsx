@@ -1,11 +1,9 @@
 import React from "react";
 
-export interface ChartConfig {
-  [key: string]: {
+export type ChartConfig = Record<string, {
     label?: string;
     color?: string;
-  };
-}
+  }>;
 
 interface ChartContainerProps {
   config: ChartConfig;

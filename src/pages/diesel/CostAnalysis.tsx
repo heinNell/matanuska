@@ -182,7 +182,7 @@ const CostAnalysisPage: React.FC = () => {
                         className={`w-3 h-3 rounded-full mr-2 bg-${
                           ["blue", "green", "yellow", "purple", "red", "indigo"][index % 6]
                         }-500`}
-                      ></div>
+                       />
                       <span className="text-sm">{item.category}</span>
                     </div>
                     <div className="flex space-x-4">

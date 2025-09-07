@@ -49,7 +49,7 @@ const InvoiceSubmissionModal: React.FC<InvoiceSubmissionModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<InvoiceFormData>({
     invoiceNumber: "",
-    invoiceDate: (new Date().toISOString().split("T")[0] as string) || "",
+    invoiceDate: (new Date().toISOString().split("T")[0]) || "",
     invoiceDueDate: "",
     finalArrivalDateTime: trip.actualArrivalDateTime || trip.plannedArrivalDateTime || "",
     finalOffloadDateTime: trip.actualOffloadDateTime || trip.plannedOffloadDateTime || "",
@@ -128,7 +128,7 @@ const InvoiceSubmissionModal: React.FC<InvoiceSubmissionModalProps> = ({
         const daysToAdd = trip.revenueCurrency === "USD" ? 14 : 30;
         const dueDate = new Date(invoiceDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
         next.invoiceDate = value;
-  next.invoiceDueDate = (dueDate.toISOString().split("T")[0] as string) || "";
+  next.invoiceDueDate = (dueDate.toISOString().split("T")[0]) || "";
       }
       return next;
     });

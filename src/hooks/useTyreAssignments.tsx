@@ -13,7 +13,7 @@ import {
 import { db } from "../firebase";
 import { TyreInspection, TyreStore } from "../types/tyre";
 
-export type TyreModelRef = { id: string; name?: string };
+export interface TyreModelRef { id: string; name?: string }
 
 export interface TyreAssignment {
   id: string;

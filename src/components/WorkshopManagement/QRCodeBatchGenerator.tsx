@@ -54,7 +54,7 @@ export const QRCodeBatchGenerator: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
       </div>
     );
   }
@@ -158,7 +158,7 @@ export const QRCodeBatchGenerator: React.FC = () => {
                   value={generateQRValue(vehicle.fleetNumber, qrType)}
                   size={120}
                   level="M"
-                  includeMargin={true}
+                  includeMargin
                 />
                 <div className="mt-3 space-y-1">
                   <div className="font-bold text-lg">{vehicle.fleetNumber}</div>

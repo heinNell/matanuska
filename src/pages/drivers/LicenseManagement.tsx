@@ -391,7 +391,7 @@ const LicenseManagement: React.FC = () => {
                           : 0
                       }%`,
                     }}
-                  ></div>
+                   />
                 </div>
               </div>
               <div className="mt-6">

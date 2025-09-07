@@ -27,7 +27,7 @@ interface LoadImportModalProps {
 
 // Create a fleet master mapping object for quick lookups
 const createFleetMasterMapping = (vehicles: { registrationNo: string; fleetNo: string }[]) => {
-  const mapping: { [key: string]: string } = {};
+  const mapping: Record<string, string> = {};
   vehicles.forEach((vehicle) => {
     mapping[vehicle.registrationNo] = vehicle.fleetNo;
   });

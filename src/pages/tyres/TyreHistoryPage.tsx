@@ -22,7 +22,7 @@ type EventType =
   | "INSPECTED"
   | "SCRAPPED";
 
-type TyreEvent = {
+interface TyreEvent {
   id: string;
   tyreId: string;
   tyreSerial?: string;
@@ -39,7 +39,7 @@ type TyreEvent = {
   performedBy?: string;
   eventDate: Date; // normalized from Firestore Timestamp
   createdAt?: Date;
-};
+}
 
 const EVENT_COLORS: Record<EventType, string> = {
   FITTED: "bg-green-100 text-green-700 ring-green-600/20",

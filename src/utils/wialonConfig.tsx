@@ -85,7 +85,7 @@ const loginToWialon = ({ token, baseUrl }: { token: string, baseUrl: string }): 
  * Returns a list of units, the number of which depends on the token.
  * @returns {Promise<Array<any>>} A promise that resolves to an array of units.
  */
-const getWialonUnits = (): Promise<Array<any>> => {
+const getWialonUnits = (): Promise<any[]> => {
   console.log(`Mock: Fetching Wialon units...`);
   return new Promise((resolve) => {
     setTimeout(() => {

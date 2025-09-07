@@ -67,7 +67,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) =>
   });
 
   // Normalize all trips for consistent structure
-  const normalizeTrip = (t: any, source: string = "internal"): Trip => ({
+  const normalizeTrip = (t: any, source = "internal"): Trip => ({
     id: t.id,
     tripNumber: t.tripNumber || t.loadRef || `TR-${t.id?.substring(0, 8) || ""}`,
     origin: t.origin || "Unknown",
@@ -1036,7 +1036,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) =>
         }}
         onSubmit={async (data, files) => {
           if (!costTripId) return;
-          await addCostEntry({ ...(data as any), tripId: costTripId } as any, files);
+          await addCostEntry({ ...(data as any), tripId: costTripId }, files);
           setIsCostModalOpen(false);
           setCostTripId(null);
         }}
@@ -1053,7 +1053,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) =>
           tripData={systemCostsTrip as any}
           onGenerateCosts={async (costs) => {
             for (const c of costs) {
-              await addCostEntry({ ...(c as any), tripId: systemCostsTrip.id } as any);
+              await addCostEntry({ ...(c as any), tripId: systemCostsTrip.id });
             }
             setIsSystemCostsOpen(false);
             setSystemCostsTrip(null);
@@ -1064,7 +1064,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD" }) =>
       {/* Status update modal */}
       {statusTrip && statusType && (
         <TripStatusUpdateModal
-          isOpen={true}
+          isOpen
           onClose={() => {
             setStatusTrip(null);
             setStatusType(null);

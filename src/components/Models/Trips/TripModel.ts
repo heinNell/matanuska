@@ -21,7 +21,7 @@ export {
 // Additional helper methods for the domain
 export class TripService {
   // Calculate estimated trip duration
-  static calculateEstimatedDuration(_origin: string, _destination: string, avgSpeed: number = 70): number {
+  static calculateEstimatedDuration(_origin: string, _destination: string, avgSpeed = 70): number {
     // Placeholder: assume a nominal 300 km trip and estimate time by avgSpeed,
     // with a small random jitter; clamp result between 2 and 8 hours.
     const nominalDistanceKm = 300;
@@ -46,7 +46,7 @@ export class TripService {
   }
 
   // Calculate estimated fuel consumption
-  static calculateEstimatedFuelConsumption(distance: number, avgConsumption: number = 30): number {
+  static calculateEstimatedFuelConsumption(distance: number, avgConsumption = 30): number {
     // avgConsumption in liters per 100km
     return (distance / 100) * avgConsumption;
   }

@@ -10,7 +10,7 @@ export const DriverManager: React.FC = () => {
   const { loggedIn, error, session } = useWialonSession(sdkReady);
   const resources = useWialonResources(session, loggedIn) || [];
   const [selectedRes, setSelectedRes] = useState<number | null>(null);
-  const [formError, setFormError] = useState<string | null>(null) as [string | null, React.Dispatch<React.SetStateAction<string | null>>];
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Set initial resource selection if available
   useEffect(() => {

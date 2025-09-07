@@ -154,8 +154,8 @@ export const isOnline = (): boolean => {
 // Helper to retry failed operations with exponential backoff
 export const retryOperation = async <T>(
   operation: () => Promise<T>,
-  maxRetries: number = 3,
-  initialDelayMs: number = 1000
+  maxRetries = 3,
+  initialDelayMs = 1000
 ): Promise<T> => {
   let lastError: any = new Error('Operation failed after max retries');
   let delay = initialDelayMs;

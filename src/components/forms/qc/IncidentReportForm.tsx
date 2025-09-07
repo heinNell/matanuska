@@ -46,7 +46,7 @@ const IncidentReportForm: React.FC<IncidentReportFormProps> = ({
     vehicleNumber: initialData?.vehicleNumber ?? "",
     vin: initialData?.vin ?? "",
     vehicleName: initialData?.vehicleName ?? "",
-  date: (initialData?.date ?? new Date().toISOString().split("T")[0]) as string,
+  date: (initialData?.date ?? new Date().toISOString().split("T")[0]),
   time: initialData?.time ?? new Date().toTimeString().slice(0, 5),
     location: initialData?.location ?? "",
     incidentType: initialData?.incidentType ?? "",

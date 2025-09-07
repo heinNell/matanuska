@@ -158,7 +158,7 @@ const GoogleMapsTest: React.FC = () => {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
+               />
             </div>
           </div>
         </div>

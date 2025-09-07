@@ -4,11 +4,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import tripSchema, { TripFormData } from './schemas/tripSchema';
 import FormSelector from '../forms/FormSelector';
 
-type Props = {
+interface Props {
   defaultValues?: Partial<TripFormData>;
   // accept any here to avoid strict resolver/type mismatch; validation still occurs via yup
   onSubmit: (data: any) => Promise<void> | void;
-};
+}
 
 const TripForm: React.FC<Props> = ({ defaultValues = {}, onSubmit }) => {
   const {

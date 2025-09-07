@@ -206,7 +206,7 @@ const ClientAnalytics: React.FC<ClientAnalyticsProps> = ({
       }
 
       // Safely add revenue - we know it exists because we just created it if it didn't
-      clientRevenues[trip.clientName]!.revenue += trip.baseRevenue;
+      clientRevenues[trip.clientName].revenue += trip.baseRevenue;
     });
 
     // Convert to array and sort

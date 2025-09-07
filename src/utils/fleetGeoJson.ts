@@ -25,14 +25,14 @@ interface WialonUnit {
     url: string;
     imgRot: string;
   };
-  profile?: Array<{
+  profile?: {
     id: number;
     n: string;
     v: string;
     ct: number;
     mt: number;
-  }>;
-  sensors?: Array<{
+  }[];
+  sensors?: {
     id: number;
     n: string;
     t: string;
@@ -46,7 +46,7 @@ interface WialonUnit {
     tbl: any[];
     ct: number;
     mt: number;
-  }>;
+  }[];
   // Additional Wialon properties as needed
 }
 

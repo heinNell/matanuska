@@ -101,7 +101,7 @@ const PerformanceAnalytics: React.FC = () => {
                 <span className="text-sm text-gray-600">94.2%</span>
               </div>
               <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full" style={{ width: "94.2%" }}></div>
+                <div className="h-full bg-green-500 rounded-full" style={{ width: "94.2%" }} />
               </div>
             </div>
 
@@ -111,7 +111,7 @@ const PerformanceAnalytics: React.FC = () => {
                 <span className="text-sm text-gray-600">91.8%</span>
               </div>
               <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full" style={{ width: "91.8%" }}></div>
+                <div className="h-full bg-green-500 rounded-full" style={{ width: "91.8%" }} />
               </div>
             </div>
 
@@ -121,7 +121,7 @@ const PerformanceAnalytics: React.FC = () => {
                 <span className="text-sm text-gray-600">88.5%</span>
               </div>
               <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full" style={{ width: "88.5%" }}></div>
+                <div className="h-full bg-green-500 rounded-full" style={{ width: "88.5%" }} />
               </div>
             </div>
 
@@ -131,7 +131,7 @@ const PerformanceAnalytics: React.FC = () => {
                 <span className="text-sm text-gray-600">86.3%</span>
               </div>
               <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full" style={{ width: "86.3%" }}></div>
+                <div className="h-full bg-green-500 rounded-full" style={{ width: "86.3%" }} />
               </div>
             </div>
 
@@ -141,7 +141,7 @@ const PerformanceAnalytics: React.FC = () => {
                 <span className="text-sm text-gray-600">82.9%</span>
               </div>
               <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full" style={{ width: "82.9%" }}></div>
+                <div className="h-full bg-green-500 rounded-full" style={{ width: "82.9%" }} />
               </div>
             </div>
           </div>
@@ -156,16 +156,16 @@ const PerformanceAnalytics: React.FC = () => {
           <CardContent>
             {/* Simulated Line Chart */}
             <div className="h-64 flex items-end justify-between px-2">
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[60%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[70%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[65%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[75%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[72%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[80%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[82%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[85%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[90%]"></div>
-              <div className="w-[8%] bg-blue-500 rounded-t-md h-[93%]"></div>
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[60%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[70%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[65%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[75%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[72%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[80%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[82%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[85%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[90%]" />
+              <div className="w-[8%] bg-blue-500 rounded-t-md h-[93%]" />
             </div>
             <div className="flex justify-between mt-2 text-xs text-gray-600">
               <div>Jan</div>
@@ -192,16 +192,16 @@ const PerformanceAnalytics: React.FC = () => {
           <CardContent>
             {/* Simulated Line Chart */}
             <div className="h-64 flex items-end justify-between px-2">
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[88%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[85%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[90%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[82%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[80%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[75%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[83%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[87%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[85%]"></div>
-              <div className="w-[8%] bg-green-500 rounded-t-md h-[87%]"></div>
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[88%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[85%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[90%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[82%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[80%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[75%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[83%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[87%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[85%]" />
+              <div className="w-[8%] bg-green-500 rounded-t-md h-[87%]" />
             </div>
             <div className="flex justify-between mt-2 text-xs text-gray-600">
               <div>Jan</div>

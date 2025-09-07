@@ -95,7 +95,7 @@ const PaidInvoicesPage: React.FC = () => {
       {/* Loading and Error States */}
       {loading && (
         <div className="bg-white p-8 rounded-lg shadow flex justify-center items-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700" />
           <span className="ml-3 text-gray-700">Loading invoices...</span>
         </div>
       )}

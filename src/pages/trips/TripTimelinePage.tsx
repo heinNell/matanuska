@@ -433,7 +433,7 @@ const TripTimelinePage: React.FC = () => {
                   <span
                     className="inline-block w-2 h-2 rounded-full"
                     style={{ background: TYPE_COLORS[st] || "#64748b" }}
-                  ></span>
+                   />
                   {st.replace("_", " ")}
                   <span className="text-[10px] opacity-70">{stats.byStatus[st]}</span>
                 </button>
@@ -627,7 +627,7 @@ const TripTimelinePage: React.FC = () => {
             </div>
           ) : loading ? (
             <div className="flex items-center justify-center h-96">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
               <span className="ml-3 text-gray-700">Loading timeline data...</span>
             </div>
           ) : filteredVehicles.length === 0 ? (
@@ -794,7 +794,7 @@ const TripTimelinePage: React.FC = () => {
                         background: TYPE_COLORS[st] || "#64748b",
                         opacity: active ? 1 : 0.3,
                       }}
-                    ></span>
+                     />
                     {st.replace("_", " ")}
                   </button>
                 );

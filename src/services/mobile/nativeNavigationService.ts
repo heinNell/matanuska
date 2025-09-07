@@ -18,7 +18,7 @@ class NativeNavigationService {
   private isNativeApp: boolean;
   private deepLinkHandlers: DeepLinkHandler[] = [];
   private navigationHistory: string[] = [];
-  private currentRoute: string = '/';
+  private currentRoute = '/';
 
   constructor() {
     this.isNativeApp = Capacitor.isNativePlatform();

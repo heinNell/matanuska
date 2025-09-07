@@ -72,7 +72,7 @@ export function calculateRemainingTreadLifeKm(
   treadDepth: number,
   previousTreadDepth: number,
   distanceTraveled: number,
-  minimumTread: number = 3
+  minimumTread = 3
 ): number {
   const treadUsed = previousTreadDepth - treadDepth;
   const wearPerKm = distanceTraveled > 0 ? treadUsed / distanceTraveled : 0;

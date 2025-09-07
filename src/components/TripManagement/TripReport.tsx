@@ -27,10 +27,10 @@ const TripReport: React.FC<TripReportProps> = ({ trip, onAddDelay, onDrillDownDe
     if (delayDescription.trim() && delayType && delaySeverity) {
       onAddDelay?.({
         tripId: trip.id,
-        delayType: delayType as DelayReason["delayType"],
+        delayType: delayType,
         description: delayDescription,
         delayDuration: delayDuration,
-        severity: delaySeverity as DelayReason["severity"],
+        severity: delaySeverity,
         reportedAt: new Date().toISOString(),
         reportedBy: "CurrentUser",
       });

@@ -392,7 +392,7 @@ const InventorySelectionForm: React.FC<InventorySelectionFormProps> = ({
             id="totalPrice"
             className="input input-bordered w-full bg-gray-100"
             value={formData.totalPrice || 0}
-            disabled={true}
+            disabled
             readOnly
           />
         </div>

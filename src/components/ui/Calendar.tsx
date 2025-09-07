@@ -204,7 +204,7 @@ const Calendar: React.FC = () => {
 
             {/* Calendar days */}
             {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-              <div key={`empty-${index}`} className="p-2 min-h-[120px] bg-gray-50"></div>
+              <div key={`empty-${index}`} className="p-2 min-h-[120px] bg-gray-50" />
             ))}
 
             {Array.from({ length: daysInMonth }).map((_, index) => {

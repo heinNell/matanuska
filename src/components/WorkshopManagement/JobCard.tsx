@@ -160,7 +160,7 @@ const JobCard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Define type for future components data
-  type FutureComponentsData = {
+  interface FutureComponentsData {
     assignedParts: any[]; // Using any[] to avoid type conflicts with mock data
     handleTaskAdd?: (task: Omit<JobCardTask, "id">) => void;
     handleTaskDelete?: (taskId: string) => void;
@@ -171,7 +171,7 @@ const JobCard: React.FC = () => {
     handleUpdatePartQuantity?: (assignmentId: string, newQuantity: number) => Promise<void>;
     handleCompleteJob?: () => Promise<void>;
     handleGenerateInvoice: () => Promise<void>; // Remove optional since it's always assigned
-  };
+  }
 
   // Store components' data in a ref to avoid unused variable warnings
   // while keeping them ready for when components are implemented

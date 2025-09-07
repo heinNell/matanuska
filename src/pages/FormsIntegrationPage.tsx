@@ -84,7 +84,7 @@ const FormsIntegrationPage: React.FC = () => {
               className={`w-2 h-2 rounded-full mr-2 ${
                 syncContext.isOnline ? "bg-green-500" : "bg-red-500"
               }`}
-            ></span>
+             />
             {syncContext.isOnline ? "Online" : "Offline"}
           </div>
         </div>

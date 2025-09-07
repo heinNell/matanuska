@@ -201,7 +201,7 @@ const CreateInvoicePage: React.FC = () => {
               className="w-full border border-gray-300 rounded-md p-2"
               rows={4}
               placeholder="Add any additional notes or terms and conditions..."
-            ></textarea>
+             />
           </div>
         </div>
 

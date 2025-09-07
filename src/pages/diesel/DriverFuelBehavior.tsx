@@ -301,7 +301,7 @@ const DriverFuelBehavior: React.FC = () => {
                                 : "bg-red-500"
                           }`}
                           style={{ width: `${driver.overallScore}%` }}
-                        ></div>
+                         />
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

@@ -143,7 +143,7 @@ export function useClientSearch(searchTerm = '', options: ClientSearchOptions = 
         const db = getFirestore();
 
         // Get all clients (we'll filter client-side)
-        let clientCollectionRef = collection(db, 'clients'); // Use a different name to avoid confusion
+        const clientCollectionRef = collection(db, 'clients'); // Use a different name to avoid confusion
 
         let clientQuery = query(clientCollectionRef); // Start with a base query
 

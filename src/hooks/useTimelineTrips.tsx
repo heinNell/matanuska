@@ -59,7 +59,7 @@ export function useTimelineTrips(webhookTrips: unknown[] = []) {
     const safeWebhooks: RealtimeTrip[] = (webhookTrips ?? []).filter(isValidTrip);
     const allTrips: RealtimeTrip[] = [...safeFetched, ...safeWebhooks];
 
-    const vehicleSet: Set<string> = new Set();
+    const vehicleSet = new Set<string>();
     const fleetMap: Record<string, boolean> = {};
     const timelineTrips: TimelineTrip[] = [];
 

@@ -268,7 +268,7 @@ const TyreMobilePage: React.FC<TyreMobilePageProps> = ({ mode, tyreId }) => {
   return (
     <MobileLayout
       title="Tyre Management"
-      showStatusBar={true}
+      showStatusBar
       statusBarStyle="dark"
       backgroundColor="#ffffff"
     >

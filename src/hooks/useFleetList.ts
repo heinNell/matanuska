@@ -42,7 +42,7 @@ export function useFleetList(options?: {
 
     // Map to dropdown options
     return vehicles.map(vehicle => {
-      const value = (vehicle.fleetNo ?? vehicle.registrationNo ?? vehicle.id) as string;
+      const value = (vehicle.fleetNo ?? vehicle.registrationNo ?? vehicle.id);
       const manufacturer = vehicle.manufacturer ?? '';
       const model = vehicle.model ?? '';
       const label = `${value} - ${manufacturer} ${model}`.trim();
@@ -51,7 +51,7 @@ export function useFleetList(options?: {
         value,
         label,
         registration: vehicle.registrationNo,
-        type: (vehicle.category ?? '') as string,
+        type: (vehicle.category ?? ''),
         status: vehicle.status,
         ...(options?.includeDetails
           ? { details: { ...vehicle, km: vehicle.km ?? (vehicle as Vehicle & { km?: number }).km } as Vehicle }

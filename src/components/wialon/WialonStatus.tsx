@@ -37,7 +37,7 @@ const WialonStatus: React.FC<WialonStatusProps> = ({
                 <div className="flex items-center">
                     <div
                         className={`w-3 h-3 rounded-full mr-2 ${status.connected ? "bg-green-500" : "bg-red-500"}`}
-                    ></div>
+                     />
                     <span className="font-medium text-gray-900 dark:text-gray-100">
                         {connectionLoading
                             ? "Checking connection..."

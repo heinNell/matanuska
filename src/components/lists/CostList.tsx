@@ -111,7 +111,7 @@ const CostList: React.FC<CostListProps> = ({ costs, onEdit, onDelete, onViewAtta
             <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
               {formatCurrency(totalCost)}
             </td>
-            <td></td>
+            <td />
           </tr>
         </tbody>
       </table>

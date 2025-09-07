@@ -109,7 +109,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center">
               <span
                 className={`w-2 h-2 rounded-full mr-2 ${syncContext.isOnline ? "bg-green-500" : "bg-red-500"}`}
-              ></span>
+               />
               {syncContext.isOnline ? "System Online" : "System Offline"}
             </div>
           </div>
@@ -182,7 +182,7 @@ const Dashboard: React.FC = () => {
             </div>
             {loading && (
               <div className="flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-lg">
-                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent mr-3"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent mr-3" />
                 <span className="text-sm">Loading map data...</span>
               </div>
             )}
@@ -192,10 +192,10 @@ const Dashboard: React.FC = () => {
               locations={locations}
               center={mapCenter}
               height="600px"
-              showInfoOnHover={true}
+              showInfoOnHover
               onLocationSelect={handleLocationSelect}
-              showPlacesSearch={true}
-              showRoutes={true}
+              showPlacesSearch
+              showRoutes
             />
           </div>
         </div>

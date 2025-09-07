@@ -392,7 +392,7 @@ const LicenseManagement: React.FC = () => {
                     style={{
                       width: `${licenses.length > 0 ? (licenses.filter((l) => l.status === "active").length / licenses.length) * 100 : 0}%`,
                     }}
-                  ></div>
+                   />
                 </div>
               </div>
               <div className="mt-6">

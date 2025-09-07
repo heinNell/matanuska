@@ -73,7 +73,7 @@ const CompletedTripEditModal: React.FC<CompletedTripEditModalProps> = ({
     if (!validateForm()) return;
 
     // Identify changed fields
-    const changes: Array<{ field: string; oldValue: string; newValue: string }> = [];
+    const changes: { field: string; oldValue: string; newValue: string }[] = [];
 
     Object.keys(formData).forEach((key) => {
       const originalValue = trip[key as keyof Trip]?.toString() || "";

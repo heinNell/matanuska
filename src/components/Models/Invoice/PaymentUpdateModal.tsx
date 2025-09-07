@@ -50,7 +50,7 @@ const PaymentUpdateModal: React.FC<PaymentUpdateModalProps> = ({
   }>({
     paymentStatus: (trip.paymentStatus as PaymentStatus) || "unpaid",
     paymentAmount: trip.paymentAmount?.toString() || "",
-    paymentReceivedDate: (trip.paymentReceivedDate || new Date().toISOString().split("T")[0])!,
+    paymentReceivedDate: (trip.paymentReceivedDate || new Date().toISOString().split("T")[0]),
     paymentNotes: "",
     paymentMethod: "bank_transfer",
     bankReference: "",

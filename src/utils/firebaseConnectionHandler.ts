@@ -24,8 +24,8 @@ const MAX_RETRY_ATTEMPTS = 3;
 
 // --- HEALTH CHECK HELPERS (leave as-is) ---
 const checkEmulatorHealth = async (
-  host: string = "127.0.0.1",
-  port: number = 8081
+  host = "127.0.0.1",
+  port = 8081
 ): Promise<boolean> => {
   try {
     // We don't need the response as we're just checking if the request succeeds
@@ -100,7 +100,7 @@ export const onConnectionStatusChanged = (
 
 export const getConnectionStatus = () => {
   return {
-    status: connectionStatus as ConnectionStatus,
+    status: connectionStatus,
     error: connectionError
   };
 };

@@ -128,12 +128,12 @@ export const isValidApiKeyFormat = (apiKey: string | undefined): boolean => {
 /**
  * Track requested libraries to prevent duplicate loading
  */
-let requestedLibraries: Set<string> = new Set();
+const requestedLibraries = new Set<string>();
 
 /**
  * Main function to load Google Maps script
  */
-export const loadGoogleMapsScript = async (libraries: string = "places"): Promise<void> => {
+export const loadGoogleMapsScript = async (libraries = "places"): Promise<void> => {
   // If already loaded, return immediately
   if (window.google && window.google.maps) {
     console.log("[Maps Loader] Google Maps already loaded");
@@ -298,7 +298,7 @@ export const loadGoogleMapsScript = async (libraries: string = "places"): Promis
 /**
  * React hook for using Google Maps in components
  */
-export const useLoadGoogleMaps = (libraries: string = "places") => {
+export const useLoadGoogleMaps = (libraries = "places") => {
   const [isLoaded, setIsLoaded] = useState(isGoogleMapsAPILoaded());
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(!isLoaded);

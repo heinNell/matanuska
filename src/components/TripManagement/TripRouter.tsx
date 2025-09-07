@@ -147,7 +147,7 @@ const TripRouter: React.FC = () => {
                       <span className="text-sm">92%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-600 h-2 rounded-full" style={{ width: "92%" }}></div>
+                      <div className="bg-green-600 h-2 rounded-full" style={{ width: "92%" }} />
                     </div>
                   </div>
                   <div>
@@ -156,7 +156,7 @@ const TripRouter: React.FC = () => {
                       <span className="text-sm">89%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: "89%" }}></div>
+                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: "89%" }} />
                     </div>
                   </div>
                   <div>
@@ -165,7 +165,7 @@ const TripRouter: React.FC = () => {
                       <span className="text-sm">95%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-600 h-2 rounded-full" style={{ width: "95%" }}></div>
+                      <div className="bg-green-600 h-2 rounded-full" style={{ width: "95%" }} />
                     </div>
                   </div>
                 </div>

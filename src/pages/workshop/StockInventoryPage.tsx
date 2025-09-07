@@ -40,7 +40,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
     vendor: "",
     vendorId: "",
     location: "",
-    lastRestocked: new Date().toISOString().split("T")[0] as string, // yyyy-mm-dd
+    lastRestocked: new Date().toISOString().split("T")[0], // yyyy-mm-dd
   });
 
   const [importFile, setImportFile] = useState<File | null>(null);
@@ -123,7 +123,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
         vendor: "",
         vendorId: "",
         location: "",
-        lastRestocked: new Date().toISOString().split("T")[0] as string,
+        lastRestocked: new Date().toISOString().split("T")[0],
       });
       setEditingItem(null);
       setShowAddForm(false);
@@ -242,7 +242,7 @@ const StockInventoryPage: React.FC<StockInventoryPageProps> = () => {
               vendor: record.vendor || "",
               vendorId: record.vendorId || "",
               location: record.location || "",
-              lastRestocked: (record.lastRestocked ?? new Date().toISOString().split("T")[0]) as string,
+              lastRestocked: (record.lastRestocked ?? new Date().toISOString().split("T")[0]),
             };
             const existingItem = stockItems.find((i) => i.itemCode === stockItem.itemCode);
             if (existingItem) {

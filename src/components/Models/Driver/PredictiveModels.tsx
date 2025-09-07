@@ -318,7 +318,7 @@ const PredictiveModels: React.FC = () => {
 
       {loading && (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
         </div>
       )}
 
@@ -372,7 +372,7 @@ const PredictiveModels: React.FC = () => {
                               : "bg-red-500"
                         }`}
                         style={{ width: `${selectedModel.accuracy}%` }}
-                      ></div>
+                       />
                     </div>
                   </div>
 
@@ -597,8 +597,8 @@ const PredictiveModels: React.FC = () => {
                   {(selectedModel.predictions || []).slice(0, 10).map((prediction, index) => {
                     const accuracy = prediction.actualValue
                       ? (1 -
-                          Math.abs(prediction.predictedValue - (prediction.actualValue as number)) /
-                            (prediction.actualValue as number)) *
+                          Math.abs(prediction.predictedValue - (prediction.actualValue)) /
+                            (prediction.actualValue)) *
                         100
                       : null;
 
@@ -615,7 +615,7 @@ const PredictiveModels: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {prediction.actualValue !== undefined
-                            ? (prediction.actualValue as number).toFixed(2)
+                            ? (prediction.actualValue).toFixed(2)
                             : "Pending"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -630,7 +630,7 @@ const PredictiveModels: React.FC = () => {
                                       : "bg-red-500"
                                 }`}
                                 style={{ width: `${prediction.confidence * 100}%` }}
-                              ></div>
+                               />
                             </div>
                             <span className="text-sm text-gray-700">
                               {(prediction.confidence * 100).toFixed(1)}%

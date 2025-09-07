@@ -158,7 +158,7 @@ const TyreManagementPage: React.FC = () => {
     () => ({
       serialNumber: `TY-${Math.floor(1000 + Math.random() * 9000)}`,
       dotCode: "",
-      manufacturingDate: new Date().toISOString().slice(0, 10) as string,
+      manufacturingDate: new Date().toISOString().slice(0, 10),
       brand: "",
       model: "",
       pattern: "",
@@ -167,7 +167,7 @@ const TyreManagementPage: React.FC = () => {
       speedRating: "",
   type: ("steer" satisfies TyreType),
       purchaseDetails: {
-        date: new Date().toISOString().slice(0, 10) as string,
+        date: new Date().toISOString().slice(0, 10),
         cost: 0,
         supplier: "",
         warranty: "",
@@ -185,7 +185,7 @@ const TyreManagementPage: React.FC = () => {
         pressure: 0,
         temperature: 0,
   status: "good" as TyreConditionStatus,
-        lastInspectionDate: new Date().toISOString().slice(0, 10) as string,
+        lastInspectionDate: new Date().toISOString().slice(0, 10),
         nextInspectionDue: "", // Corrected: Ensures this required field is present
       },
   status: "new" as TyreStatus,
@@ -324,7 +324,7 @@ const TyreManagementPage: React.FC = () => {
 
       // Create a shallow copy without id field for update
       const dataWithoutId = { ...data } as any;
-      delete (dataWithoutId as any).id;
+      delete (dataWithoutId).id;
       await updateDoc(tyreRef, { ...dataWithoutId, updatedAt: serverTimestamp() });
 
       // Update the tyre in the local state
@@ -473,7 +473,7 @@ const TyreManagementPage: React.FC = () => {
       {/* Loading and Error States */}
       {loading && (
         <div className="bg-white p-8 rounded-lg shadow flex justify-center items-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700" />
           <span className="ml-3 text-gray-700">Loading tyre inventory...</span>
         </div>
       )}
@@ -577,7 +577,7 @@ const TyreManagementPage: React.FC = () => {
                         quantity: 1,
                         reorderLevel: 5,
                         cost: t.purchaseDetails?.cost || 0,
-                        lastUpdated: new Date().toISOString().slice(0, 10) as string,
+                        lastUpdated: new Date().toISOString().slice(0, 10),
                         location: t.location || "Warehouse",
                       }))}
                       assignments={tyres
@@ -794,7 +794,7 @@ const TyreManagementPage: React.FC = () => {
             <div className="space-y-6">
               {loading ? (
                 <div className="flex items-center justify-center p-10">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700"></div>
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700" />
                   <span className="ml-3 text-gray-700">Loading analytics...</span>
                 </div>
               ) : error ? (
@@ -856,7 +856,7 @@ const TyreManagementPage: React.FC = () => {
             <div className="space-y-6">
               {loading ? (
                 <div className="flex items-center justify-center p-10">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700"></div>
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700" />
                   <span className="ml-3 text-gray-700">Loading reports...</span>
                 </div>
               ) : error ? (
@@ -947,7 +947,7 @@ const TyreManagementPage: React.FC = () => {
             } else {
               // Create a properly typed purchase details object
               tyreData.purchaseDetails = {
-                date: new Date().toISOString().slice(0, 10) as string,
+                date: new Date().toISOString().slice(0, 10),
                 cost: 0,
                 supplier: "",
                 warranty: "",
@@ -969,7 +969,7 @@ const TyreManagementPage: React.FC = () => {
           onSubmit={async (tyreData: Partial<Tyre>): Promise<void> => {
             await handleUpdateTyre(tyreData as Tyre);
           }}
-          editMode={true}
+          editMode
           initialData={editTyre} // Pass the selected tyre directly
         />
       )}

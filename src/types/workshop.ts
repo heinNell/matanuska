@@ -14,11 +14,11 @@ export interface JobCard {
   workDescription: string;
   estimatedHours: number;
   actualHours: number;
-  partsRequired: Array<{
+  partsRequired: {
     partId: string;
     quantity: number;
     cost: number;
-  }>;
+  }[];
   laborCost: number;
   partsCost: number;
   totalCost: number;
@@ -39,9 +39,9 @@ export interface JobCard {
     passed: boolean;
     comments: string;
   };
-  tasks: Array<{
+  tasks: {
     id: string;
     description: string;
     status: 'pending' | 'in_progress' | 'completed';
-  }>;
+  }[];
 }

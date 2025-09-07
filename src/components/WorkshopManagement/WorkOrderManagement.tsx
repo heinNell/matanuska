@@ -200,7 +200,7 @@ const WorkOrderManagement: React.FC<WorkOrderManagementProps> = ({
       <div className="flex-1 overflow-auto">
         {isLoading ? (
           <div className="h-full flex items-center justify-center">
-            <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin"></div>
+            <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin" />
           </div>
         ) : filteredWorkOrders.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-gray-500">
@@ -276,7 +276,7 @@ const WorkOrderManagement: React.FC<WorkOrderManagementProps> = ({
                           <div
                             className="bg-blue-600 h-2.5 rounded-full"
                             style={{ width: `${completionPercentage}%` }}
-                          ></div>
+                           />
                         </div>
                       </div>
 

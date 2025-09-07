@@ -93,7 +93,7 @@ const ManualDieselEntryModal: React.FC<ManualDieselEntryModalProps> = ({ isOpen,
   ) => {
     const value =
       typeof event === "object"
-        ? (event as React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>)
+        ? (event)
             .target.value
         : event;
 

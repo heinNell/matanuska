@@ -229,7 +229,7 @@ export const WialonGeofences: React.FC<WialonGeofencesProps> = ({
     return (
       <div className={`wialon-geofences loading ${className}`}>
         <div className="loading-container">
-          <div className="loading-spinner"></div>
+          <div className="loading-spinner" />
           <p>Loading geofences...</p>
         </div>
       </div>
@@ -314,7 +314,7 @@ export const WialonGeofences: React.FC<WialonGeofencesProps> = ({
                   className={`geofence-item ${geofence.active ? 'active' : 'inactive'} ${selectedGeofence?.id === geofence.id ? 'selected' : ''}`}
                   onClick={() => handleGeofenceSelect(geofence)}
                 >
-                  <div className="geofence-color" style={{ backgroundColor: geofence.color }}></div>
+                  <div className="geofence-color" style={{ backgroundColor: geofence.color }} />
 
                   <div className="geofence-info">
                     <div className="geofence-header">

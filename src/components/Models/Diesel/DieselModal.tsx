@@ -6,12 +6,12 @@ import { Timestamp } from "firebase/firestore";
 // If you have a UI kit barrel, swap these for your components
 import { Button } from "../../../components/ui/Button";
 
-type Props = {
+interface Props {
   open: boolean;
   onClose: () => void;
   /** If provided -> edit mode. If omitted -> create mode. */
   initial?: DieselConsumptionRecord | null;
-};
+}
 
 export default function DieselModal({ open, onClose, initial }: Props) {
   const isEdit = Boolean(initial?.id);

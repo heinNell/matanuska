@@ -577,12 +577,12 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
                     r="10"
                     stroke="currentColor"
                     strokeWidth="4"
-                  ></circle>
+                   />
                   <path
                     className="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                   />
                 </svg>
                 Importing...
               </>
@@ -600,7 +600,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
                     strokeLinejoin="round"
                     strokeWidth="2"
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                  ></path>
+                   />
                 </svg>
                 Import CSV
               </>
@@ -1070,7 +1070,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
         }}
         onSubmit={async (data, files) => {
           if (!costTripId) return;
-          await addCostEntry({ ...(data as any), tripId: costTripId } as any, files);
+          await addCostEntry({ ...(data as any), tripId: costTripId }, files);
           setIsCostModalOpen(false);
           setCostTripId(null);
         }}
@@ -1087,7 +1087,7 @@ const ActiveTrips: React.FC<ActiveTripsProps> = ({ displayCurrency = "USD", unit
           tripData={systemCostsTrip as any}
           onGenerateCosts={async (costs) => {
             for (const c of costs) {
-              await addCostEntry({ ...(c as any), tripId: systemCostsTrip.id } as any);
+              await addCostEntry({ ...(c as any), tripId: systemCostsTrip.id });
             }
             setIsSystemCostsOpen(false);
             setSystemCostsTrip(null);

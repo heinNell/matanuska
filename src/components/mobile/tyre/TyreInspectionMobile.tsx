@@ -42,7 +42,7 @@ const TyreInspectionMobile: React.FC<TyreInspectionMobileProps> = ({
   const [formData, setFormData] = useState<TyreInspectionData>({
     tyreId: tyreId || '',
     tyreNumber: tyreNumber || '',
-    inspectionDate: new Date().toISOString().split('T')[0] as string,
+    inspectionDate: new Date().toISOString().split('T')[0],
     inspectorName: '',
     mileage: 0,
     treadDepthOutside: 0,

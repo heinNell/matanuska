@@ -10,7 +10,7 @@ interface JobCardKanbanBoardProps {
   isLoading?: boolean;
 }
 
-const statusColumns: { [key in JobCardStatus]?: { title: string, color: string } } = {
+const statusColumns: Partial<Record<JobCardStatus, { title: string, color: string }>> = {
   created: { title: 'Created', color: 'bg-blue-100 border-blue-300' },
   initiated: { title: 'New', color: 'bg-blue-100 border-blue-300' },
   assigned: { title: 'Assigned', color: 'bg-purple-100 border-purple-300' },
@@ -32,7 +32,7 @@ const JobCardKanbanBoard: React.FC<JobCardKanbanBoardProps> = ({
 
   // Group job cards by status
   const groupedCards = cards.reduce((acc, card) => {
-    const status = card.status as JobCardStatus;
+    const status = card.status;
     if (!acc[status]) acc[status] = [];
     acc[status].push(card);
     return acc;
@@ -72,7 +72,7 @@ const JobCardKanbanBoard: React.FC<JobCardKanbanBoardProps> = ({
     <div className="h-full">
       {isLoading ? (
         <div className="h-full flex items-center justify-center">
-          <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin"></div>
+          <div className="spinner border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin" />
         </div>
       ) : (
         <DragDropContext onDragEnd={handleDragEnd}>
@@ -112,7 +112,7 @@ const JobCardKanbanBoard: React.FC<JobCardKanbanBoardProps> = ({
                               <JobCardCard
                                 jobCard={jobCard}
                                 showActions={false}
-                                compact={true}
+                                compact
                               />
                             </div>
                           )}

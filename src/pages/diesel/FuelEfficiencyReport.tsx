@@ -347,8 +347,7 @@ const FuelEfficiencyReport: React.FC = () => {
             const pageAvgEfficiency = (pageTotalFuel / pageTotalDistance) * 100;
 
             return (
-              <>
-                <Table.Summary.Row>
+              <Table.Summary.Row>
                   <Table.Summary.Cell index={0} colSpan={2}>
                     <Text strong>Summary:</Text>
                   </Table.Summary.Cell>
@@ -361,13 +360,12 @@ const FuelEfficiencyReport: React.FC = () => {
                   <Table.Summary.Cell index={4}>
                     <Text strong>{pageAvgEfficiency.toFixed(1)} L/100km</Text>
                   </Table.Summary.Cell>
-                  <Table.Summary.Cell index={5}></Table.Summary.Cell>
-                  <Table.Summary.Cell index={6}></Table.Summary.Cell>
+                  <Table.Summary.Cell index={5} />
+                  <Table.Summary.Cell index={6} />
                   <Table.Summary.Cell index={7}>
                     <Text strong>${pageTotalCost.toFixed(2)}</Text>
                   </Table.Summary.Cell>
                 </Table.Summary.Row>
-              </>
             );
           }}
         />

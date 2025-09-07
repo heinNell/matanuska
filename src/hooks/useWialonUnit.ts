@@ -53,7 +53,7 @@ export function useWialonUnit(unitId: number | null): UnitState {
 
   // Subscribe to common sensors
   useEffect(() => {
-    const cleanupFns: Array<() => void> = [];
+    const cleanupFns: (() => void)[] = [];
     if (unitId && unit) {
       const commonSensorIds = [1, 2, 3]; // configure
       commonSensorIds.forEach(id => {

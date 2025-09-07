@@ -88,7 +88,7 @@ export const loadWialonSDK = (options: WialonLoadOptions = {}): Promise<void> =>
  */
 export const initWialonSession = async (
   token: string,
-  baseUrl: string = "https://hst-api.wialon.com"
+  baseUrl = "https://hst-api.wialon.com"
 ): Promise<any> => {
   // Ensure Wialon SDK is loaded
   await loadWialonSDK({ baseUrl });

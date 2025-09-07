@@ -202,7 +202,7 @@ const InvoiceBuilder: React.FC = () => {
   };
 
   // Save invoice
-  const saveInvoice = (asDraft: boolean = true) => {
+  const saveInvoice = (asDraft = true) => {
     setIsLoading(true);
 
     setTimeout(() => {
@@ -364,7 +364,7 @@ const InvoiceBuilder: React.FC = () => {
                         <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Total
                         </th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -458,7 +458,7 @@ const InvoiceBuilder: React.FC = () => {
                       rows={3}
                       className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       placeholder="Any additional notes for the client..."
-                    ></textarea>
+                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -470,7 +470,7 @@ const InvoiceBuilder: React.FC = () => {
                       rows={3}
                       className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                       placeholder="Invoice terms and conditions..."
-                    ></textarea>
+                     />
                   </div>
                 </div>
               </CardContent>

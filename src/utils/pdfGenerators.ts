@@ -231,7 +231,7 @@ export const generateLoadConfirmationPDF = async (
   const pickupLines = splitText(data.pickupAddress || '', 10, contentWidth - 50);
   for (let i = 0; i < pickupLines.length; i++) {
     if (pickupLines[i]) {
-      doc.text(pickupLines[i] as string, margin + 50, yPos);
+      doc.text(pickupLines[i], margin + 50, yPos);
       yPos += 5;
     }
   }
@@ -244,7 +244,7 @@ export const generateLoadConfirmationPDF = async (
   const deliveryLines = splitText(data.deliveryAddress || '', 10, contentWidth - 50);
   for (let i = 0; i < deliveryLines.length; i++) {
     if (deliveryLines[i]) {
-      doc.text(deliveryLines[i] as string, margin + 50, yPos);
+      doc.text(deliveryLines[i], margin + 50, yPos);
       yPos += 5;
     }
   }
@@ -300,7 +300,7 @@ export const generateLoadConfirmationPDF = async (
     const instructionLines = splitText(data.specialInstructions || '', 10, contentWidth);
     for (let i = 0; i < instructionLines.length; i++) {
       if (instructionLines[i]) {
-        doc.text(instructionLines[i] as string, margin, yPos);
+        doc.text(instructionLines[i], margin, yPos);
         yPos += 5;
       }
     }
@@ -335,7 +335,7 @@ export const generateLoadConfirmationPDF = async (
   const declarationLines = splitText(declarationText, 10, contentWidth);
   for (let i = 0; i < declarationLines.length; i++) {
     if (declarationLines[i]) {
-      doc.text(declarationLines[i] as string, margin, yPos);
+      doc.text(declarationLines[i], margin, yPos);
       yPos += 5;
     }
   }

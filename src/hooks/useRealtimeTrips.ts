@@ -35,7 +35,7 @@ export function useRealtimeTrips(options?: {
 
     try {
       // Build query
-      let tripsQuery = collection(db, "trips");
+      const tripsQuery = collection(db, "trips");
       let q: any = tripsQuery;
 
       if (options?.onlyWebBook && options.status) {

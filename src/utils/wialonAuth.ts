@@ -30,7 +30,7 @@ export async function logoutWialon() {
 }
 
 export function getCurrentWialonUser() {
-  const session = window.wialon.core.Session.getInstance() as any;
+  const session = window.wialon.core.Session.getInstance();
   const user = session.getCurrUser?.() || session.getCurrentUser?.();
   return user ? user.getName() : null;
 }

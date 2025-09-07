@@ -803,7 +803,7 @@ const TyreInventoryManager: React.FC = () => {
               onChange={handleInputChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
               rows={3}
-            ></textarea>
+             />
           </div>
 
           <div className="flex justify-end space-x-3">
@@ -922,7 +922,7 @@ const TyreInventoryManager: React.FC = () => {
         {/* Tyres Table */}
         {loading ? (
           <div className="p-8 flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600" />
           </div>
         ) : filteredTyres.length === 0 ? (
           <div className="p-8 text-center text-gray-500">

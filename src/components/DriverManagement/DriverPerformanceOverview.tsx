@@ -14,8 +14,8 @@ import { formatDate, formatDateTime } from "../../utils/helpers";
 import { FileUpload, Input, Select, TextArea } from "../ui/FormElements";
 import Modal from "../ui/Modal";
 
-const ISO_TODAY = new Date().toISOString().split("T")[0] as string;
-const NOW_HHMM = new Date().toTimeString().slice(0, 5) as string;
+const ISO_TODAY = new Date().toISOString().split("T")[0];
+const NOW_HHMM = new Date().toTimeString().slice(0, 5);
 
 interface EventFormState {
   driverName: string;

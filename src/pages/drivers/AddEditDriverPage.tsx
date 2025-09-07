@@ -26,7 +26,7 @@ const AddEditDriverPage: React.FC = () => {
       if (!isEditMode) return;
 
       try {
-        const driverDoc = await getDoc(doc(db, "drivers", id as string));
+        const driverDoc = await getDoc(doc(db, "drivers", id));
         if (driverDoc.exists()) {
           setDriver(driverDoc.data() as Partial<DriverData>);
         } else {
@@ -77,7 +77,7 @@ const AddEditDriverPage: React.FC = () => {
   if (isEditMode && loading) {
     return (
       <div className="p-6 flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
       </div>
     );
   }

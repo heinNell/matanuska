@@ -129,7 +129,7 @@ const TyreInspection: React.FC = () => {
 
   // Form data state
   const [formData, setFormData] = useState<TyreInspectionFormData>({
-    date: new Date().toISOString().split("T")[0] as string,
+    date: new Date().toISOString().split("T")[0],
     inspector: "",
     fleetNumber: "",
     tyrePosition: "",
@@ -423,7 +423,7 @@ const TyreInspection: React.FC = () => {
         setTimeout(() => {
           setSuccess(false);
           setFormData({
-            date: new Date().toISOString().split("T")[0] as string,
+            date: new Date().toISOString().split("T")[0],
             inspector: formData.inspector, // Keep the inspector name
             fleetNumber: "",
             tyrePosition: "",
@@ -501,7 +501,7 @@ const TyreInspection: React.FC = () => {
                 label="Fleet Number"
                 placeholder="Select vehicle for inspection..."
                 activeOnly={false}
-                showDetails={true}
+                showDetails
               />
 
               <Input
@@ -573,7 +573,7 @@ const TyreInspection: React.FC = () => {
                                         : "bg-red-500"
                                   }`}
                                   style={{ height: `${height}%` }}
-                                ></div>
+                                 />
                                 <div className="text-xs mt-1 w-10 text-center">
                                   {new Date(insp.date).toLocaleDateString(undefined, {
                                     month: "short",
@@ -1095,7 +1095,7 @@ export const TyreInspectionForm: React.FC<TyreInspectionFormProps> = ({ onSave }
         label="Vehicle"
         placeholder="Select vehicle for inspection..."
         activeOnly={false}
-        showDetails={true}
+        showDetails
       />
 
       <Select

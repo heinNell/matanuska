@@ -56,7 +56,7 @@ const defaultFormData: DriverData = {
   country: "South Africa",
   employeeNumber: "",
   licenseInfo: defaultLicenseInfo,
-  dateHired: new Date().toISOString().split("T")[0] as string,
+  dateHired: new Date().toISOString().split("T")[0],
   status: "active",
   emergencyContact: defaultEmergencyContact,
   medicalInfo: defaultMedicalInfo,

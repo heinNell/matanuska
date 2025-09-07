@@ -27,11 +27,11 @@ interface CostCategory {
   amount: number;
   percentage: number;
   trend: "up" | "down" | "stable";
-  subcategories: Array<{
+  subcategories: {
     name: string;
     amount: number;
     percentage: number;
-  }>;
+  }[];
 }
 
 interface MonthlyData {
@@ -151,7 +151,7 @@ const IndirectCostBreakdown: React.FC = () => {
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center p-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-8">
@@ -254,8 +254,8 @@ const IndirectCostBreakdown: React.FC = () => {
                     <td className="px-4 py-2">Total</td>
                     <td className="px-4 py-2 text-right">{formatCurrency(totalIndirectCost)}</td>
                     <td className="px-4 py-2 text-center">100%</td>
-                    <td className="px-4 py-2"></td>
-                    <td className="px-4 py-2"></td>
+                    <td className="px-4 py-2" />
+                    <td className="px-4 py-2" />
                   </tr>
                 </tfoot>
               </table>

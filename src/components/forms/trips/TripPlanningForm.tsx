@@ -42,10 +42,10 @@ const TripPlanningForm: React.FC<TripPlanningFormProps> = ({ trip, onUpdate, onA
     if (!delayType || !delayDescription || !delaySeverity || !delayDuration) return;
     const delay: Omit<DelayReason, "id"> = {
       tripId: trip.id,
-      delayType: delayType as DelayReason["delayType"],
+      delayType: delayType,
       description: delayDescription,
       delayDuration,
-      severity: delaySeverity as DelayReason["severity"],
+      severity: delaySeverity,
       reportedAt: new Date().toISOString(),
       reportedBy: "CurrentUser",
     };

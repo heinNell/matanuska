@@ -158,7 +158,7 @@ const ClientForm: React.FC<ClientFormProps> = ({
 
       // Save the client
       if (isEditing) {
-        await updateClient(clientData as Client);
+        await updateClient(clientData);
       } else {
         await addClient(clientData as any);
       }

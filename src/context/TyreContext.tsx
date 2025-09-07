@@ -72,7 +72,7 @@ export const TyreProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         installation: tyre.installation
           ? {
               ...tyre.installation,
-              position: tyre.installation.position as TyrePosition,
+              position: tyre.installation.position,
             }
           : undefined,
         maintenanceHistory: {
@@ -102,7 +102,7 @@ export const TyreProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             })) || [],
         },
         // Ensure location is correctly typed as TyreStoreLocation
-        location: tyre.location as TyreStoreLocation,
+        location: tyre.location,
       }));
       setTyres(mappedTyres);
       setLoading(false);
@@ -130,7 +130,7 @@ export const TyreProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         installation: result.installation
           ? {
               ...result.installation,
-              position: result.installation.position as TyrePosition,
+              position: result.installation.position,
             }
           : undefined,
         maintenanceHistory: {
@@ -153,7 +153,7 @@ export const TyreProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               id: i.id || `inspection-${result.id}-${idx}`,
             })) || [],
         },
-        location: result.location as TyreStoreLocation,
+        location: result.location,
       };
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Unknown error getting tyre"));
@@ -216,7 +216,7 @@ export const TyreProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         installation: tyre.installation
           ? {
               ...tyre.installation,
-              position: tyre.installation.position as TyrePosition,
+              position: tyre.installation.position,
             }
           : undefined,
         maintenanceHistory: {
@@ -239,7 +239,7 @@ export const TyreProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               id: i.id || `inspection-${tyre.id}-${idx}`,
             })) || [],
         },
-        location: tyre.location as TyreStoreLocation,
+        location: tyre.location,
       }));
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Unknown error getting vehicle tyres"));
@@ -265,7 +265,7 @@ export const TyreProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         installation: tyre.installation
           ? {
               ...tyre.installation,
-              position: tyre.installation.position as TyrePosition,
+              position: tyre.installation.position,
             }
           : undefined,
         maintenanceHistory: {
@@ -288,7 +288,7 @@ export const TyreProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               id: i.id || `inspection-${tyre.id}-${idx}`,
             })) || [],
         },
-        location: tyre.location as TyreStoreLocation,
+        location: tyre.location,
       }));
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Unknown error filtering tyres"));

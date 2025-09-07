@@ -29,7 +29,7 @@ export function useTyreInspections(tyreId?: string) {
     const fetchInspections = async () => {
       setLoading(true);
       setError(null);
-      let cancelled = false;
+      const cancelled = false;
       try {
         // Try fetching from a top-level tyreInspections collection
         const q = query(

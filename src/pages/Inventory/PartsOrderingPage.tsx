@@ -650,7 +650,7 @@ const PartsOrderingPage: React.FC = () => {
                             variant="outline"
                             onClick={() => handleViewOrder(order)}
                             icon={<Eye className="w-4 h-4" />}
-                          ></Button>
+                           />
 
                           {(order.status === "ORDERED" ||
                             order.status === "PARTIALLY_RECEIVED") && (
@@ -677,7 +677,7 @@ const PartsOrderingPage: React.FC = () => {
                               variant="outline"
                               onClick={() => handleEditOrder(order)}
                               icon={<Edit className="w-4 h-4" />}
-                            ></Button>
+                             />
                           )}
 
                           {order.status !== "CANCELLED" && order.status !== "RECEIVED" && (
@@ -686,7 +686,7 @@ const PartsOrderingPage: React.FC = () => {
                               variant="danger"
                               onClick={() => handleCancelOrder(order.id)}
                               icon={<Trash2 className="w-4 h-4" />}
-                            ></Button>
+                             />
                           )}
                         </div>
                       </td>

@@ -505,7 +505,7 @@ const VendorPage: React.FC = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                ></textarea>
+                 />
               </div>
 
               <div className="flex justify-end space-x-3">

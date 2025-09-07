@@ -603,7 +603,7 @@ const LoadPlanningComponent: React.FC<LoadPlanningComponentProps> = ({ tripId })
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
                         {totalVolume.toFixed(1)} m³
                       </td>
-                      <td colSpan={2}></td>
+                      <td colSpan={2} />
                     </tr>
                   </tbody>
                 </table>

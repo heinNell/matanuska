@@ -112,7 +112,7 @@ const RouteDrawer: React.FC<RouteDrawerProps> = ({
       {calculating && (
         <div className="absolute bottom-4 left-4 bg-white p-2 rounded shadow z-10">
           <div className="flex items-center">
-            <div className="animate-spin h-4 w-4 border-t-2 border-blue-500 rounded-full mr-2"></div>
+            <div className="animate-spin h-4 w-4 border-t-2 border-blue-500 rounded-full mr-2" />
             <span className="text-sm">Calculating route...</span>
           </div>
         </div>

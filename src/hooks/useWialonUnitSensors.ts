@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface SensorIds {
-  [key: string]: string;
-}
+type SensorIds = Record<string, string>;
 
 interface SensorData {
   fuel: number | null;

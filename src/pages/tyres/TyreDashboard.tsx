@@ -820,7 +820,7 @@ export const StockInventoryDashboard: React.FC<StockInventoryDashboardProps> = (
           onClose={() => setEditItem(null)}
           onSubmit={handleEditSubmit}
           initialData={editItem}
-          editMode={true}
+          editMode
         />
       )}
     </div>

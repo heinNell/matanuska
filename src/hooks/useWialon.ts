@@ -20,7 +20,7 @@ interface WialonUnitSDK { // Represents the actual Wialon SDK Unit object with m
   getCustomProperty(propName: string): string | undefined;
   ci?: number;
   tp?: string;
-  prp?: { [key: string]: any };
+  prp?: Record<string, any>;
 }
 
 // --- Removed unused WialonCore and WialonItem interface declarations ---

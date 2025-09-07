@@ -8,7 +8,7 @@
  * - Prevention of "Object" logs by proper error serialization
  */
 
-export type AppError = {
+export interface AppError {
   name: string;
   message: string;
   stack?: string;
@@ -16,7 +16,7 @@ export type AppError = {
   status?: number;
   cause?: unknown;
   original: unknown;
-};
+}
 
 /**
  * Type guard for standard Error instances
@@ -418,7 +418,7 @@ const errorReportingTimeouts = new Map<string, NodeJS.Timeout>();
 export function debouncedErrorReport(
   error: unknown,
   context?: Record<string, any>,
-  delay: number = 1000
+  delay = 1000
 ): void {
   const hash = createErrorHash(error);
 
