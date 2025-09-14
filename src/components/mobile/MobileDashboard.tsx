@@ -77,24 +77,24 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({ onClose }) => 
   const [showNotifications, setShowNotifications] = useState(false);
   const [isNativeApp, setIsNativeApp] = useState(false);
 
-  useEffect(() => {
+  useEffect((): (() => void) => {
     setIsNativeApp(Capacitor.isNativePlatform());
-    loadDashboardData();
+    void loadDashboardData();
 
     // Set up auto-refresh
-    const interval = setInterval(() => {
-      loadDashboardData(false);
+    const interval = setInterval((): void => {
+      void loadDashboardData(false);
     }, 30000); // Refresh every 30 seconds
 
-    return () => clearInterval(interval);
+    return (): void => clearInterval(interval);
   }, []);
 
   const loadDashboardData = async (showLoading = true): Promise<void> => {
     if (showLoading) setIsRefreshing(true);
 
     try {
-      // Mock data - in real app, load from API
-      const mockVehicles: VehicleStatus[] = [
+      // Sample data - in real app, load from API
+      const sampleVehicles: VehicleStatus[] = [
         {
           id: 'V001',
           registration: 'KCA 123A',
@@ -178,22 +178,22 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({ onClose }) => 
         }
       ];
 
-      const allAlerts = mockVehicles.flatMap(v => v.alerts);
+      const allAlerts = sampleVehicles.flatMap(v => v.alerts);
 
-      const mockMetrics: FleetMetrics = {
-        totalVehicles: mockVehicles.length,
-        activeVehicles: mockVehicles.filter(v => v.status === 'active').length,
-        idleVehicles: mockVehicles.filter(v => v.status === 'idle').length,
-        maintenanceVehicles: mockVehicles.filter(v => v.status === 'maintenance').length,
-        averageFuelLevel: mockVehicles.reduce((sum, v) => sum + v.fuel.level, 0) / mockVehicles.length,
-        totalAlerts: allAlerts.filter(a => !a.acknowledged).length,
-        activeTrips: mockVehicles.filter(v => v.status === 'active').length,
+      const sampleMetrics: FleetMetrics = {
+        totalVehicles: sampleVehicles.length,
+        activeVehicles: sampleVehicles.filter(v => v.status === 'active').length,
+        idleVehicles: sampleVehicles.filter(v => v.status === 'idle').length,
+        maintenanceVehicles: sampleVehicles.filter(v => v.status === 'maintenance').length,
+        averageFuelLevel: sampleVehicles.reduce((sum, v) => sum + v.fuel.level, 0) / sampleVehicles.length,
+        totalAlerts: allAlerts.filter(a => a.acknowledged === false).length,
+        activeTrips: sampleVehicles.filter(v => v.status === 'active').length,
         completedTripsToday: 12
       };
 
-      setVehicles(mockVehicles);
-      setMetrics(mockMetrics);
-      setAlerts(allAlerts.filter(a => !a.acknowledged));
+      setVehicles(sampleVehicles);
+      setMetrics(sampleMetrics);
+      setAlerts(allAlerts.filter(a => a.acknowledged === false));
       setLastUpdate(new Date());
 
     } catch (error) {

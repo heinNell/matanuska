@@ -8,6 +8,7 @@ module.exports = {
   },
   globals: {
     process: 'readonly', // Explicitly define process as a read-only global
+    __dirname: 'readonly',  // Add this line
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
